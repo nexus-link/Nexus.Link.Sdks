@@ -8,5 +8,5 @@ resources:
 jobs:
 - template: 'devops/pipeline-templates/nuget-netstandard-v2.yml@templates'
   parameters:
-    nugetProjectsPath: '**/src/Sdk/*.csproj'
-    testProjectsPath: '**/test/Sdk.UnitTests/*.csproj'
+    nugetProjectsPath: '**/src/AsyncCaller.Sdk/*.csproj'
+    testProjectsPath: '**/test/AsyncCaller.UnitTests/*.csproj'
