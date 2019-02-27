@@ -1,0 +1,12 @@
+resources:
+  repositories:
+  - repository: templates
+    type: github
+    endpoint: 'xlent-link-admin'
+    name: 'nexus-link/nexus-developer-tools'
+    ref: 'refs/heads/master'
+jobs:
+- template: 'devops/pipeline-templates/nuget-netstandard-v2.yml@templates'
+  parameters:
+    nugetProjectsPath: '**/src/Sdk/*.csproj'
+    testProjectsPath: '**/test/Sdk.UnitTests/*.csproj'
