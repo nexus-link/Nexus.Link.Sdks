@@ -19,6 +19,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger.Sdk", "src\Logger.Sd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger.Sdk.UnitTests", "test\Logger.UnitTests\Logger.Sdk.UnitTests.csproj", "{972E7002-2402-4165-B0A3-7F1BDEABE789}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4DD53148-3BEE-4210-8C85-8B8445F8F23E}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.config = NuGet.config
+		pipeline-asynccaller-sdk.yml = pipeline-asynccaller-sdk.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ci|Any CPU = ci|Any CPU
