@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <AssemblyName>Nexus.Link.KeyTranslator.Sdk</AssemblyName>
+    <RootNamespace>Nexus.Link.KeyTranslator.Sdk</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.6.4" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <ProjectReference Include="..\Common\KeyTranslator.Common.csproj" />
+  </ItemGroup>-->
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
+    <PackageVersion>1.1.2</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.KeyTranslator</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>SDK for Nexus translation service.</Description>
+    <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      1.1.2 UrlEncoded routes for TranslateClient
+      1.1.1 Updated dependencies.
+      1.1.0 Independent of other projects.
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
