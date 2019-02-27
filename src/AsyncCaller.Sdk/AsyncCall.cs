@@ -17,6 +17,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
     /// </summary>
     public class AsyncCall : IAsyncCall
     {
+
         private readonly IAsyncCaller _asyncCaller;
 
         public AsyncCall(IAsyncCaller asyncCaller, HttpMethod method, Uri uri)
