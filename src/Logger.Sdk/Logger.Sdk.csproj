@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <AssemblyName>Nexus.Link.Logger.Sdk</AssemblyName>
+    <RootNamespace>Nexus.Link.Logger.Sdk</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="[1.6.4,2.0)" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="[3.2.4,4.0)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.Logger.Sdk</PackageId>
+    <PackageVersion>1.1.7</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>SDK for Nexus logging service (only for internal use).</Description>
+    <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      1.1.7 Updated dependencies
+      1.1.5 FulcrumLogger now supports ISyncLogger.
+      1.1.4 Updated dependencies.
+      1.1.2 Moved namespace
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
