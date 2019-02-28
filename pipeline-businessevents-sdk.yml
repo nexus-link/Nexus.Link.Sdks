@@ -8,6 +8,6 @@ resources:
 jobs:
 - template: 'devops/pipeline-templates/nuget-netstandard-v2.yml@templates'
   parameters:
-    nugetProjectsPath: '**/src/AsyncCaller.Sdk/*.csproj'
-    testProjectsPath: '**/test/AsyncCaller.UnitTests/*.csproj'
-    jobName: 'AsyncCaller.Sdk'
+    nugetProjectsPath: '**/src/BusinessEvents.Sdk/*.csproj'
+    testProjectsPath: ''
+    jobName: 'BusinessEvents.Sdk'
