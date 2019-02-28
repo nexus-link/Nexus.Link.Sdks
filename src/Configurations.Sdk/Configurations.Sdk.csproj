@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <RootNamespace>Nexus.Link.Configurations.Sdk</RootNamespace>
+    <AssemblyName>Nexus.Link.Configurations.Sdk</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="[1.6.4, 2.0)" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="[3.2.4,4.0)" /> 
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Authentication.Sdk\Authentication.Sdk.csproj" />
+  </ItemGroup>
+
+    <PropertyGroup>
+      <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
+      <PackageVersion>1.1.7</PackageVersion>
+      <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+      <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+      <Authors>XLENT Link</Authors>
+      <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
+      <PackageLanguage>en-US</PackageLanguage>
+      <Description>Configurations library to support features in the Nexus Link concept</Description>
+      <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+      <IncludeSymbols>true</IncludeSymbols>
+      <PackageReleaseNotes>
+        1.1.7 Updated dependencies
+        1.1.2 Now also supports netstandard.
+        1.1.1 Moved namespace
+        1.0.1 Updated dependency
+        1.0.0 Changed to Nexus.Link libraries
+      </PackageReleaseNotes>
+    </PropertyGroup>
+
+</Project>
