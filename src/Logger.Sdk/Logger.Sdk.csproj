@@ -23,6 +23,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.1.8 Bumped version, verifying new yaml and build.
       1.1.7 Updated dependencies
       1.1.5 FulcrumLogger now supports ISyncLogger.
       1.1.4 Updated dependencies.
