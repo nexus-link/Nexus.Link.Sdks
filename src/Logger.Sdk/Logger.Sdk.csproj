@@ -4,6 +4,8 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Nexus.Link.Logger.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.Logger.Sdk</RootNamespace>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +15,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <PackageVersion>1.1.9-beta3</PackageVersion>
+    <PackageVersion>1.1.9-beta4</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -21,8 +23,6 @@
     <PackageLanguage>en-US</PackageLanguage>
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
       1.1.9 Testing symbols publishing
       1.1.8 Bumped version, verifying new yaml and build.
