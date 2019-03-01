@@ -10,4 +10,4 @@ jobs:
   parameters:
     nugetProjectsPath: '**/src/KeyTranslator.Sdk/*.csproj'
     testProjectsPath: '**/test/KeyTranslator.UnitTests/*.csproj'
-    jobName: 'KeyTranslator.Sdk'
+    jobName: 'KeyTranslatorSdk'

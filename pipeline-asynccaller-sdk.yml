@@ -10,4 +10,4 @@ jobs:
   parameters:
     nugetProjectsPath: '**/src/AsyncCaller.Sdk/*.csproj'
     testProjectsPath: '**/test/AsyncCaller.UnitTests/*.csproj'
-    jobName: 'AsyncCaller.Sdk'
+    jobName: 'AsyncCallerSdk'

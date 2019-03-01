@@ -10,4 +10,4 @@ jobs:
   parameters:
     nugetProjectsPath: '**/src/Authentication.AspNet.Sdk/*.csproj'
     testProjectsPath: ''
-    jobName: 'Authentication.AspNet.Sdk'
+    jobName: 'AuthenticationAspNetSdk'
