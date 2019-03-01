@@ -11,7 +11,7 @@ using Nexus.Link.Libraries.Core.Platform.Configurations;
 using Nexus.Link.Logger.Sdk;
 using Nexus.Link.Logger.Sdk.RestClients;
 
-namespace Fundamentals.UnitTests.Logger
+namespace Logger.Sdk.UnitTest.Logger
 {
     [TestClass]
     public class SdkTests

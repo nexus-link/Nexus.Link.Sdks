@@ -9,5 +9,5 @@ jobs:
 - template: 'devops/pipeline-templates/nuget-netstandard-v2.yml@templates'
   parameters:
     nugetProjectsPath: '**/src/Logger.Sdk/*.csproj'
-    testProjectsPath: '**/test/Logger.UnitTests/*.csproj'
+    testProjectsPath: '**/test/Logger.Sdk.UnitTest/*.csproj'
     jobName: 'LoggerSdk'

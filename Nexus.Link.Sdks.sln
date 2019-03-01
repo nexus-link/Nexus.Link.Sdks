@@ -17,12 +17,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nexus.Link.BusinessEvents.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger.Sdk", "src\Logger.Sdk\Logger.Sdk.csproj", "{61FB1E8E-6F92-4092-931F-3B3E1BBB489E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger.Sdk.UnitTests", "test\Logger.UnitTests\Logger.Sdk.UnitTests.csproj", "{972E7002-2402-4165-B0A3-7F1BDEABE789}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4DD53148-3BEE-4210-8C85-8B8445F8F23E}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet.config = NuGet.config
 		pipeline-asynccaller-sdk.yml = pipeline-asynccaller-sdk.yml
+		pipeline-authentication-aspnet-sdk.yml = pipeline-authentication-aspnet-sdk.yml
+		pipeline-authentication-sdk.yml = pipeline-authentication-sdk.yml
+		pipeline-businessevents-sdk.yml = pipeline-businessevents-sdk.yml
+		pipeline-configurations-sdk.yml = pipeline-configurations-sdk.yml
+		pipeline-keytranslator-sdk.yml = pipeline-keytranslator-sdk.yml
+		pipeline-logger-sdk.yml = pipeline-logger-sdk.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configurations.Sdk", "src\Configurations.Sdk\Configurations.Sdk.csproj", "{E4E87F8D-42E0-4CFB-ADFD-2E94EB7CA9C9}"
@@ -30,6 +34,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.Sdk", "src\Authentication.Sdk\Authentication.Sdk.csproj", "{5DF4C067-F68B-440F-808D-653D43F91480}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.AspNet.Sdk", "src\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj", "{E7B1FD88-7535-47F2-8E8E-235D3D64F667}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logger.Sdk.UnitTest", "test\Logger.Sdk.UnitTest\Logger.Sdk.UnitTest.csproj", "{6D3177A9-A7CB-402A-9473-26179B1ACDC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,20 +132,6 @@ Global
 		{61FB1E8E-6F92-4092-931F-3B3E1BBB489E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61FB1E8E-6F92-4092-931F-3B3E1BBB489E}.ver|Any CPU.ActiveCfg = Release|Any CPU
 		{61FB1E8E-6F92-4092-931F-3B3E1BBB489E}.ver|Any CPU.Build.0 = Release|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.ci|Any CPU.ActiveCfg = ci|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.ci|Any CPU.Build.0 = ci|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.int|Any CPU.ActiveCfg = int|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.int|Any CPU.Build.0 = int|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.prd|Any CPU.ActiveCfg = prd|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.prd|Any CPU.Build.0 = prd|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.prd-simulation|Any CPU.ActiveCfg = prd-simulation|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.prd-simulation|Any CPU.Build.0 = prd-simulation|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.Release|Any CPU.Build.0 = Release|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.ver|Any CPU.ActiveCfg = ver|Any CPU
-		{972E7002-2402-4165-B0A3-7F1BDEABE789}.ver|Any CPU.Build.0 = ver|Any CPU
 		{E4E87F8D-42E0-4CFB-ADFD-2E94EB7CA9C9}.ci|Any CPU.ActiveCfg = Debug|Any CPU
 		{E4E87F8D-42E0-4CFB-ADFD-2E94EB7CA9C9}.ci|Any CPU.Build.0 = Debug|Any CPU
 		{E4E87F8D-42E0-4CFB-ADFD-2E94EB7CA9C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -182,6 +174,20 @@ Global
 		{E7B1FD88-7535-47F2-8E8E-235D3D64F667}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7B1FD88-7535-47F2-8E8E-235D3D64F667}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7B1FD88-7535-47F2-8E8E-235D3D64F667}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.int|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,7 +195,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{20E54E01-96FF-4E48-A961-0267FA748656} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 		{F0C0B14E-423E-4F2F-A3B1-23438675E6BF} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
-		{972E7002-2402-4165-B0A3-7F1BDEABE789} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
+		{6D3177A9-A7CB-402A-9473-26179B1ACDC7} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {929016C1-D948-4CB9-AD95-8115E93A6B9E}
