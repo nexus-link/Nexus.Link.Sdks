@@ -27,7 +27,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <PackageVersion>1.1.7</PackageVersion>
+      <PackageVersion>1.1.8</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -37,6 +37,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.1.8 Bumped version, verifying new yaml and build.
         1.1.7 Updated dependencies
         1.1.2 Now also supports netstandard.
         1.1.1 Moved namespace

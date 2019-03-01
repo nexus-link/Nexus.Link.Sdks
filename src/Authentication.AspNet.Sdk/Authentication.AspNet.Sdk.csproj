@@ -34,6 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.2.7 Bumped version, verifying new yaml and build.
         1.2.6 Now logs tokens that are not valid.
         1.2.5 More logging when checking claims principal tenant.
         1.2.4 Updated dependencies        1.2.3 Fix: TokenValidationHandler must allow SysAdminUsers to fetch e.g. config for other tenants
