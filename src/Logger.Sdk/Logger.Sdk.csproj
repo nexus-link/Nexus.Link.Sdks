@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="[1.6.4,2.0)" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="[3.2.4,4.0)" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.7.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="3.4.1" />
   </ItemGroup>
 
   <PropertyGroup>
