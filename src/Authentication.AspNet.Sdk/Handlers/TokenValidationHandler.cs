@@ -111,7 +111,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 return true;
             }
             // TODO: Special for OrganizationAdmin until new Authentication is in place
-            if (claimsPrincipal.IsOrganizationAdmin() && tenant.Organization == "Tenants")
+            if (claimsPrincipal.IsOrganizationAdmin() && tenant.Organization.ToLowerInvariant() == "tenants")
             {
                 Log.LogInformation("Claims principal was org admin and could thereby use api/v1/Tenants/{id} paths.");
                 return true;
