@@ -110,6 +110,12 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 Log.LogInformation($"Claims principal was sys admin and could thereby overrule mismatching tenants ({message}).");
                 return true;
             }
+            // TODO: Special for OrganizationAdmin until new Authentication is in place
+            if (claimsPrincipal.IsOrganizationAdmin() && tenant.Organization == "Tenants")
+            {
+                Log.LogInformation("Claims principal was org admin and could thereby use api/v1/Tenants/{id} paths.");
+                return true;
+            }
 
             Log.LogInformation(message);
             return false;
