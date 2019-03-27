@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <PackageVersion>1.2.9</PackageVersion>
+      <PackageVersion>1.2.10</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.2.10 More logging
         1.2.9 Fix for OrganizationAdmin tokens
         1.2.8 Bumped version, consolidating versions
         1.2.7 Bumped version, verifying new yaml and build.
