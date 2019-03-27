@@ -38,7 +38,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             var token = GetToken(context);
             if (token == null)
             {
-                Log.LogVerbose($"No token found.");
+                Log.LogInformation($"No token found. This is considered an anonymous call.");
             }
             else
             {
