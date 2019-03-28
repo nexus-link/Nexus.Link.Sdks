@@ -25,6 +25,8 @@ namespace Nexus.Link.Authentication.Sdk.Logic
                 var securityTokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = publicKey,
                     ValidIssuer = issuer
                 };
