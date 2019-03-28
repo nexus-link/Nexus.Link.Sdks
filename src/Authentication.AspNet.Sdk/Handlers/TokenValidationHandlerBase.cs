@@ -70,6 +70,11 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
             // Validate token
             var publicKey = await FetchPublicKeyXmlAsync(tenant);
+            if (string.IsNullOrWhiteSpace(publicKey))
+            {
+                Log.LogWarning($"Could not fetch public key for tenant '{tenant}'");
+                return;
+            }
             var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
             if (claimsPrincipal == null)
             {
