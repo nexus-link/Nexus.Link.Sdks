@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Logging;
@@ -10,26 +11,26 @@ using Microsoft.AspNetCore.Http;
 
 #endif
 
-namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
+namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 {
 
-    public class TokenValidationHandler : TokenValidationHandlerBase
+    public class NexusTokenValidationHandler : TokenValidationHandlerBase
     {
 
 #if NETCOREAPP
         /// <inheritdoc />
-        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, fundamentalsServiceBaseUrl, AuthenticationManager.AuthServiceIssuer)
+        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, fundamentalsServiceBaseUrl, AuthenticationManager.NexusIssuer)
         {
         }
 #else
-        public TokenValidationHandler(string fundamentalsServiceBaseUrl) : base(fundamentalsServiceBaseUrl, AuthenticationManager.AuthServiceIssuer)
+        public NexusTokenValidationHandler(string fundamentalsServiceBaseUrl) : base(fundamentalsServiceBaseUrl, AuthenticationManager.NexusIssuer)
         {
         }
 #endif
 
         protected override async Task<string> FetchPublicKeyXmlAsync(Tenant tenant)
         {
-            var publicKeyXml = await AuthenticationManager.GetAuthServicePublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
+            var publicKeyXml = await AuthenticationManager.GetNexusPublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
             return publicKeyXml;
         }
 
@@ -41,16 +42,22 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 return false;
             }
 
-            // See https://www.lucidchart.com/publicSegments/view/045c8f44-0466-4ca4-b718-fe1b73843566/image.png
-
             var orgFromToken = claimsPrincipal.GetOrganization()?.ToLower();
             var envFromToken = claimsPrincipal.GetEnvironment()?.ToLower();
             var sameTenant = orgFromToken == tenant.Organization.ToLower() && envFromToken == tenant.Environment.ToLower();
             if (sameTenant) return true;
 
+            // A client with "platform-service" role in the "fulcrum" organization can call other Nexus services on behalf of customer tenants.
+            if (claimsPrincipal.IsNexusPlatformService() && orgFromToken == "fulcrum")
+            {
+                // TODO: Should we check that FulcrumApplication.Setup.Tenant.Environment == envFromToken?
+                return true;
+            }
+
             var message = $"Claims principal had tenant {orgFromToken}/{envFromToken}. Expected tenant: {tenant}.";
             Log.LogInformation(message);
             return false;
         }
+
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.Caching;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Authentication.Sdk.Logic;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
@@ -14,6 +16,8 @@ using Nexus.Link.Libraries.Web.Platform.Authentication;
 
 namespace Nexus.Link.Authentication.Sdk
 {
+    // TODO: This should handle both Nexus and Auth as a service
+
     public class AuthenticationManager
     {
         private static readonly string Namespace = typeof(AuthenticationManager).Namespace;
@@ -23,10 +27,11 @@ namespace Nexus.Link.Authentication.Sdk
         public Tenant Tenant { get; }
         public Uri ServiceUri { get; }
         internal AuthenticationCredentials ServiceCredentials { get; }
-        public static string Issuer => Validation.Issuer;
-        public static string Audience => Validation.Audience;
-        public static byte[] PublicSecurityKeyExponent => Validation.PublicSecurityKeyExponent;
-        public static byte[] PublicSecurityKeyModulus => Validation.PublicSecurityKeyModulus;
+
+        public static string LegacyIssuer => Validation.LegacyIssuer;
+        public static string LegacyAudience => Validation.LegacyAudience;
+        public static string NexusIssuer => Validation.NexusIssuer;
+        public static string AuthServiceIssuer => Validation.AuthServiceIssuer;
 
            
         public AuthenticationManager(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials)
@@ -173,14 +178,56 @@ namespace Nexus.Link.Authentication.Sdk
             return new TokenRefresher(this, credentials);
         }
 
-        public static ClaimsPrincipal ValidateToken(string token)
+        /// <summary>
+        /// Validates a token.
+        /// </summary>
+        /// <param name="token">The JWT string</param>
+        /// <param name="publicKey">The public part of the RSA key used to sign the JWT</param>
+        /// <param name="issuer">Either Nexus services (<see cref="NexusIssuer"/>) or Auth as a service (<see cref="AuthServiceIssuer"/>)</param>
+        public static ClaimsPrincipal ValidateToken(string token, string publicKey, string issuer)
         {
             InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
+            InternalContract.RequireNotNullOrWhiteSpace(publicKey, nameof(publicKey));
 
-            return Validation.ValidateToken(token);
+            return Validation.ValidateToken(token, publicKey, issuer);
         }
 
-        public static bool HasRole(AuthenticationRoleEnum role, ClaimsPrincipal principal)
+        private static readonly MemoryCache PublicKeyCache = MemoryCache.Default;
+
+        public static async Task<string> GetNexusPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        {
+            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "NexusPublicKey");
+        }
+
+        public static async Task<string> GetAuthServicePublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        {
+            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey");
+        }
+
+        private static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)
+        {
+            var key = $"{type}|{tenant}";
+            if (PublicKeyCache[key] is string publicKeyXml) return publicKeyXml;
+
+            var url = $"{fundamentalsBaseUrl}api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
+            try
+            {
+                var response = await HttpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode) throw new Exception($"Response code {response.StatusCode}");
+                var result = await response.Content.ReadAsStringAsync();
+                var publicKey = JsonConvert.DeserializeObject<string>(result);
+                PublicKeyCache.Add(key, publicKey, DateTimeOffset.MaxValue);
+                return publicKey;
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Failed fetching '{type}' public key from '{url}'", e);
+            }
+
+            return null;
+        }
+
+        public static bool HasRole(string role, ClaimsPrincipal principal)
         {
             InternalContract.RequireNotNull(principal, nameof(principal));
 
