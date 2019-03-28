@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 #if NETCOREAPP
@@ -35,7 +36,11 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         protected override async Task InvokeAsync(CompabilityInvocationContext context)
         {
             var token = GetToken(context);
-            if (token != null)
+            if (token == null)
+            {
+                Log.LogInformation($"No token found. This is considered an anonymous call.");
+            }
+            else
             {
                 VerifyTokenAndSetClaimsPrincipal(token, context);
             }
@@ -51,6 +56,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         private static void VerifyTokenAndSetClaimsPrincipal(string token, CompabilityInvocationContext context)
         {
+            InternalContract.RequireNotNull(token, nameof(token));
             // Validate token
             var claimsPrincipal = AuthenticationManager.ValidateToken(token);
             if (claimsPrincipal == null)
@@ -84,11 +90,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         private static bool ClaimHasCorrectTenant(ClaimsPrincipal claimsPrincipal)
         {
-            if (claimsPrincipal == null)
-            {
-                Log.LogVerbose("Claims principal was null.");
-                return false;
-            }
+            InternalContract.RequireNotNull(claimsPrincipal, nameof(claimsPrincipal));
 
             var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
             if (tenant == null)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,11 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Attributes
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
             var authorized = base.IsAuthorized(actionContext);
+            if (!authorized)
+            {
+                var principal = actionContext.ControllerContext.RequestContext.Principal;
+                Log.LogInformation($"Principal '{principal?.Identity?.Name}' does not have a required role ({Roles})");
+            }
             return authorized;
         }
 #endif
