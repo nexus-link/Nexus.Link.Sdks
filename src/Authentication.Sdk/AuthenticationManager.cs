@@ -263,18 +263,28 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            var serializedCredentials = JsonConvert.SerializeObject(credentials);
             var uri = new Uri(ServiceUri, $"Tokens/?hoursToLive={lifeSpan.TotalHours}");
-            var request = new HttpRequestMessage(HttpMethod.Post, uri)
+            string data = null;
+            try
             {
-                Content = new StringContent(serializedCredentials, Encoding.UTF8, "application/json")
-            };
+                var serializedCredentials = JsonConvert.SerializeObject(credentials);
+                var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                {
+                    Content = new StringContent(serializedCredentials, Encoding.UTF8, "application/json")
+                };
 
-            request.Headers.Add("User-Agent", $"{credentials.ClientId}_{Tenant.Organization}_{Tenant.Environment}");
+                request.Headers.Add("User-Agent", $"{credentials.ClientId}_{Tenant.Organization}_{Tenant.Environment}");
 
-            var response = await HttpClient.SendAsync(request);
-            var data = response.Content == null ? null : await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<AuthenticationToken>(data);
+                var response = await HttpClient.SendAsync(request);
+                data = response.Content == null ? null : await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AuthenticationToken>(data);
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Error creating token on '{uri}' for client '{credentials.ClientId}'. Response: '{data}'", e);
+            }
+
+            return null;
         }
 
         internal string ServiceDescription(string clientId) => $"POST {ServiceUri} ClientId: {clientId}";
