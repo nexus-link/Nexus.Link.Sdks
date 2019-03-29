@@ -39,12 +39,12 @@ namespace Nexus.Link.Authentication.Sdk
         {
         }
 
-        public AuthenticationManager(Tenant tenant, string serviceUri)
+        public AuthenticationManager(Tenant tenant, string serviceBaseUrl, string path = null)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
+            InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));
 
             Tenant = tenant;
             var cacheKey = $"{tenant.Organization}{tenant.Environment}";
@@ -54,10 +54,10 @@ namespace Nexus.Link.Authentication.Sdk
                 TokenCaches[cacheKey] = _tokenCache;
             }
 
-            if (!serviceUri.EndsWith("/")) serviceUri += "/";
-            var baseUri = new Uri(serviceUri);
-            // TODO: Support both Nexus and Auth as a service
-            ServiceUri = new Uri(baseUri, $"api/v1/{tenant.Organization}/{tenant.Environment}/");
+            if (!serviceBaseUrl.EndsWith("/")) serviceBaseUrl += "/";
+            var baseUri = new Uri(serviceBaseUrl);
+            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}";
+            ServiceUri = new Uri(baseUri, path);
         }
 
         [Obsolete("No use for serviceCredentials anymore", true)]
@@ -262,7 +262,6 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            // TODO: support both Nexus and Auth as a service
             var serializedCredentials = JsonConvert.SerializeObject(credentials);
             var uri = new Uri(ServiceUri, $"Tokens/?hoursToLive={lifeSpan.TotalHours}");
             var request = new HttpRequestMessage(HttpMethod.Post, uri)
