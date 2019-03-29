@@ -119,7 +119,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             if (headerValue != null)
             {
                 // Verify Authorization header contains 'Bearer' scheme
-                token = headerValue.StartsWith("Bearer ") ? headerValue.Split(' ')[1] : null;
+                token = headerValue.ToLowerInvariant().StartsWith("bearer ") ? headerValue.Split(' ')[1] : null;
                 if (token != null) return token;
             }
 
