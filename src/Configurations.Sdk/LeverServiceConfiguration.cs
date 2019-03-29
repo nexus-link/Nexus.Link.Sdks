@@ -37,7 +37,7 @@ namespace Nexus.Link.Configurations.Sdk
 
             ServiceTenant = serviceTenant;
             ServiceName = serviceName;
-            var authenticationManager = new AuthenticationManager(ServiceTenant, authenticationServiceUrl, $"api/v1/Organizations/{serviceTenant.Organization}/Environments/{serviceTenant.Environment}");
+            var authenticationManager = new AuthenticationManager(ServiceTenant, authenticationServiceUrl, $"api/v2/Organizations/{serviceTenant.Organization}/Environments/{serviceTenant.Environment}");
             TokenRefresher = authenticationManager.CreateTokenRefresher(serviceCredentials, minimumTimeSpan, maximumTimeSpan);
             _configurationsManager = new LeverConfigurationsManager(configurationsServiceUrl, ServiceName, TokenRefresher.GetServiceClient());
         }
