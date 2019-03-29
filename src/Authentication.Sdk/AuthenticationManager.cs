@@ -26,23 +26,25 @@ namespace Nexus.Link.Authentication.Sdk
         private readonly TokenCache _tokenCache;
         public Tenant Tenant { get; }
         public Uri ServiceUri { get; }
-        internal AuthenticationCredentials ServiceCredentials { get; }
 
         public static string LegacyIssuer => Validation.LegacyIssuer;
         public static string LegacyAudience => Validation.LegacyAudience;
         public static string NexusIssuer => Validation.NexusIssuer;
         public static string AuthServiceIssuer => Validation.AuthServiceIssuer;
 
-           
-        public AuthenticationManager(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials)
+
+        [Obsolete("No use for serviceCredentials anymore", true)]
+        // ReSharper disable once UnusedParameter.Local
+        public AuthenticationManager(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials) : this(tenant, serviceUri)
+        {
+        }
+
+        public AuthenticationManager(Tenant tenant, string serviceUri)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
             InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
 
             Tenant = tenant;
             var cacheKey = $"{tenant.Organization}{tenant.Environment}";
@@ -54,84 +56,82 @@ namespace Nexus.Link.Authentication.Sdk
 
             if (!serviceUri.EndsWith("/")) serviceUri += "/";
             var baseUri = new Uri(serviceUri);
+            // TODO: Support both Nexus and Auth as a service
             ServiceUri = new Uri(baseUri, $"api/v1/{tenant.Organization}/{tenant.Environment}/");
-            ServiceCredentials = new AuthenticationCredentials
-            {
-                ClientId = serviceCredentials.ClientId,
-                ClientSecret = serviceCredentials.ClientSecret
-            };
         }
 
-        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan,
-            TimeSpan maximumExpirationSpan)
+        [Obsolete("No use for serviceCredentials anymore", true)]
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
+        {
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, minimumExpirationSpan, maximumExpirationSpan);
+        }
+
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
+            InternalContract.RequireNotNull(tokenCredentials, nameof(tokenCredentials));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
             InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
             InternalContract.RequireNotNull(minimumExpirationSpan, nameof(minimumExpirationSpan));
             InternalContract.RequireNotNull(maximumExpirationSpan, nameof(maximumExpirationSpan));
 
-            var authentication = new AuthenticationManager(tenant, serviceUri, serviceCredentials);
+            var authentication = new AuthenticationManager(tenant, serviceUri);
             return await authentication.GetJwtTokenAsync(tokenCredentials, minimumExpirationSpan, maximumExpirationSpan);
         }
 
+        [Obsolete("No use for serviceCredentials anymore", true)]
         public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan)
         {
-            InternalContract.RequireNotNull(tenant, nameof(tenant));
-            InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
-            InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
-            InternalContract.RequireNotNull(minimumExpirationSpan, nameof(minimumExpirationSpan));
-
-            return await GetJwtTokenAsync(tenant, serviceUri, serviceCredentials, tokenCredentials, minimumExpirationSpan,
-                TimeSpan.FromHours(24));
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, minimumExpirationSpan);
         }
 
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan)
+        {
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, minimumExpirationSpan, TimeSpan.FromHours(24));
+        }
+
+        [Obsolete("No use for serviceCredentials anymore", true)]
         public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials)
         {
-            InternalContract.RequireNotNull(tenant, nameof(tenant));
-            InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
-            InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
-
-            return await GetJwtTokenAsync(tenant, serviceUri, serviceCredentials, tokenCredentials, TimeSpan.FromHours(1),
-                TimeSpan.FromHours(24));
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials);
         }
+
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials)
+        {
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24));
+        }
+
+        [Obsolete("No use for serviceCredentials anymore", true)]
         public static ITokenRefresherWithServiceClient CreateTokenRefresher(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
+        {
+            return CreateTokenRefresher(tenant, serviceUri, tokenCredentials, minimumExpirationSpan, maximumExpirationSpan);
+        }
+
+        public static ITokenRefresherWithServiceClient CreateTokenRefresher(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
 
-            var authentication = new AuthenticationManager(tenant, serviceUri, serviceCredentials);
+            var authentication = new AuthenticationManager(tenant, serviceUri);
             return authentication.CreateTokenRefresher(tokenCredentials, minimumExpirationSpan, maximumExpirationSpan);
         }
 
+        [Obsolete("No use for serviceCredentials anymore", true)]
         public static ITokenRefresherWithServiceClient CreateTokenRefresher(Tenant tenant, string serviceUri, AuthenticationCredentials serviceCredentials, IAuthenticationCredentials tokenCredentials)
+        {
+            return CreateTokenRefresher(tenant, serviceUri, tokenCredentials);
+        }
+
+        public static ITokenRefresherWithServiceClient CreateTokenRefresher(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
             InternalContract.RequireNotNullOrWhiteSpace(serviceUri, nameof(serviceUri));
-            InternalContract.RequireNotNull(serviceCredentials, nameof(serviceCredentials));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientId, nameof(serviceCredentials.ClientId));
-            InternalContract.RequireNotNullOrWhiteSpace(serviceCredentials.ClientSecret, nameof(serviceCredentials.ClientSecret));
 
-            var authentication = new AuthenticationManager(tenant, serviceUri, serviceCredentials);
+            var authentication = new AuthenticationManager(tenant, serviceUri);
             return authentication.CreateTokenRefresher(tokenCredentials);
         }
 
@@ -209,7 +209,7 @@ namespace Nexus.Link.Authentication.Sdk
             var key = $"{type}|{tenant}";
             if (PublicKeyCache[key] is string publicKeyXml) return publicKeyXml;
 
-            var url = $"{fundamentalsBaseUrl}api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
+            var url = $"{fundamentalsBaseUrl}/api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
             try
             {
                 var response = await HttpClient.GetAsync(url);
@@ -262,6 +262,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
+            // TODO: support both Nexus and Auth as a service
             var serializedCredentials = JsonConvert.SerializeObject(credentials);
             var uri = new Uri(ServiceUri, $"Tokens/?hoursToLive={lifeSpan.TotalHours}");
             var request = new HttpRequestMessage(HttpMethod.Post, uri)
@@ -269,8 +270,6 @@ namespace Nexus.Link.Authentication.Sdk
                 Content = new StringContent(serializedCredentials, Encoding.UTF8, "application/json")
             };
 
-            var basicCredentialsAsBase64 = BasicCredentialsAsBase64;
-            request.Headers.Add("Authorization", $"Basic {basicCredentialsAsBase64}");
             request.Headers.Add("User-Agent", $"{credentials.ClientId}_{Tenant.Organization}_{Tenant.Environment}");
 
             var response = await HttpClient.SendAsync(request);
@@ -281,13 +280,5 @@ namespace Nexus.Link.Authentication.Sdk
         internal string ServiceDescription(string clientId) => $"POST {ServiceUri} ClientId: {clientId}";
 
         internal string ServiceDescription(Uri uri, string clientId) => $"POST {uri} ClientId: {clientId}";
-
-        private string BasicCredentialsAsBase64 => Base64Encode($"{ServiceCredentials.ClientId}:{ServiceCredentials.ClientSecret}");
-
-        private static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(plainTextBytes);
-        }
     }
 }
