@@ -47,7 +47,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));
 
             Tenant = tenant;
-            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}";
+            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}/";
             var cacheKey = path;
             if (!TokenCaches.TryGetValue(cacheKey, out _tokenCache))
             {
@@ -56,6 +56,7 @@ namespace Nexus.Link.Authentication.Sdk
             }
 
             if (!serviceBaseUrl.EndsWith("/")) serviceBaseUrl += "/";
+            if (!path.EndsWith("/")) path += "/";
             var baseUri = new Uri(serviceBaseUrl);
             ServiceUri = new Uri(baseUri, path);
         }
@@ -263,7 +264,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
             var serializedCredentials = JsonConvert.SerializeObject(credentials);
-            var uri = new Uri(ServiceUri, $"/Tokens/?hoursToLive={lifeSpan.TotalHours}");
+            var uri = new Uri(ServiceUri, $"Tokens/?hoursToLive={lifeSpan.TotalHours}");
             var request = new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new StringContent(serializedCredentials, Encoding.UTF8, "application/json")
