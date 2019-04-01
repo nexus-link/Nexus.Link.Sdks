@@ -250,7 +250,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
             var token = await RequestJwtTokenAsync(credentials, lifeSpan);
-            if (token == null) return null;
+            FulcrumAssert.IsNotNull(token, $"{Namespace}: A9CC803F-A45A-4F93-AF4E-BA455E29893D", $"Failed to get a token for client {ServiceDescription(credentials.ClientId)}.");
 
             _tokenCache.AddOrUpdate(credentials, token);
             return token;
