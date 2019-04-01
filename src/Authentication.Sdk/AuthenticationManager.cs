@@ -47,7 +47,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));
 
             Tenant = tenant;
-            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}/";
+            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}/Authentication/";
             var cacheKey = path;
             if (!TokenCaches.TryGetValue(cacheKey, out _tokenCache))
             {
@@ -277,7 +277,8 @@ namespace Nexus.Link.Authentication.Sdk
 
                 var response = await HttpClient.SendAsync(request);
                 data = response.Content == null ? null : await response.Content.ReadAsStringAsync();
-                return data == null ? null : JsonConvert.DeserializeObject<AuthenticationToken>(data);
+                if (data == null) return null;
+                return JsonConvert.DeserializeObject<AuthenticationToken>(data);
             }
             catch (Exception e)
             {
