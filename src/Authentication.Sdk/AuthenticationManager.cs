@@ -282,9 +282,8 @@ namespace Nexus.Link.Authentication.Sdk
             catch (Exception e)
             {
                 Log.LogError($"Error creating token on '{uri}' for client '{credentials.ClientId}'. Response: '{data}'", e);
+                throw;
             }
-
-            return null;
         }
 
         internal string ServiceDescription(string clientId) => $"POST {ServiceUri} ClientId: {clientId}";
