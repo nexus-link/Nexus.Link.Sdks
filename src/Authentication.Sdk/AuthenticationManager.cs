@@ -277,7 +277,7 @@ namespace Nexus.Link.Authentication.Sdk
 
                 var response = await HttpClient.SendAsync(request);
                 data = response.Content == null ? null : await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AuthenticationToken>(data);
+                return data == null ? null : JsonConvert.DeserializeObject<AuthenticationToken>(data);
             }
             catch (Exception e)
             {
