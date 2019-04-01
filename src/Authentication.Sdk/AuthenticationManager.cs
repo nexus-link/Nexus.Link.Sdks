@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Runtime.Caching;
 using System.Security.Claims;
@@ -191,6 +192,13 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(publicKey, nameof(publicKey));
 
             return Validation.ValidateToken(token, publicKey, issuer);
+        }
+
+        public static JwtSecurityToken ReadTokenNotValidating(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+            return jsonToken;
         }
 
         private static readonly MemoryCache PublicKeyCache = MemoryCache.Default;

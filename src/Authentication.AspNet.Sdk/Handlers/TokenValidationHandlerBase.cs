@@ -8,6 +8,7 @@ using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,9 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 }
 
                 // Validate token
+                var possiblePlatformServiceTenantFromToken = CheckTokenForPlatformService(token);
+                if (possiblePlatformServiceTenantFromToken != null) tenant = possiblePlatformServiceTenantFromToken;
+
                 var publicKey = await FetchPublicKeyXmlAsync(tenant);
                 if (string.IsNullOrWhiteSpace(publicKey))
                 {
@@ -69,6 +73,21 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             }
 
             await CallNextDelegateAsync(context);
+        }
+
+        private Tenant CheckTokenForPlatformService(string token)
+        {
+            var jwt = AuthenticationManager.ReadTokenNotValidating(token);
+            if (jwt?.Claims == null)
+            {
+                Log.LogWarning("Could not convert token to jwt");
+                return null;
+            }
+
+            var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value;
+            var envFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Environment)?.Value;
+            var isPlatformService = orgFromToken == "fulcrum" && jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
+            return isPlatformService ? new Tenant(orgFromToken, envFromToken) : null;
         }
 
         protected abstract Task<string> FetchPublicKeyXmlAsync(Tenant tenant);
