@@ -44,7 +44,22 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             var token = GetToken(context);
             if (token != null)
             {
-                await VerifyTokenAndSetClaimsPrincipal(token, context);
+                var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
+                if (tenant == null)
+                {
+                    Log.LogCritical("Could not verify claims principal, because the application tenant was set to null.");
+                    return;
+                }
+
+                // Validate token
+                var publicKey = await FetchPublicKeyXmlAsync(tenant);
+                if (string.IsNullOrWhiteSpace(publicKey))
+                {
+                    Log.LogWarning($"Could not fetch public key for tenant '{tenant}'");
+                    return;
+                }
+
+                VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
             }
 
             // Plan B: At least set the calling client name to the calling user agent
@@ -59,22 +74,8 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         protected abstract Task<string> FetchPublicKeyXmlAsync(Tenant tenant);
         protected abstract bool ClaimHasCorrectTenant(ClaimsPrincipal principal, Tenant tenant);
 
-        private async Task VerifyTokenAndSetClaimsPrincipal(string token, CompabilityInvocationContext context)
+        private void VerifyTokenAndSetClaimsPrincipal(string token, string publicKey, Tenant tenant, CompabilityInvocationContext context)
         {
-            var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
-            if (tenant == null)
-            {
-                Log.LogCritical("Could not verify claims principal, because the application tenant was set to null.");
-                return;
-            }
-
-            // Validate token
-            var publicKey = await FetchPublicKeyXmlAsync(tenant);
-            if (string.IsNullOrWhiteSpace(publicKey))
-            {
-                Log.LogWarning($"Could not fetch public key for tenant '{tenant}'");
-                return;
-            }
             var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
             if (claimsPrincipal == null)
             {
