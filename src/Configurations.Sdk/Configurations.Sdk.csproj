@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.7.5" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="3.4.3" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.7.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="3.4.5" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -27,7 +27,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <PackageVersion>1.1.10</PackageVersion>
+      <PackageVersion>1.1.11</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -37,7 +37,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        1.1.10 Bumped nexus nugets.
+        1.1.11 Bumped nexus nugets
         1.1.9 Bumped version, consolidating versions
         1.1.8 Bumped version, verifying new yaml and build.
         1.1.7 Updated dependencies
