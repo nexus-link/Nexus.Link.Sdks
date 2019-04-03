@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 #if NETCOREAPP
@@ -36,11 +37,7 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
         protected override bool ClaimHasCorrectTenant(ClaimsPrincipal claimsPrincipal, Tenant tenant)
         {
-            if (claimsPrincipal == null)
-            {
-                Log.LogVerbose("Claims principal was null.");
-                return false;
-            }
+            InternalContract.RequireNotNull(claimsPrincipal, nameof(claimsPrincipal));
 
             var orgFromToken = claimsPrincipal.GetOrganization()?.ToLower();
             var envFromToken = claimsPrincipal.GetEnvironment()?.ToLower();

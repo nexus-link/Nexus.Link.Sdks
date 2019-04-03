@@ -3,13 +3,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
+using AuthenticationManager = Nexus.Link.Authentication.Sdk.AuthenticationManager;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Http;
 #else
@@ -65,6 +66,10 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
                 VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
             }
+            else
+            {
+                Log.LogInformation("No token found. This is considered an anonymous call.");
+            }
 
             // Plan B: At least set the calling client name to the calling user agent
             if (FulcrumApplication.Context.CallingClientName == null)
@@ -95,6 +100,9 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         private void VerifyTokenAndSetClaimsPrincipal(string token, string publicKey, Tenant tenant, CompabilityInvocationContext context)
         {
+            InternalContract.RequireNotNull(token, nameof(token));
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
+
             var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
             if (claimsPrincipal == null)
             {
