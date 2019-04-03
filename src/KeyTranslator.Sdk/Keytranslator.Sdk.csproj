@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <PackageVersion>1.1.4</PackageVersion>
+    <PackageVersion>1.1.6</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -36,6 +36,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.1.6 Bumped nexus nugets
       1.1.4 Bumped version, consolidating versions
       1.1.3 Bumped version, verifying new yaml and build.
       1.1.2 UrlEncoded routes for TranslateClient
