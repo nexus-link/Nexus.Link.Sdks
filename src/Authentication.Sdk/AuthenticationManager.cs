@@ -17,8 +17,9 @@ using Nexus.Link.Libraries.Web.Platform.Authentication;
 
 namespace Nexus.Link.Authentication.Sdk
 {
-    // TODO: This should handle both Nexus and Auth as a service
-
+    /// <summary>
+    /// Authentication helper for tokens used in the "Authentication as service"
+    /// </summary>
     public class AuthenticationManager
     {
         private static readonly string Namespace = typeof(AuthenticationManager).Namespace;
@@ -27,6 +28,7 @@ namespace Nexus.Link.Authentication.Sdk
         private readonly TokenCache _tokenCache;
         public Tenant Tenant { get; }
         public Uri ServiceUri { get; }
+        private readonly string _type;
 
         public static string LegacyIssuer => Validation.LegacyIssuer;
         public static string LegacyAudience => Validation.LegacyAudience;
@@ -40,15 +42,21 @@ namespace Nexus.Link.Authentication.Sdk
         {
         }
 
-        public AuthenticationManager(Tenant tenant, string serviceBaseUrl, string path = null)
+        public AuthenticationManager(Tenant tenant, string serviceBaseUrl) : this("AuthService", tenant, serviceBaseUrl, $"api/v1/{tenant.Organization}/{tenant.Environment}/Authentication/")
         {
+        }
+
+        protected AuthenticationManager(string type, Tenant tenant, string serviceBaseUrl, string path)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(type, nameof(type));
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));
+            InternalContract.RequireNotNullOrWhiteSpace(path, nameof(path));
 
+            _type = type;
             Tenant = tenant;
-            if (path == null) path = $"api/v1/{tenant.Organization}/{tenant.Environment}/Authentication/";
             var cacheKey = path;
             if (!TokenCaches.TryGetValue(cacheKey, out _tokenCache))
             {
@@ -145,7 +153,7 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNull(minimumExpirationSpan, nameof(minimumExpirationSpan));
             InternalContract.RequireNotNull(maximumExpirationSpan, nameof(maximumExpirationSpan));
 
-            var token = _tokenCache.Get(tokenCredentials, minimumExpirationSpan);
+            var token = _tokenCache.Get(_type, tokenCredentials, minimumExpirationSpan);
             if (token != null) return token;
             token = await RequestAndCacheJwtTokenAsync(tokenCredentials, maximumExpirationSpan);
             return token;
@@ -203,17 +211,12 @@ namespace Nexus.Link.Authentication.Sdk
 
         private static readonly MemoryCache PublicKeyCache = MemoryCache.Default;
 
-        public static async Task<string> GetNexusPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
-        {
-            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "NexusPublicKey");
-        }
-
-        public static async Task<string> GetAuthServicePublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
         {
             return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey");
         }
 
-        private static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)
+        protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)
         {
             var key = $"{type}|{tenant}";
             if (PublicKeyCache[key] is string publicKeyXml) return publicKeyXml;
@@ -260,7 +263,7 @@ namespace Nexus.Link.Authentication.Sdk
             var token = await RequestJwtTokenAsync(credentials, lifeSpan);
             FulcrumAssert.IsNotNull(token, $"{Namespace}: A9CC803F-A45A-4F93-AF4E-BA455E29893D", $"Failed to get a token for client {ServiceDescription(credentials.ClientId)}.");
 
-            _tokenCache.AddOrUpdate(credentials, token);
+            _tokenCache.AddOrUpdate(_type, credentials, token);
             return token;
         }
 

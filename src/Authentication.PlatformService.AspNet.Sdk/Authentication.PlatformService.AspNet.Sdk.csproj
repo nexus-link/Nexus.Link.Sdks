@@ -25,7 +25,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <PackageVersion>1.0.0</PackageVersion>
+      <PackageVersion>1.0.1</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>

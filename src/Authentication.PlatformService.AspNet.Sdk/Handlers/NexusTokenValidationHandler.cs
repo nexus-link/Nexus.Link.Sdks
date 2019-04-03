@@ -30,7 +30,7 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
         protected override async Task<string> FetchPublicKeyXmlAsync(Tenant tenant)
         {
-            var publicKeyXml = await AuthenticationManager.GetNexusPublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
+            var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
             return publicKeyXml;
         }
 
