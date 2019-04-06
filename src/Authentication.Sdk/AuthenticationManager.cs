@@ -284,6 +284,9 @@ namespace Nexus.Link.Authentication.Sdk
                     Content = new StringContent(serializedCredentials, Encoding.UTF8, "application/json")
                 };
 
+                // TODO: Remove Basic Auth when Fundamentals with new auth is released in all environments
+                var basicCredentialsAsBase64 = Base64Encode("user:pwd");
+                request.Headers.Add("Authorization", $"Basic {basicCredentialsAsBase64}");
                 request.Headers.Add("User-Agent", $"{credentials.ClientId}_{Tenant.Organization}_{Tenant.Environment}");
 
                 var response = await HttpClient.SendAsync(request);
@@ -301,5 +304,11 @@ namespace Nexus.Link.Authentication.Sdk
         internal string ServiceDescription(string clientId) => $"POST {ServiceUri} ClientId: {clientId}";
 
         internal string ServiceDescription(Uri uri, string clientId) => $"POST {uri} ClientId: {clientId}";
+
+        private static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
+        }
     }
 }
