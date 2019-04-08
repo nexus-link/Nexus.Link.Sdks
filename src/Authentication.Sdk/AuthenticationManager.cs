@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Runtime.Caching;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Nexus.Link.Authentication.Sdk.Logic;
 using Nexus.Link.Libraries.Core.Assert;
@@ -209,7 +209,7 @@ namespace Nexus.Link.Authentication.Sdk
             return jsonToken;
         }
 
-        private static readonly MemoryCache PublicKeyCache = MemoryCache.Default;
+        private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());
 
         public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
         {
@@ -219,7 +219,8 @@ namespace Nexus.Link.Authentication.Sdk
         protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)
         {
             var key = $"{type}|{tenant}";
-            if (PublicKeyCache[key] is string publicKeyXml) return publicKeyXml;
+            var publicKeyXml = PublicKeyCache.Get<string>(key);
+            if (!string.IsNullOrWhiteSpace(publicKeyXml)) return publicKeyXml;
 
             var url = $"{fundamentalsBaseUrl}/api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
             try
@@ -228,7 +229,7 @@ namespace Nexus.Link.Authentication.Sdk
                 if (!response.IsSuccessStatusCode) throw new Exception($"Response code {response.StatusCode}");
                 var result = await response.Content.ReadAsStringAsync();
                 var publicKey = JsonConvert.DeserializeObject<string>(result);
-                PublicKeyCache.Add(key, publicKey, DateTimeOffset.MaxValue);
+                PublicKeyCache.Set(key, publicKey, DateTimeOffset.MaxValue);
                 return publicKey;
             }
             catch (Exception e)
