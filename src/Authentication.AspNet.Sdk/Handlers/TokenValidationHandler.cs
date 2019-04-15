@@ -11,6 +11,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 #else
 using System.Net.Http;
 #endif
@@ -176,4 +177,14 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         }
 
     }
+#if NETCOREAPP
+    public static class TokenValidationHandlerExtension
+    {
+        public static IApplicationBuilder UseNexusTokenValidationHandler(
+            this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<TokenValidationHandler>();
+        }
+    }
+#endif
 }
