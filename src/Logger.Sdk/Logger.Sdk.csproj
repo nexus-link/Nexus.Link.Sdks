@@ -15,7 +15,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <PackageVersion>1.1.11</PackageVersion>
+    <PackageVersion>1.1.16</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
-      1.1.11 Bumped nexus nugets
+      1.1.16 Bumped nexus nugets
       1.1.9 Bumped version, verifying new yaml and build.
       1.1.7 Updated dependencies
       1.1.5 FulcrumLogger now supports ISyncLogger.

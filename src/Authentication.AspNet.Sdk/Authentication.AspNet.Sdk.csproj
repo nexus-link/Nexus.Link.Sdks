@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="1.4.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="1.4.8" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-alpha01" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-alpha01" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <PackageVersion>2.0.0-alpha02</PackageVersion>
+      <PackageVersion>2.0.0-alpha03</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -35,7 +35,7 @@
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
         2.0.0 Support refactored Authentication
-        1.2.12 Bumped nexus nugets
+        1.2.17 Bumped nexus nugets
         1.2.11 More logging, bumped nugets.
         1.2.9 Fix for OrganizationAdmin tokens
         1.2.8 Bumped version, consolidating versions
