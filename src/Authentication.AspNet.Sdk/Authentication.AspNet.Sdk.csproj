@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="1.4.8" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-alpha01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-alpha01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-alpha02" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-alpha02" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <PackageVersion>2.0.0-alpha03</PackageVersion>
+      <PackageVersion>2.0.0-alpha04</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>

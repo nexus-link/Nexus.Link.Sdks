@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-alpha01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-alpha01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-alpha02" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-alpha02" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <PackageVersion>1.1.16</PackageVersion>
+    <PackageVersion>1.2.0-alpha01</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,6 +24,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
+      1.2.0 Support refactored Authentication
       1.1.16 Bumped nexus nugets
       1.1.9 Bumped version, verifying new yaml and build.
       1.1.7 Updated dependencies
