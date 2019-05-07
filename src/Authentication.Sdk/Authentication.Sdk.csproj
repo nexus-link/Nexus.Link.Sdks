@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <PackageVersion>2.0.0-alpha05</PackageVersion>
+      <PackageVersion>2.0.0-beta01</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>

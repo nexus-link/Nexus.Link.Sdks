@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <PackageVersion>1.2.0-alpha01</PackageVersion>
+    <PackageVersion>1.2.0-beta01</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
