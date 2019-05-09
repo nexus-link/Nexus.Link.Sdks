@@ -15,7 +15,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
     /// <summary>
     /// SDK for publishing business events.
     /// </summary>
-    public class BusinessEvents : IResourceHealth
+    public class BusinessEvents : IBusinessEvents
     {
         private readonly IPublicationsClient _publicationsClient;
         private readonly IServiceMetasClient _serviceMetasClient;
@@ -89,15 +89,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
             await _publicationsClient.PublishWithClientNameAsync(publicationId, content, clientName);
         }
 
-        /// <summary>
-        /// Publish a business event based on version of event and publisher client.
-        /// </summary>
-        /// <param name="entityName">The name of the entity</param>
-        /// <param name="eventName">The name of the event</param>
-        /// <param name="majorVersion">The major version</param>
-        /// <param name="minorVersion">The minor version</param>
-        /// <param name="clientName">The publisher client</param>
-        /// <param name="eventBody">The event body to be sent.</param>
+        /// <inheritdoc />
         public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody)
         {
             InternalContract.RequireNotNull(eventBody, nameof(eventBody));
@@ -108,7 +100,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <summary>
         /// Deprecated
         /// </summary>
-        [Obsolete("Use version without correlation id", false)]
+        [Obsolete("Use version without correlation id", true)]
         public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId)
         {
             await PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody);
@@ -124,16 +116,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
             return result;
         }
 
-        /// <summary>
-        /// Test publish an event to see if it meets the requirements (types and translations)
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="event"></param>
-        /// <param name="major"></param>
-        /// <param name="minor"></param>
-        /// <param name="clientName"></param>
-        /// <param name="payload"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public async Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload)
         {
             return await _testBenchClient.Publish(entity, @event, major, minor, clientName, payload);
