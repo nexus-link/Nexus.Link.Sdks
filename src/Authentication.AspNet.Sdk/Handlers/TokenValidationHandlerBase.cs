@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
@@ -47,11 +48,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             if (token != null)
             {
                 var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
-                if (tenant == null)
-                {
-                    Log.LogCritical("Could not verify claims principal, because the application tenant was set to null.");
-                    return;
-                }
+                FulcrumAssert.IsNotNull(tenant, "Could not verify claims principal, because the application tenant was set to null.");
 
                 // Validate token
                 var possiblePlatformServiceTenantFromToken = CheckTokenForPlatformService(token);
@@ -60,8 +57,9 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 var publicKey = await FetchPublicKeyXmlAsync(tenant);
                 if (string.IsNullOrWhiteSpace(publicKey))
                 {
-                    Log.LogWarning($"Could not fetch public key for tenant '{tenant}'");
-                    return;
+                    var message = $"Could not fetch public key for tenant '{tenant}'";
+                    Log.LogWarning(message);
+                    throw new FulcrumResourceException(message);
                 }
 
                 VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
