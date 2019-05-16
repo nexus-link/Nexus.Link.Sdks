@@ -87,10 +87,12 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 return null;
             }
 
+            var isPlatformService = jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
+            if (!isPlatformService) return null;
+
             var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value;
             var envFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Environment)?.Value;
-            var isPlatformService = orgFromToken == "fulcrum" && jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
-            return isPlatformService ? new Tenant(orgFromToken, envFromToken) : null;
+            return new Tenant(orgFromToken, envFromToken);
         }
 
         protected abstract Task<string> FetchPublicKeyXmlAsync(Tenant tenant);
