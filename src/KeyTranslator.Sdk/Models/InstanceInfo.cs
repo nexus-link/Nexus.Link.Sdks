@@ -27,6 +27,13 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
             return new InstanceInfo(this, Value);
         }
 
+        public static bool IsInstanceInfo(string path)
+        {
+            if (path == null) return false;
+            return Regex.IsMatch(path, ExclamationMarkSyntaxPattern)
+                || Regex.IsMatch(path, SlashSyntaxPattern);
+        }
+
         public new static InstanceInfo Parse(string path)
         {
             if (path == null) return null;

@@ -28,9 +28,9 @@ namespace Nexus.Link.KeyTranslator.Sdk
 
         static BatchTranslate()
         {
-            var cacheMinutesString = (string) null; // TODO ConfigurationManager.AppSettings["KeyTranslatorClientCacheMinutes"];
+            var cacheMinutesString = (string)null; // TODO ConfigurationManager.AppSettings["KeyTranslatorClientCacheMinutes"];
             var cacheMinutes = string.IsNullOrEmpty(cacheMinutesString) ? 5 : int.Parse(cacheMinutesString);
-            var cachePhysicalMemoryLimitPercentageString = (string) null; // TODO ConfigurationManager.AppSettings["KeyTranslatorCachePhysicalMemoryLimitPercentage"];
+            var cachePhysicalMemoryLimitPercentageString = (string)null; // TODO ConfigurationManager.AppSettings["KeyTranslatorCachePhysicalMemoryLimitPercentage"];
             var cachePhysicalMemoryLimitPercentage = string.IsNullOrEmpty(cachePhysicalMemoryLimitPercentageString) ? 10 : int.Parse(cachePhysicalMemoryLimitPercentageString);
             TranslateResponseCache = new TranslateResponseCache(cacheMinutes, cachePhysicalMemoryLimitPercentage);
         }
@@ -199,6 +199,12 @@ namespace Nexus.Link.KeyTranslator.Sdk
                 FulcrumAssert.IsTrue(responses.ContainsKey(key));
                 var response = responses[key];
                 _translateResponses.TryAdd(key, response);
+
+                if (InstanceInfo.IsInstanceInfo(response.Value))
+                {
+                    // Don't cache if no translation was found. See FreshDesk issue 2292.
+                    continue;
+                }
                 lock (TranslateResponseCache)
                 {
                     TranslateResponseCache.Add(GetCacheIndex(translateRequest), response);
