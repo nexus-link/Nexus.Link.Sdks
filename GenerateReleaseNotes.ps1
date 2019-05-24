@@ -22,7 +22,7 @@ Get-Childitem . -Include *.csproj -Recurse -ErrorAction SilentlyContinue | ForEa
             Try {
                 $response = Invoke-RestMethod "$url"
                 $releaseDate = $response.ChildNodes.updated[2]
-                $releaseNotesFinal = $releaseNotesFinal.Replace($version, $version + " (" + $releaseDate.Substring(0, 10) + ")")
+                $releaseNotesFinal = $releaseNotesFinal.Replace($version + " ", $version + " (" + $releaseDate.Substring(0, 10) + ") ")
             } Catch {
                 # It's ok, we skip the date for this version
                 # Write-Error Error: $_.Exception.Message;
