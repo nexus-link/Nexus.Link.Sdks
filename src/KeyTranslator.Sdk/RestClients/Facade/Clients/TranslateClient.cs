@@ -60,7 +60,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
             await RestClient.PostNoResponseContentAsync(relativeUrl, new
             {
                 InstancePath = instancePath,
-                lockId
+                LockId = lockId
             });
         }
 
