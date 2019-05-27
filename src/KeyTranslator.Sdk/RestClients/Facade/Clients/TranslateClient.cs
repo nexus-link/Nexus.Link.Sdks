@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Rest;
@@ -16,24 +17,51 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         {
         }
 
+        [Obsolete("Consider using TranslateToContextOrLock2Async, since this older version does not support colons and slashes in the instance path")]
         public async Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceInstancePath, string targetContextName)
         {
-            var relativeUrl = $"Translate/{WebUtility.UrlEncode(sourceInstancePath)}/Context/{WebUtility.UrlEncode(targetContextName)}/Lock";
+            var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetContextName={WebUtility.UrlEncode(targetContextName)}";
             var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
             return result;
         }
 
+        public async Task<ValueOrLockId> TranslateToContextOrLock2Async(string sourceInstancePath, string targetContextName)
+        {
+            var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetContextName={WebUtility.UrlEncode(targetContextName)}";
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            return result;
+        }
+
+        [Obsolete("Consider using TranslateToClientOrLock2Async, since this older version does not support colons and slashes in the instance path")]
         public async Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceInstancePath, string targetClientName)
         {
-            string relativeUrl = $"Translate/{WebUtility.UrlEncode(sourceInstancePath)}/Client/{WebUtility.UrlEncode(targetClientName)}/Lock";
+            var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetClientName={WebUtility.UrlEncode(targetClientName)}";
             var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
             return result;
         }
 
+        public async Task<ValueOrLockId> TranslateToClientOrLock2Async(string sourceInstancePath, string targetClientName)
+        {
+            var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetClientName={WebUtility.UrlEncode(targetClientName)}";
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            return result;
+        }
+
+        [Obsolete("Consider using ReleaseLock2Async, since this older version does not support colons and slashes in the instance path")]
         public async Task ReleaseLockAsync(string instancePath, string lockId)
         {
             string relativeUrl = $"Translate/{WebUtility.UrlEncode(instancePath)}/ReleaseLock";
             await RestClient.PostNoResponseContentAsync(relativeUrl, lockId);
+        }
+
+        public async Task ReleaseLock2Async(string instancePath, string lockId)
+        {
+            const string relativeUrl = "Translate/ReleaseLock";
+            await RestClient.PostNoResponseContentAsync(relativeUrl, new
+            {
+                InstancePath = instancePath,
+                lockId
+            });
         }
 
         public async Task<TranslateResponse> TranslateAsync(TranslateRequest translateRequest)
