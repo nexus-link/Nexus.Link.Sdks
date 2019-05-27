@@ -57,7 +57,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         public async Task ReleaseLock2Async(string instancePath, string lockId)
         {
             const string relativeUrl = "Translate/ReleaseLock";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, new
+            await RestClient.PostNoResponseContentAsync(relativeUrl, new ReleaseLockRequest
             {
                 InstancePath = instancePath,
                 LockId = lockId
