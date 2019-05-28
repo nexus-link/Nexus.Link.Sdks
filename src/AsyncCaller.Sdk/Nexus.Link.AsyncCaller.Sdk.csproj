@@ -24,7 +24,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       1.1.0 Support refactored Authentication
-      1.0.16 Bumped nexus nugets
+      1.0.18 Bumped nexus nugets
       1.0.9 Bumped version, consolidating versions
       1.0.8 Bumped version, verifying new yaml and build.
       1.0.7 BUG: Null pointer exception

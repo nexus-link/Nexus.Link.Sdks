@@ -17,4 +17,10 @@
     <ProjectReference Include="..\..\src\Logger.Sdk\Logger.Sdk.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Nexus.Link.Libraries.Web.AspNet">
+      <HintPath>..\..\..\..\..\Users\ErikLauraeus\.nuget\packages\nexus.link.libraries.web.aspnet\1.5.2\lib\net461\Nexus.Link.Libraries.Web.AspNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

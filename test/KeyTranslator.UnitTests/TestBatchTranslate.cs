@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nexus.Link.KeyTranslator.Sdk;
+using Nexus.Link.KeyTranslator.Sdk.Models;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
-using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Application;
+using TranslateRequest = Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models.TranslateRequest;
+using TranslateResponse = Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models.TranslateResponse;
 
 namespace Xlent.Lever.KeyTranslator.Sdk.Test
 {
@@ -254,6 +256,44 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Assert.IsTrue(translated.ContainsKey(value));
                 Assert.AreEqual($"{value}-translated", translated[value]);
             }
+        }
+
+        [TestMethod]
+        public async Task NoCachingOfUntranslatedValues()
+        {
+            // Setup
+            var request = new TranslateRequest("(concept!!a1)");
+            var translateResponse = new TranslateResponse
+            {
+                Value = request.SourceInstancePath, // Simulate no translation found
+                Request = request
+                
+            };
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+                .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
+
+            // Expect no translation at first
+            var translations1 = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
+            await translations1.Add("concept", "a1").ExecuteAsync();
+            var translation = translations1["concept", "a1"];
+            var instancePath = InstanceInfo.Parse(translation);
+            Assert.IsNotNull(instancePath, $"Translation '{translation}' expected to be instance path when no translation was found");
+
+            // Simulate an association
+            translateResponse = new TranslateResponse
+            {
+                Value = "b1",
+                Request = request
+
+            };
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+                .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
+
+            // Expect translation (especially, that untranslated value is not cached)
+            var translations2 = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
+            await translations2.Add("concept", "a1").ExecuteAsync();
+            translation = translations2["concept", "a1"];
+            Assert.AreEqual("b1", translation);
         }
     }
 }

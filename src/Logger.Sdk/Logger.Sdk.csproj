@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="1.0.7" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta01" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-beta01" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Configurations.Sdk\Configurations.Sdk.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -25,7 +30,8 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
       1.2.0 Support refactored Authentication
-      1.1.16 Bumped nexus nugets
+      1.1.19 Refactor NexusLogger internally for AzureStorageQueue with RestClient to fundamentals as fallback
+      1.1.18 Bumped nexus nugets
       1.1.9 Bumped version, verifying new yaml and build.
       1.1.7 Updated dependencies
       1.1.5 FulcrumLogger now supports ISyncLogger.
@@ -33,6 +39,14 @@
       1.1.2 Moved namespace
       1.0.0 First release
     </PackageReleaseNotes>
+    <Version>2.0.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
 </Project>
