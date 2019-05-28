@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Azure" Version="1.0.7" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta02" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-beta01" />
   </ItemGroup>
 
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <PackageVersion>1.2.0-beta01</PackageVersion>
+    <PackageVersion>1.2.0-beta02</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta02" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-beta01" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <PackageVersion>2.0.0-beta01</PackageVersion>
+      <PackageVersion>2.0.0-beta02</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
