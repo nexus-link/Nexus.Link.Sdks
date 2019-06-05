@@ -29,6 +29,7 @@ namespace Nexus.Link.Authentication.Sdk
         public Tenant Tenant { get; }
         public Uri ServiceUri { get; }
         private readonly string _type;
+        private readonly bool _legacyIssuer;
 
         public static string LegacyIssuer => Validation.LegacyIssuer;
         public static string LegacyAudience => Validation.LegacyAudience;
@@ -42,8 +43,14 @@ namespace Nexus.Link.Authentication.Sdk
         {
         }
 
-        public AuthenticationManager(Tenant tenant, string serviceBaseUrl) : this("AuthService", tenant, serviceBaseUrl, $"api/v1/{tenant.Organization}/{tenant.Environment}/Authentication/")
+        public AuthenticationManager(Tenant tenant, string serviceBaseUrl) : this(tenant, serviceBaseUrl, false)
         {
+        }
+
+        public AuthenticationManager(Tenant tenant, string serviceBaseUrl, bool legacyIssuer)
+            : this("AuthService", tenant, serviceBaseUrl, $"api/v1/{tenant.Organization}/{tenant.Environment}/Authentication/")
+        {
+            _legacyIssuer = legacyIssuer;
         }
 
         protected AuthenticationManager(string type, Tenant tenant, string serviceBaseUrl, string path)
@@ -275,7 +282,9 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            var uri = new Uri(ServiceUri, $"Tokens/?hoursToLive={lifeSpan.TotalHours}");
+            var relativeUrl = $"Tokens/?hoursToLive={lifeSpan.TotalHours}";
+            if (_legacyIssuer) relativeUrl += "&legacyIssuer=true";
+            var uri = new Uri(ServiceUri, relativeUrl);
             string data = null;
             try
             {
