@@ -19,11 +19,20 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
 #if NETCOREAPP
         /// <inheritdoc />
-        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, fundamentalsServiceBaseUrl, AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl)
+            : this(next, fundamentalsServiceBaseUrl, false)
+        {
+        }
+        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl, bool legacyIssuer)
+            : base(next, fundamentalsServiceBaseUrl, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
         }
 #else
-        public TokenValidationHandler(string fundamentalsServiceBaseUrl) : base(fundamentalsServiceBaseUrl, AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(string fundamentalsServiceBaseUrl) : this(fundamentalsServiceBaseUrl, false)
+        {
+        }
+        public TokenValidationHandler(string fundamentalsServiceBaseUrl, bool legacyIssuer)
+            : base(fundamentalsServiceBaseUrl,  legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
         }
 #endif
