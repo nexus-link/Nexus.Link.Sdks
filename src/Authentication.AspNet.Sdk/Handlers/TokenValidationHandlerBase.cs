@@ -90,8 +90,11 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             var isPlatformService = jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
             if (!isPlatformService) return null;
 
-            var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value;
-            var envFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Environment)?.Value;
+            // Support legacy issuer for a while
+            var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value 
+                               ?? jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.LegacyOrganization)?.Value;
+            var envFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Environment)?.Value
+                               ?? jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.LegacyEnvironment)?.Value;
             return new Tenant(orgFromToken, envFromToken);
         }
 
