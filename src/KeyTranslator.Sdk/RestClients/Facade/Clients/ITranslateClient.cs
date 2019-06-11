@@ -9,10 +9,13 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         string Organization { get; }
         string Environment { get; }
         Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceInstancePath, string targetClientName);
+        Task<ValueOrLockId> TranslateToClientOrLock2Async(string sourceInstancePath, string targetClientName);
 
         Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceInstancePath, string targetContextName);
+        Task<ValueOrLockId> TranslateToContextOrLock2Async(string sourceInstancePath, string targetContextName);
 
-        Task ReleaseLockAsync(string instancePath,  string lockId);
+        Task ReleaseLockAsync(string instancePath, string lockId);
+        Task ReleaseLock2Async(string instancePath, string lockId);
 
         Task<TranslateResponse> TranslateAsync(TranslateRequest translateRequest);
 

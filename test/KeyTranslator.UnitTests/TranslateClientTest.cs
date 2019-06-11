@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
     [TestClass]
     public class TranslateClientTest
     {
-        private TranslateClient _client;
+        private ITranslateClient _client;
 
         private static readonly Tenant Tenant = new Tenant("org", "env");
         private Mock<IHttpClient> _httpClientMock;
@@ -46,17 +47,35 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
         [TestMethod]
         public async Task UrlEncodingInTranslateToContextOrLock()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             await _client.TranslateToContextOrLockAsync(SourceInstancePath, "crm");
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Assert.IsNotNull(_request);
             var encoded = WebUtility.UrlEncode(SourceInstancePath) ?? "";
             Assert.IsTrue(_request.RequestUri.ToString().Contains(encoded), _request.RequestUri.ToString());
+        }
+
+        [TestMethod]
+        public async Task UrlEncodingInTranslateToContextOrLock2()
+        {
+            await _client.TranslateToContextOrLock2Async(SourceInstancePath, "crm");
+
+            Assert.IsNotNull(_request);
+            var uri = _request.RequestUri.ToString();
+            Assert.IsTrue(uri.Contains("?"), uri);
+            var query = uri.Substring(uri.IndexOf("?", StringComparison.Ordinal));
+
+            var encoded = WebUtility.UrlEncode(SourceInstancePath) ?? "";
+            Assert.IsTrue(query.Contains(encoded), query);
         }
 
         [TestMethod]
         public async Task UrlEncodingInTranslateToClientOrLockAsync()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             await _client.TranslateToClientOrLockAsync(SourceInstancePath, "crm");
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Assert.IsNotNull(_request);
             var encoded = WebUtility.UrlEncode(SourceInstancePath) ?? "";
@@ -64,13 +83,38 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
         }
 
         [TestMethod]
+        public async Task UrlEncodingInTranslateToClientOrLockAsync2()
+        {
+            await _client.TranslateToClientOrLock2Async(SourceInstancePath, "crm");
+
+            Assert.IsNotNull(_request);
+            var uri = _request.RequestUri.ToString();
+            Assert.IsTrue(uri.Contains("?"), uri);
+            var query = uri.Substring(uri.IndexOf("?", StringComparison.Ordinal));
+
+            var encoded = WebUtility.UrlEncode(SourceInstancePath) ?? "";
+            Assert.IsTrue(query.Contains(encoded), query);
+        }
+
+        [TestMethod]
         public async Task ReleaseLockAsync()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             await _client.ReleaseLockAsync(SourceInstancePath, "crm");
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Assert.IsNotNull(_request);
             var encoded = WebUtility.UrlEncode(SourceInstancePath) ?? "";
             Assert.IsTrue(_request.RequestUri.ToString().Contains(encoded), _request.RequestUri.ToString());
+        }
+
+        [TestMethod]
+        public async Task ReleaseLockAsync2()
+        {
+            await _client.ReleaseLock2Async(SourceInstancePath, "crm");
+
+            Assert.IsNotNull(_request);
+            Assert.IsFalse(_request.RequestUri.ToString().Contains("person"), _request.RequestUri.ToString());
         }
     }
 }
