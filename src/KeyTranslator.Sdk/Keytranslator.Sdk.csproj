@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.8.11" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.8.12" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <PackageVersion>1.3.0</PackageVersion>
+    <PackageVersion>1.3.1</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -36,6 +36,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.3.1 Bumped nexus nugets
       1.3.0 Support for the new versions of TranslateOrLock/ReleaseLock, making it possible to use e.g. colons and slashes in the instance path.
       1.1.14 Fix: Don't cache untranslated values in BatchTranslate
       1.1.13 Bumped nexus nugets
