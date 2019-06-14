@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="1.5.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.8.8" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="3.6.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="1.5.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.8.11" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="3.7.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <PackageVersion>1.2.29</PackageVersion>
+      <PackageVersion>1.2.30</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        1.2.20 Bumped nexus nugets
+        1.2.30 Bumped nexus nugets
         1.2.18 Added UseNexusTokenValidationHandler
         1.2.17 Bumped nexus nugets
         1.2.11 More logging, bumped nugets
