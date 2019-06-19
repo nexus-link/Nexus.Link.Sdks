@@ -8,24 +8,24 @@ namespace Nexus.Link.Authentication.Sdk.Logic
     {
         private readonly Dictionary<string, AuthenticationToken> _cache = new Dictionary<string, AuthenticationToken>();
 
-        public void AddOrUpdate(IAuthenticationCredentials credentials, AuthenticationToken token)
+        public void AddOrUpdate(string type, IAuthenticationCredentials credentials, AuthenticationToken token)
         {
             lock (_cache)
             {
-                _cache[CacheKey(credentials)] = token;
+                _cache[CacheKey(type, credentials)] = token;
             }
         }
 
-        public AuthenticationToken Get(IAuthenticationCredentials credentials, TimeSpan minimumExpirationSpan)
+        public AuthenticationToken Get(string type, IAuthenticationCredentials credentials, TimeSpan minimumExpirationSpan)
         {
             lock (_cache)
             {
                 AuthenticationToken token;
-                _cache.TryGetValue(CacheKey(credentials), out token);
+                _cache.TryGetValue(CacheKey(type, credentials), out token);
                 if (token == null) return null;
                 if (HasExpired(token))
                 {
-                    _cache.Remove(CacheKey(credentials));
+                    _cache.Remove(CacheKey(type, credentials));
                     return null;
                 }
                 return WillLive(token, minimumExpirationSpan) ? token : null;
@@ -42,9 +42,9 @@ namespace Nexus.Link.Authentication.Sdk.Logic
             return token.ExpiresOn >= DateTimeOffset.Now.Add(timeSpan);
         }
 
-        private static string CacheKey(IAuthenticationCredentials credentials)
+        private static string CacheKey(string type, IAuthenticationCredentials credentials)
         {
-            return $"{credentials.ClientId}{credentials.ClientSecret}";
+            return $"{type}{credentials.ClientId}{credentials.ClientSecret}";
         }
 
 

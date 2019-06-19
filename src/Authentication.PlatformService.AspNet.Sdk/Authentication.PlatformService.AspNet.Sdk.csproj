@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <RootNamespace>Nexus.Link.Authentication.Sdk</RootNamespace>
-    <AssemblyName>Nexus.Link.Authentication.Sdk</AssemblyName>
+    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <RootNamespace>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</RootNamespace>
+    <AssemblyName>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.0.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.0.0" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
@@ -15,30 +15,27 @@
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System.Web" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj" />
+    <ProjectReference Include="..\Authentication.Sdk\Authentication.Sdk.csproj" />
   </ItemGroup>
 
     <PropertyGroup>
-      <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>2.0.0-beta04</Version>
+      <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
+      <PackageVersion>1.0.4</PackageVersion>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
       <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
       <PackageLanguage>en-US</PackageLanguage>
-      <Description>SDK for Nexus Authentication service (for outgoing calls)</Description>
+      <Description>SDK for Nexus Authentication in NExus platform services (for incoming calls).</Description>
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.0.0 Support refactored Authentication
-        1.1.21 Bumped nexus nugets
-        1.1.9 Bumped version, consolidating versions
-        1.1.8 Bumped version, verifying new yaml and build.
-        1.1.7 Updated dependencies
-        1.1.3 Split into Sdk and Sdk.AspNet
-        1.1.2 Now also supports netstandard.
-        1.1.1 Moved namespace
-        1.0.1 Bumped
-        1.0.0 Changed to Nexus.Link libraries
+        1.0.4 Support refactored Authentication
       </PackageReleaseNotes>
     </PropertyGroup>
 

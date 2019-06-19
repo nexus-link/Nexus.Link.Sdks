@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 #if NETCOREAPP
@@ -10,11 +8,16 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 #endif
 
-namespace Nexus.Link.Authentication.AspNet.Sdk.Attributes
+namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Attributes
 {
-    public class FulcrumAuthorizeAttribute : AuthorizeAttribute
+    /// <inheritdoc />
+    /// <summary>
+    /// Authorization used by Nexus services.
+    /// </summary>
+    /// <remarks>Not intended for use in customer's apis and adapters.</remarks>
+    public class NexusAuthorizeAttribute : AuthorizeAttribute
     {
-        public FulcrumAuthorizeAttribute(params AuthenticationRoleEnum[] roles)
+        public NexusAuthorizeAttribute(params string[] roles)
         {
             Roles = RestrictTo(roles);
         }
@@ -33,20 +36,16 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Attributes
         }
 #endif
 
-        private static string RestrictTo(params AuthenticationRoleEnum[] roles)
+        private static string RestrictTo(params string[] roles)
         {
-            // SysAdmin always has access
-            var result = new List<string> { From(AuthenticationRoleEnum.SysAdminUser) };
+            // "platform-service" always has access
+            // We depend on TokenValidationHandler to authenticate the calling client
+            var result = new List<string> { NexusAuthenticationRoles.PlatformService };
             if (roles != null)
             {
-                result.AddRange(roles.Select(From));
+                result.AddRange(roles);
             }
             return string.Join(",", result);
-        }
-
-        public static string From(AuthenticationRoleEnum role)
-        {
-            return Enum.GetName(typeof(AuthenticationRoleEnum), role);
         }
 
     }

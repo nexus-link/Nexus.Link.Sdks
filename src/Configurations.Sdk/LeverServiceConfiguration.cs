@@ -37,12 +37,7 @@ namespace Nexus.Link.Configurations.Sdk
 
             ServiceTenant = serviceTenant;
             ServiceName = serviceName;
-            var basicCredentials = new AuthenticationCredentials
-            {
-                ClientId = "user",
-                ClientSecret = "pwd"
-            };
-            var authenticationManager = new AuthenticationManager(ServiceTenant, authenticationServiceUrl, basicCredentials);
+            var authenticationManager = new NexusAuthenticationManager(ServiceTenant, authenticationServiceUrl);
             TokenRefresher = authenticationManager.CreateTokenRefresher(serviceCredentials, minimumTimeSpan, maximumTimeSpan);
             _configurationsManager = new LeverConfigurationsManager(configurationsServiceUrl, ServiceName, TokenRefresher.GetServiceClient());
         }
