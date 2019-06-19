@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.BusinessEvents.Sdk</PackageId>
-    <PackageVersion>1.1.1-beta02</PackageVersion>
+    <Version>1.1.1-beta02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       1.1.1 Support refactored Authentication
-      1.0.16 Bumped nexus nugets
+      1.0.19 Bumped nexus nugets
       1.0.7 Bumped version, consolidating versions
       1.0.6 Bumped version, verifying new yaml and build.
       1.0.5 Updated dependencies

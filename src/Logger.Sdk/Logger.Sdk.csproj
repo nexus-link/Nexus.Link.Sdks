@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="1.0.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="1.0.8" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="1.9.0-beta02" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.0.0-beta01" />
   </ItemGroup>
@@ -30,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
       1.2.0 Support refactored Authentication
+      1.1.22 Bumped nexus nugets
       1.1.19 Refactor NexusLogger internally for AzureStorageQueue with RestClient to fundamentals as fallback
       1.1.18 Bumped nexus nugets
       1.1.9 Bumped version, verifying new yaml and build.

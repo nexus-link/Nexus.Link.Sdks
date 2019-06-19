@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <PackageVersion>2.0.0-beta03</PackageVersion>
+      <Version>2.0.0-beta03</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -30,7 +30,7 @@
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
         2.0.0 Support refactored Authentication
-        1.1.18 Bumped nexus nugets
+        1.1.21 Bumped nexus nugets
         1.1.9 Bumped version, consolidating versions
         1.1.8 Bumped version, verifying new yaml and build.
         1.1.7 Updated dependencies

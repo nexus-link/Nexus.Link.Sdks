@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <PackageVersion>1.1.0-beta02</PackageVersion>
+    <Version>1.1.0-beta02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       1.1.0 Support refactored Authentication
-      1.0.18 Bumped nexus nugets
+      1.0.20 Bumped nexus nugets
       1.0.9 Bumped version, consolidating versions
       1.0.8 Bumped version, verifying new yaml and build.
       1.0.7 BUG: Null pointer exception
