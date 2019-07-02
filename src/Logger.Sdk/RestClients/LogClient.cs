@@ -18,7 +18,7 @@ namespace Nexus.Link.Logger.Sdk.RestClients
             : base(baseUri, authenticationCredentials)
         {
             var isWelFormedUri = Uri.IsWellFormedUriString(baseUri, UriKind.Absolute);
-            if (!isWelFormedUri) throw new ArgumentException($"{nameof(baseUri)} must be a welformed uri");
+            if (!isWelFormedUri) throw new ArgumentException($"{nameof(baseUri)} must be a well formed uri");
             if (authenticationCredentials == null) throw new ArgumentNullException(nameof(authenticationCredentials));
         }
 
