@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Decoupling;
 using Nexus.Link.Libraries.Core.Logging;
@@ -61,6 +62,11 @@ namespace Nexus.Link.Logger.Sdk.MessageModel
         /// Where the log was issued (typically file name and line number)
         /// </summary>
         public string Location { get; set; }
+
+        /// <summary>
+        /// Optional extra data about this log event.
+        /// </summary>
+        public JObject Data { get; set; }
 
         /// <inheritdoc />
         public void Validate(string errorLocation, string propertyPath = "")
