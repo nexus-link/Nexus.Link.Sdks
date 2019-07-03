@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 #if NETCOREAPP
@@ -16,32 +18,23 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
     public class TokenValidationHandler : TokenValidationHandlerBase
     {
+        private readonly RsaSecurityKey _publicKey;
 
 #if NETCOREAPP
-        /// <inheritdoc />
-        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl)
-            : this(next, fundamentalsServiceBaseUrl, false)
+        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, bool legacyIssuer)
+            : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
-        }
-        public TokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl, bool legacyIssuer)
-            : base(next, fundamentalsServiceBaseUrl, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
-        {
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
+            _publicKey = publicKey;
         }
 #else
-        public TokenValidationHandler(string fundamentalsServiceBaseUrl) : this(fundamentalsServiceBaseUrl, false)
+        public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer)
+            : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
-        }
-        public TokenValidationHandler(string fundamentalsServiceBaseUrl, bool legacyIssuer)
-            : base(fundamentalsServiceBaseUrl,  legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
-        {
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
+            _publicKey = publicKey;
         }
 #endif
-
-        protected override async Task<string> FetchPublicKeyXmlAsync(Tenant tenant)
-        {
-            var publicKeyXml = await AuthenticationManager.GetPublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
-            return publicKeyXml;
-        }
 
         protected override bool ClaimHasCorrectTenant(ClaimsPrincipal claimsPrincipal, Tenant tenant)
         {
@@ -62,7 +55,13 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             Log.LogInformation(message);
             return false;
         }
+
+        protected override Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
+        {
+            return Task.FromResult(_publicKey);
+        }
     }
+
 #if NETCOREAPP
     public static class TokenValidationHandlerExtension
     {

@@ -1,17 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 using AuthenticationManager = Nexus.Link.Authentication.Sdk.AuthenticationManager;
+using Microsoft.IdentityModel.Tokens;
+using Nexus.Link.Libraries.Core.Error.Logic;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Http;
 #else
@@ -23,20 +26,18 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
     public abstract class TokenValidationHandlerBase : CompatibilityDelegatingHandler
     {
-        protected string FundamentalsServiceBaseUrl;
         protected string Issuer;
 
 #if NETCOREAPP
-        /// <inheritdoc />
-        protected TokenValidationHandlerBase(RequestDelegate next, string fundamentalsServiceBaseUrl, string issuer) : base(next)
+        protected TokenValidationHandlerBase(RequestDelegate next, string issuer) : base(next)
         {
-            FundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
+            InternalContract.RequireNotNullOrWhiteSpace(issuer, nameof(issuer));
             Issuer = issuer;
         }
 #else
-        protected TokenValidationHandlerBase(string fundamentalsServiceBaseUrl, string issuer)
+        protected TokenValidationHandlerBase(string issuer)
         {
-            FundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
+            InternalContract.RequireNotNullOrWhiteSpace(issuer, nameof(issuer));
             Issuer = issuer;
         }
 #endif
@@ -54,12 +55,19 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 var possiblePlatformServiceTenantFromToken = CheckTokenForPlatformService(token);
                 if (possiblePlatformServiceTenantFromToken != null) tenant = possiblePlatformServiceTenantFromToken;
 
-                var publicKey = await FetchPublicKeyXmlAsync(tenant);
-                if (string.IsNullOrWhiteSpace(publicKey))
+                RsaSecurityKey publicKey;
+                try
                 {
-                    var message = $"Could not fetch public key for tenant '{tenant}'";
-                    Log.LogWarning(message);
-                    throw new FulcrumResourceException(message);
+                    publicKey = await GetPublicKeyAsync(tenant);
+                    if (publicKey == null)
+                    {
+                        throw new FulcrumNotFoundException($"Could not fetch public key for tenant '{tenant}'");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.LogError(e.Message);
+                    throw new FulcrumResourceException("External resource error", e);
                 }
 
                 VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
@@ -91,17 +99,16 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             if (!isPlatformService) return null;
 
             // Support legacy issuer for a while
-            var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value 
+            var orgFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Organization)?.Value
                                ?? jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.LegacyOrganization)?.Value;
             var envFromToken = jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.Environment)?.Value
                                ?? jwt.Claims.FirstOrDefault(x => x.Type == ClaimTypeNames.LegacyEnvironment)?.Value;
             return new Tenant(orgFromToken, envFromToken);
         }
 
-        protected abstract Task<string> FetchPublicKeyXmlAsync(Tenant tenant);
         protected abstract bool ClaimHasCorrectTenant(ClaimsPrincipal principal, Tenant tenant);
 
-        private void VerifyTokenAndSetClaimsPrincipal(string token, string publicKey, Tenant tenant, CompabilityInvocationContext context)
+        private void VerifyTokenAndSetClaimsPrincipal(string token, RsaSecurityKey publicKey, Tenant tenant, CompabilityInvocationContext context)
         {
             InternalContract.RequireNotNull(token, nameof(token));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
@@ -134,6 +141,15 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 context.RequestMessage.GetRequestContext().Principal = claimsPrincipal;
             }
 #endif
+        }
+
+        protected abstract Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant);
+
+        public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
+        {
+            var provider = new RSACryptoServiceProvider(AuthenticationManager.RsaKeySizeInBits);
+            provider.FromXmlString(publicKeyXml);
+            return new RsaSecurityKey(provider.ExportParameters(false));
         }
 
         private string GetRequestUserAgent(CompabilityInvocationContext context)

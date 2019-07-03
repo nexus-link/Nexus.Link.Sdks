@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Nexus.Link.Authentication.Sdk.Logic;
 using Nexus.Link.Libraries.Core.Assert;
@@ -35,6 +36,8 @@ namespace Nexus.Link.Authentication.Sdk
         public static string LegacyAudience => Validation.LegacyAudience;
         public static string NexusIssuer => Validation.NexusIssuer;
         public static string AuthServiceIssuer => Validation.AuthServiceIssuer;
+
+        public const int RsaKeySizeInBits = 2048;
 
 
         [Obsolete("No use for serviceCredentials anymore", true)]
@@ -201,12 +204,19 @@ namespace Nexus.Link.Authentication.Sdk
         /// <param name="token">The JWT string</param>
         /// <param name="publicKey">The public part of the RSA key used to sign the JWT</param>
         /// <param name="issuer">Either Nexus services (<see cref="NexusIssuer"/>) or Auth as a service (<see cref="AuthServiceIssuer"/>)</param>
-        public static ClaimsPrincipal ValidateToken(string token, string publicKey, string issuer)
+        public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer)
         {
             InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
-            InternalContract.RequireNotNullOrWhiteSpace(publicKey, nameof(publicKey));
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
             return Validation.ValidateToken(token, publicKey, issuer);
+        }
+
+        [Obsolete("Use ValidateToken(string token, RsaSecurityKey publicKey, string issuer)", error: true)]
+        public static ClaimsPrincipal ValidateToken(string token, string publicKey, string issuer)
+        {
+            InternalContract.Fail("Don't use this obsolete method. The code needs to be recompiled.");
+            return null;
         }
 
         public static JwtSecurityToken ReadTokenNotValidating(string token)

@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Libraries.Core.Error.Logic;
 
@@ -14,14 +13,10 @@ namespace Nexus.Link.Authentication.Sdk.Logic
         public const string LegacyIssuer = "Fulcrum Authentication";
         public const string LegacyAudience = "fulcrum";
 
-        public static ClaimsPrincipal ValidateToken(string token, string publicKeyXml, string issuer)
+        public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer)
         {
             try
             {
-                var provider = new RSACryptoServiceProvider(2048);
-                provider.FromXmlString(publicKeyXml);
-                var publicKey = new RsaSecurityKey(provider.ExportParameters(false));
-
                 var securityTokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {

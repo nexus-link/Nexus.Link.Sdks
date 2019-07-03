@@ -1,9 +1,12 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 #if NETCOREAPP
@@ -17,23 +20,22 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
     public class NexusTokenValidationHandler : TokenValidationHandlerBase
     {
+        private readonly string _fundamentalsServiceBaseUrl;
 
 #if NETCOREAPP
         /// <inheritdoc />
-        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, fundamentalsServiceBaseUrl, AuthenticationManager.NexusIssuer)
+        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, AuthenticationManager.NexusIssuer)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(fundamentalsServiceBaseUrl, nameof(fundamentalsServiceBaseUrl));
+            _fundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
         }
 #else
-        public NexusTokenValidationHandler(string fundamentalsServiceBaseUrl) : base(fundamentalsServiceBaseUrl, AuthenticationManager.NexusIssuer)
+        public NexusTokenValidationHandler(string fundamentalsServiceBaseUrl) : base(AuthenticationManager.NexusIssuer)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(fundamentalsServiceBaseUrl, nameof(fundamentalsServiceBaseUrl));
+            _fundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
         }
 #endif
-
-        protected override async Task<string> FetchPublicKeyXmlAsync(Tenant tenant)
-        {
-            var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, FundamentalsServiceBaseUrl);
-            return publicKeyXml;
-        }
 
         protected override bool ClaimHasCorrectTenant(ClaimsPrincipal claimsPrincipal, Tenant tenant)
         {
@@ -56,5 +58,10 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
             return false;
         }
 
+        protected override async Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
+        {
+            var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl);
+            return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+        }
     }
 }
