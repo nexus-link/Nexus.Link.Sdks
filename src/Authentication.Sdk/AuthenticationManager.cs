@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -212,11 +213,26 @@ namespace Nexus.Link.Authentication.Sdk
             return Validation.ValidateToken(token, publicKey, issuer);
         }
 
-        [Obsolete("Use ValidateToken(string token, RsaSecurityKey publicKey, string issuer)", error: true)]
-        public static ClaimsPrincipal ValidateToken(string token, string publicKey, string issuer)
+        /// <summary>
+        /// Validates a token.
+        /// </summary>
+        /// <param name="token">The JWT string</param>
+        /// <param name="publicKeyXml">The public part of the RSA key used to sign the JWT</param>
+        /// <param name="issuer">Either Nexus services (<see cref="NexusIssuer"/>) or Auth as a service (<see cref="AuthServiceIssuer"/>)</param>
+        public static ClaimsPrincipal ValidateToken(string token, string publicKeyXml, string issuer)
         {
-            InternalContract.Fail("Don't use this obsolete method. The code needs to be recompiled.");
-            return null;
+            InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
+            InternalContract.RequireNotNullOrWhiteSpace(publicKeyXml, nameof(publicKeyXml));
+
+            var publicKey = CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+            return ValidateToken(token, publicKey, issuer);
+        }
+
+        public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
+        {
+            var provider = new RSACryptoServiceProvider(RsaKeySizeInBits);
+            provider.FromXmlString(publicKeyXml);
+            return new RsaSecurityKey(provider.ExportParameters(false));
         }
 
         public static JwtSecurityToken ReadTokenNotValidating(string token)

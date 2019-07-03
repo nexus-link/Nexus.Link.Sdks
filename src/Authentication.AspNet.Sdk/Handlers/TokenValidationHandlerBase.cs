@@ -145,13 +145,6 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         protected abstract Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant);
 
-        public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
-        {
-            var provider = new RSACryptoServiceProvider(AuthenticationManager.RsaKeySizeInBits);
-            provider.FromXmlString(publicKeyXml);
-            return new RsaSecurityKey(provider.ExportParameters(false));
-        }
-
         private string GetRequestUserAgent(CompabilityInvocationContext context)
         {
             return GetRequestHeaderValues("User-Agent", context)?.FirstOrDefault();

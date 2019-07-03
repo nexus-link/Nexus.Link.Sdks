@@ -61,7 +61,7 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
         protected override async Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
         {
             var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl);
-            return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+            return AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
     }
 }
