@@ -55,19 +55,11 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 var possiblePlatformServiceTenantFromToken = CheckTokenForPlatformService(token);
                 if (possiblePlatformServiceTenantFromToken != null) tenant = possiblePlatformServiceTenantFromToken;
 
-                RsaSecurityKey publicKey;
-                try
+                var publicKey = await GetPublicKeyAsync(tenant);
+                if (publicKey == null)
                 {
-                    publicKey = await GetPublicKeyAsync(tenant);
-                    if (publicKey == null)
-                    {
-                        throw new FulcrumNotFoundException($"Could not fetch public key for tenant '{tenant}'");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.LogError(e.Message);
-                    throw new FulcrumResourceException("External resource error", e);
+                    Log.LogError($"Could not fetch public key for tenant '{tenant}'");
+                    throw new FulcrumUnauthorizedException("See log for more information");
                 }
 
                 VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
