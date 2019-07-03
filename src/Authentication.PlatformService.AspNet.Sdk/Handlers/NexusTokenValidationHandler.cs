@@ -24,15 +24,13 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
 #if NETCOREAPP
         /// <inheritdoc />
-        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl) : base(next, AuthenticationManager.NexusIssuer)
+        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl = null) : base(next, AuthenticationManager.NexusIssuer)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(fundamentalsServiceBaseUrl, nameof(fundamentalsServiceBaseUrl));
             _fundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
         }
 #else
-        public NexusTokenValidationHandler(string fundamentalsServiceBaseUrl) : base(AuthenticationManager.NexusIssuer)
+        public NexusTokenValidationHandler(string fundamentalsServiceBaseUrl = null) : base(AuthenticationManager.NexusIssuer)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(fundamentalsServiceBaseUrl, nameof(fundamentalsServiceBaseUrl));
             _fundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
         }
 #endif
@@ -60,6 +58,8 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
         protected override async Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
         {
+            FulcrumAssert.IsNotNullOrWhiteSpace(_fundamentalsServiceBaseUrl, null, "We need a url to Fundamentals");
+
             var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl);
             return AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
