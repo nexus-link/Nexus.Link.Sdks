@@ -23,7 +23,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 		pipeline-asynccaller-sdk.yml = pipeline-asynccaller-sdk.yml
 		pipeline-authentication-aspnet-sdk.yml = pipeline-authentication-aspnet-sdk.yml
-		pipeline-authentication-platformservice-aspnet-sdk.yml = pipeline-authentication-platformservice-aspnet-sdk.yml
 		pipeline-authentication-sdk.yml = pipeline-authentication-sdk.yml
 		pipeline-businessevents-sdk.yml = pipeline-businessevents-sdk.yml
 		pipeline-configurations-sdk.yml = pipeline-configurations-sdk.yml
@@ -38,8 +37,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.AspNet.Sdk", "src\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj", "{E7B1FD88-7535-47F2-8E8E-235D3D64F667}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logger.Sdk.UnitTest", "test\Logger.Sdk.UnitTest\Logger.Sdk.UnitTest.csproj", "{6D3177A9-A7CB-402A-9473-26179B1ACDC7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication.PlatformService.AspNet.Sdk", "src\Authentication.PlatformService.AspNet.Sdk\Authentication.PlatformService.AspNet.Sdk.csproj", "{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -192,20 +189,6 @@ Global
 		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{6D3177A9-A7CB-402A-9473-26179B1ACDC7}.ver|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.ci|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.ci|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.int|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.int|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.prd|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.prd|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.ver|Any CPU.ActiveCfg = Debug|Any CPU
-		{D10E8CAC-12BB-40B7-8526-A00EC6E7E853}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
