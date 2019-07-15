@@ -13,7 +13,7 @@ namespace Sdk.UnitTests
     public class AyncCallTests
     {
         [TestInitialize]
-        public void Initialize()
+        public void RunBeforeEachTestMethod()
         {
             FulcrumApplicationHelper.UnitTestSetup(nameof(AyncCallTests));
         }

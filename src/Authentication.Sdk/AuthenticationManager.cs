@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -201,9 +202,55 @@ namespace Nexus.Link.Authentication.Sdk
         public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
         {
             var provider = new RSACryptoServiceProvider(RsaKeySizeInBits);
-            provider.FromXmlString(publicKeyXml);
+            try
+            {
+                provider.FromXmlString(publicKeyXml);
+            }
+            catch (System.PlatformNotSupportedException)
+            {
+                // Support in .NET Core is not planned until .NET Core 3.0, so we use a workaround
+                // https://github.com/dotnet/core/issues/874
+                FromXmlString(provider, publicKeyXml);
+            }
             return new RsaSecurityKey(provider.ExportParameters(false));
         }
+
+        /// <summary>
+        /// Workaround found at https://github.com/dotnet/core/issues/874
+        /// </summary>
+        private static void FromXmlString(RSA rsa, string xmlString)
+        {
+            var parameters = new RSAParameters();
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xmlString);
+
+            var name = xmlDoc?.DocumentElement?.Name;
+            if (name == "RSAKeyValue")
+            {
+                foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
+                {
+                    switch (node.Name)
+                    {
+                        case "Modulus": parameters.Modulus = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "Exponent": parameters.Exponent = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "P": parameters.P = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "Q": parameters.Q = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "DP": parameters.DP = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "DQ": parameters.DQ = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "InverseQ": parameters.InverseQ = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                        case "D": parameters.D = (string.IsNullOrEmpty(node.InnerText) ? null : Convert.FromBase64String(node.InnerText)); break;
+                    }
+                }
+            }
+            else
+            {
+                throw new Exception("Invalid XML RSA key.");
+            }
+
+            rsa.ImportParameters(parameters);
+        }
+
 
         public static JwtSecurityToken ReadTokenNotValidating(string token)
         {
