@@ -66,9 +66,10 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
     public static class TokenValidationHandlerExtension
     {
         public static IApplicationBuilder UseNexusTokenValidationHandler(
-            this IApplicationBuilder builder)
+            this IApplicationBuilder builder,
+            RsaSecurityKey publicKey, bool legacyIssuer)
         {
-            return builder.UseMiddleware<TokenValidationHandler>();
+            return builder.UseMiddleware<TokenValidationHandler>(publicKey, legacyIssuer);
         }
     }
 #endif
