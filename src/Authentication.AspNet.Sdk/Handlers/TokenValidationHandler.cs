@@ -21,14 +21,14 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         private readonly RsaSecurityKey _publicKey;
 
 #if NETCOREAPP
-        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, bool legacyIssuer)
+        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, bool legacyIssuer = false)
             : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
         }
 #else
-        public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer)
+        public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer = false)
             : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
@@ -67,7 +67,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
     {
         public static IApplicationBuilder UseNexusTokenValidationHandler(
             this IApplicationBuilder builder,
-            RsaSecurityKey publicKey, bool legacyIssuer)
+            RsaSecurityKey publicKey, bool legacyIssuer = false)
         {
             return builder.UseMiddleware<TokenValidationHandler>(publicKey, legacyIssuer);
         }
