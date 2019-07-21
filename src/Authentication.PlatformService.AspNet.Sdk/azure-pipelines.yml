@@ -1,0 +1,25 @@
+resources:
+  repositories:
+  - repository: azure-devops-tools
+    type: github
+    endpoint: 'xlent-link-admin'
+    name: 'nexus-link/nexus-azure-devops-tools'
+    ref: 'refs/heads/master'
+ 
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'src/Authentication.PlatformService.AspNet.Sdk/*'   
+    
+jobs:
+- template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
+  parameters:
+    jobName: 'AuthenticationPlatformServiceAspNetSdk'
+    testProjectsPath: ''
+    nugetProjectsPath: '**/src/Authentication.PlatformService.AspNet.Sdk/*.csproj'
+    nuGetFeedType: external
+    publishFeedCredentials: 'prd-nexus-nuget-external'
