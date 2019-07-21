@@ -12,13 +12,13 @@ trigger:
     - master
   paths:
     include:
-    - 'src/Service.Controllers/*'   
+    - 'src/Services.Controllers/*'   
     
 jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
     jobName: 'ServiceControllers'
     testProjectsPath: '**/test/Services.Controllers.UnitTests/*.csproj'
-    nugetProjectsPath: '**/src/Service.Controllers/*.csproj'
+    nugetProjectsPath: 'src/Services.Controllers/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'

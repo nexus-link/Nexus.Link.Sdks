@@ -19,6 +19,6 @@ jobs:
   parameters:
     jobName: 'ServicesImplementations'
     testProjectsPath: ''
-    nugetProjectsPath: '**/src/Services.Implementations/*.csproj'
+    nugetProjectsPath: 'src/Services.Implementations/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
