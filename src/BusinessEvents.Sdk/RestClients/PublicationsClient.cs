@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.BusinessEvents.Sdk.RestClients
@@ -31,7 +32,11 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
 
         public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody)
         {
-            if (eventBody == null) throw new ArgumentNullException(nameof(eventBody));
+            InternalContract.RequireNotNullOrWhiteSpace(entityName, nameof(entityName));
+            InternalContract.RequireNotNullOrWhiteSpace(eventName, nameof(eventName));
+            InternalContract.RequireGreaterThanOrEqualTo(0, majorVersion, nameof(majorVersion));
+            InternalContract.RequireGreaterThanOrEqualTo(0, minorVersion, nameof(minorVersion));
+            InternalContract.RequireNotNull(eventBody, nameof(eventBody));
 
             var relativeUrl = $"Publications/{entityName}/{eventName}/{majorVersion}/{minorVersion}?clientName={clientName}";
             await RestClient.PostNoResponseContentAsync(relativeUrl, eventBody);
