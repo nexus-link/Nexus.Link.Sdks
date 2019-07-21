@@ -1,0 +1,24 @@
+resources:
+  repositories:
+  - repository: azure-devops-tools
+    type: github
+    endpoint: 'xlent-link-admin'
+    name: 'nexus-link/nexus-azure-devops-tools'
+    ref: 'refs/heads/master'
+ 
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - 'src/Services.Implementations/*'   
+    
+jobs:
+- template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
+  parameters:
+    jobName: 'ServicesImplementations'
+    testProjectsPath: ''
+    nugetProjectsPath: '**/src/Services.Implementations/*.csproj'
+    nuGetFeedType: external
+    publishFeedCredentials: 'prd-nexus-nuget-external'
