@@ -199,6 +199,28 @@ namespace Nexus.Link.Authentication.Sdk
             return ValidateToken(token, publicKey, issuer);
         }
 
+
+        public static JwtSecurityToken ReadTokenNotValidating(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+            return jsonToken;
+        }
+
+        private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());
+
+        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        {
+            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey");
+        }
+
+        public static async Task<RsaSecurityKey> GetPublicRsaKey(Tenant tenant, string fundamentalsBaseUrl)
+        {
+            var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl);
+            FulcrumAssert.IsNotNullOrWhiteSpace(publicKeyXml);
+            return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+        }
+
         public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
         {
             var provider = new RSACryptoServiceProvider(RsaKeySizeInBits);
@@ -249,21 +271,6 @@ namespace Nexus.Link.Authentication.Sdk
             }
 
             rsa.ImportParameters(parameters);
-        }
-
-
-        public static JwtSecurityToken ReadTokenNotValidating(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-            return jsonToken;
-        }
-
-        private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());
-
-        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
-        {
-            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey");
         }
 
         protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)

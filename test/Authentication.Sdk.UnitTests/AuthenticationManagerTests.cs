@@ -12,6 +12,7 @@ namespace Authentication.Sdk.UnitTests
         {
             FulcrumApplicationHelper.UnitTestSetup(nameof(AuthenticationManagerTests));
         }
+
         [TestMethod]
         public void CreateRsaSecurityKeyFromXmlString()
         {
