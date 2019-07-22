@@ -11,6 +11,7 @@ trigger:
   branches:
     include:
     - master
+    - dev
   paths:
     include:
     - 'src/Authentication.AspNet.Sdk/*'   
