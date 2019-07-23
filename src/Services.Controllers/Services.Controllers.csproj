@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.4.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.3.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.3.7" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +28,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.0.3 Bump
       1.0.0 First release
     </PackageReleaseNotes>
   </PropertyGroup>

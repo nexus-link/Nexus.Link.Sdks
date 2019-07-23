@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.Extensions.Caching.Memory;
@@ -199,6 +200,16 @@ namespace Nexus.Link.Authentication.Sdk
             return ValidateToken(token, publicKey, issuer);
         }
 
+        public async Task<string> GetPublicKeyXmlAsync(CancellationToken token = default(CancellationToken))
+        {
+            return await GetPublicKeyXmlAsync(Tenant, ServiceUri.AbsolutePath, token);
+        }
+
+        public async Task<RsaSecurityKey> GetPublicRsaKeyAsync(CancellationToken token = default(CancellationToken))
+        {
+            return await GetPublicRsaKeyAsync(Tenant, ServiceUri.AbsolutePath, token);
+        }
+
 
         public static JwtSecurityToken ReadTokenNotValidating(string token)
         {
@@ -209,14 +220,14 @@ namespace Nexus.Link.Authentication.Sdk
 
         private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());
 
-        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
         {
-            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey");
+            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey", token);
         }
 
-        public static async Task<RsaSecurityKey> GetPublicRsaKey(Tenant tenant, string fundamentalsBaseUrl)
+        public static async Task<RsaSecurityKey> GetPublicRsaKeyAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
         {
-            var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl);
+            var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, token);
             FulcrumAssert.IsNotNullOrWhiteSpace(publicKeyXml);
             return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
@@ -273,7 +284,7 @@ namespace Nexus.Link.Authentication.Sdk
             rsa.ImportParameters(parameters);
         }
 
-        protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type)
+        protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type, CancellationToken token)
         {
             var key = $"{type}|{tenant}";
             var publicKeyXml = PublicKeyCache.Get<string>(key);
@@ -282,7 +293,7 @@ namespace Nexus.Link.Authentication.Sdk
             var url = $"{fundamentalsBaseUrl}/api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
             try
             {
-                var response = await HttpClient.GetAsync(url);
+                var response = await HttpClient.GetAsync(url, token);
                 if (!response.IsSuccessStatusCode) throw new Exception($"Response code {response.StatusCode}");
                 var result = await response.Content.ReadAsStringAsync();
                 var publicKey = JsonConvert.DeserializeObject<string>(result);

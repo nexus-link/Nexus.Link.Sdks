@@ -7,7 +7,7 @@ using Nexus.Link.AsyncCaller.Sdk;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Application;
 
-namespace Sdk.UnitTests
+namespace AsyncCaller.Sdk.UnitTests
 {
     [TestClass]
     public class AyncCallTests

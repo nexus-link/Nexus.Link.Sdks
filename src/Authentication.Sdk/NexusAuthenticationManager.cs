@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Libraries.Core.Assert;
@@ -67,16 +68,16 @@ namespace Nexus.Link.Authentication.Sdk
             return authentication.CreateTokenRefresher(tokenCredentials);
         }
 
-        public static async Task<RsaSecurityKey> GetPublicRsaKey(Tenant tenant, string fundamentalsBaseUrl)
+        public new static async Task<RsaSecurityKey> GetPublicRsaKeyAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
         {
-            var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl);
+            var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, token);
             FulcrumAssert.IsNotNullOrWhiteSpace(publicKeyXml);
             return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
 
-        public new static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl)
+        public new static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
         {
-            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "NexusPublicKey");
+            return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "NexusPublicKey", token);
         }
     }
 }

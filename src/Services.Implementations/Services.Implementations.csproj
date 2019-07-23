@@ -7,18 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Authentication.Sdk" Version="2.1.3" />
-    <PackageReference Include="Nexus.Link.BusinessEvents.Sdk" Version="2.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.4.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Authentication.Sdk\Authentication.Sdk.csproj" />
+    <ProjectReference Include="..\BusinessEvents.Sdk\Nexus.Link.BusinessEvents.Sdk.csproj" />
     <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.5</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +28,8 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.0.5 Bump
+      1.0.3 Signature change.
       1.0.2 Changed credentials parameter.
       1.0.0 First release
     </PackageReleaseNotes>

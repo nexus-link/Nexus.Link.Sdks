@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Controllers.Capabilities.Integration.Authentication
 {
     /// <summary>
-    /// Service implementation of <see cref="IBusinessEventService"/>
+    /// Service implementation of <see cref="ITokenService"/>
     /// </summary>
     public abstract class TokensControllerBase : ControllerBase, ITokenService
     {

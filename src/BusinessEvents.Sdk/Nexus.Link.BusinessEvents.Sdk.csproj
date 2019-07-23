@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.1.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.4.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.2.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.BusinessEvents.Sdk</PackageId>
-    <Version>2.0.1</Version>
+    <Version>2.0.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -23,7 +23,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.1 Bumped nexus nugets
+      2.0.2 Bump
       2.0.0 Support refactored Authentication
       1.0.19 Bumped nexus nugets
       1.0.7 Bumped version, consolidating versions
