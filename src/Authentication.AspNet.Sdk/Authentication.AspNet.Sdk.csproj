@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.13" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.2.5" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.1.13</Version>
+      <Version>2.1.18</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.1.13 Bump
+        2.1.18 Bump
         2.1.6 Made constructor parameter optional
         2.1.4 Added missing parameters for UseNexusTokenValidationHandler
         2.1.3 Bumped nexus nugets
