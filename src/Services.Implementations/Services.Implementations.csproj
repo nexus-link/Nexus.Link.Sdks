@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj" />
     <ProjectReference Include="..\Authentication.Sdk\Authentication.Sdk.csproj" />
     <ProjectReference Include="..\BusinessEvents.Sdk\Nexus.Link.BusinessEvents.Sdk.csproj" />
     <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
@@ -18,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.0.6</Version>
+    <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.1.0 Added ServicesStartupHelperBase to support quick configuration of Startup.cs in Business API and Nexus Adapter.
       1.0.6 Bump
       1.0.3 Signature change.
       1.0.2 Changed credentials parameter.

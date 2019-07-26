@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Azure" Version="2.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.2.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.2.5" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.1" />
   </ItemGroup>
 
