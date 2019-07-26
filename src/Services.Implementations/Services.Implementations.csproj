@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.1" />
     <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.0.3" />
   </ItemGroup>
 
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.1.1 Bump
       1.1.0 Added ServicesStartupHelperBase to support quick configuration of Startup.cs in Business API and Nexus Adapter.
       1.0.6 Bump
       1.0.3 Signature change.
