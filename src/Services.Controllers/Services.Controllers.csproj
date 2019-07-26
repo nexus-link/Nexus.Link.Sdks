@@ -12,10 +12,6 @@
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
     <Version>1.0.4</Version>

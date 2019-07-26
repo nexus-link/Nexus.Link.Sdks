@@ -9,13 +9,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.4.0" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj" />
     <ProjectReference Include="..\Authentication.Sdk\Authentication.Sdk.csproj" />
     <ProjectReference Include="..\BusinessEvents.Sdk\Nexus.Link.BusinessEvents.Sdk.csproj" />
-    <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
