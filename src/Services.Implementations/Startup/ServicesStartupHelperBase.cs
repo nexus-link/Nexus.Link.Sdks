@@ -44,12 +44,12 @@ namespace Nexus.Link.Services.Implementations.Startup
         /// <summary>
         /// The base URL to the authentication service for authenticating within your platform.
         /// </summary>
-        public string LocalAuthenticationBaseUrl { get; protected set; }
+        protected string LocalAuthenticationBaseUrl { get; set; }
 
         /// <summary>
         /// A token generator for authenticating between adapters and the business API.
         /// </summary>
-        public ITokenRefresherWithServiceClient LocalTokenRefresher { get; protected set; }
+        protected ITokenRefresherWithServiceClient LocalTokenRefresher { get; set; }
 
         /// <inheritdoc/>
         protected ServicesStartupHelperBase(IConfiguration configuration, bool isBusinessApi)
@@ -139,12 +139,10 @@ namespace Nexus.Link.Services.Implementations.Startup
         public override void Validate(string errorLocation, string propertyPath = "")
         {
             base.Validate(errorLocation, propertyPath);
-            if (IsBusinessApi)
-            {
-                FulcrumValidate.IsNotNullOrWhiteSpace(NexusLinkAuthenticationBaseUrl, nameof(NexusLinkAuthenticationBaseUrl), errorLocation);
-                FulcrumValidate.IsNotNullOrWhiteSpace(BusinessEventsBaseUrl, nameof(BusinessEventsBaseUrl), errorLocation);
-                FulcrumValidate.IsNotNull(NexusLinkTokenRefresher, nameof(NexusLinkTokenRefresher), errorLocation);
-            }
+            if (!IsBusinessApi) return;
+            FulcrumValidate.IsNotNullOrWhiteSpace(NexusLinkAuthenticationBaseUrl, nameof(NexusLinkAuthenticationBaseUrl), errorLocation);
+            FulcrumValidate.IsNotNullOrWhiteSpace(BusinessEventsBaseUrl, nameof(BusinessEventsBaseUrl), errorLocation);
+            FulcrumValidate.IsNotNull(NexusLinkTokenRefresher, nameof(NexusLinkTokenRefresher), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(LocalAuthenticationBaseUrl, nameof(LocalAuthenticationBaseUrl), errorLocation);
             FulcrumValidate.IsNotNull(LocalTokenRefresher, nameof(LocalTokenRefresher), errorLocation);
         }
