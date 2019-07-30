@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[2.1.1,3.0)" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.1.8</Version>
+    <Version>1.2.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +29,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.2.1 Implements Integration both for the business api and for adapters.
       1.1.8 Bump
       1.1.0 Added ServicesStartupHelperBase to support quick configuration of Startup.cs in Business API and Nexus Adapter.
       1.0.6 Bump

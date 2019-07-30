@@ -6,7 +6,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
-namespace Nexus.Link.Services.Implementations.Capabilities.Integration.Authentication
+namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication
 {
     public class TokenLogic : ITokenService
     {

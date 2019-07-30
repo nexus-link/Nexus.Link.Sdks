@@ -10,7 +10,7 @@ using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.Model;
 
-namespace Nexus.Link.Services.Implementations.Capabilities.Integration.BusinessEvents
+namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents
 {
     public class BusinessEventLogic : IBusinessEventService
     {

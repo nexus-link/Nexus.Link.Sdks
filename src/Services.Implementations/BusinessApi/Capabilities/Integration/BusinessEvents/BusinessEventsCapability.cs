@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
-namespace Nexus.Link.Services.Implementations.Capabilities.Integration.BusinessEvents
+namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents
 {
     public class BusinessEventsCapability : IBusinessEventsCapability
     {

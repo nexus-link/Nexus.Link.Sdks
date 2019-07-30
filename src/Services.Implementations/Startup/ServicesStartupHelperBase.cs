@@ -1,4 +1,7 @@
-﻿#if NETCOREAPP
+﻿
+using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
+using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
+#if NETCOREAPP
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,8 +16,6 @@ using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Implementations.Capabilities.Integration.Authentication;
-using Nexus.Link.Services.Implementations.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Implementations.Startup
 {
