@@ -9,15 +9,15 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc cref="ITokenService" />
     public class TokenRestService : RestClientBase, ITokenService
     {
-        public TokenRestService(string baseUrl, ServiceClientCredentials credentials)
-        :base(baseUrl, credentials)
+        public TokenRestService(string baseUrl)
+        :base($"{baseUrl}/Tokens", null)
         {
         }
 
         /// <inheritdoc />
-        public Task<AuthenticationToken> ObtainAccessToken(AuthenticationCredentials credentials, CancellationToken token = new CancellationToken())
+        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials, CancellationToken token = default(CancellationToken))
         {
-            return _restClient.GetAsync<AuthenticationToken>("", null, token);
+            return RestClient.PostAsync<AuthenticationToken, AuthenticationCredentials>("", credentials, null, token);
         }
     }
 }

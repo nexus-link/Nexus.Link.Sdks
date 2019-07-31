@@ -18,7 +18,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public Task<AuthenticationToken> ObtainAccessToken(AuthenticationCredentials credentials,
+        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials,
             CancellationToken token =
                 default(CancellationToken))
         {

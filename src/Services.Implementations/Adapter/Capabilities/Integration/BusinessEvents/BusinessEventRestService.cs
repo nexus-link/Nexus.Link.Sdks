@@ -11,15 +11,15 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     public class BusinessEventRestService : RestClientBase, IBusinessEventService
     {
         public BusinessEventRestService(string baseUrl, ServiceClientCredentials credentials)
-        :base(baseUrl, credentials)
+        :base($"{baseUrl}/BusinessEvents", credentials)
         {
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(JToken @event, CancellationToken token = new CancellationToken())
+        public Task PublishAsync(JToken @event, CancellationToken token = default(CancellationToken))
         {
             InternalContract.RequireNotNull(@event, nameof(@event));
-            return _restClient.PostNoResponseContentAsync<JToken>("", @event, null, token);
+            return RestClient.PostNoResponseContentAsync<JToken>("", @event, null, token);
         }
     }
 }

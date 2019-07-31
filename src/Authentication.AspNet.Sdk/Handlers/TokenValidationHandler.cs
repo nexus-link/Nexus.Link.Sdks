@@ -27,12 +27,24 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
         }
+        public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, bool legacyIssuer = false)
+            : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        {
+            InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
+            _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
+        }
 #else
         public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer = false)
             : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
+        }
+        public TokenValidationHandler(string publicKeyAsXmlString, bool legacyIssuer = false)
+            : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        {
+            InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
+            _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
         }
 #endif
 
@@ -70,6 +82,12 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             RsaSecurityKey publicKey, bool legacyIssuer = false)
         {
             return builder.UseMiddleware<TokenValidationHandler>(publicKey, legacyIssuer);
+        }
+        public static IApplicationBuilder UseNexusTokenValidationHandler(
+            this IApplicationBuilder builder,
+            string publicKeyAsXmlString, bool legacyIssuer = false)
+        {
+            return builder.UseMiddleware<TokenValidationHandler>(publicKeyAsXmlString, legacyIssuer);
         }
     }
 #endif

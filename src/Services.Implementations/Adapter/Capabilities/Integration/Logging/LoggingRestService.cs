@@ -11,7 +11,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.L
     public class LoggingRestService : RestClientBase, ILoggingService
     {
         public LoggingRestService(string baseUrl, ServiceClientCredentials credentials)
-            :base(baseUrl, credentials)
+            :base($"{baseUrl}/Logs", credentials)
         {
         }
 
@@ -19,7 +19,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.L
         public Task LogAsync(JToken message, CancellationToken token = default(CancellationToken))
         {
             InternalContract.RequireNotNull(message, nameof(message));
-            return _restClient.PostNoResponseContentAsync<JToken>("", message, null, token);
+            return RestClient.PostNoResponseContentAsync<JToken>("", message, null, token);
         }
     }
 }

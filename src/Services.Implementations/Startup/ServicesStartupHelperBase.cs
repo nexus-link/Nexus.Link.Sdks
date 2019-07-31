@@ -63,13 +63,12 @@ namespace Nexus.Link.Services.Implementations.Startup
         protected override void InitialLocalConfiguration(IServiceCollection services)
         {
             base.InitialLocalConfiguration(services);
-            if (IsBusinessApi)
-            {
-                NexusLinkAuthenticationBaseUrl = FulcrumApplication.AppSettings.GetString("Nexus.AuthenticationUrl", true);
-                BusinessEventsBaseUrl =
-                    FulcrumApplication.AppSettings.GetString("Nexus.BusinessEventsUrl", true);
-                NexusLinkTokenRefresher = CreateNexusTokenRefresher();
-            }
+            if (!IsBusinessApi) return;
+
+            NexusLinkAuthenticationBaseUrl = FulcrumApplication.AppSettings.GetString("Nexus.AuthenticationUrl", true);
+            BusinessEventsBaseUrl =
+                FulcrumApplication.AppSettings.GetString("Nexus.BusinessEventsUrl", true);
+            NexusLinkTokenRefresher = CreateNexusTokenRefresher();
 
             LocalAuthenticationBaseUrl = FulcrumApplication.AppSettings.GetString("Local.AuthenticationUrl", true);
             LocalTokenRefresher = CreateLocalTokenRefresher();
@@ -128,6 +127,7 @@ namespace Nexus.Link.Services.Implementations.Startup
         protected override void ConfigureNexusLinkMiddleware(IApplicationBuilder app, IHostingEnvironment env)
         {
             base.ConfigureNexusLinkMiddleware(app, env);
+            if (!IsBusinessApi) return;
 
             // Verify tokens with our public key
             var rsaPublicKey = AuthenticationManager

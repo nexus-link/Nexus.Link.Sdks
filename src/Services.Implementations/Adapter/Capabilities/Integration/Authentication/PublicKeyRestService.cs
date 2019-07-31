@@ -8,15 +8,15 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc cref="IPublicKeyService" />
     public class PublicKeyRestService : RestClientBase, IPublicKeyService
     {
-        public PublicKeyRestService(string baseUrl, ServiceClientCredentials credentials)
-        :base(baseUrl, credentials)
+        public PublicKeyRestService(string baseUrl)
+        :base($"{baseUrl}/PublicKeys", null)
         {
         }
 
         /// <inheritdoc />
-        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = new CancellationToken())
+        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
         {
-            return _restClient.GetAsync<string>("", null, token);
+            return RestClient.GetAsync<string>("", null, token);
         }
     }
 }

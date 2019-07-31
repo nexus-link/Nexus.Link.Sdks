@@ -15,7 +15,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         public IntegrationCapability(string baseUrl, ServiceClientCredentials credentials)
         {
             BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents", credentials);
-            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication", credentials);
+            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication");
             Logging = new LoggingCapability($"{baseUrl}/Logging", credentials);
         }
 

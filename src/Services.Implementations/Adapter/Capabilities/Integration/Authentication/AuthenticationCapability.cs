@@ -6,10 +6,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc />
     public class AuthenticationCapability : IAuthenticationCapability
     {
-        public AuthenticationCapability(string baseUrl, ServiceClientCredentials credentials)
+        public AuthenticationCapability(string baseUrl)
         {
-            TokenService = new TokenRestService(baseUrl, credentials);
-            PublicKeyService = new PublicKeyRestService(baseUrl, credentials);
+            TokenService = new TokenRestService(baseUrl);
+            PublicKeyService = new PublicKeyRestService(baseUrl);
         }
 
         /// <inheritdoc />
