@@ -1,6 +1,7 @@
 ﻿
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
+using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +13,6 @@ using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
-using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
@@ -22,7 +22,7 @@ namespace Nexus.Link.Services.Implementations.Startup
     /// <summary>
     /// Helper class for the different steps in the Startup.cs file.
     /// </summary>
-    public abstract class ServicesStartupHelperBase : StartupHelperBase
+    public abstract class NexusBusinessApiStartup : StartupBase
     {
         /// <summary>
         /// The base URL to the authentication service for authenticating your app vs. Nexus Link.
@@ -53,17 +53,15 @@ namespace Nexus.Link.Services.Implementations.Startup
         protected ITokenRefresherWithServiceClient LocalTokenRefresher { get; set; }
 
         /// <inheritdoc/>
-        protected ServicesStartupHelperBase(IConfiguration configuration, bool isBusinessApi)
-        :base(configuration, isBusinessApi)
+        protected NexusBusinessApiStartup(IConfiguration configuration) : base(configuration, true)
         {
         }
 
         #region Configure Services
-        /// <inheritdoc/>
-        protected override void InitialLocalConfiguration(IServiceCollection services)
+        /// <inheritdoc />
+        protected override void ConfigureServicesInitialUrgentPart(IServiceCollection services)
         {
-            base.InitialLocalConfiguration(services);
-            if (!IsBusinessApi) return;
+            base.ConfigureServicesInitialUrgentPart(services);
 
             NexusLinkAuthenticationBaseUrl = FulcrumApplication.AppSettings.GetString("Nexus.AuthenticationUrl", true);
             BusinessEventsBaseUrl =
@@ -78,7 +76,7 @@ namespace Nexus.Link.Services.Implementations.Startup
         /// Creates a <see cref="ITokenRefresherWithServiceClient"/>.
         /// </summary>
         /// <remarks>
-        /// Gets the credentials from app settings (Nexus.ClientId, Nexus.ClientSecret)  and calls a token service at <see cref="StartupHelperBase.NexusLinkAuthenticationBaseUrl"/>."/>
+        /// Gets the credentials from app settings (Nexus.ClientId, Nexus.ClientSecret)  and calls a token service at <see cref="NexusLinkAuthenticationBaseUrl"/>."/>
         /// </remarks>
         protected virtual ITokenRefresherWithServiceClient CreateNexusTokenRefresher()
         {
@@ -94,7 +92,7 @@ namespace Nexus.Link.Services.Implementations.Startup
         /// Creates a <see cref="ITokenRefresherWithServiceClient"/>.
         /// </summary>
         /// <remarks>
-        /// Gets the credentials from app settings (Local.ClientId, Local.ClientSecret) and calls a token service at <see cref="StartupHelperBase.NexusLinkAuthenticationBaseUrl"/>."/>
+        /// Gets the credentials from app settings (Local.ClientId, Local.ClientSecret) and calls a token service at <see cref="NexusLinkAuthenticationBaseUrl"/>."/>
         /// </remarks>
         protected virtual ITokenRefresherWithServiceClient CreateLocalTokenRefresher()
         {
@@ -105,30 +103,14 @@ namespace Nexus.Link.Services.Implementations.Startup
                 AuthenticationManager.CreateTokenRefresher(FulcrumApplication.Setup.Tenant, LocalAuthenticationBaseUrl, credentials);
             return tokenRefresher;
         }
-
-        /// <inheritdoc/>
-        protected override void DependencyInjectNexusServices(IServiceCollection services)
-        {
-            services.AddScoped<IAuthenticationCapability>(provider =>
-                ValidateDependencyInjection(provider,
-                    p => new AuthenticationCapability(NexusLinkAuthenticationBaseUrl, NexusLinkTokenRefresher.GetServiceClient())));
-            services.AddScoped<IBusinessEventsCapability>(provider =>
-                ValidateDependencyInjection(provider, p =>
-                new BusinessEventsCapability(BusinessEventsBaseUrl, NexusLinkTokenRefresher.GetServiceClient())));
-            services
-                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
-                .AddJwtBearer();
-        }
         #endregion
 
         #region Configure
 
         /// <inheritdoc/>
-        protected override void ConfigureNexusLinkMiddleware(IApplicationBuilder app, IHostingEnvironment env)
+        protected override void ConfigureAppMiddleware(IApplicationBuilder app, IHostingEnvironment env)
         {
-            base.ConfigureNexusLinkMiddleware(app, env);
-            if (!IsBusinessApi) return;
-
+            base.ConfigureAppMiddleware(app, env);
             // Verify tokens with our public key
             var rsaPublicKey = AuthenticationManager
                 .GetPublicRsaKeyAsync(FulcrumApplication.Setup.Tenant, LocalAuthenticationBaseUrl).Result;
