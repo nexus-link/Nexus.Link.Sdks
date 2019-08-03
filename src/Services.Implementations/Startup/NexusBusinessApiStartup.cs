@@ -51,12 +51,12 @@ namespace Nexus.Link.Services.Implementations.Startup
         /// <summary>
         /// Credentials for calling Nexus Link services
         /// </summary>
-        protected ServiceClientCredentials NexusCredentials => _nexusLinkTokenRefresher.GetServiceClient();
+        protected ServiceClientCredentials GetNexusCredentials() => _nexusLinkTokenRefresher.GetServiceClient();
 
         /// <summary>
         /// Credentials for calling adapters
         /// </summary>
-        protected ServiceClientCredentials LocalCredentials => _localTokenRefresher.GetServiceClient();
+        protected ServiceClientCredentials GetLocalCredentials()=> _localTokenRefresher.GetServiceClient();
 
         /// <inheritdoc/>
         protected NexusBusinessApiStartup(IConfiguration configuration) : base(configuration, true)
