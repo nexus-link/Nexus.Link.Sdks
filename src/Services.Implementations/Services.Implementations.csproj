@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.3.2</Version>
+    <Version>1.3.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -29,7 +29,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.3.2 Refactored Startup
+      1.3.3 Refactored Startup
       1.2.12 Bump
       1.2.5 Implements Integration both for the business api and for adapters.
       1.1.8 Bump
