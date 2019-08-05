@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.5.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.3.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.5.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.3.6" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.1.24</Version>
+      <Version>2.1.27</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.1.24 Bump
+        2.1.27 Bump
         2.1.20 Added overload of TokenValidationHandler constructor to accept public key as string.
         2.1.19 Bump
         2.1.6 Made constructor parameter optional

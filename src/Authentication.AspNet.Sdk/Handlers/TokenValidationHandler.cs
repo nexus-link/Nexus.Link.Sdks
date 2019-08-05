@@ -26,12 +26,14 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
+            FulcrumAssert.IsNotNull(_publicKey);
         }
         public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, bool legacyIssuer = false)
             : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
         {
             InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
             _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
+            FulcrumAssert.IsNotNull(_publicKey);
         }
 #else
         public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer = false)

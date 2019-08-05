@@ -1,4 +1,5 @@
-﻿using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
 #if NETCOREAPP
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,10 @@ namespace Nexus.Link.Services.Implementations.Startup
         /// <param name="services"></param>
         protected override void DependencyInjectServices(IServiceCollection services)
         {
+            // Authenticate by tokens
+            services
+                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
+                .AddJwtBearer();
             DependencyInjectBusinessApiServices(services);
             DependencyInjectAdapterServices(services);
         }

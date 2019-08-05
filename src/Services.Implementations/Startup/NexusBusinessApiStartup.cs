@@ -1,4 +1,7 @@
-﻿#if NETCOREAPP
+﻿
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
+#if NETCOREAPP
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -76,6 +79,16 @@ namespace Nexus.Link.Services.Implementations.Startup
 
             LocalAuthenticationBaseUrl = FulcrumApplication.AppSettings.GetString("Local.AuthenticationUrl", true);
             _localTokenRefresher = CreateLocalTokenRefresher();
+        }
+
+
+        /// <inheritdoc />
+        protected override void DependencyInjectServices(IServiceCollection services)
+        {
+            // Authenticate by tokens
+            services
+                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
+                .AddJwtBearer();
         }
 
         /// <summary>
