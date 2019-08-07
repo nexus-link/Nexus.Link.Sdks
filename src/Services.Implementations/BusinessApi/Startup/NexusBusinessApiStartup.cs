@@ -43,7 +43,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
                 {
                     if (_localTokenRefresher != null) return _localTokenRefresher;
                     _localTokenRefresher =
-                        NexusAuthenticationManager.CreateTokenRefresher(
+                        AuthenticationManager.CreateTokenRefresher(
                             FulcrumApplication.Setup.Tenant,
                             BusinessApiConfiguration.AuthenticationLocal.Endpoint, 
                             BusinessApiConfiguration.AuthenticationLocal.Credentials);

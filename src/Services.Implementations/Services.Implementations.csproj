@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.6.2</Version>
+    <Version>1.6.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,7 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.6.2 Bump
+      1.6.4 Changed the AuthenticationManager for local authentication.
       1.6.1 Added AdapterAuthenticationManager
       1.5.6 Added configuration DB support
       1.4.8 Bump
