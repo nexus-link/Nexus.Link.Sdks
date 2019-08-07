@@ -4,13 +4,10 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents
 {
+    /// <inheritdoc />
     public class BusinessEventsCapability : IBusinessEventsCapability
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="serviceBaseUrle base URL to the business events service</param>
-        /// <param name="serviceClientCredentials"></param>
+        /// <inheritdoc />
         public BusinessEventsCapability(string serviceBaseUrl, ServiceClientCredentials serviceClientCredentials)
         {
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));

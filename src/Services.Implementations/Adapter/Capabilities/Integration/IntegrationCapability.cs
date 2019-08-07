@@ -1,61 +1,61 @@
-﻿using Microsoft.Rest;
-using Nexus.Link.Authentication.Sdk;
-using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.Libraries.Core.Assert;
+﻿using System.Net.Http;
+using Microsoft.Rest;
+using Nexus.Link.Authentication.Sdk.Logic;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
+using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration;
+using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.Logging;
+using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Logging;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
 {
     /// <inheritdoc />
     public class IntegrationCapability : IIntegrationCapability
     {
+        /// <summary>
+        /// The HttpClient to use for all integration capabilities
+        /// </summary>
+        protected static HttpClient HttpClient { get; private set; }
         private static ITokenRefresherWithServiceClient _tokenRefresher;
         private static readonly object ClassLock = new object();
 
-        private static ITokenRefresherWithServiceClient TokenRefresher(string baseUrl,
-            AuthenticationCredentials credentials)
+        private ITokenRefresherWithServiceClient TokenRefresher(AuthenticationCredentials credentials)
         {
-
             lock (ClassLock)
             {
                 if (_tokenRefresher != null) return _tokenRefresher;
-                _tokenRefresher =
-                    AuthenticationManager.CreateTokenRefresher(FulcrumApplication.Setup.Tenant, baseUrl, credentials);
-                FulcrumAssert.IsNotNull(_tokenRefresher);
+                var authenticationManager = new AdapterAuthenticationManager(Authentication.TokenService);
+                _tokenRefresher = new TokenRefresher(authenticationManager, credentials);
                 return _tokenRefresher;
             }
         }
 
-        private static ServiceClientCredentials ServiceClientCredentials(string baseUrl,
-            AuthenticationCredentials credentials) => TokenRefresher(baseUrl, credentials).GetServiceClient();
+        private ServiceClientCredentials ServiceClientCredentials(string baseUrl,
+            AuthenticationCredentials credentials) => TokenRefresher(credentials).GetServiceClient();
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="baseUrl">The URL to the integration capability</param>
         /// <param name="basicCredentials">ClientId and ClientSecret for calling the business api</param>
-        public IntegrationCapability(string baseUrl, AuthenticationCredentials basicCredentials) : this(baseUrl, ServiceClientCredentials(baseUrl, basicCredentials))
+        public IntegrationCapability(string baseUrl, AuthenticationCredentials basicCredentials)
         {
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="baseUrl">The URL to the integration capability</param>
-        /// <param name="credentials">Credentials for calls to the business api</param>
-        public IntegrationCapability(string baseUrl, ServiceClientCredentials credentials)
-        {
-            BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents", credentials);
-            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication");
-            Logging = new LoggingCapability($"{baseUrl}/Logging", credentials);
+            lock (ClassLock)
+            {
+                if (HttpClient == null)
+                {
+                    HttpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
+                }
+            }
+            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication", HttpClient);
+            var credentials = ServiceClientCredentials(baseUrl, basicCredentials);
+            BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents", HttpClient, credentials);
+            AppSupport = new AppSupportCapability($"{baseUrl}/AppSupport", HttpClient, credentials);
         }
 
         /// <inheritdoc />
@@ -65,6 +65,6 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         public IAuthenticationCapability Authentication { get; }
 
         /// <inheritdoc />
-        public ILoggingCapability Logging { get; }
+        public IAppSupportCapability AppSupport { get; }
     }
 }

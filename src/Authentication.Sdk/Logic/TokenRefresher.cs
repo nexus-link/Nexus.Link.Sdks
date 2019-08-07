@@ -13,7 +13,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
 {
     public class TokenRefresher : ServiceClientCredentials, ITokenRefresherWithServiceClient
     {
-        private readonly AuthenticationManager _authenticationManager;
+        private readonly IJwtTokenHandler _authenticationManager;
         private readonly IAuthenticationCredentials _credentials;
         private readonly TimeSpan _minimumTimeSpan;
         private readonly TimeSpan _maximumTimeSpan;
@@ -21,7 +21,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
         private readonly object _lockObject = new object();
         private bool _refreshInProgress;
 
-        internal TokenRefresher(AuthenticationManager authenticationManager, IAuthenticationCredentials credentials, TimeSpan minimumTimeSpan, TimeSpan maximumTimeSpan, TimeSpan refreshTimeSpan)
+        internal TokenRefresher(IJwtTokenHandler authenticationManager, IAuthenticationCredentials credentials, TimeSpan minimumTimeSpan, TimeSpan maximumTimeSpan, TimeSpan refreshTimeSpan)
         {
             InternalContract.Require(maximumTimeSpan, x => x >= minimumTimeSpan, $"maximumTimeSpan ({maximumTimeSpan}) was smaller than minimumTimeSpan ({minimumTimeSpan})");
 
@@ -32,7 +32,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
             _refreshTimeSpan = refreshTimeSpan;
         }
 
-        internal TokenRefresher(AuthenticationManager authenticationManager, IAuthenticationCredentials credentials, TimeSpan minimumTimeSpan, TimeSpan maximumTimeSpan)
+        internal TokenRefresher(IJwtTokenHandler authenticationManager, IAuthenticationCredentials credentials, TimeSpan minimumTimeSpan, TimeSpan maximumTimeSpan)
             : this(authenticationManager, credentials, minimumTimeSpan, maximumTimeSpan, CalculateRefreshTimeSpan(minimumTimeSpan, maximumTimeSpan))
         {
         }
@@ -45,7 +45,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
             return TimeSpan.FromHours(hours);
         }
 
-        internal TokenRefresher(AuthenticationManager authenticationManager, IAuthenticationCredentials credentials)
+        public TokenRefresher(IJwtTokenHandler authenticationManager, IAuthenticationCredentials credentials)
             : this(authenticationManager, credentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24), TimeSpan.FromHours(2))
         {
         }

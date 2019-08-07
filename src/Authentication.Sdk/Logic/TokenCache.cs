@@ -4,7 +4,7 @@ using Nexus.Link.Libraries.Core.Platform.Authentication;
 
 namespace Nexus.Link.Authentication.Sdk.Logic
 {
-    internal class TokenCache
+    public class TokenCache
     {
         private readonly Dictionary<string, AuthenticationToken> _cache = new Dictionary<string, AuthenticationToken>();
 

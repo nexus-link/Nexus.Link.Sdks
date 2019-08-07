@@ -1,4 +1,4 @@
-﻿using Microsoft.Rest;
+﻿using System.Net.Http;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication
@@ -6,10 +6,12 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc />
     public class AuthenticationCapability : IAuthenticationCapability
     {
-        public AuthenticationCapability(string baseUrl)
+        
+        /// <inheritdoc />
+        public AuthenticationCapability(string baseUrl, HttpClient httpClient)
         {
-            TokenService = new TokenRestService(baseUrl);
-            PublicKeyService = new PublicKeyRestService(baseUrl);
+            TokenService = new TokenRestService(baseUrl, httpClient);
+            PublicKeyService = new PublicKeyRestService(baseUrl, httpClient);
         }
 
         /// <inheritdoc />

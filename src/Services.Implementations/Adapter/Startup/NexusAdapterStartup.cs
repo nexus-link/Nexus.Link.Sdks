@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
-#if NETCOREAPP
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
+using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
+#if NETCOREAPP
 
-namespace Nexus.Link.Services.Implementations.Startup
+namespace Nexus.Link.Services.Implementations.Adapter.Startup
 {
     /// <summary>
     /// Helper class for the different steps in the Startup.cs file.
@@ -12,9 +14,15 @@ namespace Nexus.Link.Services.Implementations.Startup
     public abstract class NexusAdapterStartup : StartupBase
     {
 
+        /// <summary>
+        /// Access to all relevant configuration
+        /// </summary>
+        protected AdapterConfiguration AdapterConfiguration { get; }
+
         /// <inheritdoc/>
         protected NexusAdapterStartup(IConfiguration configuration) : base(configuration, false)
         {
+            AdapterConfiguration = new AdapterConfiguration(configuration);
         }
 
         /// <summary>

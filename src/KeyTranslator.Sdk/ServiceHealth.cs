@@ -12,10 +12,8 @@ namespace Nexus.Link.KeyTranslator.Sdk
     {
 
         private readonly IServiceMetasClient _translateClient;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
+        
+        /// <inheritdoc />
         public ServiceHealth(IServiceMetasClient translateClient)
         {
             _translateClient = translateClient;

@@ -12,10 +12,12 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.Mode
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents
 {
+    /// <inheritdoc />
     public class BusinessEventLogic : IBusinessEventService
     {
         private static Link.BusinessEvents.Sdk.BusinessEvents _businessEventsService;
 
+        /// <inheritdoc />
         public BusinessEventLogic(string serviceBaseUrl, ServiceClientCredentials serviceClient)
         {
             _businessEventsService =

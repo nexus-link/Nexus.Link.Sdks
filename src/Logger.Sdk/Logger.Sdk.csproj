@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="2.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.3.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.5.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="2.0.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.3.8" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>2.1.9</Version>
+    <Version>2.1.10</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -29,7 +29,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
-      2.1.9 Bump
+      2.1.10 Bump
       2.1.2 Introduced named schema for LogMessage.
       2.1.0 Support refactored Authentication
       1.1.22 Bumped nexus nugets

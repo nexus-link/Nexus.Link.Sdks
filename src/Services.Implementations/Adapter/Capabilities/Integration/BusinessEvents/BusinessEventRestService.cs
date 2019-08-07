@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -10,8 +11,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     /// <inheritdoc cref="IBusinessEventService" />
     public class BusinessEventRestService : RestClientBase, IBusinessEventService
     {
-        public BusinessEventRestService(string baseUrl, ServiceClientCredentials credentials)
-        :base($"{baseUrl}/BusinessEvents", credentials)
+        /// <inheritdoc cref="IBusinessEventService" />
+        public BusinessEventRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
+        :base($"{baseUrl}/BusinessEvents", httpClient, credentials)
         {
         }
 

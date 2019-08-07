@@ -24,7 +24,7 @@ namespace Nexus.Link.Authentication.Sdk
     /// <summary>
     /// Authentication helper for tokens used in the "Authentication as service"
     /// </summary>
-    public class AuthenticationManager
+    public class AuthenticationManager : IJwtTokenHandler
     {
         private static readonly string Namespace = typeof(AuthenticationManager).Namespace;
         private static readonly HttpClient HttpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
@@ -322,7 +322,7 @@ namespace Nexus.Link.Authentication.Sdk
             return Validation.GetClaimValue(type, principal);
         }
 
-        internal async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
+        public async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientId, nameof(credentials.ClientId));

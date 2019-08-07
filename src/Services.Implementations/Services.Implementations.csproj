@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[2.1.1,3.0)" />
-    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.0.8" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.4" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.3.8</Version>
+    <Version>1.6.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -29,6 +30,11 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.6.2 Bump
+      1.6.1 Added AdapterAuthenticationManager
+      1.5.6 Added configuration DB support
+      1.4.8 Bump
+      1.4.7 Added AppSupport
       1.3.8 Minor refactorization of Startup.
       1.3.7 Bump
       1.3.6 Added constructor overload for IntegrationCapability.
@@ -43,6 +49,10 @@
       1.0.2 Changed credentials parameter.
       1.0.0 First release
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Git\Xlent.Lever\Nexus.Link.Sdks\src\Services.Implementations\Nexus.Link.Services.Implementations.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

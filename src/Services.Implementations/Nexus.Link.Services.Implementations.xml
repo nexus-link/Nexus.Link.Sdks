@@ -1,0 +1,430 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nexus.Link.Services.Implementations</name>
+    </assembly>
+    <members>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.LoggingService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService"/>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService"/>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService.LogAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(System.String,System.Net.Http.HttpClient)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.PublicKeyService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.IPublicKeyService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService.#ctor(System.String,System.Net.Http.HttpClient)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.IPublicKeyService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.#ctor(System.String,System.Net.Http.HttpClient)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.HttpClient">
+            <summary>
+            The HttpClient to use for all integration capabilities
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.#ctor(System.String,Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="baseUrl">The URL to the integration capability</param>
+            <param name="basicCredentials">ClientId and ClientSecret for calling the business api</param>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.BusinessEvents">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.Authentication">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.AppSupport">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.RestClientBase">
+            <summary>
+            A base class for rest clients
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.RestClientBase.RestClient">
+            <summary>
+            The current RestClient
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.RestClientBase.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
+            <summary>
+            Helper class for updating the configuration with data from the configuration DB.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper.AddConfiguration(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Use this in Program.cs to update the configuration with data from the configuration DB.
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration">
+            <summary>
+            All the configuration values needed for a business API
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiEndpoint">
+            <summary>
+            The endpoint for the business API
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiClientId">
+            <summary>
+            The endpoint for the business API
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiClientSecret">
+            <summary>
+            The endpoint for the business API
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiCredentials">
+            <summary>
+            Credentials constructed from the properties <see cref="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiClientId"/> and <see cref="P:Nexus.Link.Services.Implementations.Adapter.Startup.Configuration.AdapterConfiguration.BusinessApiClientSecret"/>
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup">
+            <summary>
+            Helper class for the different steps in the Startup.cs file.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.AdapterConfiguration">
+            <summary>
+            Access to all relevant configuration
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This is where the business API injects its own services.
+            </summary>
+            <param name="services">From the parameter to Startup.ConfigureServices.</param>
+            <remarks>Always override this to inject your services.</remarks>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            This is where the adapter injects its own services.
+            </summary>
+            <param name="services">From the parameter to Startup.ConfigureServices.</param>
+            <remarks>Always override this to inject your services.</remarks>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.HttpClient">
+            <summary>
+            The HttpClient for all AppSupport services
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger,System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.LoggingService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic.ReadAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.LoggingLogic">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.LoggingLogic.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.LoggingLogic.LogAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.PublicKeyService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic.#ctor(Nexus.Link.Authentication.Sdk.AuthenticationManager)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.#ctor(Nexus.Link.Authentication.Sdk.AuthenticationManager)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.BusinessApiProgramHelper">
+            <summary>
+            Helper class for the different steps in the Startup.cs file.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.BusinessApiProgramHelper.AddConfiguration(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <summary>
+            Use this in Program.cs to make essential configurations.
+            </summary>
+            <param name="builder"></param>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.BusinessApiConfiguration">
+            <summary>
+            All the configuration values needed for a business API
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.BusinessApiConfiguration.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.BusinessApiConfiguration.AuthenticationLocal">
+            <summary>
+            Configuration for local authentication
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.BusinessApiConfiguration.AuthenticationNexus">
+            <summary>
+            Configuration for local authentication
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.BusinessApiConfiguration.NexusCapabilityEndpoints">
+            <summary>
+            Configuration for Nexus services
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationBase.GetSection(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationBase.GetChildren">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationBase.GetReloadToken">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationBase.Item(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationExtensions">
+            <summary>
+            Extensions for <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationExtensions.GetMandatoryValue``1(Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Same as GetValue{T}(), but does not accept the default value for T
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration.ConfigurationExtensions.GetMandatoryString(Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Same as GetValue{T}(), but does not accept the default value for T
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup">
+            <summary>
+            Helper class for the different steps in the Startup.cs file.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.BusinessApiConfiguration">
+            <summary>
+            Access to all relevant configuration
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.LocalTokenRefresher">
+            <summary>
+            A token generator for authenticating between adapters and the business API.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.NexusLinkTokenRefresher">
+            <summary>
+            A token generator for authenticating your app vs. Nexus Link.
+            </summary>
+            <remarks>Only useful for the Business API, not for Nexus Adapters.</remarks>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.GetNexusCredentials">
+            <summary>
+            Credentials for calling Nexus Link services
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.GetLocalCredentials">
+            <summary>
+            Credentials for calling adapters
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.ConfigureAppMiddleware(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.GetMandatoryString(Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <summary>
+            Support method for getting a value from configuration and throwing an exception if it was missing.
+            </summary>
+            <param name="configuration"></param>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Singleton`1">
+            <summary>
+            Support class for handling singleton instantiation challenge
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Singleton`1.#ctor(System.Func{`0})">
+            <summary>
+            Constructor
+            </summary>
+            <param name="factory">How to instantiate the only instance</param>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Singleton`1.IsInstantiated">
+            <summary>
+            True if the singleton has not yet been instantiated
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Singleton`1.Instance">
+            <summary>
+            Get the only instance.
+            </summary>
+            <remarks>The instance is not created until the first call to this property.</remarks>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider">
+            <summary>
+            A configuration provider that gets configuration data from the Nexus configuration database
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider.Load">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource">
+            <summary>
+            Adds the Nexus configuration database as a configuration source
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

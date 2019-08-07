@@ -11,10 +11,8 @@ namespace Nexus.Link.KeyTranslator.Sdk
     public class TranslatorService : ITranslatorService
     {
         private readonly ITranslateClient _translateClient;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
+        
+        /// <inheritdoc />
         public TranslatorService(ITranslateClient translateClient)
         {
             _translateClient = translateClient;

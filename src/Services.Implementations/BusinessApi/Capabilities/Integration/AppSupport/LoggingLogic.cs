@@ -1,16 +1,17 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Logging;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.Logging;
+using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
-namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Logging
+namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport
 {
+    /// <inheritdoc />
     public class LoggingLogic : ILoggingService
     {
         private readonly IAsyncLogger _logger;
 
+        /// <inheritdoc />
         public LoggingLogic(IAsyncLogger logger)
         {
             _logger = logger;

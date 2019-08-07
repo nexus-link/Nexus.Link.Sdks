@@ -1,4 +1,5 @@
-﻿using Microsoft.Rest;
+﻿using System.Net.Http;
+using Microsoft.Rest;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents
@@ -6,9 +7,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     /// <inheritdoc />
     public class BusinessEventsCapability : IBusinessEventsCapability
     {
-        public BusinessEventsCapability(string baseUrl, ServiceClientCredentials credentials)
+        /// <inheritdoc />
+        public BusinessEventsCapability(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
         {
-            BusinessEventService = new BusinessEventRestService(baseUrl, credentials);
+            BusinessEventService = new BusinessEventRestService(baseUrl, httpClient, credentials);
         }
 
         /// <inheritdoc />

@@ -7,11 +7,13 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication
 {
+    /// <inheritdoc />
     public class PublicKeyLogic : IPublicKeyService
     {
         private readonly AuthenticationManager _authenticationManager;
         private static string _publicKey;
 
+        /// <inheritdoc />
         public PublicKeyLogic(AuthenticationManager authenticationManager)
         {
             _authenticationManager = authenticationManager;

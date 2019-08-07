@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
@@ -9,8 +9,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc cref="ITokenService" />
     public class TokenRestService : RestClientBase, ITokenService
     {
-        public TokenRestService(string baseUrl)
-        :base($"{baseUrl}/Tokens", null)
+        /// <inheritdoc cref="ITokenService" />
+        public TokenRestService(string baseUrl, HttpClient httpClient)
+        :base($"{baseUrl}/Tokens", httpClient, null)
         {
         }
 

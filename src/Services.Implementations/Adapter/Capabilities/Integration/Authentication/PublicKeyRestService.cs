@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Rest;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication
@@ -8,8 +8,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc cref="IPublicKeyService" />
     public class PublicKeyRestService : RestClientBase, IPublicKeyService
     {
-        public PublicKeyRestService(string baseUrl)
-        :base($"{baseUrl}/PublicKeys", null)
+        /// <inheritdoc cref="IPublicKeyService" />
+        public PublicKeyRestService(string baseUrl, HttpClient httpClient)
+        :base($"{baseUrl}/PublicKeys", httpClient, null)
         {
         }
 

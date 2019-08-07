@@ -1,17 +1,20 @@
-﻿using System.Threading;
+﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.Logging;
+using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
-namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Logging
+namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport
 {
     /// <inheritdoc cref="ILoggingService" />
     public class LoggingRestService : RestClientBase, ILoggingService
     {
-        public LoggingRestService(string baseUrl, ServiceClientCredentials credentials)
-            :base($"{baseUrl}/Logs", credentials)
+        
+        /// <inheritdoc cref="ILoggingService"/>
+        public LoggingRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
+            :base($"{baseUrl}/Logs", httpClient, credentials)
         {
         }
 

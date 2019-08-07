@@ -8,10 +8,12 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication
 {
+    /// <inheritdoc />
     public class TokenLogic : ITokenService
     {
         private static AuthenticationManager _authenticationManager;
 
+        /// <inheritdoc />
         public TokenLogic(AuthenticationManager authenticationManager)
         {
             _authenticationManager = authenticationManager;
