@@ -24,7 +24,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         /// <inheritdoc />
         public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
         {
-            return RestClient.GetAsync<string>("", null, token);
+            return RestClient.GetAsync<string>("PublicKeyAsXml", null, token);
         }
     }
 }
