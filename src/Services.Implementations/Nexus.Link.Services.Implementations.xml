@@ -40,18 +40,6 @@
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
             <inheritdoc />
         </member>
-        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.PublicKeyService">
-            <inheritdoc />
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService">
-            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.IPublicKeyService" />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService.#ctor(System.String,System.Net.Http.HttpClient)">
-            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.IPublicKeyService" />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.PublicKeyRestService.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
         </member>
@@ -59,6 +47,9 @@
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService">
@@ -233,18 +224,6 @@
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
             <inheritdoc />
         </member>
-        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.PublicKeyService">
-            <inheritdoc />
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic.#ctor(Nexus.Link.Authentication.Sdk.AuthenticationManager)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.PublicKeyLogic.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic">
             <inheritdoc />
         </member>
@@ -252,6 +231,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.GetPublicRsaKeyAsXmlAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic">
@@ -343,6 +325,9 @@
             Access to all relevant configuration
             </summary>
         </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc />
+        </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.LocalTokenRefresher">
             <summary>
             A token generator for authenticating between adapters and the business API.
@@ -367,9 +352,6 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <inheritdoc/>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <inheritdoc />
-        </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.ConfigureAppMiddleware(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
             <inheritdoc/>
         </member>
@@ -383,6 +365,23 @@
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.Validate(System.String,System.String)">
             <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup">
+            <summary>
+            Helper class for the different steps in the Startup.cs file.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Call <see cref="!:MandRR"/>
+            </summary>
+            <param name="services"></param>
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Singleton`1">
             <summary>

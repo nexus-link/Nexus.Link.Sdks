@@ -16,13 +16,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             InternalContract.RequireNotNull(serviceClientCredentials, nameof(serviceClientCredentials));
             var authenticationManager = new AuthenticationManager(FulcrumApplication.Setup.Tenant, serviceBaseUrl);
             TokenService = new TokenLogic(authenticationManager);
-            PublicKeyService = new PublicKeyLogic(authenticationManager);
         }
 
         /// <inheritdoc />
         public ITokenService TokenService { get; }
-
-        /// <inheritdoc />
-        public IPublicKeyService PublicKeyService { get; set; }
     }
 }

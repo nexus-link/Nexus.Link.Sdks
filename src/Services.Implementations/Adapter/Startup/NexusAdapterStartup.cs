@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
+using Nexus.Link.Services.Implementations.BusinessApi.Startup;
 using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
 #if NETCOREAPP
 
@@ -11,7 +12,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
     /// <summary>
     /// Helper class for the different steps in the Startup.cs file.
     /// </summary>
-    public abstract class NexusAdapterStartup : StartupBase
+    public abstract class NexusAdapterStartup : NexusCommonStartup
     {
 
         /// <summary>
@@ -31,10 +32,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// <param name="services"></param>
         protected override void DependencyInjectServices(IServiceCollection services)
         {
-            // Authenticate by tokens
-            services
-                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
-                .AddJwtBearer();
+            base.DependencyInjectServices(services);
             DependencyInjectBusinessApiServices(services);
             DependencyInjectAdapterServices(services);
         }

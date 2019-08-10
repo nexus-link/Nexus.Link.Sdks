@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[2.1.1,3.0)" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.4" />
-    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.1.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.5" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.6.4</Version>
+    <Version>1.8.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +30,8 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.8.0 Moved PublicKeys to token service. Added policy HasMandatoryRole
+      1.7.0 Mocks all integrations services for adapters in Development mode.
       1.6.4 Changed the AuthenticationManager for local authentication.
       1.6.1 Added AdapterAuthenticationManager
       1.5.6 Added configuration DB support

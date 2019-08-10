@@ -20,5 +20,11 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         {
             return RestClient.PostAsync<AuthenticationToken, AuthenticationCredentials>("", credentials, null, token);
         }
+
+        /// <inheritdoc />
+        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
+        {
+            return RestClient.GetAsync<string>("", null, token);
+        }
     }
 }

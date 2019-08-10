@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,6 @@ using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.A
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
-using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
 #if NETCOREAPP
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
@@ -24,7 +22,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
     /// <summary>
     /// Helper class for the different steps in the Startup.cs file.
     /// </summary>
-    public abstract class NexusBusinessApiStartup : StartupBase
+    public abstract class NexusBusinessApiStartup : NexusCommonStartup
     {
         private static readonly object ClassLock = new object();
 
@@ -32,6 +30,31 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         /// Access to all relevant configuration
         /// </summary>
         protected BusinessApiConfiguration BusinessApiConfiguration { get; }
+
+        #region Configure Services
+        /// <inheritdoc />
+        protected override void DependencyInjectServices(IServiceCollection services)
+        {
+            base.DependencyInjectServices(services);
+            //
+            // Nexus services
+            //
+
+            // Authentication
+            services.AddScoped<IAuthenticationCapability>(provider =>
+                ValidateDependencyInjection(provider,
+                    p => new AuthenticationCapability(BusinessApiConfiguration.AuthenticationLocal.Endpoint, GetLocalCredentials())));
+
+            // Business Events
+            services.AddScoped<IBusinessEventsCapability>(provider =>
+                ValidateDependencyInjection(provider, p =>
+                    new BusinessEventsCapability(BusinessApiConfiguration.NexusCapabilityEndpoints.BusinessEvents, GetNexusCredentials())));
+
+            // App support
+            services.AddScoped<IAppSupportCapability>(provider =>
+                ValidateDependencyInjection(provider, p =>
+                    new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
+        }
 
         /// <summary>
         /// A token generator for authenticating between adapters and the business API.
@@ -90,35 +113,6 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         protected NexusBusinessApiStartup(IConfiguration configuration) : base(configuration, true)
         {
             BusinessApiConfiguration = new BusinessApiConfiguration(configuration);
-        }
-
-        #region Configure Services
-        /// <inheritdoc />
-        protected override void DependencyInjectServices(IServiceCollection services)
-        {
-            // Authenticate by tokens
-            services
-                .AddAuthentication(options => { options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
-                .AddJwtBearer();
-
-            //
-            // Nexus services
-            //
-
-            // Authentication
-            services.AddScoped<IAuthenticationCapability>(provider =>
-                ValidateDependencyInjection(provider,
-                    p => new AuthenticationCapability(BusinessApiConfiguration.AuthenticationLocal.Endpoint, GetLocalCredentials())));
-
-            // Business Events
-            services.AddScoped<IBusinessEventsCapability>(provider =>
-                ValidateDependencyInjection(provider, p =>
-                    new BusinessEventsCapability(BusinessApiConfiguration.NexusCapabilityEndpoints.BusinessEvents, GetNexusCredentials())));
-
-            // App support
-            services.AddScoped<IAppSupportCapability>(provider =>
-                ValidateDependencyInjection(provider, p =>
-                    new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
         }
         #endregion
 

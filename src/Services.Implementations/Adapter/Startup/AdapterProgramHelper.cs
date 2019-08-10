@@ -20,6 +20,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         {
             var configuration = new AdapterConfiguration(builder.Build());
             ProgramHelper.AddConfiguration(configuration.Configuration);
+            if (FulcrumApplication.IsInDevelopment) return;
             var integrationCapability = new IntegrationCapability($"{configuration.BusinessApiEndpoint}/api/Integration/v1", configuration.BusinessApiCredentials);
             builder.Add(new NexusConfigurationSource(configuration.BusinessApiClientId, integrationCapability.AppSupport.ConfigurationService));
         }

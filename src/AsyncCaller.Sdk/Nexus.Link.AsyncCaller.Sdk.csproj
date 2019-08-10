@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.3.8" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.4.0" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.6.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.0.8</Version>
+    <Version>2.0.9</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.8 Bump
+      2.0.9 Bump
       2.0.0 Support refactored Authentication
       1.0.20 Bumped nexus nugets
       1.0.9 Bumped version, consolidating versions
