@@ -1,23 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Rest;
-using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
-using Nexus.Link.Authentication.Sdk;
-using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.AspNet.Authorize;
-using Nexus.Link.Libraries.Web.Platform.Authentication;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport;
-using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
-using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
-using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
+using Nexus.Link.Libraries.Web.AspNet.Startup;
+
 #if NETCOREAPP
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
@@ -51,7 +37,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         }
 
         /// <summary>
-        /// Call <see cref="MandRR"/>
+        /// Set the role that is mandatory for calls to this app.
         /// </summary>
         /// <param name="services"></param>
         protected abstract void SetMandatoryRole(IServiceCollection services);

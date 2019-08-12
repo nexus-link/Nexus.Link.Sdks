@@ -2,9 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup;
-using StartupBase = Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase;
+using Nexus.Link.Services.Contracts.Events;
+using Nexus.Link.Services.Implementations.Adapter.Events;
+
 #if NETCOREAPP
 
 namespace Nexus.Link.Services.Implementations.Adapter.Startup
@@ -35,6 +38,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
             base.DependencyInjectServices(services);
             DependencyInjectBusinessApiServices(services);
             DependencyInjectAdapterServices(services);
+            var subscriptionHandler = new EventSubscriptionHandler();
+            AddSubscriptions(subscriptionHandler);
+            services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
         }
 
         /// <summary>
@@ -50,6 +56,12 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// <param name="services">From the parameter to Startup.ConfigureServices.</param>
         /// <remarks>Always override this to inject your services.</remarks>
         protected abstract void DependencyInjectAdapterServices(IServiceCollection services);
+
+        /// <summary>
+        /// This is where the adapter can add events that it wants to subscribe to.
+        /// </summary>
+        /// <param name="subscriptionHandler">Use this to add subscriptions</param>
+        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler);
     }
 }
 #endif

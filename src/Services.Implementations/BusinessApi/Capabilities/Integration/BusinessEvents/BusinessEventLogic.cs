@@ -8,7 +8,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
-using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.Model;
+using Nexus.Link.Services.Contracts.Events;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents
 {
