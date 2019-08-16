@@ -221,6 +221,7 @@ namespace Nexus.Link.Authentication.Sdk
             }
             catch (Exception)
             {
+                Log.LogWarning($"Could not read token '{token}' as JWT");
                 return null;
             }
         }
