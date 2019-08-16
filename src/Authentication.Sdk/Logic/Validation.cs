@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -27,7 +28,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
                 };
                 return securityTokenHandler.ValidateToken(token, validationParameters, out _);
             }
-            catch (SecurityTokenException e)
+            catch (Exception e) when (e is SecurityTokenException || e is ArgumentException)
             {
                 throw new FulcrumUnauthorizedException("Could not validate token: " + e.Message, e);
             }
