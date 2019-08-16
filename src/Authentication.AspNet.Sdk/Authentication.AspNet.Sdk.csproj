@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.1.30</Version>
+      <Version>2.1.31</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.1.31 Removed logging from CheckTokenForPlatformService
         2.1.30 Bump
         2.1.20 Added overload of TokenValidationHandler constructor to accept public key as string.
         2.1.19 Bump

@@ -76,14 +76,10 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             await CallNextDelegateAsync(context);
         }
 
-        private Tenant CheckTokenForPlatformService(string token)
+        private static Tenant CheckTokenForPlatformService(string token)
         {
             var jwt = AuthenticationManager.ReadTokenNotValidating(token);
-            if (jwt?.Claims == null)
-            {
-                Log.LogWarning($"Could not convert token '{token}' to jwt");
-                return null;
-            }
+            if (jwt?.Claims == null) return null;
 
             var isPlatformService = jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
             if (!isPlatformService) return null;
