@@ -213,9 +213,16 @@ namespace Nexus.Link.Authentication.Sdk
 
         public static JwtSecurityToken ReadTokenNotValidating(string token)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-            return jsonToken;
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+                return jsonToken;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());

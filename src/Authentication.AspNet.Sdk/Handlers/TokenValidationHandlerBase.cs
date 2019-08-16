@@ -81,7 +81,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             var jwt = AuthenticationManager.ReadTokenNotValidating(token);
             if (jwt?.Claims == null)
             {
-                Log.LogWarning("Could not convert token to jwt");
+                Log.LogWarning($"Could not convert token '{token}' to jwt");
                 return null;
             }
 
