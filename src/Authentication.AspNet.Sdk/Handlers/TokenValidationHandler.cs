@@ -21,29 +21,29 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         private readonly RsaSecurityKey _publicKey;
 
 #if NETCOREAPP
-        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, bool legacyIssuer = false)
-            : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, bool supportLegacyIssuer = false)
+            : base(next, supportLegacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer, supportLegacyIssuer)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
             FulcrumAssert.IsNotNull(_publicKey);
         }
-        public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, bool legacyIssuer = false)
-            : base(next, legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, bool supportLegacyIssuer = false)
+            : base(next, supportLegacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer, supportLegacyIssuer)
         {
             InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
             _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
             FulcrumAssert.IsNotNull(_publicKey);
         }
 #else
-        public TokenValidationHandler(RsaSecurityKey publicKey, bool legacyIssuer = false)
-            : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(RsaSecurityKey publicKey, bool supportLegacyIssuer = false)
+            : base(supportLegacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer, supportLegacyIssuer)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
         }
-        public TokenValidationHandler(string publicKeyAsXmlString, bool legacyIssuer = false)
-            : base(legacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer)
+        public TokenValidationHandler(string publicKeyAsXmlString, bool supportLegacyIssuer = false)
+            : base(supportLegacyIssuer ? AuthenticationManager.LegacyIssuer : AuthenticationManager.AuthServiceIssuer, supportLegacyIssuer)
         {
             InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
             _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);

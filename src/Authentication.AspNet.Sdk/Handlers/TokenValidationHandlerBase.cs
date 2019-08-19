@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -25,18 +26,21 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
     public abstract class TokenValidationHandlerBase : CompatibilityDelegatingHandler
     {
         protected string Issuer;
+        protected bool SupportLegacyIssuer;
 
 #if NETCOREAPP
-        protected TokenValidationHandlerBase(RequestDelegate next, string issuer) : base(next)
+        protected TokenValidationHandlerBase(RequestDelegate next, string issuer, bool supportLegacyIssuer = false) : base(next)
         {
             InternalContract.RequireNotNullOrWhiteSpace(issuer, nameof(issuer));
             Issuer = issuer;
+            SupportLegacyIssuer = supportLegacyIssuer;
         }
 #else
-        protected TokenValidationHandlerBase(string issuer)
+        protected TokenValidationHandlerBase(string issuer, bool supportLegacyIssuer = false)
         {
             InternalContract.RequireNotNullOrWhiteSpace(issuer, nameof(issuer));
             Issuer = issuer;
+            SupportLegacyIssuer = supportLegacyIssuer;
         }
 #endif
 
@@ -99,7 +103,19 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             InternalContract.RequireNotNull(token, nameof(token));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
-            var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
+            ClaimsPrincipal claimsPrincipal = null;
+            try
+            {
+                claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
+            }
+            catch (Exception)
+            {
+                // For a while, support legacy tokens as well
+                if (SupportLegacyIssuer)
+                {
+                    claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
+                }
+            }
             if (claimsPrincipal == null)
             {
                 Log.LogInformation($"Invalid token: {token}");
