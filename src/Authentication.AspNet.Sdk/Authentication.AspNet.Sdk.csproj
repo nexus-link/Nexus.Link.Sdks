@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.2.1</Version>
+      <Version>2.2.2</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.2.1 TokenValidationHandler can support both normal and legacy tokens, allowing callers to transition in their own pace
+        2.2.2 TokenValidationHandler can support both normal and legacy tokens, allowing callers to transition in their own pace
         2.1.31 Removed logging from CheckTokenForPlatformService
         2.1.30 Bump
         2.1.20 Added overload of TokenValidationHandler constructor to accept public key as string.
