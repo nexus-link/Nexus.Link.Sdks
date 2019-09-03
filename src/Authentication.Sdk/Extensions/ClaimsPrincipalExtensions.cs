@@ -21,7 +21,7 @@ namespace Nexus.Link.Authentication.Sdk.Extensions
                 result = AuthenticationManager.GetClaimValue(ClaimTypeNames.LegacyOrganization, principal);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    Log.LogWarning($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyOrganization}. Please issue a new token.");
+                    Log.LogVerbose($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyOrganization}. Please issue a new token.");
                 }
             }
             return result;
@@ -35,7 +35,7 @@ namespace Nexus.Link.Authentication.Sdk.Extensions
                 result = AuthenticationManager.GetClaimValue(ClaimTypeNames.LegacyEnvironment, principal);
                 if (!string.IsNullOrWhiteSpace(result))
                 {
-                    Log.LogWarning($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyEnvironment}. Please issue a new token.");
+                    Log.LogVerbose($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyEnvironment}. Please issue a new token.");
                 }
             }
             return result;

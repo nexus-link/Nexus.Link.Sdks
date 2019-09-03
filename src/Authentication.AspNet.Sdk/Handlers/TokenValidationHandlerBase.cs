@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -76,14 +77,10 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             await CallNextDelegateAsync(context);
         }
 
-        private Tenant CheckTokenForPlatformService(string token)
+        private static Tenant CheckTokenForPlatformService(string token)
         {
             var jwt = AuthenticationManager.ReadTokenNotValidating(token);
-            if (jwt?.Claims == null)
-            {
-                Log.LogWarning("Could not convert token to jwt");
-                return null;
-            }
+            if (jwt?.Claims == null) return null;
 
             var isPlatformService = jwt.Claims.Any(x => x.Type == "role" && x.Value == NexusAuthenticationRoles.PlatformService);
             if (!isPlatformService) return null;
@@ -103,7 +100,16 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             InternalContract.RequireNotNull(token, nameof(token));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
-            var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
+            ClaimsPrincipal claimsPrincipal;
+            try
+            {
+                claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
+            }
+            catch (Exception)
+            {
+                // For a while, support legacy tokens as well
+                claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
+            }
             if (claimsPrincipal == null)
             {
                 Log.LogInformation($"Invalid token: {token}");
