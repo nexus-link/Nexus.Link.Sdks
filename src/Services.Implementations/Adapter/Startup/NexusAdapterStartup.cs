@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nexus.Link.BusinessEvents.Sdk.RestClients;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
