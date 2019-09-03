@@ -136,6 +136,21 @@
             <param name="event"></param>
             <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.Extensions">
+            <summary>
+            Extensions for events
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Events.Extensions.BusinessEventService">
+            <summary>
+            This property must be initialized in the Startup.cs.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.Extensions.PublishAsync(Nexus.Link.Services.Contracts.Events.IPublishableEvent,System.Threading.CancellationToken)">
+            <summary>
+            See <see cref="M:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
             <summary>
             Helper class for updating the configuration with data from the configuration DB.
