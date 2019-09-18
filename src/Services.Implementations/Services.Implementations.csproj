@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.9.0</Version>
+    <Version>1.9.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.9.1 Bump
       1.9.0 Added Events support
       1.8.1 Moved PublicKeys to token service. Added policy HasMandatoryRole
       1.7.0 Mocks all integrations services for adapters in Development mode.
