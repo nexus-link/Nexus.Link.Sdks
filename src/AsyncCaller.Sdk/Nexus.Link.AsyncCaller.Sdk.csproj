@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.0.10</Version>
+    <Version>2.0.11</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.10 Bump
+      2.0.11 Bump
       2.0.0 Support refactored Authentication
       1.0.20 Bumped nexus nugets
       1.0.9 Bumped version, consolidating versions

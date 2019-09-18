@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>2.1.14</Version>
+    <Version>2.1.15</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,7 +28,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
-      2.1.14 Bump
+      2.1.15 Bump
       2.1.13 Cleanup references
       2.1.12 Add LoggingServiceConfiguration for FulcrumLogger
       2.1.11 Bump
