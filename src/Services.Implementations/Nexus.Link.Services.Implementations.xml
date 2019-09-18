@@ -109,6 +109,22 @@
             Constructor
             </summary>
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.DataSync.DataSyncMemoryMock`1">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.DataSync.IDataSyncCreate`1" />
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.DataSync.IDataSyncReadUpdate`1" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.DataSync.DataSyncMemoryMock`1.#ctor(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.DataSync.DataSyncMemoryMock`1.CreateAsync(`0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.DataSync.DataSyncMemoryMock`1.ReadAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.DataSync.DataSyncMemoryMock`1.UpdateAsync(System.String,`0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEvent(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -135,6 +151,21 @@
             </summary>
             <param name="event"></param>
             <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.Extensions">
+            <summary>
+            Extensions for events
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Events.Extensions.BusinessEventService">
+            <summary>
+            This property must be initialized in the Startup.cs.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.Extensions.PublishAsync(Nexus.Link.Services.Contracts.Events.IPublishableEvent,System.Threading.CancellationToken)">
+            <summary>
+            See <see cref="M:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)"/>.
+            </summary>
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
             <summary>
