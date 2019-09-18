@@ -70,10 +70,10 @@ namespace Nexus.Link.Configurations.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
 
-            var configuration = ConfigurationCache.Get(tenant);
+            var configuration = ConfigurationCache.Get(tenant, ServiceName);
             if (configuration != null) return configuration;
             configuration = await _configurationsManager.GetConfigurationForAsync(tenant);
-            ConfigurationCache.Add(tenant, configuration);
+            ConfigurationCache.Add(tenant, ServiceName, configuration);
             return configuration;
         }
 

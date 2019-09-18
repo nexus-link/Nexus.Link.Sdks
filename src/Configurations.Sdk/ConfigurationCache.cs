@@ -20,13 +20,13 @@ namespace Nexus.Link.Configurations.Sdk
         /// </summary>
         /// <param name="tenant"></param>
         /// <returns></returns>
-        public ILeverConfiguration Get(Tenant tenant)
+        public ILeverConfiguration Get(Tenant tenant, string serviceName)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
 
-            var cacheKey = GetCacheKey(tenant);
+            var cacheKey = GetCacheKey(tenant, serviceName);
             lock (_cache)
             {
                 return _cache[cacheKey] as ILeverConfiguration;
@@ -38,27 +38,27 @@ namespace Nexus.Link.Configurations.Sdk
         /// </summary>
         /// <param name="tenant"></param>
         /// <param name="configuration"></param>
-        public void Add(Tenant tenant, ILeverConfiguration configuration)
+        public void Add(Tenant tenant, string serviceName, ILeverConfiguration configuration)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
             InternalContract.RequireNotNull(configuration, nameof(configuration));
 
-            var cacheKey = GetCacheKey(tenant);
+            var cacheKey = GetCacheKey(tenant, serviceName);
             lock (_cache)
             {
                 _cache.Set(cacheKey, configuration, GetCacheExpiration());
             }
         }
 
-        private string GetCacheKey(Tenant tenant)
+        private string GetCacheKey(Tenant tenant, string serviceName)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
 
-            return $"{tenant.Organization}|{tenant.Environment}{_uniqueId}";
+            return $"{tenant.Organization}|{tenant.Environment}|{serviceName}{_uniqueId}";
         }
 
         private static DateTimeOffset GetCacheExpiration()

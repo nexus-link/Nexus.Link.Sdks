@@ -49,13 +49,13 @@ namespace Nexus.Link.Configurations.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Organization, nameof(tenant.Organization));
 
-            var configuration = _cache.Get(tenant);
+            var configuration = _cache.Get(tenant, _serviceName);
             if (configuration != null) return configuration;
 
             var serviceUri = new Uri(_configurationsServiceUri, $"api/v1/{tenant.Organization}/{tenant.Environment}/Configurations/{_serviceName}");
             var jObject = await GetConfigurationAsync(serviceUri);
             configuration = new LeverConfiguration(tenant, _serviceName, jObject);
-            _cache.Add(tenant, configuration);
+            _cache.Add(tenant, _serviceName, configuration);
             return configuration;
         }
 
