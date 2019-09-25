@@ -1,4 +1,5 @@
-﻿using Nexus.Link.Libraries.Core.Application;
+﻿using System;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
@@ -27,6 +28,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             InternalContract.RequireValidated(tenant, nameof(tenant));
 
             var service = FulcrumApplication.Setup.Name;
+            ILeverConfiguration tenantLoggingConfiguration;
 
             if (_loggingServiceConfiguration == null)
             {
@@ -36,9 +38,18 @@ namespace Nexus.Link.Logger.Sdk.Helpers
                 return (AzureStorageQueueIsCreated.No, null);
             }
 
-            var tennantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant);
+            try
+            {
+                tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant);
+            }
+            catch (Exception e)
+            {
+                LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
+                    $"Configuration for service \"Logging\" for tenant {tenant} must have setting for LoggerConnectionString");
+                return (AzureStorageQueueIsCreated.No, null);
+            }
 
-            var connectionString = tennantLoggingConfiguration?.Value<string>("LoggerConnectionString");
+            var connectionString = tenantLoggingConfiguration?.Value<string>("LoggerConnectionString");
             if (connectionString == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
@@ -46,7 +57,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
                 return (AzureStorageQueueIsCreated.No, null);
             }
 
-            var queueName = tennantLoggingConfiguration?.Value<string>("QueueName");
+            var queueName = tenantLoggingConfiguration?.Value<string>("QueueName");
             if (queueName == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
