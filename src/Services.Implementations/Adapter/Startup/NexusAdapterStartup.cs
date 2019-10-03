@@ -34,11 +34,11 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// Replace the <see cref="StartupBase.DependencyInjectServices"/> with <see cref="DependencyInjectBusinessApiServices"/> and <see cref="DependencyInjectAdapterServices"/>.
         /// </summary>
         /// <param name="services"></param>
-        protected override void DependencyInjectServices(IServiceCollection services)
+        protected override void DependencyInjectServices(IServiceCollection services, IMvcBuilder mvcBuilder)
         {
-            base.DependencyInjectServices(services);
-            DependencyInjectBusinessApiServices(services);
-            DependencyInjectAdapterServices(services);
+            base.DependencyInjectServices(services, mvcBuilder);
+            DependencyInjectBusinessApiServices(services, mvcBuilder);
+            DependencyInjectAdapterServices(services, mvcBuilder);
             var subscriptionHandler = new EventSubscriptionHandler();
             AddSubscriptions(subscriptionHandler);
             services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
@@ -48,15 +48,17 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// This is where the business API injects its own services.
         /// </summary>
         /// <param name="services">From the parameter to Startup.ConfigureServices.</param>
+        /// <param name="mvcBuilder"></param>
         /// <remarks>Always override this to inject your services.</remarks>
-        protected abstract void DependencyInjectBusinessApiServices(IServiceCollection services);
+        protected abstract void DependencyInjectBusinessApiServices(IServiceCollection services, IMvcBuilder mvcBuilder);
 
         /// <summary>
         /// This is where the adapter injects its own services.
         /// </summary>
         /// <param name="services">From the parameter to Startup.ConfigureServices.</param>
+        /// <param name="mvcBuilder"></param>
         /// <remarks>Always override this to inject your services.</remarks>
-        protected abstract void DependencyInjectAdapterServices(IServiceCollection services);
+        protected abstract void DependencyInjectAdapterServices(IServiceCollection services, IMvcBuilder mvcBuilder);
 
         /// <summary>
         /// This is where the adapter can add events that it wants to subscribe to.

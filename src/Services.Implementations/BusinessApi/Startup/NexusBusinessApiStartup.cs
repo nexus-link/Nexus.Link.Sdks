@@ -33,9 +33,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
 
         #region Configure Services
         /// <inheritdoc />
-        protected override void DependencyInjectServices(IServiceCollection services)
+        protected override void DependencyInjectServices(IServiceCollection services, IMvcBuilder mvcBuilder)
         {
-            base.DependencyInjectServices(services);
+            base.DependencyInjectServices(services, mvcBuilder);
             //
             // Nexus services
             //
