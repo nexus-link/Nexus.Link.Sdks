@@ -187,20 +187,9 @@
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <inheritdoc/>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
-            </summary>
-            <param name="services"></param>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.RegisterCapabilityControllers``1(System.Type[])">
-            <summary>
-            Register which controllers that should be used for a specific capability interface.
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.RegisterCapabilityControllers(System.Type,System.Type[])">
-            <summary>
-            Register which controllers that should be used for a specific capability interface.
+            Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
             </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
@@ -368,7 +357,7 @@
             Access to all relevant configuration
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.LocalTokenRefresher">
@@ -417,7 +406,7 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">

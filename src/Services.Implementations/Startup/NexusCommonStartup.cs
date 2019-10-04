@@ -21,7 +21,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
 
         #region Configure Services
         /// <inheritdoc />
-        protected override void DependencyInjectServices(IServiceCollection services, IMvcBuilder mvcBuilder)
+        protected override void DependencyInjectServices(IServiceCollection services)
         {
             // Authenticate by tokens
             services

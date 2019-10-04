@@ -30,8 +30,6 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// </summary>
         protected AdapterConfiguration AdapterConfiguration { get; }
 
-        private readonly IDictionary<Type, IEnumerable<Type>> _capabilityInterfaceToControllerClasses = new Dictionary<Type, IEnumerable<Type>>();
-
         /// <inheritdoc/>
         protected NexusAdapterStartup(IConfiguration configuration) : base(configuration, false)
         {
@@ -41,68 +39,14 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// <summary>
         /// Replace the <see cref="StartupBase.DependencyInjectServices"/> with <see cref="DependencyInjectBusinessApiServices"/> and <see cref="DependencyInjectAdapterServices"/>.
         /// </summary>
-        /// <param name="services"></param>
-        protected override void DependencyInjectServices(IServiceCollection services, IMvcBuilder mvcBuilder)
+        protected override void DependencyInjectServices(IServiceCollection services)
         {
-            base.DependencyInjectServices(services, mvcBuilder);
+            base.DependencyInjectServices(services);
             DependencyInjectBusinessApiServices(services);
             DependencyInjectAdapterServices(services);
-            AddControllersToMvc(services, mvcBuilder);
             var subscriptionHandler = new EventSubscriptionHandler();
             AddSubscriptions(subscriptionHandler);
             services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
-        }
-
-        /// <summary>
-        /// Register which controllers that should be used for a specific capability interface.
-        /// </summary>
-        protected void RegisterCapabilityControllers<TCapabilityInterface>(params Type[] controllerTypes)
-        where TCapabilityInterface : IServicesCapability
-        {
-            InternalContract.Require(typeof(TCapabilityInterface).IsInterface, 
-                $"The type ({typeof(TCapabilityInterface).Name}) passed to {nameof(TCapabilityInterface)} must be an interface.");
-            RegisterCapabilityControllers(typeof(TCapabilityInterface), controllerTypes);
-        }
-
-        /// <summary>
-        /// Register which controllers that should be used for a specific capability interface.
-        /// </summary>
-        protected void RegisterCapabilityControllers(Type capabilityInterface, params Type[] controllerTypes)
-        {
-            InternalContract.Require(capabilityInterface, type => type.IsInterface, nameof(capabilityInterface));
-            InternalContract.Require(capabilityInterface.IsInterface, 
-                $"The parameter {nameof(capabilityInterface)} must be an interface.");
-            InternalContract.Require(typeof(IServicesCapability).IsAssignableFrom(capabilityInterface), 
-                $"The parameter {nameof(capabilityInterface)} must inherit from {typeof(IServicesCapability).FullName}.");
-            foreach (var controllerType in controllerTypes)
-            {
-                InternalContract.Require(controllerType, type => type.IsClass, nameof(controllerType));
-            }
-
-            _capabilityInterfaceToControllerClasses.Add(capabilityInterface, controllerTypes);
-        }
-
-        private void AddControllersToMvc(IServiceCollection services, IMvcBuilder mvcBuilder)
-        {
-            using (var serviceScope = services.BuildServiceProvider().CreateScope())
-            {
-                var serviceProvider = serviceScope.ServiceProvider;
-
-                foreach (var serviceType in _capabilityInterfaceToControllerClasses.Keys)
-                {
-                    FulcrumAssert.IsTrue(serviceType.IsInterface);
-                    var service = serviceProvider.GetService(serviceType);
-                    if (service == null) continue;
-                    var controllerTypes = _capabilityInterfaceToControllerClasses[serviceType];
-                    FulcrumAssert.IsNotNull(controllerTypes);
-                    foreach (var controllerType in controllerTypes)
-                    {
-                        FulcrumAssert.IsTrue(controllerType.IsClass);
-                        var assembly = controllerType.GetTypeInfo().Assembly;
-                        mvcBuilder.AddApplicationPart(assembly);
-                    }
-                }
-            }
         }
 
         /// <summary>
