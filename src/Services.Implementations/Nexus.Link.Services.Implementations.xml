@@ -406,6 +406,11 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
             <inheritdoc/>
         </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.RegisterCapabilityControllers``1(System.Type[])">
+            <summary>
+            Register which controllers that should be used for a specific capability interface.
+            </summary>
+        </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
