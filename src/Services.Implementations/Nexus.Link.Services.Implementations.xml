@@ -189,24 +189,29 @@
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
             <summary>
-            Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)"/>.
+            Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
             </summary>
             <param name="services"></param>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.RegisterCapabilityControllers(System.Type,System.Type[])">
+            <summary>
+            Register which controllers that should be used for a specific capability interface.
+            </summary>
+            <param name="capabilityInterface"></param>
+            <param name="controllerTypes"></param>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             This is where the business API injects its own services.
             </summary>
             <param name="services">From the parameter to Startup.ConfigureServices.</param>
-            <param name="mvcBuilder"></param>
             <remarks>Always override this to inject your services.</remarks>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             This is where the adapter injects its own services.
             </summary>
             <param name="services">From the parameter to Startup.ConfigureServices.</param>
-            <param name="mvcBuilder"></param>
             <remarks>Always override this to inject your services.</remarks>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler)">
