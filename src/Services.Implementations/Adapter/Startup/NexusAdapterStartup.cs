@@ -56,8 +56,17 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// <summary>
         /// Register which controllers that should be used for a specific capability interface.
         /// </summary>
-        /// <param name="capabilityInterface"></param>
-        /// <param name="controllerTypes"></param>
+        protected void RegisterCapabilityControllers<TCapabilityInterface>(params Type[] controllerTypes)
+        where TCapabilityInterface : IServicesCapability
+        {
+            InternalContract.Require(typeof(TCapabilityInterface).IsInterface, 
+                $"The type ({typeof(TCapabilityInterface).Name}) passed to {nameof(TCapabilityInterface)} must be an interface.");
+            RegisterCapabilityControllers(typeof(TCapabilityInterface), controllerTypes);
+        }
+
+        /// <summary>
+        /// Register which controllers that should be used for a specific capability interface.
+        /// </summary>
         protected void RegisterCapabilityControllers(Type capabilityInterface, params Type[] controllerTypes)
         {
             InternalContract.Require(capabilityInterface, type => type.IsInterface, nameof(capabilityInterface));

@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>1.11.0</Version>
+    <Version>1.11.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,7 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.11.0 Added controller injection.
+      1.11.1 Added controller injection.
       1.10.6 Bump
       1.10.0 Moved data sync implementations to Services.Contracts.
       1.9.5 Bump
