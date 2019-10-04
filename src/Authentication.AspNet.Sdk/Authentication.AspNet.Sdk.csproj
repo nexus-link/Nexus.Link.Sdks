@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.10.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.10.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.5.2" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.7.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.2.6</Version>
+      <Version>2.2.7</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.2.6 Bump
+        2.2.7 Bump
         2.2.2 TokenValidationHandler can support both normal and legacy tokens, allowing callers to transition in their own pace
         2.1.31 Removed logging from CheckTokenForPlatformService
         2.1.30 Bump

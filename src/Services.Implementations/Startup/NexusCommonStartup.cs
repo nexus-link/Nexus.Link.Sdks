@@ -21,16 +21,6 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         {
         }
 
-        // TODO: Make the one in Libraries.Web.AspNet public instead of doing this.
-        /// <summary>
-        /// Register which controllers that should be used for a specific capability interface.
-        /// </summary>
-        public new void RegisterCapabilityControllers<TCapabilityInterface>(params Type[] controllerTypes)
-            where TCapabilityInterface : IServicesCapability
-        {
-            RegisterCapabilityControllers(typeof(TCapabilityInterface), controllerTypes);
-        }
-
         #region Configure Services
         /// <inheritdoc />
         protected override void DependencyInjectServices(IServiceCollection services)
