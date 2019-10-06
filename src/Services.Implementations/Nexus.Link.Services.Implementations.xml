@@ -16,6 +16,9 @@
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.LoggingService">
             <inheritdoc />
         </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.LoggingService_NotImplemented.LogAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService" />
         </member>
