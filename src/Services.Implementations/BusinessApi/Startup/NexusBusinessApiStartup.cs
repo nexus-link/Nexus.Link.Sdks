@@ -38,7 +38,6 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         /// <inheritdoc />
         protected override void DependencyInjectServices(IServiceCollection services)
         {
-            base.DependencyInjectServices(services);
             //
             // Nexus services
             //
@@ -57,18 +56,21 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
             services.AddScoped<IAppSupportCapability>(provider =>
                 ValidateDependencyInjection(provider, p =>
                     new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
+        }
 
+        /// <inheritdoc />
+        protected override void DependencyInjectServicesAdvanced(IServiceCollection services, IMvcBuilder mvcBuilder)
+        {
             var subscriptionHandler = new EventSubscriptionHandler();
-            DependencyInjectServices(services, subscriptionHandler);
+            AddSubscriptions(subscriptionHandler, mvcBuilder);
             services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
         }
 
         /// <summary>
         /// This is where the adapter can add events that it wants to subscribe to.
         /// </summary>
-        /// <param name="services"></param>
         /// <param name="subscriptionHandler">Use this to add subscriptions</param>
-        protected abstract void DependencyInjectServices(IServiceCollection services, EventSubscriptionHandler subscriptionHandler);
+        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler, IMvcBuilder mvcBuilder);
 
         /// <summary>
         /// A token generator for authenticating between adapters and the business API.

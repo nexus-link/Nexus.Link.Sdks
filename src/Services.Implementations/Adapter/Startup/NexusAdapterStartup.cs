@@ -44,8 +44,13 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
             base.DependencyInjectServices(services);
             DependencyInjectBusinessApiServices(services);
             DependencyInjectAdapterServices(services);
+        }
+
+        /// <inheritdoc />
+        protected override void DependencyInjectServicesAdvanced(IServiceCollection services, IMvcBuilder mvcBuilder)
+        {
             var subscriptionHandler = new EventSubscriptionHandler();
-            AddSubscriptions(subscriptionHandler);
+            AddSubscriptions(subscriptionHandler, mvcBuilder);
             services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
         }
 
@@ -67,7 +72,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         /// This is where the adapter can add events that it wants to subscribe to.
         /// </summary>
         /// <param name="subscriptionHandler">Use this to add subscriptions</param>
-        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler);
+        /// <param name="mvcBuilder"></param>
+        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler, IMvcBuilder mvcBuilder);
     }
 }
 #endif
