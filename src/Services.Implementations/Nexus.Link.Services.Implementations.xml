@@ -112,33 +112,6 @@
             Constructor
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEvent(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler">
-            <summary>
-            Handle the event subscriptions for an adapter
-            </summary>
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1">
-            <summary>
-            A delegate for receiving events
-            </summary>
-            <param name="event"></param>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate{``0})">
-            <summary>
-            Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1"/>
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync``1(``0)">
-            <summary>
-            Call the registered method for this event
-            </summary>
-            <param name="event"></param>
-            <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
-        </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
             <summary>
             Helper class for updating the configuration with data from the configuration DB.
@@ -214,6 +187,33 @@
             This is where the adapter can add events that it wants to subscribe to.
             </summary>
             <param name="subscriptionHandler">Use this to add subscriptions</param>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEvent(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler">
+            <summary>
+            Handle the event subscriptions for an adapter
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1">
+            <summary>
+            A delegate for receiving events
+            </summary>
+            <param name="event"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate{``0})">
+            <summary>
+            Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync``1(``0)">
+            <summary>
+            Call the registered method for this event
+            </summary>
+            <param name="event"></param>
+            <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability">
             <inheritdoc />
@@ -363,6 +363,12 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler)">
+            <summary>
+            This is where the adapter can add events that it wants to subscribe to.
+            </summary>
+            <param name="subscriptionHandler">Use this to add subscriptions</param>
+        </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.LocalTokenRefresher">
             <summary>
             A token generator for authenticating between adapters and the business API.
@@ -418,6 +424,25 @@
             </summary>
             <param name="services"></param>
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider">
+            <summary>
+            A configuration provider that gets configuration data from the Nexus configuration database
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider.Load">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource">
+            <summary>
+            Adds the Nexus configuration database as a configuration source
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.Singleton`1">
             <summary>
             Support class for handling singleton instantiation challenge
@@ -440,25 +465,6 @@
             Get the only instance.
             </summary>
             <remarks>The instance is not created until the first call to this property.</remarks>
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider">
-            <summary>
-            A configuration provider that gets configuration data from the Nexus configuration database
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider.Load">
-            <inheritdoc />
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource">
-            <summary>
-            Adds the Nexus configuration database as a configuration source
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
-            <inheritdoc />
         </member>
     </members>
 </doc>

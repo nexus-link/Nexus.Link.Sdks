@@ -7,10 +7,13 @@ using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
+using Nexus.Link.Services.Contracts.Events;
+using Nexus.Link.Services.Implementations.Adapter.Events;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
@@ -54,7 +57,17 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
             services.AddScoped<IAppSupportCapability>(provider =>
                 ValidateDependencyInjection(provider, p =>
                     new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
+
+            var subscriptionHandler = new EventSubscriptionHandler();
+            AddSubscriptions(subscriptionHandler);
+            services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
         }
+
+        /// <summary>
+        /// This is where the adapter can add events that it wants to subscribe to.
+        /// </summary>
+        /// <param name="subscriptionHandler">Use this to add subscriptions</param>
+        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler);
 
         /// <summary>
         /// A token generator for authenticating between adapters and the business API.

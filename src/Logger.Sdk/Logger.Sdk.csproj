@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>2.1.16</Version>
+    <Version>2.1.17</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +28,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
+      2.1.17 Bump
       2.1.16 Fix for issue where fetching tenantconfiguration threw an unhandled exception
       2.1.15 Bump
       2.1.13 Cleanup references
