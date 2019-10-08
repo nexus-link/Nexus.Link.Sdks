@@ -100,19 +100,28 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             InternalContract.RequireNotNull(token, nameof(token));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
-            ClaimsPrincipal claimsPrincipal;
+            ClaimsPrincipal claimsPrincipal = null;
             try
             {
                 claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
             }
-            catch (Exception)
+            catch (Exception e1)
             {
+                Log.LogVerbose($"Failed to validate token with issuer {Issuer}. Error message: {e1.Message}");
+
                 // For a while, support legacy tokens as well
-                claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
+                try
+                {
+                    claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
+                }
+                catch (Exception e2)
+                {
+                    Log.LogVerbose($"Failed to validate token with legacy issuer {AuthenticationManager.LegacyIssuer}. Error message: {e2.Message}");
+                }
             }
             if (claimsPrincipal == null)
             {
-                Log.LogInformation($"Invalid token: {token}");
+                Log.LogInformation($"Invalid token: {token}. Issuer: {Issuer}.");
                 return;
             }
 
