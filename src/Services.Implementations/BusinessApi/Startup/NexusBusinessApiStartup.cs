@@ -38,6 +38,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         /// <inheritdoc />
         protected override void DependencyInjectServices(IServiceCollection services)
         {
+            base.DependencyInjectServices(services);
             //
             // Nexus services
             //

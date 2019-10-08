@@ -200,16 +200,16 @@
             Handle the event subscriptions for an adapter
             </summary>
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1">
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1">
             <summary>
             A delegate for receiving events
             </summary>
             <param name="event"></param>
             <typeparam name="T"></typeparam>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate{``0})">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{``0})">
             <summary>
-            Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegate`1"/>
+            Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1"/>
             </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync``1(``0)">

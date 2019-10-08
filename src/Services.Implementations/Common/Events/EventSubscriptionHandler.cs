@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -12,24 +13,24 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
     /// </summary>
     public class EventSubscriptionHandler
     {
-        private readonly ConcurrentDictionary<string, EventReceiverDelegate<IPublishableEvent>> _eventReceiverDelegates = new ConcurrentDictionary<string,EventReceiverDelegate<IPublishableEvent>>();
+        private readonly ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>> _eventReceiverDelegates = new ConcurrentDictionary<string,EventReceiverDelegateAsync<IPublishableEvent>>();
 
         /// <summary>
         /// A delegate for receiving events
         /// </summary>
         /// <param name="event"></param>
         /// <typeparam name="T"></typeparam>
-        public delegate Task EventReceiverDelegate<in T>(T @event);
+        public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Add another <see cref="EventReceiverDelegate{T}"/>
+        /// Add another <see cref="EventReceiverDelegateAsync{T}"/>
         /// </summary>
-        public EventSubscriptionHandler Add<T>(EventReceiverDelegate<T> eventReceiverDelegate)
+        public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<T> eventReceiverDelegateAsync)
         where T : IPublishableEvent, new()
         {
             var item = new T();
             var key = ToKey(item);
-            var d = eventReceiverDelegate as EventReceiverDelegate<IPublishableEvent>;
+            var d = eventReceiverDelegateAsync as EventReceiverDelegateAsync<IPublishableEvent>;
             var success = _eventReceiverDelegates.TryAdd(key, d);
             InternalContract.Require(success, $"The event {key} has already been added");
             return this;
