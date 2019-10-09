@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>2.2.10</Version>
+      <Version>2.2.11</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -29,7 +29,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.2.10 Bump
+        2.2.11 Bump
         2.2.6 Change log level on legacy tokens to from Warning to Verbose
         2.2.5 Fix: In-pipe could be interupted by badly formatted token
         2.2.2 Bump

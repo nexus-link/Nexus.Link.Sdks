@@ -168,9 +168,6 @@
             Replace the <see cref="M:Nexus.Link.Libraries.Web.AspNet.Startup.StartupBase.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> with <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/> and <see cref="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectAdapterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>.
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
-            <inheritdoc />
-        </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.DependencyInjectBusinessApiServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             This is where the business API injects its own services.
@@ -185,13 +182,6 @@
             <param name="services">From the parameter to Startup.ConfigureServices.</param>
             <remarks>Always override this to inject your services.</remarks>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
-            <summary>
-            This is where the adapter can add events that it wants to subscribe to.
-            </summary>
-            <param name="subscriptionHandler">Use this to add subscriptions</param>
-            <param name="mvcBuilder"></param>
-        </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEvent(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
@@ -205,7 +195,13 @@
             A delegate for receiving events
             </summary>
             <param name="event"></param>
+            <param name="cancellationToken"></param>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.HasSubscriptions">
+            <summary>
+            True if any subscription has been added to this subscription handler.
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{``0})">
             <summary>
@@ -367,15 +363,6 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
-            <summary>
-            This is where the adapter can add events that it wants to subscribe to.
-            </summary>
-            <param name="subscriptionHandler">Use this to add subscriptions</param>
-        </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.LocalTokenRefresher">
             <summary>
             A token generator for authenticating between adapters and the business API.
@@ -424,6 +411,16 @@
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+            <summary>
+            This is where the adapter can add events that it wants to subscribe to.
+            </summary>
+            <param name="subscriptionHandler">Use this to add subscriptions</param>
+            <param name="mvcBuilder"></param>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>

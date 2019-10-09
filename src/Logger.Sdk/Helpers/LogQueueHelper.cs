@@ -42,7 +42,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             {
                 tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
                     $"Configuration for service \"Logging\" for tenant {tenant} must have setting for LoggerConnectionString");

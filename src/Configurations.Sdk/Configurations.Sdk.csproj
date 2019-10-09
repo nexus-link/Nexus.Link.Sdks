@@ -27,7 +27,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.0.15</Version>
+      <Version>2.0.16</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -37,7 +37,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.0.15 Bump
+        2.0.16 Bump
         2.0.13 CacheKey now includes serviceName to support virutal services (logging).
         2.0.12 Bump
         2.0.0 Support refactored Authentication

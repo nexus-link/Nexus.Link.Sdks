@@ -20,6 +20,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// A delegate for receiving events
         /// </summary>
         /// <param name="event"></param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T"></typeparam>
         public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken));
 
