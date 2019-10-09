@@ -49,10 +49,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         /// <param name="basicCredentials">ClientId and ClientSecret for calling the business api</param>
         public IntegrationCapability(string baseUrl, AuthenticationCredentials basicCredentials)
         {
-            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication", HttpClient);
+            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication/v1", HttpClient);
             var credentials = ServiceClientCredentials(baseUrl, basicCredentials);
-            BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents", HttpClient, credentials);
-            AppSupport = new AppSupportCapability($"{baseUrl}/AppSupport", HttpClient, credentials);
+            BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents/v1", HttpClient, credentials);
+            AppSupport = new AppSupportCapability($"{baseUrl}/AppSupport/v1", HttpClient, credentials);
         }
 
         /// <inheritdoc />

@@ -10,7 +10,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
         /// <inheritdoc />
         public BusinessEventsCapability(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
         {
-            BusinessEventService = new BusinessEventRestService(baseUrl, httpClient, credentials);
+            BusinessEventService = new BusinessEventRestService($"{baseUrl}/Events", httpClient, credentials);
         }
 
         /// <inheritdoc />

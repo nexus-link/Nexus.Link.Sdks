@@ -12,7 +12,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         
         /// <inheritdoc cref="IConfigurationService"/>
         public ConfigurationRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
-            :base($"{baseUrl}/Configurations", httpClient, credentials)
+            :base(baseUrl, httpClient, credentials)
         {
         }
     }

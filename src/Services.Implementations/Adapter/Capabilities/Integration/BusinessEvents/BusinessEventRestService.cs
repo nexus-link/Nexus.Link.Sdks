@@ -13,7 +13,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     {
         /// <inheritdoc cref="IBusinessEventService" />
         public BusinessEventRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
-        :base($"{baseUrl}/BusinessEvents", httpClient, credentials)
+        :base(baseUrl, httpClient, credentials)
         {
         }
 

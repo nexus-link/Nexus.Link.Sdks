@@ -10,7 +10,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         /// <inheritdoc />
         public AuthenticationCapability(string baseUrl, HttpClient httpClient)
         {
-            TokenService = new TokenRestService(baseUrl, httpClient);
+            TokenService = new TokenRestService($"{baseUrl}/Tokens", httpClient);
         }
 
         /// <inheritdoc />

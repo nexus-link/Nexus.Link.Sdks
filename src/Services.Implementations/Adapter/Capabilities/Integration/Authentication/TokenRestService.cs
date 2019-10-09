@@ -11,7 +11,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     {
         /// <inheritdoc cref="ITokenService" />
         public TokenRestService(string baseUrl, HttpClient httpClient)
-        :base($"{baseUrl}/Tokens", httpClient, null)
+        :base(baseUrl, httpClient, null)
         {
         }
 

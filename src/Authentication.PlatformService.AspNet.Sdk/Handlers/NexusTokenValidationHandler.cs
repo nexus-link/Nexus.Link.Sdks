@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +5,6 @@ using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 #if NETCOREAPP

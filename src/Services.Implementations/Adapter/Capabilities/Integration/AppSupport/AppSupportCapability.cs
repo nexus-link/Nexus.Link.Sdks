@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
@@ -24,7 +23,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
             else
             {
                 LoggingService = new LoggingService_NotImplemented();
-                ConfigurationService = new ConfigurationRestService(baseUrl, httpClient, credentials);
+                ConfigurationService = new ConfigurationRestService($"{baseUrl}/Configurations", httpClient, credentials);
             }
         }
 

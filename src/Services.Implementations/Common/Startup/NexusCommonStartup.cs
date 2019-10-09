@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Web.AspNet.Authorize;
 using Nexus.Link.Libraries.Web.AspNet.Startup;
-using Nexus.Link.Services.Contracts.Capabilities;
 
 #if NETCOREAPP
 
