@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
@@ -21,6 +22,11 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <param name="event"></param>
         /// <typeparam name="T"></typeparam>
         public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// True if any subscription has been added to this subscription handler.
+        /// </summary>
+        public bool HasSubscriptions => _eventReceiverDelegates.Any();
 
         /// <summary>
         /// Add another <see cref="EventReceiverDelegateAsync{T}"/>

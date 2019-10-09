@@ -58,20 +58,6 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
                     new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
         }
 
-        /// <inheritdoc />
-        protected override void DependencyInjectServicesAdvanced(IServiceCollection services, IMvcBuilder mvcBuilder)
-        {
-            var subscriptionHandler = new EventSubscriptionHandler();
-            AddSubscriptions(subscriptionHandler, mvcBuilder);
-            services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
-        }
-
-        /// <summary>
-        /// This is where the adapter can add events that it wants to subscribe to.
-        /// </summary>
-        /// <param name="subscriptionHandler">Use this to add subscriptions</param>
-        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler, IMvcBuilder mvcBuilder);
-
         /// <summary>
         /// A token generator for authenticating between adapters and the business API.
         /// </summary>
