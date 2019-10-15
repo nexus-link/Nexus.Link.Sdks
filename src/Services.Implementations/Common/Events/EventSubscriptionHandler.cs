@@ -1,10 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Services.Contracts;
 using Nexus.Link.Services.Contracts.Events;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Events
@@ -59,7 +62,17 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
                 return;
             }
 
+            Log.LogOnLevel(
+                FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
+                $"Event {@event.ToLogString()} delegated to {DelegateLogString(eventReceiverDelegate)}.");
             await eventReceiverDelegate(@event);
+        }
+
+        private string DelegateLogString(EventReceiverDelegateAsync<IPublishableEvent> d)
+        {
+            var methodInfo = d.GetMethodInfo();
+            if (methodInfo == null) return "Unknown delegate";
+            return $"{methodInfo.DeclaringType?.FullName}.{methodInfo.Name}()";
         }
 
         private static string ToKey<T>(T item) where T : IPublishableEvent, new()

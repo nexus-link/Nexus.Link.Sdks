@@ -182,7 +182,10 @@
             <param name="services">From the parameter to Startup.ConfigureServices.</param>
             <remarks>Always override this to inject your services.</remarks>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEvent(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEventAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEventExplicitlyAsync(System.String,System.String,System.Int32,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler">

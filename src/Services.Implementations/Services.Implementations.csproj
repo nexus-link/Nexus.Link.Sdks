@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[2.1.1,3.0)" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.10" />
-    <PackageReference Include="Nexus.Link.Services.Contracts" Version="2.0.1" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>2.0.3</Version>
+    <Version>2.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.1.0 New contract for IEventReceiver
       2.0.3 Bump
       2.0.1 Conditional injection of IEventReceiver service.
       2.0.0 Updated REST endpoints.
