@@ -7,6 +7,7 @@ using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
@@ -140,7 +141,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         protected string GetMandatoryString(IConfiguration configuration, string key)
         {
             var value = configuration.GetValue<string>(key);
-            FulcrumAssert.IsNotNullOrWhiteSpace(value, null, $"Missing configuration {key}");
+            FulcrumAssert.IsNotNullOrWhiteSpace(value, CodeLocation.AsString(), $"Missing configuration {key}");
             return value;
         }
 

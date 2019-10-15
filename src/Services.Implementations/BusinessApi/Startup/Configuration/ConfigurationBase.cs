@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 
 #pragma warning disable 1591
 
@@ -28,16 +29,16 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration
         protected T GetMandatoryValue<T>(string key)
         {
             var value = Configuration.GetValue<T>(key);
-            FulcrumAssert.IsNotNull(value, null, $"You must provide a configuration value for {NewPath(key)}");
-            FulcrumAssert.IsNotDefaultValue(value, null, $"You must provide a configuration value for {NewPath(key)} other than the default value for the type ({default(T)})");
-            if (typeof(string).IsInstanceOfType(typeof(T))) FulcrumAssert.IsNotNullOrWhiteSpace((string)(object)value, null, $"You must provide a value for {NewPath(key)} that is not the empty string and not only white space.");
+            FulcrumAssert.IsNotNull(value, CodeLocation.AsString(), $"You must provide a configuration value for {NewPath(key)}");
+            FulcrumAssert.IsNotDefaultValue(value, CodeLocation.AsString(), $"You must provide a configuration value for {NewPath(key)} other than the default value for the type ({default(T)})");
+            if (typeof(string).IsAssignableFrom(typeof(T))) FulcrumAssert.IsNotNullOrWhiteSpace((string)(object)value, CodeLocation.AsString(), $"You must provide a value for {NewPath(key)} that is not the empty string and not only white space.");
             return value;
         }
 
         protected IConfigurationSection GetMandatorySection(string key)
         {
             var value = GetSection(key);
-            FulcrumAssert.IsNotNull(value, null, $"You must provide the configuration section {NewPath(key)}");
+            FulcrumAssert.IsNotNull(value, CodeLocation.AsString(), $"You must provide the configuration section {NewPath(key)}");
             return value;
         }
 

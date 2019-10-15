@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Services.Contracts.Events;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Events
@@ -20,9 +23,13 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <inheritdoc />
         public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken token = new CancellationToken())
         {
+            Log.LogOnLevel(
+                FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
+                eventAsJson.ToString(Formatting.Indented));
             InternalContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             InternalContract.Require(eventAsJson.Type == JTokenType.Object, $"The {nameof(eventAsJson)} parameter must be a JSON object.");
             var publishableEvent =JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson as JObject);
+            FulcrumAssert.IsNotNull(publishableEvent, CodeLocation.AsString());
             InternalContract.RequireNotNull(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
             InternalContract.RequireValidated(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
 
@@ -34,10 +41,24 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             JToken eventAsJson,
             CancellationToken token = new CancellationToken())
         {
+            Log.LogOnLevel(
+                FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
+                eventAsJson.ToString(Formatting.Indented));
             InternalContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             InternalContract.Require(eventAsJson.Type == JTokenType.Object,
                 $"The {nameof(eventAsJson)} parameter must be a JSON object.");
-            var publishableEvent = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson as JObject);
+            var eventAsJObject = eventAsJson as JObject;
+            FulcrumAssert.IsNotNull(eventAsJObject, CodeLocation.AsString());
+            var publishableEvent = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJObject);
+            if (publishableEvent == null)
+            {
+                var metadata = new EventMetadata(entityName, eventName, majorVersion, 0);
+                var metadataAsJObject = JObject.FromObject(metadata);
+                eventAsJObject?.Add("Metadata", metadataAsJObject);
+                publishableEvent = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJObject);
+                FulcrumAssert.IsNotNull(publishableEvent, CodeLocation.AsString());
+            }
+
             InternalContract.RequireNotNull(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
             InternalContract.RequireValidated(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
             if (publishableEvent?.Metadata == null) return;
@@ -50,7 +71,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             {
                 Log.LogWarning(
                     $"REST parameters ({entityName}.{eventName} ({majorVersion})"
-                    + $" did not match the event {nameof(publishableEvent.Metadata)} ({publishableEvent.Metadata})." 
+                    + $" did not match the event {nameof(publishableEvent.Metadata)} ({publishableEvent.Metadata})."
                     + $" Will trust the event {nameof(publishableEvent.Metadata)}.");
             }
 

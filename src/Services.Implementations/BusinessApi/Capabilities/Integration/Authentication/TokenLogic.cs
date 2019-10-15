@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
@@ -37,7 +38,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         {
             if (_publicKey != null) return _publicKey;
             var publicKey = await _semaphore.ExecuteAsync(GetKeyFromNexus, token);
-            FulcrumAssert.IsNotNullOrWhiteSpace(publicKey);
+            FulcrumAssert.IsNotNullOrWhiteSpace(publicKey, CodeLocation.AsString());
             _publicKey = publicKey;
             return _publicKey;
         }

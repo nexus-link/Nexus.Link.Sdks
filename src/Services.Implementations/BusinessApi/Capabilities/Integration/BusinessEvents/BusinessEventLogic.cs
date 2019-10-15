@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Contracts.Events;
 
@@ -32,7 +33,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             InternalContract.RequireNotNull(@event, nameof(@event));
             InternalContract.RequireNotNull(@event?.Metadata, nameof(@event.Metadata));
             InternalContract.RequireValidated(@event?.Metadata, nameof(@event.Metadata));
-            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context?.ClientPrincipal?.Identity?.Name);
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context?.ClientPrincipal?.Identity?.Name, CodeLocation.AsString());
             var metadata = @event?.Metadata;
             if (metadata == null) throw new FulcrumAssertionFailedException("Metadata was unexpectedly null.");
             return _businessEventsService.PublishAsync(
