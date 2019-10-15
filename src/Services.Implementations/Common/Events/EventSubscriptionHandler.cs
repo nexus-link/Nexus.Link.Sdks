@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -57,6 +58,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         public async Task CallEventReceiverAsync<T>(T @event)
             where T : IPublishableEvent, new()
         {
+            InternalContract.RequireNotNull(@event, nameof(@event));
             var key = ToKey(@event);
             var success = _eventReceiverDelegates.TryGetValue(key, out var eventReceiverDelegateAsync);
             if (!success)
@@ -72,7 +74,14 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             var asyncDelegate = eventReceiverDelegateAsync as EventReceiverDelegateAsync<IPublishableEvent>;
             FulcrumAssert.IsNotNull(asyncDelegate, CodeLocation.AsString());
             if (asyncDelegate == null) return;
-            await asyncDelegate(@event);
+            try
+            {
+                await asyncDelegate(@event);
+            }
+            catch (Exception e)
+            {
+                Log.LogError($"Failed to handle event {@event.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}");
+            }
         }
 
         private string DelegateLogString(object d)
