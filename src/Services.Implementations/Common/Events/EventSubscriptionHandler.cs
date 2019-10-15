@@ -38,11 +38,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <summary>
         /// Add another <see cref="EventReceiverDelegateAsync{T}"/>
         /// </summary>
-        public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<IPublishableEvent> eventReceiverDelegateAsync)
-            where T : IPublishableEvent, new()
+        public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<IPublishableEvent> eventReceiverDelegateAsync, T eventExample)
+            where T : IPublishableEvent
         {
             InternalContract.RequireNotNull(eventReceiverDelegateAsync, nameof(eventReceiverDelegateAsync));
-            var eventExample = new T();
             var key = ToKey(eventExample);
             var success = _eventReceiverDelegates.TryAdd(key, eventReceiverDelegateAsync);
             InternalContract.Require(success, $"The event {key} already has a delegate. Latest delegate ({DelegateLogString(eventReceiverDelegateAsync)}) was ignored.");
