@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Services.Contracts;
 using Nexus.Link.Services.Contracts.Events;
 
@@ -17,7 +18,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
     /// </summary>
     public class EventSubscriptionHandler
     {
-        private readonly ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>> _eventReceiverDelegates = new ConcurrentDictionary<string,EventReceiverDelegateAsync<IPublishableEvent>>();
+        private readonly ConcurrentDictionary<string, object> _eventReceiverDelegates = new ConcurrentDictionary<string,object>();
 
         /// <summary>
         /// A delegate for receiving events
@@ -38,11 +39,11 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<T> eventReceiverDelegateAsync)
         where T : IPublishableEvent, new()
         {
+            InternalContract.RequireNotNull(eventReceiverDelegateAsync, nameof(eventReceiverDelegateAsync));
             var item = new T();
             var key = ToKey(item);
-            var d = eventReceiverDelegateAsync as EventReceiverDelegateAsync<IPublishableEvent>;
-            var success = _eventReceiverDelegates.TryAdd(key, d);
-            InternalContract.Require(success, $"The event {key} has already been added");
+            var success = _eventReceiverDelegates.TryAdd(key, eventReceiverDelegateAsync);
+            InternalContract.Require(success, $"The event {key} already has a delegate. Latest delegate ({DelegateLogString(eventReceiverDelegateAsync)}) was ignored.");
             return this;
         }
 
@@ -55,24 +56,29 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             where T : IPublishableEvent, new()
         {
             var key = ToKey(@event);
-            var success = _eventReceiverDelegates.TryGetValue(key, out var eventReceiverDelegate);
+            var success = _eventReceiverDelegates.TryGetValue(key, out var eventReceiverDelegateAsync);
             if (!success)
             {
                 Log.LogWarning($"This adapter received an event that it doesn't subscribe to ({key}).");
                 return;
             }
+            FulcrumAssert.IsNotNull(eventReceiverDelegateAsync, CodeLocation.AsString());
 
             Log.LogOnLevel(
                 FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
-                $"Event {@event.ToLogString()} delegated to {DelegateLogString(eventReceiverDelegate)}.");
-            await eventReceiverDelegate(@event);
+                $"Event {@event.ToLogString()} delegated to {DelegateLogString(eventReceiverDelegateAsync)}.");
+            var asyncDelegate = eventReceiverDelegateAsync as EventReceiverDelegateAsync<IPublishableEvent>;
+            FulcrumAssert.IsNotNull(asyncDelegate, CodeLocation.AsString());
+            if (asyncDelegate == null) return;
+            await asyncDelegate(@event);
         }
 
-        private string DelegateLogString(EventReceiverDelegateAsync<IPublishableEvent> d)
+        private string DelegateLogString(object d)
         {
-            var methodInfo = d.GetMethodInfo();
-            if (methodInfo == null) return "Unknown delegate";
-            return $"{methodInfo.DeclaringType?.FullName}.{methodInfo.Name}()";
+            if (d == null) return "NULL delegate";
+            if (!(d is EventReceiverDelegateAsync<IPublishableEvent> asyncDelegate)) return $"(FAILED to cast {d.GetType().FullName})";
+            var methodInfo = asyncDelegate.GetMethodInfo();
+            return methodInfo == null ? "Unknown delegate" : $"{methodInfo.DeclaringType?.FullName}.{methodInfo.Name}()";
         }
 
         private static string ToKey<T>(T item) where T : IPublishableEvent, new()
