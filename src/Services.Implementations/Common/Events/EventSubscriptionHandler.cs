@@ -18,7 +18,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
     /// </summary>
     public class EventSubscriptionHandler
     {
-        private readonly ConcurrentDictionary<string, object> _eventReceiverDelegates = new ConcurrentDictionary<string,object>();
+        private readonly ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>> _eventReceiverDelegates = 
+            new ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>>();
 
         /// <summary>
         /// A delegate for receiving events
@@ -26,7 +27,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <param name="event"></param>
         /// <param name="cancellationToken"></param>
         /// <typeparam name="T"></typeparam>
-        public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken));
+        public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken))
+            where T : IPublishableEvent;
 
         /// <summary>
         /// True if any subscription has been added to this subscription handler.
@@ -36,12 +38,11 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <summary>
         /// Add another <see cref="EventReceiverDelegateAsync{T}"/>
         /// </summary>
-        public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<T> eventReceiverDelegateAsync)
-        where T : IPublishableEvent, new()
+        public EventSubscriptionHandler Add<T>(EventReceiverDelegateAsync<IPublishableEvent> eventReceiverDelegateAsync, T eventExample)
+            where T : IPublishableEvent
         {
             InternalContract.RequireNotNull(eventReceiverDelegateAsync, nameof(eventReceiverDelegateAsync));
-            var item = new T();
-            var key = ToKey(item);
+            var key = ToKey(eventExample);
             var success = _eventReceiverDelegates.TryAdd(key, eventReceiverDelegateAsync);
             InternalContract.Require(success, $"The event {key} already has a delegate. Latest delegate ({DelegateLogString(eventReceiverDelegateAsync)}) was ignored.");
             return this;
@@ -81,7 +82,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             return methodInfo == null ? "Unknown delegate" : $"{methodInfo.DeclaringType?.FullName}.{methodInfo.Name}()";
         }
 
-        private static string ToKey<T>(T item) where T : IPublishableEvent, new()
+        private static string ToKey<T>(T item) where T : IPublishableEvent
         {
             return $"{item.Metadata.EntityName}|{item.Metadata.EventName}|{item.Metadata.MajorVersion}";
         }

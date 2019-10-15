@@ -206,7 +206,7 @@
             True if any subscription has been added to this subscription handler.
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{``0})">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{Nexus.Link.Services.Contracts.Events.IPublishableEvent},``0)">
             <summary>
             Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1"/>
             </summary>
