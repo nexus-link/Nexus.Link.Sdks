@@ -12,8 +12,8 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
         public PublicationsClient(string baseUri, Tenant tenant, ServiceClientCredentials authenticationCredentials)
             : base(baseUri, tenant, authenticationCredentials)
         {
-            var isWelFormedUri = Uri.IsWellFormedUriString(baseUri, UriKind.Absolute);
-            if (!isWelFormedUri) throw new ArgumentException($"{nameof(baseUri)} must be a welformed uri");
+            var isWellFormedUriString = Uri.IsWellFormedUriString(baseUri, UriKind.Absolute);
+            if (!isWellFormedUriString) throw new ArgumentException($"{nameof(baseUri)} must be a well formed uri");
             if (tenant == null) throw new ArgumentNullException(nameof(tenant));
             if (authenticationCredentials == null) throw new ArgumentNullException(nameof(tenant));
 
