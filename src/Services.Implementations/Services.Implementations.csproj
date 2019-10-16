@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>3.0.6</Version>
+    <Version>3.0.7</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.0.7 More detailed error messages.
       3.0.6 Bump
       3.0.5 Verify the event before sending it to the event delegate.
       3.0.4 Catch exceptions from event delegates.

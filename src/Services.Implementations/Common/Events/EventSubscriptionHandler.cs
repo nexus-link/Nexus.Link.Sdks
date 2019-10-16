@@ -70,7 +70,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             try
             {
                 InternalContract.RequireNotNull(eventAsJObject, nameof(eventAsJObject));
-                FulcrumAssert.IsNotNull(publishableEvent, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(publishableEvent, CodeLocation.AsString(), $"Could not convert to {nameof(PublishableEvent)}: {eventAsJObject}");
                 var key = ToKey(publishableEvent);
                 var success = _eventReceiverDelegates.TryGetValue(key, out var eventDelegateInfo);
                 if (!success)
@@ -79,27 +79,25 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
                     return;
                 }
 
-                FulcrumAssert.IsNotNull(eventDelegateInfo, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(eventDelegateInfo?.Delegate, CodeLocation.AsString(), $"Could not find a delegate for event {eventAsJObject}");
+                if (eventDelegateInfo?.Delegate == null) return;
 
                 Log.LogOnLevel(
                     FulcrumApplication.IsInProductionOrProductionSimulation
                         ? LogSeverityLevel.Verbose
                         : LogSeverityLevel.Information,
                     $"Event {publishableEvent.ToLogString()} delegated to {DelegateLogString(eventDelegateInfo.Delegate)}.");
-                var asyncDelegate = eventDelegateInfo.Delegate as EventReceiverDelegateAsync<IPublishableEvent>;
-                FulcrumAssert.IsNotNull(asyncDelegate, CodeLocation.AsString());
-                var castedEvent = JsonHelper.SafeDeserializeObject(eventAsJObject, eventDelegateInfo.Type);
-                FulcrumAssert.IsNotNull(castedEvent, CodeLocation.AsString());
-                var i = castedEvent as IPublishableEvent;
-                FulcrumAssert.IsNotNull(i, CodeLocation.AsString());
-                if (asyncDelegate == null) return;
+                var typedEvent = JsonHelper.SafeDeserializeObject(eventAsJObject, eventDelegateInfo.Type);
+                FulcrumAssert.IsNotNull(typedEvent, CodeLocation.AsString());
+                var i = typedEvent as IPublishableEvent;
+                FulcrumAssert.IsNotNull(i, CodeLocation.AsString(), $"Could not cast event to {nameof(IPublishableEvent)}.\rEvent: {eventAsJObject}");
                 InternalContract.RequireValidated(i, nameof(eventAsJObject));
-                await asyncDelegate(i);
+                await eventDelegateInfo.Delegate(i);
             }
             catch (Exception e)
             {
                 Log.LogError(
-                    $"Failed to handle event {publishableEvent.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}");
+                    $"Failed to handle event {publishableEvent.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}\r{e}");
             }
         }
 
