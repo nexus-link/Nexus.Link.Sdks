@@ -211,11 +211,10 @@
             Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1"/>
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync``1(``0)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync(Newtonsoft.Json.Linq.JObject)">
             <summary>
             Call the registered method for this event
             </summary>
-            <param name="event"></param>
             <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability">
