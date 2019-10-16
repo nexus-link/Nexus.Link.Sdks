@@ -276,6 +276,11 @@
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic">
             <inheritdoc />
         </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.ForInternalUseInBusinessApi">
+            <summary>
+            Must be set if the business API should publish events itself as publisher.
+            </summary>
+        </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
             <inheritdoc />
         </member>

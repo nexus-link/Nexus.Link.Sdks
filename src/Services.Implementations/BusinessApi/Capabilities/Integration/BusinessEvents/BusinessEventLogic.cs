@@ -18,6 +18,11 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     {
         private static Link.BusinessEvents.Sdk.BusinessEvents _businessEventsService;
 
+        /// <summary>
+        /// Must be set if the business API should publish events itself as publisher.
+        /// </summary>
+        public bool ForInternalUseInBusinessApi { get; set; }
+
         /// <inheritdoc />
         public BusinessEventLogic(string serviceBaseUrl, ServiceClientCredentials serviceClient)
         {
@@ -33,15 +38,19 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             InternalContract.RequireNotNull(@event, nameof(@event));
             InternalContract.RequireNotNull(@event?.Metadata, nameof(@event.Metadata));
             InternalContract.RequireValidated(@event?.Metadata, nameof(@event.Metadata));
-            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context?.ClientPrincipal?.Identity?.Name, CodeLocation.AsString());
+            // TODO: Make the internal name for BusinessApi a configurable name
+            var publisherName = ForInternalUseInBusinessApi
+                ? "business-api"
+                : FulcrumApplication.Context?.ClientPrincipal?.Identity?.Name;
+            FulcrumAssert.IsNotNullOrWhiteSpace(publisherName, CodeLocation.AsString());
             var metadata = @event?.Metadata;
             if (metadata == null) throw new FulcrumAssertionFailedException("Metadata was unexpectedly null.");
             return _businessEventsService.PublishAsync(
-                metadata?.EntityName,
-                metadata?.EventName,
+                metadata.EntityName,
+                metadata.EventName,
                 metadata.MajorVersion,
-                metadata.MinorVersion, 
-                FulcrumApplication.Context?.ClientPrincipal?.Identity?.Name, 
+                metadata.MinorVersion,
+                publisherName,
                 eventAsJson);
         }
     }
