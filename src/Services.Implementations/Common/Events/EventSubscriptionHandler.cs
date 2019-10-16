@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -11,6 +13,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Services.Contracts;
 using Nexus.Link.Services.Contracts.Events;
+using JsonHelper = Nexus.Link.Libraries.Core.Json.JsonHelper;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Events
 {
@@ -19,8 +22,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
     /// </summary>
     public class EventSubscriptionHandler
     {
-        private readonly ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>> _eventReceiverDelegates = 
-            new ConcurrentDictionary<string, EventReceiverDelegateAsync<IPublishableEvent>>();
+        private readonly ConcurrentDictionary<string, EventDelegateInfo> _eventReceiverDelegates = 
+            new ConcurrentDictionary<string, EventDelegateInfo>();
 
         /// <summary>
         /// A delegate for receiving events
@@ -45,42 +48,58 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             InternalContract.RequireNotNull(eventReceiverDelegateAsync, nameof(eventReceiverDelegateAsync));
             var eventExample = new T();
             var key = ToKey(eventExample);
-            var success = _eventReceiverDelegates.TryAdd(key, eventReceiverDelegateAsync);
+            var eventDelegateInfo = new EventDelegateInfo
+            {
+                Type = typeof(T),
+                Delegate = eventReceiverDelegateAsync
+            };
+            var success = _eventReceiverDelegates.TryAdd(key, eventDelegateInfo);
             InternalContract.Require(success, $"The event {key} already has a delegate. Latest delegate ({DelegateLogString(eventReceiverDelegateAsync)}) was ignored.");
             return this;
         }
 
+        // TODO: Refactor and also calling methods
+
         /// <summary>
         /// Call the registered method for this event
         /// </summary>
-        /// <param name="event"></param>
         /// <exception cref="FulcrumNotImplementedException"></exception>
-        public async Task CallEventReceiverAsync<T>(T @event)
-            where T : IPublishableEvent, new()
+        public async Task CallEventReceiverAsync(JObject eventAsJObject)
         {
-            InternalContract.RequireNotNull(@event, nameof(@event));
-            var key = ToKey(@event);
-            var success = _eventReceiverDelegates.TryGetValue(key, out var eventReceiverDelegateAsync);
-            if (!success)
-            {
-                Log.LogWarning($"This adapter received an event that it doesn't subscribe to ({key}).");
-                return;
-            }
-            FulcrumAssert.IsNotNull(eventReceiverDelegateAsync, CodeLocation.AsString());
-
-            Log.LogOnLevel(
-                FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
-                $"Event {@event.ToLogString()} delegated to {DelegateLogString(eventReceiverDelegateAsync)}.");
-            var asyncDelegate = eventReceiverDelegateAsync as EventReceiverDelegateAsync<IPublishableEvent>;
-            FulcrumAssert.IsNotNull(asyncDelegate, CodeLocation.AsString());
-            if (asyncDelegate == null) return;
+            var publishableEvent = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJObject);
             try
             {
-                await asyncDelegate(@event);
+                InternalContract.RequireNotNull(eventAsJObject, nameof(eventAsJObject));
+                FulcrumAssert.IsNotNull(publishableEvent, CodeLocation.AsString());
+                var key = ToKey(publishableEvent);
+                var success = _eventReceiverDelegates.TryGetValue(key, out var eventDelegateInfo);
+                if (!success)
+                {
+                    Log.LogWarning($"This adapter received an event that it doesn't subscribe to ({key}).");
+                    return;
+                }
+
+                FulcrumAssert.IsNotNull(eventDelegateInfo, CodeLocation.AsString());
+
+                Log.LogOnLevel(
+                    FulcrumApplication.IsInProductionOrProductionSimulation
+                        ? LogSeverityLevel.Verbose
+                        : LogSeverityLevel.Information,
+                    $"Event {publishableEvent.ToLogString()} delegated to {DelegateLogString(eventDelegateInfo.Delegate)}.");
+                var asyncDelegate = eventDelegateInfo.Delegate as EventReceiverDelegateAsync<IPublishableEvent>;
+                FulcrumAssert.IsNotNull(asyncDelegate, CodeLocation.AsString());
+                var castedEvent = JsonHelper.SafeDeserializeObject(eventAsJObject, eventDelegateInfo.Type);
+                FulcrumAssert.IsNotNull(castedEvent, CodeLocation.AsString());
+                var i = castedEvent as IPublishableEvent;
+                FulcrumAssert.IsNotNull(i, CodeLocation.AsString());
+                if (asyncDelegate == null) return;
+                InternalContract.RequireValidated(i, nameof(eventAsJObject));
+                await asyncDelegate(i);
             }
             catch (Exception e)
             {
-                Log.LogError($"Failed to handle event {@event.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}");
+                Log.LogError(
+                    $"Failed to handle event {publishableEvent.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}");
             }
         }
 
@@ -95,6 +114,12 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         private static string ToKey<T>(T item) where T : IPublishableEvent
         {
             return $"{item.Metadata.EntityName}|{item.Metadata.EventName}|{item.Metadata.MajorVersion}";
+        }
+
+        private class EventDelegateInfo
+        {
+            public EventReceiverDelegateAsync<IPublishableEvent> Delegate { get; set; }
+            public Type Type { get; set; }
         }
     }
 }
