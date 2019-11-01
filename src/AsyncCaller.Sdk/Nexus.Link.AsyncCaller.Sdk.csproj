@@ -8,22 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.0.16</Version>
+    <Version>2.0.17</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
-    <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.AsyncCaller</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
     <PackageLanguage>en-US</PackageLanguage>
     <Description>SDK for Nexus async caller service.</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.17 Fix: PackageProjectUrl for this nuget package
       2.0.16 Bump
       2.0.0 Support refactored Authentication
       1.0.20 Bumped nexus nugets

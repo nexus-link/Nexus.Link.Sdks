@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="2.0.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="2.0.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,15 +19,16 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>2.1.21</Version>
+    <Version>2.1.22</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
-    <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
     <PackageLanguage>en-US</PackageLanguage>
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
+      2.1.22 Fix: PackageProjectUrl for this nuget package
       2.1.21 Bump
       2.1.16 Fix for issue where fetching tenantconfiguration threw an unhandled exception
       2.1.15 Bump

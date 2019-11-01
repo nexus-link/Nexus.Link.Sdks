@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.12.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.12.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -24,16 +24,17 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.2.16</Version>
+      <Version>2.2.17</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
-      <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
+      <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
       <PackageLanguage>en-US</PackageLanguage>
       <Description>SDK for Nexus Authentication service (for incoming calls).</Description>
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.2.17 Fix: PackageProjectUrl for this nuget package
         2.2.16 Bump
         2.2.10 Fix: TokenValidationHandler could throw exception in certain circumstances
         2.2.9 Bump

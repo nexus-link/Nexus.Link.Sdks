@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.12.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.12.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.6.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.8.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -25,16 +25,17 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <Version>1.0.36</Version>
+      <Version>1.0.37</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
-      <PackageProjectUrl>https://github.com/xlent-fulcrum/Xlent.Lever.Fundamentals</PackageProjectUrl>
+      <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
       <PackageLanguage>en-US</PackageLanguage>
       <Description>SDK for Nexus Authentication in NExus platform services (for incoming calls).</Description>
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.0.37 Fix: PackageProjectUrl for this nuget package
         1.0.36 Bump
         1.0.7 Refactored NexusTokenValidationHandler
         1.0.5 Support refactored Authentication
