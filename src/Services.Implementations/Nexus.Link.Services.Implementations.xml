@@ -296,6 +296,29 @@
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.ForInternalUseInBusinessApi">
+            <summary>
+            Must be set if the business API should publish events itself as publisher.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.TranslatorService">
+            <inheritdoc />
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.BusinessApiProgramHelper">
             <summary>
             Helper class for the different steps in the Startup.cs file.
