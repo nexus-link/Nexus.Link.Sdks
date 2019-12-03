@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -33,7 +34,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Request = new TranslateRequest("(concept!!a1)")
             };
             // TODO: How to deal with async?
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
             var personGender = "FAIL";
             var batch = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
@@ -57,7 +58,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Request = new TranslateRequest("(concept!!a2)")
             };
             // TODO: How to deal with async?
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse1, translateResponse2 }));
             var personGender1 = "FAIL";
             var personGender2 = "FAIL";
@@ -79,7 +80,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Request = new TranslateRequest("(concept!!a1)")
             };
             // TODO: How to deal with async?
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse1 }));
             var personGender1 = "FAIL1";
             var personGender2 = "FAIL2";
@@ -105,7 +106,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 }
             };
             _translateClient
-                .Setup(mock => mock.TranslateBatchAsync(new[] { translateResponse.Request }))
+                .Setup(mock => mock.TranslateBatchAsync(new[] { translateResponse.Request }, CancellationToken.None))
                 .ReturnsAsync(new[] { translateResponse });
             var personGender = "FAIL";
             var batch = new BatchTranslate(_translateClient.Object);
@@ -129,7 +130,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 }
             };
             _translateClient
-                .Setup(mock => mock.TranslateBatchAsync(new[] { translateResponse.Request }))
+                .Setup(mock => mock.TranslateBatchAsync(new[] { translateResponse.Request }, CancellationToken.None))
                 .ReturnsAsync(new[] { translateResponse });
             var personGender = "FAIL";
             var batch = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
@@ -144,7 +145,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
         {
             var translateResponse1 = new TranslateResponse { Value = "b1", Request = new TranslateRequest("(concept!!a1)") };
             var translateResponse2 = new TranslateResponse { Value = "b2", Request = new TranslateRequest("(concept!!a2)") };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse2, translateResponse1 }));
             var personGender1 = "FAIL";
             var personGender2 = "FAIL";
@@ -165,7 +166,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Value = "b1",
                 Request = new TranslateRequest("(concept!!a1)")
             };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
             var translations = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
             await translations
@@ -183,7 +184,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Value = "b1",
                 Request = new TranslateRequest("(concept!!a1)")
             };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
             var personGender = "FAIL";
             var batch = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
@@ -193,7 +194,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
             Assert.AreEqual(translateResponse.Value, personGender);
 
             // Now get from cache
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Throws<ApplicationException>();
             personGender = "FAIL";
             batch = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
@@ -208,7 +209,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
         {
             var translateResponse1 = new TranslateResponse { Value = "b1", Request = new TranslateRequest("(concept!!a1)") };
 
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse1 }));
             var personGender1 = "FAIL";
             var batch = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
@@ -220,7 +221,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
             // Now get from cache
 
             var translateResponse2 = new TranslateResponse { Value = "b2", Request = new TranslateRequest("(concept!!a2)") };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse2 }));
             personGender1 = "FAIL";
             var personGender2 = "FAIL";
@@ -247,7 +248,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 responses.Add(new TranslateResponse { Value = $"{value}-translated", Request = new TranslateRequest($"(concept!!{value})") });
             }
 
-            _translateClient.Setup(x => x.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(x => x.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)responses));
             await batch.ExecuteAsync();
 
@@ -269,7 +270,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Request = request
                 
             };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
 
             // Expect no translation at first
@@ -286,7 +287,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Request = request
 
             };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((IEnumerable<TranslateResponse>)new[] { translateResponse }));
 
             // Expect translation (especially, that untranslated value is not cached)

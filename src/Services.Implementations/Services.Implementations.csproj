@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="[2.1.1,3.0)" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.13" />
-    <PackageReference Include="Nexus.Link.Services.Contracts" Version="3.1.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.1.14" />
+    <PackageReference Include="Nexus.Link.Services.Contracts" Version="3.2.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>3.1.1</Version>
+    <Version>3.1.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,7 +30,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.1.1 Bump
+      3.1.2 Bump
       3.1.0 Introduced ForInternalUseInBusinessApi
       3.0.8 More detailed error messages.
       3.0.6 Bump

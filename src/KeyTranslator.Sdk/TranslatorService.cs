@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
@@ -19,7 +20,8 @@ namespace Nexus.Link.KeyTranslator.Sdk
         }
 
         /// <inheritdoc />
-        public async Task<IDictionary<string, string>> TranslateAsync(IEnumerable<string> conceptValuePaths, string targetClientName)
+        public async Task<IDictionary<string, string>> TranslateAsync(IEnumerable<string> conceptValuePaths, string targetClientName,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             var translateRequests = conceptValuePaths
                 .Select(path => new TranslateRequest(path, GetTargetContextPath(path, targetClientName)));

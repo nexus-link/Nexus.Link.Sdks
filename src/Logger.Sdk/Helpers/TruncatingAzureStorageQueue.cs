@@ -34,10 +34,8 @@ namespace Nexus.Link.Logger.Sdk.Helpers
         {
             InternalContract.RequireNotNull(message, nameof(message));
 
-            if (message is LogMessage)
+            if (message is LogMessage logMessage)
             {
-                var logMessage = message as LogMessage;
-
                 const int maxLength = 48000; // 65536;
 
                 // Threshold reached?
@@ -66,7 +64,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
         private static bool TruncateLogMessageToMaxCharacters(LogMessage logMessage, int maxNumberOfBytes)
         {
             var isTruncated = false;
-            int processDepth = 0;
+            var processDepth = 0;
 
             while (true && (processDepth++ < 10))
             {
@@ -127,12 +125,6 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             return _baseQueue.GetResourceHealthAsync(tenant);
         }
 
-        public string Name
-        {
-            get
-            {
-                return _baseQueue.Name;
-            }
-        }
+        public string Name => _baseQueue.Name;
     }
 }

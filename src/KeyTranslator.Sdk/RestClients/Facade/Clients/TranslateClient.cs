@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
@@ -18,64 +19,72 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         }
 
         [Obsolete("Consider using TranslateToContextOrLock2Async, since this older version does not support colons and slashes in the instance path")]
-        public async Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceInstancePath, string targetContextName)
+        public async Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceInstancePath, string targetContextName,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetContextName={WebUtility.UrlEncode(targetContextName)}";
-            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
 
-        public async Task<ValueOrLockId> TranslateToContextOrLock2Async(string sourceInstancePath, string targetContextName)
+        public async Task<ValueOrLockId> TranslateToContextOrLock2Async(string sourceInstancePath, string targetContextName,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetContextName={WebUtility.UrlEncode(targetContextName)}";
-            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
 
         [Obsolete("Consider using TranslateToClientOrLock2Async, since this older version does not support colons and slashes in the instance path")]
-        public async Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceInstancePath, string targetClientName)
+        public async Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceInstancePath, string targetClientName,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetClientName={WebUtility.UrlEncode(targetClientName)}";
-            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
 
-        public async Task<ValueOrLockId> TranslateToClientOrLock2Async(string sourceInstancePath, string targetClientName)
+        public async Task<ValueOrLockId> TranslateToClientOrLock2Async(string sourceInstancePath, string targetClientName,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             var relativeUrl = $"Translate/Lock?sourceInstancePath={WebUtility.UrlEncode(sourceInstancePath)}&targetClientName={WebUtility.UrlEncode(targetClientName)}";
-            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl);
+            var result = await RestClient.GetAsync<ValueOrLockId>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
 
         [Obsolete("Consider using ReleaseLock2Async, since this older version does not support colons and slashes in the instance path")]
-        public async Task ReleaseLockAsync(string instancePath, string lockId)
+        public async Task ReleaseLockAsync(string instancePath, string lockId,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             string relativeUrl = $"Translate/{WebUtility.UrlEncode(instancePath)}/ReleaseLock";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, lockId);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, lockId, null, cancellationToken);
         }
 
-        public async Task ReleaseLock2Async(string instancePath, string lockId)
+        public async Task ReleaseLock2Async(string instancePath, string lockId,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             const string relativeUrl = "Translate/ReleaseLock";
             await RestClient.PostNoResponseContentAsync(relativeUrl, new ReleaseLockRequest
             {
                 InstancePath = instancePath,
                 LockId = lockId
-            });
+            }, cancellationToken: cancellationToken);
         }
 
-        public async Task<TranslateResponse> TranslateAsync(TranslateRequest translateRequest)
+        public async Task<TranslateResponse> TranslateAsync(TranslateRequest translateRequest,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
             const string relativeUrl = "Translate";
-            var result = await RestClient.PostAsync<TranslateResponse, TranslateRequest>(relativeUrl, translateRequest);
+            var result = await RestClient.PostAsync<TranslateResponse, TranslateRequest>(relativeUrl, translateRequest, cancellationToken: cancellationToken);
             return result;
         }
 
-        public async Task<IEnumerable<TranslateResponse>> TranslateBatchAsync(IEnumerable<TranslateRequest> translateRequests)
+        public async Task<IEnumerable<TranslateResponse>> TranslateBatchAsync(IEnumerable<TranslateRequest> translateRequests,
+            CancellationToken cancellationToken = default (CancellationToken))
         {
 
             const string relativeUrl = "Translate/Batch";
-            var result = await RestClient.PostAsync<IEnumerable<TranslateResponse>, IEnumerable<TranslateRequest>>(relativeUrl, translateRequests);
+            var result = await RestClient.PostAsync<IEnumerable<TranslateResponse>, IEnumerable<TranslateRequest>>(relativeUrl, translateRequests, cancellationToken: cancellationToken);
             return result;
         }
     }

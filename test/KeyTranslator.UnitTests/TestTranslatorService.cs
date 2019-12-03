@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -35,7 +36,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
                 Value = value2,
                 Request = new TranslateRequest(path2)
             };
-            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>()))
+            _translateClient.Setup(mock => mock.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] { translateResponse1, translateResponse2 });
             var service = new TranslatorService(_translateClient.Object);
 
