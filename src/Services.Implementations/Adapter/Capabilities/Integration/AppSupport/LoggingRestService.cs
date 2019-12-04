@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport
@@ -13,8 +14,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     {
         
         /// <inheritdoc cref="ILoggingService"/>
-        public LoggingRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
-            :base($"{baseUrl}/Logs", httpClient, credentials)
+        public LoggingRestService(IHttpSender httpSender)
+            :base(httpSender.CreateHttpSender("Logs"))
         {
         }
 

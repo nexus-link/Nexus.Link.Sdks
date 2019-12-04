@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents
@@ -12,8 +13,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     public class BusinessEventRestService : RestClientBase, IBusinessEventService
     {
         /// <inheritdoc cref="IBusinessEventService" />
-        public BusinessEventRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
-        :base(baseUrl, httpClient, credentials)
+        public BusinessEventRestService(IHttpSender httpSender)
+        :base(httpSender)
         {
         }
 

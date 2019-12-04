@@ -2,6 +2,7 @@
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Crud.Web.RestClient;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport
@@ -11,8 +12,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     {
         
         /// <inheritdoc cref="IConfigurationService"/>
-        public ConfigurationRestService(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
-            :base(baseUrl, httpClient, credentials)
+        public ConfigurationRestService(IHttpSender httpSender)
+            :base(httpSender)
         {
         }
     }

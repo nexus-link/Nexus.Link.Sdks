@@ -17,9 +17,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         /// <summary>
         /// Constructor
         /// </summary>
-        protected RestClientBase(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
+        protected RestClientBase(IHttpSender httpSender)
         {
-            RestClient = new RestClient(baseUrl, httpClient, credentials);
+            RestClient = new RestClient(httpSender);
         }
     }
 }
