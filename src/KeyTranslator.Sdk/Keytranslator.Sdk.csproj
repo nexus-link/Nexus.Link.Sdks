@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.5" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <Version>2.0.19</Version>
+    <Version>2.0.20</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -36,7 +36,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.19 Bump
+      2.0.20 Bump
       2.0.17 Fix: PackageProjectUrl for this nuget package
       2.0.16 Bump
       2.0.0 Support refactored Authentication

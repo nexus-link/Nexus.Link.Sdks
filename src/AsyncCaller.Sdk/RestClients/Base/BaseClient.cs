@@ -15,13 +15,13 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Base
 
         protected BaseClient(string baseUrl)
         {
-            RestClient = new RestClient(GetUriStart(baseUrl));
+            RestClient = new RestClient(new HttpSender(GetUriStart(baseUrl)));
         }
 
         protected BaseClient(string baseUrl, Tenant tenant, ServiceClientCredentials credentials)
         {
             var uri = $"{GetUriStart(baseUrl)}/{tenant.Organization}/{tenant.Environment}";
-            RestClient = new RestClient(uri, credentials);
+            RestClient = new RestClient(new HttpSender(uri, credentials));
         }
 
     }

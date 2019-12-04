@@ -19,29 +19,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
     /// <inheritdoc />
     public class IntegrationCapability : IIntegrationCapability
     {
-        private static HttpClient _httpClient;
         private static ITokenRefresherWithServiceClient _tokenRefresher;
         private static readonly object ClassLock = new object();
-
-        /// <summary>
-        /// The HttpClient to use for all integration capabilities
-        /// </summary>
-        protected static HttpClient HttpClient
-        {
-            get
-            {
-                if (FulcrumApplication.IsInDevelopment) return null;
-                lock (ClassLock)
-                {
-                    if (_httpClient == null)
-                    {
-                        _httpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
-                    }
-                }
-
-                return _httpClient;
-            }
-        }
 
         /// <summary>
         /// Constructor
@@ -50,10 +29,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         /// <param name="basicCredentials">ClientId and ClientSecret for calling the business api</param>
         public IntegrationCapability(string baseUrl, AuthenticationCredentials basicCredentials)
         {
-            var httpSender = new HttpSender(baseUrl, HttpClient);
+            var httpSender = new HttpSender(baseUrl);
             Authentication = new AuthenticationCapability(httpSender.CreateHttpSender("Authentication/v1"));
             var credentials = ServiceClientCredentials(basicCredentials); 
-            httpSender = new HttpSender(baseUrl, HttpClient, credentials);
+            httpSender = new HttpSender(baseUrl, credentials);
             BusinessEvents = new BusinessEventsCapability(httpSender.CreateHttpSender("BusinessEvents/v1"));
             AppSupport = new AppSupportCapability(httpSender.CreateHttpSender("AppSupport/v1"));
         }

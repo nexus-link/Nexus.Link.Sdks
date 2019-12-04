@@ -9,6 +9,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
@@ -63,7 +64,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
             // App support
             services.AddScoped<IAppSupportCapability>(provider =>
                 ValidateDependencyInjection(provider, p =>
-                    new AppSupportCapability(null, BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials())));
+                {
+                    var httpSender = new HttpSender(BusinessApiConfiguration.NexusCapabilityEndpoints.AppSupport, GetNexusCredentials());
+                    return new AppSupportCapability(null, httpSender);
+                }));
         }
 
         /// <summary>

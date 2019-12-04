@@ -23,9 +23,10 @@ namespace Nexus.Link.Logger.Sdk.RestClients
 
         protected BaseClient(string baseUri, ServiceClientCredentials authenticationCredentials)
         {
-            var handlers = OutboundPipeFactory.CreateDelegatingHandlersWithoutLogging();
-            var httpClient = HttpClientFactory.Create(handlers);
-            var httpSender = new HttpSender(GetUriStart(baseUri), httpClient, authenticationCredentials);
+            var httpSender = new HttpSender(GetUriStart(baseUri), authenticationCredentials)
+            {
+                HttpClient = new HttpClientWrapper(HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlersWithoutLogging()))
+            };
             RestClient = new RestClient(httpSender);
         }
     }

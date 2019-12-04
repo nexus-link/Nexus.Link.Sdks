@@ -22,14 +22,14 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
         {
             if (string.IsNullOrWhiteSpace(baseUri)) throw new ArgumentException($"{nameof(baseUri)} can't be null or empty");
             var uri = GetUriStart(baseUri);
-            RestClient = new RestClient(uri, new BasicAuthenticationCredentials()); // Just any credentials
+            RestClient = new RestClient(new HttpSender(uri, new BasicAuthenticationCredentials())); // Just any credentials
         }
 
 
         protected BaseClient(string baseUri, Tenant tenant, ServiceClientCredentials authenticationCredentials)
         {
             var uri = $"{GetUriStart(baseUri)}/{tenant.Organization}/{tenant.Environment}";
-            RestClient = new RestClient(uri, authenticationCredentials);
+            RestClient = new RestClient(new HttpSender(uri, authenticationCredentials));
         }
 
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
 {
@@ -9,6 +10,8 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
     {
         string Organization { get; }
         string Environment { get; }
+        IHttpClient HttpClient { get; set; }
+
         Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceInstancePath, string targetClientName,
             CancellationToken cancellationToken = default (CancellationToken));
         Task<ValueOrLockId> TranslateToClientOrLock2Async(string sourceInstancePath, string targetClientName,

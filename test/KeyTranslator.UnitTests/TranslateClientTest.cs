@@ -31,7 +31,7 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
 
             _client = new TranslateClient("http://example.com", Tenant, new BasicAuthenticationCredentials());
             _httpClientMock = new Mock<IHttpClient>();
-            HttpSender.HttpClient = _httpClientMock.Object;
+            _client.HttpClient = _httpClientMock.Object;
 
 
             _httpClientMock

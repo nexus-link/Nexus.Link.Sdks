@@ -11,25 +11,12 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     /// <inheritdoc />
     public class AppSupportCapability : IAppSupportCapability
     {
-        /// <summary>
-        /// The HttpClient for all AppSupport services
-        /// </summary>
-        protected static HttpClient HttpClient { get; private set; }
-        private static readonly object ClassLock = new object();
-        
         /// <inheritdoc />
-        public AppSupportCapability(IAsyncLogger logger, string baseUri, ServiceClientCredentials credentials)
+        public AppSupportCapability(IAsyncLogger logger, IHttpSender httpSender)
         {
-            lock (ClassLock)
-            {
-                if (HttpClient == null)
-                {
-                    HttpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
-                }
-            }
             LoggingService = new LoggingLogic(logger);
-            var url = $"{baseUri}/api/v1/{FulcrumApplication.Setup.Tenant.Organization}/{FulcrumApplication.Setup.Tenant.Environment}";
-            ConfigurationService = new ConfigurationLogic(new HttpSender(url, HttpClient, credentials));
+            ConfigurationService = new ConfigurationLogic(
+                httpSender.CreateHttpSender($"api/v1/{FulcrumApplication.Setup.Tenant.Organization}/{FulcrumApplication.Setup.Tenant.Environment}"));
         }
 
         /// <inheritdoc />

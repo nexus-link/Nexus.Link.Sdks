@@ -26,7 +26,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
             _restClients = new List<IRestClient>();
             foreach (var uri in uris)
             {
-                _restClients.Add(new RestClient(uri, credentials));
+                _restClients.Add(new RestClient(new HttpSender(uri, credentials)));
             } 
         }
 

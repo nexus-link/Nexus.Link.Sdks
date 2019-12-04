@@ -76,11 +76,6 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability">
             <inheritdoc />
         </member>
-        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.HttpClient">
-            <summary>
-            The HttpClient to use for all integration capabilities
-            </summary>
-        </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.IntegrationCapability.#ctor(System.String,Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials)">
             <summary>
             Constructor
@@ -220,12 +215,7 @@
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability">
             <inheritdoc />
         </member>
-        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.HttpClient">
-            <summary>
-            The HttpClient for all AppSupport services
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger,System.String,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger,Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
