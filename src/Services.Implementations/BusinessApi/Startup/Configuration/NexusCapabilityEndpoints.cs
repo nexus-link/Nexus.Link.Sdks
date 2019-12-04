@@ -12,5 +12,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration
 
         public string BusinessEvents => GetMandatoryValue<string>("BusinessEvents");
 
+        public string ValueTranslation => GetMandatoryValue<string>("ValueTranslation");
+
     }
 }

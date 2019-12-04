@@ -12,11 +12,13 @@ using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
+using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
 using Nexus.Link.Services.Contracts.Events;
 using Nexus.Link.Services.Implementations.Adapter.Events;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
+using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
 #if NETCOREAPP
 
@@ -52,6 +54,11 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
             services.AddScoped<IBusinessEventsCapability>(provider =>
                 ValidateDependencyInjection(provider, p =>
                     new BusinessEventsCapability(BusinessApiConfiguration.NexusCapabilityEndpoints.BusinessEvents, GetNexusCredentials())));
+
+            // Value Translation
+            services.AddScoped<IValueTranslationCapability>(provider =>
+                ValidateDependencyInjection(provider, p =>
+                    new ValueTranslationCapability(BusinessApiConfiguration.NexusCapabilityEndpoints.ValueTranslation, GetNexusCredentials())));
 
             // App support
             services.AddScoped<IAppSupportCapability>(provider =>
