@@ -5,6 +5,7 @@ using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport
@@ -14,7 +15,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     {
         
         /// <inheritdoc />
-        public AppSupportCapability(string baseUrl, HttpClient httpClient, ServiceClientCredentials credentials)
+        public AppSupportCapability(IHttpSender httpSender)
         {
             if (FulcrumApplication.IsInDevelopment)
             {
@@ -23,7 +24,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
             else
             {
                 LoggingService = new LoggingService_NotImplemented();
-                ConfigurationService = new ConfigurationRestService($"{baseUrl}/Configurations", httpClient, credentials);
+                ConfigurationService = new ConfigurationRestService(httpSender.CreateHttpSender("Configurations"));
             }
         }
 

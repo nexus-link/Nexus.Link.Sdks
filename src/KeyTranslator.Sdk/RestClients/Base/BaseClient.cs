@@ -19,7 +19,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Base
 
         protected BaseClient(string baseUri)
         {
-            RestClient = new RestClient(GetUriStart(baseUri), new BasicAuthenticationCredentials()); // Just any auth, can't be null
+            RestClient = new RestClient(new HttpSender(GetUriStart(baseUri), new BasicAuthenticationCredentials())); // Just any auth, can't be null
         }
 
         protected BaseClient(string baseUri, Tenant tenant, ServiceClientCredentials authenticationCredentials)
@@ -27,7 +27,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Base
             Organization = tenant.Organization;
             Environment = tenant.Environment;
             var uri = $"{GetUriStart(baseUri)}/{tenant.Organization}/{tenant.Environment}";
-            RestClient = new RestClient(uri, authenticationCredentials);
+            RestClient = new RestClient(new HttpSender(uri, authenticationCredentials));
         }
 
     }

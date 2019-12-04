@@ -7,7 +7,7 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
@@ -22,13 +22,13 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.ConfigurationRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService"/>
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.ILoggingService"/>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.LoggingRestService.LogAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
@@ -37,7 +37,7 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(System.String,System.Net.Http.HttpClient)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
@@ -46,7 +46,7 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.#ctor(System.String,System.Net.Http.HttpClient)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication.ITokenService" />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.TokenRestService.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
@@ -58,7 +58,7 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventRestService.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
@@ -67,7 +67,7 @@
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
@@ -107,7 +107,7 @@
             The current RestClient
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.RestClientBase.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.RestClientBase.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <summary>
             Constructor
             </summary>
@@ -237,7 +237,7 @@
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic.#ctor(System.String,System.Net.Http.HttpClient,Microsoft.Rest.ServiceClientCredentials)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.ConfigurationLogic.ReadAsync(System.String,System.Threading.CancellationToken)">

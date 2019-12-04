@@ -3,6 +3,7 @@ using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport
@@ -28,7 +29,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             }
             LoggingService = new LoggingLogic(logger);
             var url = $"{baseUri}/api/v1/{FulcrumApplication.Setup.Tenant.Organization}/{FulcrumApplication.Setup.Tenant.Environment}";
-            ConfigurationService = new ConfigurationLogic(url, HttpClient, credentials);
+            ConfigurationService = new ConfigurationLogic(new HttpSender(url, HttpClient, credentials));
         }
 
         /// <inheritdoc />

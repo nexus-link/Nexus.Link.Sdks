@@ -5,6 +5,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
@@ -49,10 +50,12 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
         /// <param name="basicCredentials">ClientId and ClientSecret for calling the business api</param>
         public IntegrationCapability(string baseUrl, AuthenticationCredentials basicCredentials)
         {
-            Authentication = new AuthenticationCapability($"{baseUrl}/Authentication/v1", HttpClient);
-            var credentials = ServiceClientCredentials(baseUrl, basicCredentials);
-            BusinessEvents = new BusinessEventsCapability($"{baseUrl}/BusinessEvents/v1", HttpClient, credentials);
-            AppSupport = new AppSupportCapability($"{baseUrl}/AppSupport/v1", HttpClient, credentials);
+            var httpSender = new HttpSender(baseUrl, HttpClient);
+            Authentication = new AuthenticationCapability(httpSender.CreateHttpSender("Authentication/v1"));
+            var credentials = ServiceClientCredentials(basicCredentials); 
+            httpSender = new HttpSender(baseUrl, HttpClient, credentials);
+            BusinessEvents = new BusinessEventsCapability(httpSender.CreateHttpSender("BusinessEvents/v1"));
+            AppSupport = new AppSupportCapability(httpSender.CreateHttpSender("AppSupport/v1"));
         }
 
         /// <inheritdoc />
@@ -75,7 +78,6 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
             }
         }
 
-        private ServiceClientCredentials ServiceClientCredentials(string baseUrl,
-            AuthenticationCredentials credentials) => TokenRefresher(credentials).GetServiceClient();
+        private ServiceClientCredentials ServiceClientCredentials(AuthenticationCredentials credentials) => TokenRefresher(credentials).GetServiceClient();
     }
 }

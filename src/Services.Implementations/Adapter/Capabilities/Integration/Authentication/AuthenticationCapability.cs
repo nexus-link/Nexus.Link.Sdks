@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication
@@ -8,9 +9,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     {
         
         /// <inheritdoc />
-        public AuthenticationCapability(string baseUrl, HttpClient httpClient)
+        public AuthenticationCapability(IHttpSender httpSender)
         {
-            TokenService = new TokenRestService($"{baseUrl}/Tokens", httpClient);
+            TokenService = new TokenRestService(httpSender.CreateHttpSender("Tokens"));
         }
 
         /// <inheritdoc />

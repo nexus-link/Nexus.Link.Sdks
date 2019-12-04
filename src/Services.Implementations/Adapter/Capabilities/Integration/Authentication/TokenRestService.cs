@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication
@@ -10,8 +11,8 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     public class TokenRestService : RestClientBase, ITokenService
     {
         /// <inheritdoc cref="ITokenService" />
-        public TokenRestService(string baseUrl, HttpClient httpClient)
-        :base(baseUrl, httpClient, null)
+        public TokenRestService(IHttpSender httpSender)
+        :base(httpSender)
         {
         }
 
