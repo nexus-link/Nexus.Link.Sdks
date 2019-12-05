@@ -286,20 +286,6 @@
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic">
-            <inheritdoc />
-        </member>
-        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.ForInternalUseInBusinessApi">
-            <summary>
-            Must be set if the business API should publish events itself as publisher.
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.BusinessEventLogic.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
             <inheritdoc />
         </member>
@@ -432,15 +418,15 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.IServiceProvider)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,Microsoft.Extensions.DependencyInjection.IMvcBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,System.IServiceProvider)">
             <summary>
             This is where the adapter can add events that it wants to subscribe to.
             </summary>
             <param name="subscriptionHandler">Use this to add subscriptions</param>
-            <param name="mvcBuilder"></param>
+            <param name="serviceProvider"></param>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>

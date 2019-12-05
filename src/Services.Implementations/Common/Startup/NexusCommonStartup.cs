@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Web.AspNet.Authorize;
@@ -39,10 +40,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         }
 
         /// <inheritdoc />
-        protected override void DependencyInjectServicesAdvanced(IServiceCollection services, IMvcBuilder mvcBuilder)
+        protected override void DependencyInjectServicesAdvanced(IServiceCollection services, IServiceProvider serviceProvider)
         {
             var subscriptionHandler = new EventSubscriptionHandler();
-            AddSubscriptions(subscriptionHandler, mvcBuilder);
+            AddSubscriptions(subscriptionHandler, serviceProvider);
             if (subscriptionHandler.HasSubscriptions)
             {
                 services.AddSingleton<IEventReceiver>(new EventReceiverLogic(subscriptionHandler));
@@ -53,8 +54,8 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         /// This is where the adapter can add events that it wants to subscribe to.
         /// </summary>
         /// <param name="subscriptionHandler">Use this to add subscriptions</param>
-        /// <param name="mvcBuilder"></param>
-        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler, IMvcBuilder mvcBuilder);
+        /// <param name="serviceProvider"></param>
+        protected abstract void AddSubscriptions(EventSubscriptionHandler subscriptionHandler, IServiceProvider serviceProvider);
 
 
         /// <summary>

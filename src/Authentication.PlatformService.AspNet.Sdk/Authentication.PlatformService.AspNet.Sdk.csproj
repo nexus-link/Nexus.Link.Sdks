@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.15.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.15.8" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.6" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
