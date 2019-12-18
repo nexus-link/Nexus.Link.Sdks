@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.16.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.2.13" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.16.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.2.15" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.2.19</Version>
+    <Version>2.2.20</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -27,7 +27,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.2.19 Bump
+      2.2.20 Bump
       2.2.3 Fix: PackageProjectUrl for this nuget package
       2.2.2 Bump
       2.2.1 Added explicit event for IEventReceiver.
