@@ -24,7 +24,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>2.2.23</Version>
+      <Version>2.2.24</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.2.23 Bump
+        2.2.24 Bump
         2.2.17 Fix: PackageProjectUrl for this nuget package
         2.2.16 Bump
         2.2.10 Fix: TokenValidationHandler could throw exception in certain circumstances

@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>2.2.19</Version>
+      <Version>2.2.20</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -29,7 +29,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.2.19 Bump
+        2.2.20 Bump
         2.2.14 Fix: PackageProjectUrl for this nuget package
         2.2.13 Bump
         2.2.6 Change log level on legacy tokens to from Warning to Verbose
