@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.0.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.4" />
   </ItemGroup>
 
   <ItemGroup>
