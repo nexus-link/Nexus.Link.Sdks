@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Nexus.Link.Services.Contracts</RootNamespace>
+    <AssemblyName>Nexus.Link.Services.Contracts</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.Services.Contracts</PackageId>
+    <Version>3.2.12</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Libraries</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Contracts for Nexus Link Services, aimed at business API developers.</Description>
+    <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      3.2.12 Bump
+      3.2.8 Refactored translation.
+      3.2.3 Added IValueTranslationCapability
+      3.2.2 Bump
+      3.2.1 Moved SyncKey to core
+      3.2.0 Added event DataSyncEntityWasAssociated
+      3.1.1 Fix: PackageProjectUrl for this nuget package
+      3.1.0 DataSyncMemory now supports IReadChildrenWithPaging.
+      3.0.0 IPublishable now inherits from IValidatable
+      2.1.0 Added explicit event for IEventReceiver.
+      2.0.1 Bump
+      2.0.0 Renamed IServicesCapability to IControllerInjector
+      1.5.1 Added interface overload.
+      1.5.0 Introduced IServicesCapability
+      1.4.0 Added IDataSyncTesting, renamed DataSyncMemoryMock.
+      1.3.4 Renamed and added field in DataSyncEntityWasUpdated.
+      1.3.0 Moved DataSyncMemory and EventExtensions here.
+      1.2.4 Bump
+      1.2.3 Added DataSync and Events
+      1.2.0 Moved PublicKey to ITokenService.
+      1.1.2 Bump
+      1.1.0 Added AppSupport
+      1.0.8 Bump
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="2.3.3" />
+  </ItemGroup>
+
+</Project>
