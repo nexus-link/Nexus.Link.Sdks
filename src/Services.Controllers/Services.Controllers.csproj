@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libraries.Crud.AspNet\Libraries.Crud.AspNet.csproj" />
-    <ProjectReference Include="..\Libraries.Web.AspNet\Libraries.Web.AspNet.csproj" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.16.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.2.13" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
   </ItemGroup>
 
