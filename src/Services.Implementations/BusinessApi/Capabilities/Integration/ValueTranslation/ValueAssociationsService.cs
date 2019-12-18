@@ -5,6 +5,8 @@ using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Platform.ValueTranslator;
+using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation
 {
@@ -52,10 +54,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
                     targetConceptValue.ClientName, cancellationToken);
                 targetContextOrClient = $"client {targetConceptValue.ClientName}";
             }
-
-            FulcrumAssert.IsNotNull(valueOrLockId.IsLock);
-            if (valueOrLockId.IsLock == null) return; // This will never be true. This line is here to satisfy automatic code checkers.
-            if (!valueOrLockId.IsLock.Value)
+            if (!valueOrLockId.IsLock)
             {
                 throw new FulcrumNotImplementedException(
                     $"Method {nameof(AssociateAsync)} does not yet support adding doublets and" +

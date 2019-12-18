@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
+using Nexus.Link.Libraries.Core.Platform.ValueTranslator;
 
-namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation
+namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation
 {
     /// <summary>
     /// Methods for associating values with each other
