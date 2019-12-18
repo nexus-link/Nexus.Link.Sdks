@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.12" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.4" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.1" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -27,7 +27,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.0.24</Version>
+      <Version>2.0.25</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -37,7 +37,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.0.24 Bump
+        2.0.25 Bump
         2.0.19 Fix: PackageProjectUrl for this nuget package
         2.0.18 Bump
         2.0.13 CacheKey now includes serviceName to support virutal services (logging).
