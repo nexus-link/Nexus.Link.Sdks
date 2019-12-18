@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <AssemblyName>Nexus.Link.DatasyncEngine.Sdk</AssemblyName>
+    <RootNamespace>Nexus.Link.DatasyncEngine.Sdk</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.DatasyncEngine.Sdk</PackageId>
+    <Version>1.0.0</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>SDK for Nexus Data Synchronization Engine service.</Description>
+    <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReleaseNotes>
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
