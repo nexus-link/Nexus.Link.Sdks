@@ -7,7 +7,7 @@ using Nexus.Link.Libraries.Core.Platform.DataSyncEngine;
 
 namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
 {
-    internal class SynchronizedEntityClient : BaseClient, ISynchronizedEntityClient
+    public class SynchronizedEntityClient : BaseClient, ISynchronizedEntityClient
     {
         public SynchronizedEntityClient(string baseUri, Tenant tenant, ServiceClientCredentials authenticationCredentials)
             : base(baseUri, tenant, authenticationCredentials)

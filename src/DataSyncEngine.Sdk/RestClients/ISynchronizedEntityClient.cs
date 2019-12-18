@@ -3,7 +3,7 @@ using Nexus.Link.Libraries.Core.Platform.DataSyncEngine;
 
 namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
 {
-    internal interface ISynchronizedEntityClient
+    public interface ISynchronizedEntityClient
     {
         Task SynchronizedEntityAssociatedAsync(KeyAssociations associations);
     }

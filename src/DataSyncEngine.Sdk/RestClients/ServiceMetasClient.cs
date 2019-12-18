@@ -5,7 +5,7 @@ using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
 {
-    internal class ServiceMetasClient : BaseClient, IServiceMetasClient
+    public class ServiceMetasClient : BaseClient, IServiceMetasClient
     {
         public ServiceMetasClient(string baseUri) : base(baseUri)
         {

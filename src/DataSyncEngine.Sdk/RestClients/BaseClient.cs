@@ -5,7 +5,7 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
 {
-    internal abstract class BaseClient
+    public abstract class BaseClient
     {
         protected readonly IRestClient RestClient;
 
