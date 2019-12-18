@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>Nexus.Link.Services.Controllers</RootNamespace>
+    <AssemblyName>Nexus.Link.Services.Controllers</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries.Crud.AspNet\Libraries.Crud.AspNet.csproj" />
+    <ProjectReference Include="..\Libraries.Web.AspNet\Libraries.Web.AspNet.csproj" />
+    <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.Services.Controllers</PackageId>
+    <Version>2.2.17</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Libraries</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Base controllers for Nexus Link Services, aimed at business API developers.</Description>
+    <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      2.2.17 Bump
+      2.2.3 Fix: PackageProjectUrl for this nuget package
+      2.2.2 Bump
+      2.2.1 Added explicit event for IEventReceiver.
+      2.1.3 Bump
+      2.1.2 Changed the name of the EventReceiver controller
+      2.1.1 Bump
+      2.1.0 LegacySyncControllerBase now supports TModelCreate. Renamed the NexusEventsController.
+      2.0.1 Changed controller routes.
+      1.4.13 Introduced NexusApi capability
+      1.4.11 Bump
+      1.4.4 Using T insead of JObject in LegacySyncControllerBase to make Model show up i swagger.
+      1.4.3 Bump
+      1.4.2 Returned Guid must have quotes.
+      1.4.1 Bump
+      1.4.0 Added DataSync ControllerBase
+      1.3.7 Added BusinessEventsControllerBase
+      1.3.2 Bump
+      1.3.0 Now uses the policy HasMandatoryRole for authorization
+      1.2.6 Bump
+      1.2.3 Added AppSupport
+      1.1.1 Bump
+      1.1.0 Introduced RootsControllerBase
+      1.0.7 Bump
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
