@@ -7,7 +7,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration
     /// <summary>
     /// The services 
     /// </summary>
-    public interface IIntegrationCapability : IControllerInjector
+    public interface IIntegrationCapability : Libraries.Core.Platform.Services.IControllerInjector
     {
         /// <summary>
         /// Service for business events

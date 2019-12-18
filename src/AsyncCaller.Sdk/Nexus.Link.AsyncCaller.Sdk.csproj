@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.12" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.13.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.13" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.0" />
   </ItemGroup>
 
   <PropertyGroup>

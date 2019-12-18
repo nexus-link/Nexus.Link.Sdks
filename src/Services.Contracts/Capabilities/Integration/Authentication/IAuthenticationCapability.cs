@@ -3,7 +3,7 @@
     /// <summary>
     /// Authentication
     /// </summary>
-    public interface IAuthenticationCapability : IControllerInjector
+    public interface IAuthenticationCapability : Libraries.Core.Platform.Services.IControllerInjector
     {
         /// <summary>
         /// Service for tokens

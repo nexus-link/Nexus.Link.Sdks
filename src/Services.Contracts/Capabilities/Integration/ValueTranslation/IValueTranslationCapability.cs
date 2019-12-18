@@ -5,7 +5,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
     /// <summary>
     /// Value Translation
     /// </summary>
-    public interface IValueTranslationCapability : IControllerInjector
+    public interface IValueTranslationCapability : Libraries.Core.Platform.Services.IControllerInjector
     {
         /// <summary>
         /// Service for translating values
