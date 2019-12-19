@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using Nexus.Link.Libraries.Web.RestClientHelper;
+﻿using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication

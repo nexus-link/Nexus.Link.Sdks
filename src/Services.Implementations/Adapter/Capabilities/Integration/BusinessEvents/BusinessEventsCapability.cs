@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using Microsoft.Rest;
-using Nexus.Link.Libraries.Web.RestClientHelper;
+﻿using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents

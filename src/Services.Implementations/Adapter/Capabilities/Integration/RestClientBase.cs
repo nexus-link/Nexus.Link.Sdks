@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using Microsoft.Rest;
-using Nexus.Link.Libraries.Web.RestClientHelper;
+﻿using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration
 {

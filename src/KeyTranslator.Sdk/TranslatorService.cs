@@ -26,7 +26,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
             var translateRequests = conceptValuePaths
                 .Select(path => new TranslateRequest(path, GetTargetContextPath(path, targetClientName)));
             
-            var result = await _translateClient.TranslateBatchAsync(translateRequests);
+            var result = await _translateClient.TranslateBatchAsync(translateRequests, cancellationToken);
             return result.ToDictionary(item => item.Request.SourceInstancePath, item => item.Value);
         }
 

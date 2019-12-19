@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.Services.Contracts.Capabilities;
 
 namespace Nexus.Link.Services.Contracts.Events
 {

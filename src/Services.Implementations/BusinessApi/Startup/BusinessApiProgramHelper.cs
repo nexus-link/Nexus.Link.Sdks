@@ -6,7 +6,6 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
 using Nexus.Link.Services.Implementations.Startup;
-#if NETCOREAPP
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
 {
@@ -34,4 +33,3 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         }
     }
 }
-#endif

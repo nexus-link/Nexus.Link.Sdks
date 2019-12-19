@@ -8,21 +8,18 @@ using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Core.Translation;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
-using Nexus.Link.Services.Contracts.Events;
-using Nexus.Link.Services.Implementations.Adapter.Events;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
-#if NETCOREAPP
+using Nexus.Link.Services.Implementations.Common.Startup;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
 {
@@ -167,4 +164,3 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         }
     }
 }
-#endif

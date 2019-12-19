@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using Microsoft.Rest;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Crud.Web.RestClient;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
