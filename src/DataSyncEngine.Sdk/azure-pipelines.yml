@@ -1,0 +1,25 @@
+resources:
+  repositories:
+  - repository: azure-devops-tools
+    type: github
+    endpoint: 'xlent-link-admin'
+    name: 'nexus-link/nexus-azure-devops-tools'
+    ref: 'refs/heads/master'
+ 
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+  paths:
+    include:
+    - 'src/DataSyncEngine.Sdk/*'   
+    
+jobs:
+- template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
+  parameters:
+    jobName: 'DataSyncEngineSdk'
+    testProjectsPath: ''
+    nugetProjectsPath: '**/src/DataSyncEngine.Sdk/*.csproj'
+    nuGetFeedType: external
+    publishFeedCredentials: 'prd-nexus-nuget-external'
