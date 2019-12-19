@@ -19,7 +19,7 @@ using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.A
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents;
 using Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation;
 using Nexus.Link.Services.Implementations.BusinessApi.Startup.Configuration;
-#if NETCOREAPP
+using Nexus.Link.Services.Implementations.Common.Startup;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
 {
@@ -164,4 +164,3 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         }
     }
 }
-#endif

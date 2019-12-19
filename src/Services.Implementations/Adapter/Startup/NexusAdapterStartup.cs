@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
-
-#if NETCOREAPP
+using Nexus.Link.Services.Implementations.Common.Startup;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Startup
 {
@@ -49,4 +49,3 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         protected abstract void DependencyInjectAdapterServices(IServiceCollection services);
     }
 }
-#endif

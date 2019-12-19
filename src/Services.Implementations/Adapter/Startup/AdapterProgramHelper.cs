@@ -4,7 +4,6 @@ using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
 using Nexus.Link.Services.Implementations.Startup;
-#if NETCOREAPP
 
 namespace Nexus.Link.Services.Implementations.Adapter.Startup
 {
@@ -26,4 +25,3 @@ namespace Nexus.Link.Services.Implementations.Adapter.Startup
         }
     }
 }
-#endif

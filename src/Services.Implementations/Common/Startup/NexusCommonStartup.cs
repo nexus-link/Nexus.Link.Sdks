@@ -7,9 +7,7 @@ using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Contracts.Events;
 using Nexus.Link.Services.Implementations.Adapter.Events;
 
-#if NETCOREAPP
-
-namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
+namespace Nexus.Link.Services.Implementations.Common.Startup
 {
     /// <summary>
     /// Helper class for the different steps in the Startup.cs file.
@@ -69,4 +67,3 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Startup
         #endregion
     }
 }
-#endif
