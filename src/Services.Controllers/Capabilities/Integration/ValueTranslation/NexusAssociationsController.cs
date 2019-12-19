@@ -14,7 +14,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
     [ApiController]
     [Area("ValueTranslation")]
     [Route("api/Integration/v1/[area]/v1/Associations")]
-    public class AssociationsController : ControllerBase, IAssociationsService
+    public class NexusAssociationsController : ControllerBase, IAssociationsService
     {
         protected readonly IValueTranslationCapability Capability;
 
@@ -22,7 +22,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         /// Constructor
         /// </summary>
         /// <param name="capability">The logic layer</param>
-        public AssociationsController(IValueTranslationCapability capability)
+        public NexusAssociationsController(IValueTranslationCapability capability)
         {
             Capability = capability;
         }

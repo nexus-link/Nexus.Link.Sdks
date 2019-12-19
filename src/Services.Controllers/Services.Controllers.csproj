@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -27,7 +27,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.3.0 Added ValueTranslationCapability
+      2.3.1 Added ValueTranslationCapability
       2.2.20 Bump
       2.2.3 Fix: PackageProjectUrl for this nuget package
       2.2.2 Bump
