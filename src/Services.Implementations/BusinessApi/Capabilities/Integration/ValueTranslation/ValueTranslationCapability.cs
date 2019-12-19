@@ -1,15 +1,10 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Rest;
+﻿using Microsoft.Rest;
 using Nexus.Link.KeyTranslator.Sdk;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
-using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Translation;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
-using ConceptValue = Nexus.Link.KeyTranslator.Sdk.ConceptValue;
 
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation
 {

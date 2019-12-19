@@ -1,8 +1,5 @@
-﻿using System.Net.Http;
-using Microsoft.Rest;
-using Nexus.Link.Libraries.Core.Application;
+﻿using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
-using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 

@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.RestClientHelper;

@@ -1,7 +1,5 @@
-﻿using System.Net.Http;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Crud.Web.RestClient;

@@ -1,9 +1,6 @@
-﻿using System.Net.Http;
-using Microsoft.Rest;
+﻿using Microsoft.Rest;
 using Nexus.Link.Authentication.Sdk.Logic;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
-using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration;
