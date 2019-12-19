@@ -7,17 +7,17 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
     /// <summary>
     /// Methods for associating values with each other
     /// </summary>
-    public interface IValueAssociationsService
+    public interface IAssociationsService
     {
         /// <summary>
         /// Associate concept values.
         /// </summary>
         /// <param name="sourceConceptValuePath">The "old" concept value that we would like to associate to.</param>
-        /// <param name="targetConceptValuePath">The "new" concept value that we would like to add as an association to <paramref name="sourceConceptValuePath"/>.</param>
+        /// <param name="targetConceptValuePaths">The "new" concept values that we would like to add as associations to <paramref name="sourceConceptValuePath"/>.</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <remarks>Only use this associate method for items that already exists. If you du to parallelism face any risk of creating doublets then you should use
-        /// <see cref="AssociateWithLockAsync"/> instead.</remarks>
-        Task AssociateAsync(string sourceConceptValuePath, string targetConceptValuePath,
+        /// <see cref="AssociateUsingLockAsync"/> instead.</remarks>
+        Task AssociateAsync(string sourceConceptValuePath, string[] targetConceptValuePaths,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
         /// <param name="sourceConceptValuePath">The concept value that we would like to translate.</param>
         /// <param name="targetContextName">The name of the target context for the translation.</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>Either a translation or a lock id. The lock id is supposed to be used in <see cref="AssociateWithLockAsync"/>.</returns>
+        /// <returns>Either a translation or a lock id. The lock id is supposed to be used in <see cref="AssociateUsingLockAsync"/>.</returns>
         Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
             CancellationToken cancellationToken = default(CancellationToken));
         
@@ -45,11 +45,11 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
         /// <see cref="TranslateToContextOrLockAsync"/> or <see cref="TranslateToClientOrLockAsync"/>.
         /// </summary>
         /// <param name="sourceConceptValuePath">The "old" concept value that we would like to associate to.</param>
-        /// <param name="targetConceptValuePath">The "new" concept value that we would like to add as an association to <paramref name="sourceConceptValuePath"/>.</param>
         /// <param name="lockId">The lock that was created in <see cref="TranslateToContextOrLockAsync"/> or
         /// <see cref="TranslateToClientOrLockAsync"/>.</param>
+        /// <param name="targetConceptValuePath">The "new" concept value that we would like to add as an association to <paramref name="sourceConceptValuePath"/>.</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        Task AssociateWithLockAsync(string sourceConceptValuePath, string targetConceptValuePath, string lockId,
+        Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>

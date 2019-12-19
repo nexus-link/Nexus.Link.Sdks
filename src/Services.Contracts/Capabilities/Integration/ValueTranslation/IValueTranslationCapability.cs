@@ -15,6 +15,6 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
         /// <summary>
         /// Service for associating values with each other.
         /// </summary>
-        IValueAssociationsService AssociationService { get; }
+        IAssociationsService AssociationService { get; }
     }
 }
