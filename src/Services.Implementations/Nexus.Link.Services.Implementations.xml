@@ -107,6 +107,42 @@
             Constructor
             </summary>
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
+            <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.TranslatorService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.AssociationService">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.NotImplementedTranslatorService.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
             <summary>
             Helper class for updating the configuration with data from the configuration DB.
@@ -286,6 +322,29 @@
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
         </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.TranslateClient,Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
+            <inheritdoc />
+            <remarks>This method is not complete yet. It does not support adding doublets. It will throw <see cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"/> in those cases.
+            To implement that, we will need a new service method in <see cref="T:Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient"/>.</remarks>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
             <inheritdoc />
         </member>
@@ -293,6 +352,9 @@
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.TranslatorService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.AssociationService">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.BusinessApiProgramHelper">
@@ -407,28 +469,28 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.Validate(System.String,System.String)">
             <inheritdoc />
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup">
+        <member name="T:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup">
             <summary>
             Helper class for the different steps in the Startup.cs file.
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.Boolean)">
             <inheritdoc/>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.DependencyInjectServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.IServiceProvider)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.IServiceProvider)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,System.IServiceProvider)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,System.IServiceProvider)">
             <summary>
             This is where the adapter can add events that it wants to subscribe to.
             </summary>
             <param name="subscriptionHandler">Use this to add subscriptions</param>
             <param name="serviceProvider"></param>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.SetMandatoryRole(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Set the role that is mandatory for calls to this app.
             </summary>

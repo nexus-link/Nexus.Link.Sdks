@@ -29,19 +29,19 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         public async Task AssociateAsync(string sourceConceptValuePath, string [] targetConceptValuePaths,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
             var success = ConceptValue.TryParse(sourceConceptValuePath, out var sourceConceptValue);
-            InternalContract.Require(success,
+            ServiceContract.Require(success,
                 $"Parameter {nameof(sourceConceptValuePath)} ({sourceConceptValuePath}) is not a concept value.");
             foreach (var targetConceptValuePath in targetConceptValuePaths)
             {
-                InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePaths), $"The individual values of {nameof(targetConceptValuePaths)} must not be null or empty.");
+                ServiceContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePaths), $"The individual values of {nameof(targetConceptValuePaths)} must not be null or empty.");
                 success = ConceptValue.TryParse(targetConceptValuePath, out var targetConceptValue);
-                InternalContract.Require(success,
+                ServiceContract.Require(success,
                     $"Parameter {nameof(targetConceptValuePaths)} contained at least one item ({targetConceptValuePath}) that is not a concept value.");
-                InternalContract.Require(sourceConceptValue.ConceptName == targetConceptValue.ConceptName,
-                    $"Parameter {nameof(targetConceptValuePaths)} contained at least one item ({targetConceptValuePath}) that has an unexpected concept name ({sourceConceptValue.ConceptName}) - should have {targetConceptValue.ConceptName}");
+                ServiceContract.Require(sourceConceptValue.ConceptName == targetConceptValue.ConceptName,
+                    $"Parameter {nameof(targetConceptValuePaths)} contained at least one item ({targetConceptValuePath}) that has an unexpected concept name ({targetConceptValue.ConceptName}) - should have {sourceConceptValue.ConceptName}");
             }
 
             foreach (var targetConceptValuePath in targetConceptValuePaths)
@@ -70,8 +70,8 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
                         $" there was already a translation from {sourceConceptValuePath} to {targetContextOrClient} ({valueOrLockId.Value}).");
                 }
 
-                await AssociateUsingLockAsync(sourceConceptValuePath, targetConceptValuePath, valueOrLockId.LockId,
-                    cancellationToken);
+                await AssociateUsingLockAsync(sourceConceptValuePath, valueOrLockId.LockId,
+                    targetConceptValuePath, cancellationToken);
             }
         }
 
@@ -79,8 +79,8 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
             return _translatorClient.TranslateToContextOrLock2Async(sourceConceptValuePath, targetContextName,
                 cancellationToken);
         }
@@ -89,8 +89,8 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
             return _translatorClient.TranslateToClientOrLock2Async(sourceConceptValuePath, targetClientName,
                 cancellationToken);
         }
@@ -99,15 +99,15 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         public async Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
             var success = ConceptValue.TryParse(sourceConceptValuePath, out var sourceConceptValue);
-            InternalContract.Require(success,
+            ServiceContract.Require(success,
                 $"Parameter {nameof(sourceConceptValuePath)} ({sourceConceptValuePath}) is not a concept value.");
             success = ConceptValue.TryParse(targetConceptValuePath, out var targetConceptValue);
-            InternalContract.Require(success,
-                $"Parameter {nameof(targetConceptValue)} ({targetConceptValue}) is not a concept value.");
-            InternalContract.Require(sourceConceptValue.ConceptName == targetConceptValue.ConceptName,
+            ServiceContract.Require(success,
+                $"Parameter {nameof(targetConceptValuePath)} ({targetConceptValuePath}) is not a concept value.");
+            ServiceContract.Require(sourceConceptValue.ConceptName == targetConceptValue.ConceptName,
                 $"The two concept values must have the same concept. Had {sourceConceptValue.ConceptName} and {targetConceptValue.ConceptName}");
 
             var association = new Association

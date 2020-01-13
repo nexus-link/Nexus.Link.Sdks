@@ -329,3 +329,5 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 /Nexus.Link.Sdks.v3.ncrunchsolution
+/src/Services.Contracts/Nexus.Link.Services.Contracts.xml
+/src/Services.Controllers/Nexus.Link.Services.Controllers.xml

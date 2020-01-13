@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.3.1</Version>
+    <Version>2.3.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -27,6 +27,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.3.2 Corrected wrong order of paramter. More descriptive name for parameters. Added XML documentation.
       2.3.1 Added ValueTranslationCapability
       2.2.20 Bump
       2.2.3 Fix: PackageProjectUrl for this nuget package
@@ -54,6 +55,10 @@
       1.0.7 Bump
       1.0.0 First release
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>Nexus.Link.Services.Controllers.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

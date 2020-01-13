@@ -29,71 +29,71 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
 
         /// <inheritdoc />
         [HttpPost]
-        [Route("{sourceId}")]
-        public Task AssociateAsync(string sourceId, string[] targetIds,
+        [Route("{sourceConceptValuePath}")]
+        public Task AssociateAsync(string sourceConceptValuePath, string[] targetConceptValuePaths,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(sourceId, nameof(sourceId));
-            ServiceContract.RequireNotNull(targetIds, nameof(targetIds));
-            foreach (var targetConceptValuePath in targetIds)
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
+            foreach (var targetConceptValuePath in targetConceptValuePaths)
             {
-                InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetIds), $"The individual values of {nameof(targetIds)} must not be null or empty.");
+                InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePaths), $"The individual values of {nameof(targetConceptValuePaths)} must not be null or empty.");
             }
 
-            return Capability.AssociationService.AssociateAsync(sourceId, targetIds,
+            return Capability.AssociationService.AssociateAsync(sourceConceptValuePath, targetConceptValuePaths,
                 cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpGet]
-        [Route("{sourceId}/Context/{targetId}/ValueOrLock")]
-        public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceId, string targetId,
+        [Route("{sourceConceptValuePath}/Context/{targetContextName}/ValueOrLock")]
+        public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceId, nameof(sourceId));
-            InternalContract.RequireNotNullOrWhiteSpace(targetId, nameof(targetId));
+            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            InternalContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
 
-            return Capability.AssociationService.TranslateToContextOrLockAsync(sourceId, targetId,
+            return Capability.AssociationService.TranslateToContextOrLockAsync(sourceConceptValuePath, targetContextName,
                 cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpGet]
-        [Route("{sourceId}/Client/{targetId}/ValueOrLock")]
-        public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceId, string targetId,
+        [Route("{sourceConceptValuePath}/Client/{targetClientName}/ValueOrLock")]
+        public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceId, nameof(sourceId));
-            InternalContract.RequireNotNullOrWhiteSpace(targetId, nameof(targetId));
+            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            InternalContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
 
-            return Capability.AssociationService.TranslateToClientOrLockAsync(sourceId, targetId,
+            return Capability.AssociationService.TranslateToClientOrLockAsync(sourceConceptValuePath, targetClientName,
                 cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpPost]
-        [Route("{sourceId}/Locks/{lockId}")]
-        public Task AssociateUsingLockAsync(string sourceId, string lockId, string targetId,
+        [Route("{sourceConceptValuePath}/Locks/{lockId}")]
+        public Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceId, nameof(sourceId));
+            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
-            InternalContract.RequireNotNullOrWhiteSpace(targetId, nameof(targetId));
+            InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
 
-            return Capability.AssociationService.AssociateUsingLockAsync(sourceId, lockId, targetId,
+            return Capability.AssociationService.AssociateUsingLockAsync(sourceConceptValuePath, lockId, targetConceptValuePath,
                 cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpDelete]
-        [Route("{sourceId}/Locks/{lockId}")]
-        public Task ReleaseLockAsync(string sourceId, string lockId,
+        [Route("{sourceConceptValuePath}/Locks/{lockId}")]
+        public Task ReleaseLockAsync(string sourceConceptValuePath, string lockId,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceId, nameof(sourceId));
+            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
 
-            return Capability.AssociationService.ReleaseLockAsync(sourceId, lockId,
+            return Capability.AssociationService.ReleaseLockAsync(sourceConceptValuePath, lockId,
                 cancellationToken);
         }
     }
