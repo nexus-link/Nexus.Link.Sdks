@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Translation;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
@@ -15,15 +16,19 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
         public ValueTranslationCapability(IHttpSender httpSender)
         {
             InternalContract.RequireNotNull(httpSender, nameof(httpSender));
-            AssociationService = new AssociationsRestService(httpSender.CreateHttpSender("Associations"));
+            AssociationService = new AssociationRestService(httpSender.CreateHttpSender("Associations"));
             TranslatorService = new NotImplementedTranslatorService();
+            ConceptService = new NotImplementedConceptService();
         }
 
         /// <inheritdoc />
         public ITranslatorService TranslatorService { get; }
 
         /// <inheritdoc />
-        public IAssociationsService AssociationService { get; }
+        public IAssociationService AssociationService { get; }
+
+        /// <inheritdoc />
+        public IConceptService ConceptService { get; }
 
         private class NotImplementedTranslatorService : ITranslatorService
         {
@@ -31,7 +36,16 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
             public Task<IDictionary<string, string>> TranslateAsync(IEnumerable<string> conceptValuePaths, string targetClientName,
                 CancellationToken cancellationToken = new CancellationToken())
             {
-                throw new System.NotImplementedException();
+                throw new FulcrumNotImplementedException("This method is not expected to be called from a Nexus Adapter.");
+            }
+        }
+
+        private class NotImplementedConceptService : IConceptService
+        {
+            /// <inheritdoc />
+            public Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                throw new FulcrumNotImplementedException("This method is not expected to be called from a Nexus Adapter.");
             }
         }
     }

@@ -107,25 +107,25 @@
             Constructor
             </summary>
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService">
+        <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
             <inheritdoc cref="T:Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents.IBusinessEventService" />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationsRestService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.AssociationRestService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
@@ -140,7 +140,13 @@
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.AssociationService">
             <inheritdoc />
         </member>
+        <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.ConceptService">
+            <inheritdoc />
+        </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.NotImplementedTranslatorService.TranslateAsync(System.Collections.Generic.IEnumerable{System.String},System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.NotImplementedConceptService.GetAllInstancesAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Adapter.Startup.NexusAdapterProgramHelper">
@@ -322,27 +328,36 @@
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService">
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.TranslateClient,Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.TranslateClient,Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
             <inheritdoc />
             <remarks>This method is not complete yet. It does not support adding doublets. It will throw <see cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"/> in those cases.
             To implement that, we will need a new service method in <see cref="T:Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient"/>.</remarks>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.TranslateToContextOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.TranslateToClientOrLockAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.AssociateUsingLockAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationsService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.ReleaseLockAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ConceptService">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ConceptService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.ConceptsClient)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ConceptService.GetAllInstancesAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability">
@@ -355,6 +370,9 @@
             <inheritdoc />
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.AssociationService">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.ConceptService">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Startup.BusinessApiProgramHelper">

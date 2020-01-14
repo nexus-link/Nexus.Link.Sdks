@@ -11,13 +11,13 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
 namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation
 {
     /// <inheritdoc />
-    public class AssociationsService : IAssociationsService
+    public class AssociationService : IAssociationService
     {
         private readonly TranslateClient _translatorClient;
         private readonly IAssociationsClient _associationsClient;
 
         /// <inheritdoc />
-        public AssociationsService(TranslateClient translatorClient, IAssociationsClient associationsClient)
+        public AssociationService(TranslateClient translatorClient, IAssociationsClient associationsClient)
         {
             _translatorClient = translatorClient;
             _associationsClient = associationsClient;

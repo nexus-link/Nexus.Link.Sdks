@@ -7,7 +7,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
     /// <summary>
     /// Methods for associating values with each other
     /// </summary>
-    public interface IAssociationsService
+    public interface IAssociationService
     {
         /// <summary>
         /// Associate concept values.

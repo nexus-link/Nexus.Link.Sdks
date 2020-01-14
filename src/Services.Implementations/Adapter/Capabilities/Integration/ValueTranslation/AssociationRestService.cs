@@ -10,10 +10,10 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
 namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation
 {
     /// <inheritdoc cref="IBusinessEventService" />
-    public class AssociationsRestService : RestClientBase, IAssociationsService
+    public class AssociationRestService : RestClientBase, IAssociationService
     {
         /// <inheritdoc cref="IBusinessEventService" />
-        public AssociationsRestService(IHttpSender httpSender)
+        public AssociationRestService(IHttpSender httpSender)
         :base(httpSender)
         {
         }

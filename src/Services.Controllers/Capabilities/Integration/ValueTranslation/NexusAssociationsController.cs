@@ -9,12 +9,12 @@ using Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslation;
 namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslation
 {
     /// <summary>
-    /// Service implementation of <see cref="IBusinessEventService"/>
+    /// Service implementation of <see cref="IAssociationService"/>
     /// </summary>
     [ApiController]
     [Area("ValueTranslation")]
     [Route("api/Integration/v1/[area]/v1/Associations")]
-    public class NexusAssociationsController : ControllerBase, IAssociationsService
+    public class NexusAssociationsController : ControllerBase, IAssociationService
     {
         protected readonly IValueTranslationCapability Capability;
 
@@ -37,7 +37,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
             ServiceContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
             foreach (var targetConceptValuePath in targetConceptValuePaths)
             {
-                InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePaths), $"The individual values of {nameof(targetConceptValuePaths)} must not be null or empty.");
+                ServiceContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePaths), $"The individual values of {nameof(targetConceptValuePaths)} must not be null or empty.");
             }
 
             return Capability.AssociationService.AssociateAsync(sourceConceptValuePath, targetConceptValuePaths,
@@ -50,8 +50,8 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
 
             return Capability.AssociationService.TranslateToContextOrLockAsync(sourceConceptValuePath, targetContextName,
                 cancellationToken);
@@ -63,8 +63,8 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
 
             return Capability.AssociationService.TranslateToClientOrLockAsync(sourceConceptValuePath, targetClientName,
                 cancellationToken);
@@ -76,9 +76,9 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         public Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
-            InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
+            ServiceContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
 
             return Capability.AssociationService.AssociateUsingLockAsync(sourceConceptValuePath, lockId, targetConceptValuePath,
                 cancellationToken);
@@ -90,8 +90,8 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         public Task ReleaseLockAsync(string sourceConceptValuePath, string lockId,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
-            InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
+            ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
+            ServiceContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
 
             return Capability.AssociationService.ReleaseLockAsync(sourceConceptValuePath, lockId,
                 cancellationToken);

@@ -20,13 +20,18 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             TranslatorService = new TranslatorService(translatorClient);
             var associationsClient = new AssociationsClient(serviceBaseUrl, FulcrumApplication.Setup.Tenant,
                 serviceClientCredentials);
-            AssociationService = new AssociationsService(translatorClient, associationsClient);
+            AssociationService = new AssociationService(translatorClient, associationsClient);
+            var conceptsClient = new ConceptsClient(serviceBaseUrl, FulcrumApplication.Setup.Tenant, serviceClientCredentials);
+            ConceptService = new ConceptService(conceptsClient);
         }
 
         /// <inheritdoc />
         public ITranslatorService TranslatorService { get; }
 
         /// <inheritdoc />
-        public IAssociationsService AssociationService { get; }
+        public IAssociationService AssociationService { get; }
+
+        /// <inheritdoc />
+        public IConceptService ConceptService { get; }
     }
 }
