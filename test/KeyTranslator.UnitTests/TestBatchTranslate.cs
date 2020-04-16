@@ -296,5 +296,19 @@ namespace Xlent.Lever.KeyTranslator.Sdk.Test
             translation = translations2["concept", "a1"];
             Assert.AreEqual("b1", translation);
         }
+
+        [TestMethod]
+        public async Task NoCallToKeyTranslatorForEmptyBatch()
+        {
+            _translateClient
+                .Setup(x => x.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()))
+                .Verifiable();
+
+            // No translations
+            var translator = new BatchTranslate(_translateClient.Object, "sourceClient", "targetClient");
+            await translator.ExecuteAsync();
+
+            _translateClient.Verify(x => x.TranslateBatchAsync(It.IsAny<IEnumerable<TranslateRequest>>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 }
