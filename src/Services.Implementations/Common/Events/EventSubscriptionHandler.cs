@@ -75,7 +75,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
                 if (!success)
                 {
                     Log.LogWarning($"This adapter received an event that it doesn't subscribe to ({key}).");
-                    return;
+                    throw new FulcrumNotFoundException($"This adapter received an event that it doesn't subscribe to ({key}).");
                 }
 
                 FulcrumAssert.IsNotNull(eventDelegateInfo?.Delegate, CodeLocation.AsString(), $"Could not find a delegate for event {eventAsJObject}");
@@ -97,6 +97,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
             {
                 Log.LogError(
                     $"Failed to handle event {publishableEvent.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}\r{e}");
+                throw;
             }
         }
 
