@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Authentication.Sdk;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
@@ -51,7 +57,7 @@ namespace Nexus.Link.Configurations.Sdk
         /// <param name="serviceCredentials">AuthenticationCredentials for the current service to the configuration service.</param>
         /// <param name="configurationsServiceUrl">A URL to the configuration service.</param>
         public LeverServiceConfiguration(Tenant serviceTenant, string serviceName, string authenticationServiceUrl, IAuthenticationCredentials serviceCredentials, string configurationsServiceUrl)
-            :this(serviceTenant, serviceName, authenticationServiceUrl, serviceCredentials, configurationsServiceUrl, TimeSpan.FromHours(1), TimeSpan.FromHours(24))
+            : this(serviceTenant, serviceName, authenticationServiceUrl, serviceCredentials, configurationsServiceUrl, TimeSpan.FromHours(1), TimeSpan.FromHours(24))
         {
         }
 
@@ -72,8 +78,51 @@ namespace Nexus.Link.Configurations.Sdk
 
             var configuration = ConfigurationCache.Get(tenant);
             if (configuration != null) return configuration;
-            configuration = await _configurationsManager.GetConfigurationForAsync(tenant);
+
+            if (tenant.Equals(FulcrumApplication.Setup.Tenant))
+            {
+                configuration = ReadConfigurationFromAppSettings();
+            }
+            else
+            {
+                configuration = await ReadConfigurationFromFundamentals(tenant);
+            }
+
             ConfigurationCache.Add(tenant, configuration);
+            return configuration;
+        }
+
+        private async Task<ILeverConfiguration> ReadConfigurationFromFundamentals(Tenant tenant)
+        {
+            var configuration = await _configurationsManager.GetConfigurationForAsync(tenant);
+            ConfigurationCache.Add(tenant, configuration);
+            return configuration;
+        }
+
+        private ILeverConfiguration ReadConfigurationFromAppSettings()
+        {
+            LeverConfiguration configuration;
+            if (ServiceName == "logging")
+            {
+                //How to handle logging configuration?
+                var loggingConnectionString = ConfigurationManager.AppSettings["Logging.ConnectionString"];
+                var queueName = ConfigurationManager.AppSettings["Logging.QueueName"];
+                var version = ConfigurationManager.AppSettings["Logging.Version"];
+
+                InternalContract.RequireNotNullOrWhiteSpace(loggingConnectionString, nameof(loggingConnectionString), $"Missing mandatory appSetting 'Logging.ConnectionString'");
+                InternalContract.RequireNotNullOrWhiteSpace(queueName, nameof(queueName), $"Missing mandatory appSetting 'Logging.QueueName'");
+                InternalContract.RequireNotNullOrWhiteSpace(version, nameof(version), $"Missing mandatory appSetting 'Logging.Version'");
+
+                var loggingConfiguration = new LoggingConfiguration(loggingConnectionString, queueName, version);
+                var jObject = JObject.FromObject(loggingConfiguration);
+                configuration = new LeverConfiguration(ServiceTenant, ServiceName, jObject);
+            }
+            else
+            {
+                configuration = new LeverConfiguration(ServiceTenant, ServiceName, new JObject());
+            }
+
+            ConfigurationCache.Add(ServiceTenant, configuration);
             return configuration;
         }
 
@@ -82,5 +131,33 @@ namespace Nexus.Link.Configurations.Sdk
         {
             return await GetConfigurationForAsync(ServiceTenant);
         }
+
+        ///// <inheritdoc />
+        //public async Task<ILeverConfiguration> GetConfigurationAsync(string vaultUrl = null, List<string> keyVaultSettings = null)
+        //{
+        //    var configuration = ConfigurationCache.Get(ServiceTenant);
+        //    if (configuration != null) return configuration;
+
+        //    var jObject = new JObject();
+        //    foreach (var setting in settings)
+        //    {
+        //        jObject.Add(ConfigurationManager.AppSettings[setting]);
+        //    }
+
+        //    if (keyVaultSettings != null && keyVaultSettings.Any())
+        //    {
+        //        var keyVaultProvider = new KeyVaultSecretProvider();
+        //        await keyVaultProvider.UpdateAppSettingsAsync(vaultUrl, keyVaultSettings);
+
+        //        foreach (var setting in keyVaultSettings)
+        //        {
+        //            jObject.Add(ConfigurationManager.AppSettings[setting]);
+        //        }
+        //    }
+
+        //    configuration = new LeverConfiguration(ServiceTenant, ServiceName, jObject);
+        //    ConfigurationCache.Add(ServiceTenant, configuration);
+        //    return configuration;
+        //}
     }
 }

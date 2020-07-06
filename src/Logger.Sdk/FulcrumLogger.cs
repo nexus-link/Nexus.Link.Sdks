@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Platform.Configurations;
 using Nexus.Link.Logger.Sdk.Helpers;
 using Nexus.Link.Logger.Sdk.RestClients;
 using System.Threading.Tasks;
+using Nexus.Link.Configurations.Sdk;
 
 namespace Nexus.Link.Logger.Sdk
 {
@@ -33,9 +34,17 @@ namespace Nexus.Link.Logger.Sdk
         }
 
         /// <param name="logClient">The fundamentals log client</param>
-        /// <param name="serviceConfiguration">Access to TennantLoggingConfiguration</param>
+        /// <param name="loggingServiceConfiguration">Access to TennantLoggingConfiguration</param>
         public FulcrumLogger(ILogClient logClient, ILeverServiceConfiguration loggingServiceConfiguration) :
             this(logClient, new LogQueueHelper<LogMessage>(loggingServiceConfiguration))
+        {
+        }
+
+        /// <param name="logClient">The fundamentals log client</param>
+        /// <param name="loggingServiceConfiguration">Access to TennantLoggingConfiguration</param>
+        /// <param name="loggingConfiguration">Logging configuration for the service</param>
+        public FulcrumLogger(ILogClient logClient, ILeverServiceConfiguration loggingServiceConfiguration, LoggingConfiguration loggingConfiguration) :
+            this(logClient, new LogQueueHelper<LogMessage>(loggingServiceConfiguration, loggingConfiguration))
         {
         }
 
