@@ -67,6 +67,13 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// <returns>"this", to allow for chained calls.</returns>
         IAsyncCall SetContext(JToken context);
         /// <summary>
+        /// Set the priority level of the request
+        /// </summary>
+        /// <remarks>Default is null</remarks>
+        /// <returns>"this", to allow for chained calls.</returns>
+        /// <returns></returns>
+        IAsyncCall SetPriority(int? priority);
+        /// <summary>
         /// Set the id for this request to <paramref name="id"/>.
         /// </summary>
         /// <returns>"this", to allow for chained calls.</returns>
