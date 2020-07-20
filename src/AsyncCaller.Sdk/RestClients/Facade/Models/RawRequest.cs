@@ -11,6 +11,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
         public string Id { get; set; }
         public string Title { get; set; }
         public byte[] Context { get; set; }
+        public int? Priority { get; set; }
         public byte[] CallOut { get; set; }
         public string CallOutUriScheme { get; set; }
         public byte[] CallBack { get; set; }

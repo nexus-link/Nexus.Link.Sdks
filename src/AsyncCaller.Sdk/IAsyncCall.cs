@@ -23,6 +23,10 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// </summary>
         JToken Context { get; set; }
         /// <summary>
+        /// The priority of the request (requires tenant configuration option "PrioritizedQueues")
+        /// </summary>
+        int? Priority { get; set; }
+        /// <summary>
         /// Sets the URI for the callback to the value in <paramref name="uri"/>, and the method to POST.
         /// </summary>
         /// <returns>"this", to allow for chained calls.</returns>

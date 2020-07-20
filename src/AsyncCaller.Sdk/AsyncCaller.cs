@@ -64,12 +64,32 @@ namespace Nexus.Link.AsyncCaller.Sdk
             return asyncCall;
         }
 
+        public IAsyncCall CreateCall(HttpMethod method, string uri, int priority)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+            InternalContract.Require(uri, (u) => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
+
+            var asyncCall = new AsyncCall(this, method, uri)
+                .SetPriority(priority);
+            return asyncCall;
+        }
+
         public IAsyncCall CreateCall(HttpMethod method, Uri uri)
         {
             InternalContract.RequireNotNull(method, nameof(method));
             InternalContract.RequireNotNull(uri, nameof(uri));
 
             var asyncCall = new AsyncCall(this, method, uri);
+            return asyncCall;
+        }
+
+        public IAsyncCall CreateCall(HttpMethod method, Uri uri, int priority)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+            InternalContract.RequireNotNull(uri, nameof(uri));
+
+            var asyncCall = new AsyncCall(this, method, uri)
+                .SetPriority(priority);
             return asyncCall;
         }
 

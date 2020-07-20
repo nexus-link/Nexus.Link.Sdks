@@ -10,6 +10,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
     {
         public string Id { get; set; }
         public byte[] Context { get; set; }
+        public int? Priority { get; set; }
         public RequestMessage CallOut { get; set; }
         public RequestMessage CallBack { get; set; }
 
@@ -21,7 +22,8 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
                 Id = source.Id,
                 CallOut = await RequestMessage.FromDataAsync(source.CallOut, source.CallOutUriScheme),
                 CallBack = await RequestMessage.FromDataAsync(source.CallBack, source.CallBackUriScheme),
-                Context = source.Context
+                Context = source.Context,
+                Priority = source.Priority
             };
         }
         public async Task<RawRequest> ToDataAsync()
@@ -34,7 +36,8 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
                 CallOutUriScheme = GetSchema(CallOut?.RequestUri),
                 CallBack = CallBack == null ? null : await CallBack.ToDataAsync(),
                 CallBackUriScheme = GetSchema(CallBack?.RequestUri),
-                Context = Context
+                Context = Context,
+                Priority = Priority
             };
         }
 
