@@ -14,7 +14,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.1.1-alpha</Version>
+    <Version>2.1.2-alpha</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,7 +24,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.1.1 Support for priority queues
+      2.1.2 Support for priority queues
       2.0.23 Bump
       2.0.17 Fix: PackageProjectUrl for this nuget package
       2.0.16 Bump
