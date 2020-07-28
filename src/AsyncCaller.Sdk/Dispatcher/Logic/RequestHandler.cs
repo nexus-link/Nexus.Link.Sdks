@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Dispatcher.Exceptions;
 using Nexus.Link.AsyncCaller.Dispatcher.Helpers;
 using Nexus.Link.AsyncCaller.Dispatcher.Models;
-using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.AsyncCaller.Sdk.Common.Helpers;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Error.Model;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using Nexus.Link.Libraries.Core.Platform.Configurations;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
@@ -26,15 +28,17 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
         private readonly IRequestQueue _requestQueue;
         private readonly RequestEnvelope _envelope;
         private readonly IHttpClient _sender;
+        private readonly TimeSpan _defaultDeadlineInSeconds;
         private readonly Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope _originalRequestEnvelope;
 
-        public RequestHandler(IHttpClient sender, Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope requestEnvelope)
+        public RequestHandler(IHttpClient sender, Tenant tenant, ILeverConfiguration config, Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope requestEnvelope)
         {
             _sender = sender;
             var priority = requestEnvelope?.RawRequest?.Priority;
-            _requestQueue = RequestQueueHelper.GetRequestQueueOrThrow(FulcrumApplication.Context.ClientTenant, priority);
+            _requestQueue = RequestQueueHelper.GetRequestQueueOrThrow(tenant, config, priority);
             _originalRequestEnvelope = requestEnvelope;
-            _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromDataAsync(_originalRequestEnvelope));
+            _defaultDeadlineInSeconds = ConfigurationHelper.GetDefaultDeadlineTimeSpanAsync(config);
+            _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromDataAsync(_originalRequestEnvelope, _defaultDeadlineInSeconds));
         }
 
         public async Task ProcessOneRequestAsync()
@@ -91,7 +95,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
         private async Task HandleSuccessfulResponseAsync(HttpResponseMessage response)
         {
             if (!AcceptsCallback) return;
-            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response);
+            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
             var dataEnvelope = await requestEnvelope.ToDataAsync();
             await _requestQueue.EnqueueAsync(dataEnvelope);
         }
@@ -111,7 +115,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
                 return;
             }
             if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync()}), but there is no callback address.");
-            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response);
+            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
             var dataEnvelope = await requestEnvelope.ToDataAsync();
             await _requestQueue.EnqueueAsync(dataEnvelope);
         }

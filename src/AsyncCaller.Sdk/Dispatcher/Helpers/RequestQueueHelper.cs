@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Runtime.Caching;
 using Newtonsoft.Json;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
@@ -21,7 +20,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
 
         private static readonly ObjectCache RequestQueueCache = MemoryCache.Default;
 
-        public static IRequestQueue GetRequestQueueOrThrow(Tenant tenant, int? priority)
+        public static IRequestQueue GetRequestQueueOrThrow(Tenant tenant, ILeverConfiguration config, int? priority)
         {
             var cacheKey = $"RequestQueue|{tenant.Organization}|{tenant.Environment}|{priority}";
             if (RequestQueueCache[cacheKey] is RequestQueue requestQueue) return requestQueue;
@@ -29,7 +28,6 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
             requestQueue = MaybeUseMemoryQueue();
             if (requestQueue != null) return requestQueue;
 
-            var config = FulcrumApplication.Context.LeverConfiguration;
             var connectionString = config.MandatoryValue<string>("ConnectionString");
             var queueName = FindQueueName(priority, config);
             var queue = CreateQueue(connectionString, queueName);

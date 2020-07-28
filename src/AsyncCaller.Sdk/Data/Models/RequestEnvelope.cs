@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Nexus.Link.AsyncCaller.Common.Configuration;
+using Nexus.Link.AsyncCaller.Sdk.Common.Helpers;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using Nexus.Link.Libraries.Core.Platform.Configurations;
 
 namespace Xlent.Lever.AsyncCaller.Data.Models
 {
     public class RequestEnvelope
     {
-       public static async Task<RequestEnvelope> Create(Tenant tenant, RawRequest rawRequest)
+       public static RequestEnvelope Create(Tenant tenant, ILeverConfiguration config, RawRequest rawRequest)
         {
-            var timeSpan = await ConfigurationHandler.GetDefaultDeadlineTimeSpanAsync(tenant);
+            var timeSpan = ConfigurationHelper.GetDefaultDeadlineTimeSpanAsync(config);
             var envelope = new RequestEnvelope
             {
                 Organization = tenant.Organization,

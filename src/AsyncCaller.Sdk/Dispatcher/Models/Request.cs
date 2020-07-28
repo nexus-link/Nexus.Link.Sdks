@@ -26,7 +26,6 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             try
             {
                 CallOut.Content.LoadIntoBufferAsync().Wait();
-                //var content = CallOut.Content.ReadAsStringAsync().Result;
                 var content = ThreadHelper.CallAsyncFromSync(async () => await CallOut.Content.ReadAsStringAsync());
                 return $"{request} {content}";
             }

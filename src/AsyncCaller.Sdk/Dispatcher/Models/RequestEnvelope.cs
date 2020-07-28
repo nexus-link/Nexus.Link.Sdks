@@ -2,10 +2,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Common.Configuration;
 using Nexus.Link.AsyncCaller.Common.Models;
-using Nexus.Link.Libraries.Core.MultiTenant.Model;
-using Nexus.Link.Libraries.Core.Threads;
 using ResponseContent = Nexus.Link.AsyncCaller.Dispatcher.Logic.ResponseContent;
 
 namespace Nexus.Link.AsyncCaller.Dispatcher.Models
@@ -23,7 +20,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
         public DateTimeOffset NextAttemptAt { get; set; }
         public Request Request { get; set; }
 
-        public RequestEnvelope(string organization, string environment, Request request)
+        public RequestEnvelope(string organization, string environment, Request request, TimeSpan defaultDeadlineInSeconds)
         {
             Organization = organization;
             Environment = environment;
@@ -31,14 +28,11 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             CreatedAt = DateTimeOffset.Now;
             LatestAttemptAt = DateTimeOffset.MinValue;
             NextAttemptAt = DateTimeOffset.MinValue;
-            var tenant = new Tenant(organization, environment);
-            //var timeSpan = ConfigurationHandler.GetDefaultDeadlineTimeSpanAsync(tenant).Result;
-            var timeSpan = ThreadHelper.CallAsyncFromSync(async () => await ConfigurationHandler.GetDefaultDeadlineTimeSpanAsync(tenant));
-            DeadlineAt = DateTimeOffset.Now.Add(timeSpan);
+            DeadlineAt = DateTimeOffset.Now.Add(defaultDeadlineInSeconds);
             Request = request;
         }
 
-        public static async Task<RequestEnvelope> GetResponseAsRequestEnvelopeAsync(RequestEnvelope requestEnvelope, HttpResponseMessage response)
+        public static async Task<RequestEnvelope> GetResponseAsRequestEnvelopeAsync(RequestEnvelope requestEnvelope, HttpResponseMessage response, TimeSpan defaultDeadlineInSeconds)
         {
             var request = new Request
             {
@@ -55,19 +49,19 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             };
             var dataAsync = await responseContent.ToDataAsync();
             request.CallOut.Content = new StringContent(dataAsync.Serialize(), Encoding.UTF8, dataAsync.PayloadMediaType);
-            var responseEnvelope = new RequestEnvelope(requestEnvelope.Organization, requestEnvelope.Environment, request)
+            var responseEnvelope = new RequestEnvelope(requestEnvelope.Organization, requestEnvelope.Environment, request, defaultDeadlineInSeconds)
             {
                 OriginalRequestId = requestEnvelope.OriginalRequestId
             };
             return await Task.FromResult(responseEnvelope);
         }
 
-        public static async Task<RequestEnvelope> FromDataAsync(Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope source)
+        public static async Task<RequestEnvelope> FromDataAsync(Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope source, TimeSpan defaultDeadlineInSeconds)
         {
             if (source == null) return null;
             var request = await Request.FromDataAsync(source.RawRequest);
             var serializer = new MessageContentHttpMessageSerializer(true);
-            var target = new RequestEnvelope(source.Organization, source.Environment, request)
+            var target = new RequestEnvelope(source.Organization, source.Environment, request, defaultDeadlineInSeconds)
             {
                 OriginalRequestId = source.OriginalRequestId,
                 Attempts = source.Attempts,
