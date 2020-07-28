@@ -8,13 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.18" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.15.2" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Configurations.Sdk\Configurations.Sdk.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.1.2-alpha</Version>
+    <Version>2.2.0-alpha03-mw</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -24,6 +29,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.2.0 Support for Dispatching in Azure functions
       2.1.2 Support for priority queues
       2.0.23 Bump
       2.0.17 Fix: PackageProjectUrl for this nuget package
