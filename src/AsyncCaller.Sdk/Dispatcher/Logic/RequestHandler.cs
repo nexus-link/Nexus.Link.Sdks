@@ -78,7 +78,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
             {
                 if (!(e is FulcrumAssertionFailedException))
                 {
-                    Log.LogError($"Internal error when making the call for {envelopeAsString}", e.StackTrace, e);
+                    Log.LogError($"Internal error when making the call for {envelopeAsString}", e);
                 }
                 // NOTE! This is not an HTTP request that returned a non-OK value, it is an internal error.
                 // Could be because we have no internet connection and all sorts of errors.
