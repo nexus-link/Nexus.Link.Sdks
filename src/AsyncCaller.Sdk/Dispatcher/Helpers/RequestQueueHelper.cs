@@ -54,7 +54,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
             string queueName;
             if (config.Value<string>("DistributionVersion") == "2")
             {
-                queueName = FindQueueNameDistributionVersion2(priority);
+                queueName = GetQueueNameForDistributionVersion2(priority);
             }
             else
             {
@@ -89,7 +89,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
             return queueName;
         }
 
-        private static string FindQueueNameDistributionVersion2(int? priority)
+        public static string GetQueueNameForDistributionVersion2(int? priority)
         {
             if (!priority.HasValue)
             {
