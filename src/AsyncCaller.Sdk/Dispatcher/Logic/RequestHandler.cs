@@ -110,7 +110,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
 
             if (await IsTemporaryFailureAsync(response))
             {
-                Log.LogInformation($"TemporaryFailure({response.StatusCode}) -> Put back last in queue");
+                Log.LogInformation($"TemporaryFailure({response.StatusCode}) -> Put back last in queue '{_requestQueue.GetQueue().QueueName}'");
                 await PutBackLastInQueueAsync(DateTimeOffset.Now);
                 return;
             }
