@@ -7,7 +7,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Helpers
 {
     public static class ConfigurationHelper
     {
-        public static TimeSpan GetDefaultDeadlineTimeSpanAsync(ILeverConfiguration config)
+        public static TimeSpan GetDefaultDeadlineTimeSpan(ILeverConfiguration config)
         {
             TimeSpan timeSpan;
             try

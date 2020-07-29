@@ -10,7 +10,7 @@ namespace Xlent.Lever.AsyncCaller.Data.Models
     {
        public static RequestEnvelope Create(Tenant tenant, ILeverConfiguration config, RawRequest rawRequest)
         {
-            var timeSpan = ConfigurationHelper.GetDefaultDeadlineTimeSpanAsync(config);
+            var timeSpan = ConfigurationHelper.GetDefaultDeadlineTimeSpan(config);
             var envelope = new RequestEnvelope
             {
                 Organization = tenant.Organization,

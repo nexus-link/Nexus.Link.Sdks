@@ -37,7 +37,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
             var priority = requestEnvelope?.RawRequest?.Priority;
             _requestQueue = RequestQueueHelper.GetRequestQueueOrThrow(tenant, config, priority);
             _originalRequestEnvelope = requestEnvelope;
-            _defaultDeadlineInSeconds = ConfigurationHelper.GetDefaultDeadlineTimeSpanAsync(config);
+            _defaultDeadlineInSeconds = ConfigurationHelper.GetDefaultDeadlineTimeSpan(config);
             _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromDataAsync(_originalRequestEnvelope, _defaultDeadlineInSeconds));
         }
 
