@@ -52,7 +52,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
         private static string FindQueueName(int? priority, ILeverConfiguration config)
         {
             string queueName;
-            if (config.Value<string>("DistributionVersion") == "2")
+            if (config.Value<int?>("DistributionVersion") == 2)
             {
                 queueName = GetQueueNameForDistributionVersion2(priority);
             }
