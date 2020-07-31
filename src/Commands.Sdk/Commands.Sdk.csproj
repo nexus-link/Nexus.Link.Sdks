@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <RootNamespace>Nexus.Link.Commands.Sdk</RootNamespace>
+    <AssemblyName>Nexus.Link.Commands.Sdk</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire" Version="1.7.12" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.12" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.12" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <PackageReference Include="Hangfire.AspNet" Version="0.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.12" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.Commands.Sdk</PackageId>
+    <Version>1.0.0-alpha01-mw</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Commands library to support features in the Nexus Link concept</Description>
+    <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      1.0.0 Initial release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+</Project>
