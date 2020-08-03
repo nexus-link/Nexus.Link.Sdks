@@ -137,7 +137,9 @@ namespace Nexus.Link.Commands.Sdk
         /// <summary>
         /// Check with Fundamentals' Commands capability if there is anything for us.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// Not intended for outside usage, but Hangfire requires a public function.
+        /// </remarks>
         [AutomaticRetry(Attempts = 0, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
         public static async Task PollForCommands()
         {
