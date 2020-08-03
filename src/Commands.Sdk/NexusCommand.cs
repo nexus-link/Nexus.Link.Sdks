@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Nexus.Link.Commands.Sdk
 {
@@ -10,5 +11,9 @@ namespace Nexus.Link.Commands.Sdk
         public string Originator { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
 
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

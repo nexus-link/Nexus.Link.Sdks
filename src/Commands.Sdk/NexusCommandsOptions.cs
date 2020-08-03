@@ -1,11 +1,22 @@
 ﻿using System;
 using Hangfire.MemoryStorage;
 using Hangfire.SqlServer;
+using Nexus.Link.Libraries.Core.Assert;
 
 namespace Nexus.Link.Commands.Sdk
 {
-    public class NexusCommandsOptions
+    public class NexusCommandsOptions : IValidatable
     {
+        /// <summary>
+        /// The name of the service to check commands for
+        /// </summary>
+        public string ServiceName { get; }
+
+        /// <summary>
+        /// The id of the instance to check commands for
+        /// </summary>
+        public string InstanceId { get; }
+
         /// <summary>
         /// In development mode, you can use a memory storage
         /// </summary>
@@ -15,6 +26,13 @@ namespace Nexus.Link.Commands.Sdk
         /// The background process is backed by Hangfire; this is the connection string to a database to use for it
         /// </summary>
         public string HangfireSqlConnectionString { get; set; }
+
+
+        public NexusCommandsOptions(string serviceName, string instanceId)
+        {
+            ServiceName = serviceName;
+            InstanceId = instanceId;
+        }
 
         public SqlServerStorageOptions SqlServerStorageOptions { get; set; } = new SqlServerStorageOptions
         {
@@ -35,5 +53,19 @@ namespace Nexus.Link.Commands.Sdk
             // TODO
         };
 
+        public void Validate(string errorLocation, string propertyPath = "")
+        {
+            FulcrumValidate.IsNotNull(ServiceName, nameof(ServiceName), errorLocation);
+            FulcrumValidate.IsNotNull(InstanceId, nameof(InstanceId), errorLocation);
+            if (UseHangfireMemoryStorage)
+            {
+                FulcrumValidate.IsNotNull(MemoryStorageOptions, nameof(MemoryStorageOptions), errorLocation);
+            }
+            else
+            {
+                FulcrumValidate.IsNotNullOrWhiteSpace(HangfireSqlConnectionString, nameof(HangfireSqlConnectionString), errorLocation);
+                FulcrumValidate.IsNotNull(SqlServerStorageOptions, nameof(SqlServerStorageOptions), errorLocation);
+            }
+        }
     }
 }
