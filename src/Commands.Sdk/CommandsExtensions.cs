@@ -82,7 +82,7 @@ namespace Nexus.Link.Commands.Sdk
             _commandsCallback = callback;
 
             app.UseHangfireServer(BackgroundJobServerOptions);
-            RecurringJob.AddOrUpdate(() => PollForCommands(), CronSecondly);
+            SetupRecurringJob();
 
             return app;
         }
@@ -119,9 +119,17 @@ namespace Nexus.Link.Commands.Sdk
             }
 
             HangfireAspNet.Use(() => new List<IDisposable> { new BackgroundJobServer(BackgroundJobServerOptions) });
-            RecurringJob.AddOrUpdate(() => PollForCommands(), CronSecondly);
+            SetupRecurringJob();
         }
 #endif
+
+        private static void SetupRecurringJob()
+        {
+            const string jobId = nameof(PollForCommands);
+            var manager = new RecurringJobManager();
+            manager.RemoveIfExists(jobId);
+            manager.AddOrUpdate(jobId, () => PollForCommands(), CronSecondly);
+        }
 
         private static bool _fetchingCommands;
         private static DateTimeOffset _lastLoggedCommandFetchingError;

@@ -1,0 +1,1 @@
+﻿We use DbPatcher only to auto-create the hangfire database.
