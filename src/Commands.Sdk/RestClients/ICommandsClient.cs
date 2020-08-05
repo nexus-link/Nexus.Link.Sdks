@@ -5,7 +5,7 @@ namespace Nexus.Link.Commands.Sdk.RestClients
 {
     public interface ICommandsClient
     {
-        Task<NexusCommand> CreateAsync(string service, string command, string originator);
+        Task<NexusCommand> CreateAsync(string service, string command, dynamic arguments, string originator);
         Task<IEnumerable<NexusCommand>> ReadAsync(string service, string instanceId);
     }
 }

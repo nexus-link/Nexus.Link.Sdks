@@ -31,13 +31,14 @@ namespace Nexus.Link.Commands.Sdk.RestClients
             return commands;
         }
 
-        public async Task<NexusCommand> CreateAsync(string service, string command, string originator)
+        public async Task<NexusCommand> CreateAsync(string service, string command, dynamic arguments, string originator)
         {
             var relativeUrl = $"{WebUtility.UrlEncode(service)}";
             var result = await RestClient.PostAsync<NexusCommand, object>(relativeUrl, new
             {
                 Service = service,
                 Command = command,
+                Arguments = arguments,
                 Originator = originator
             });
             return result;
