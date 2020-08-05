@@ -20,7 +20,11 @@ namespace Commands.Sdk.UnitTests
         private const string ConnectionString = "Server=localhost;Database=hangfire;Trusted_Connection=True;";
 
 
-        protected override NexusCommandsOptions CommandsOptions { get; } = new NexusCommandsOptions(ServiceName, InstanceId) {HangfireSqlConnectionString = ConnectionString};
+        protected override NexusCommandsOptions CommandsOptions { get; } = new NexusCommandsOptions(ServiceName, InstanceId)
+        {
+            HangfireSqlConnectionString = ConnectionString,
+            PollingCronExpresson = NexusCommandsOptions.CronSecondly
+        };
 
         [ClassInitialize]
         public static void ClassInit(TestContext context)

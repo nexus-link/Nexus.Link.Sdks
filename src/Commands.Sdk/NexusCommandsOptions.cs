@@ -7,6 +7,12 @@ namespace Nexus.Link.Commands.Sdk
 {
     public class NexusCommandsOptions : IValidatable
     {
+        public const string CronSecondly = "* * * * * *";
+        public const string CronEvery2Seconds = "*/2 * * * * *";
+        public const string CronEvery10Seconds = "*/10 * * * * *";
+        public const string CronMinutely = "* * * * *";
+
+
         /// <summary>
         /// The name of the service to check commands for
         /// </summary>
@@ -16,6 +22,11 @@ namespace Nexus.Link.Commands.Sdk
         /// The id of the instance to check commands for
         /// </summary>
         public string InstanceId { get; }
+
+        /// <summary>
+        /// When to poll for new commands
+        /// </summary>
+        public string PollingCronExpresson { get; set; } = CronEvery10Seconds;
 
         /// <summary>
         /// In development mode, you can use a memory storage
@@ -41,16 +52,14 @@ namespace Nexus.Link.Commands.Sdk
             QueuePollInterval = TimeSpan.Zero,
             UseRecommendedIsolationLevel = true,
             DisableGlobalLocks = true,
-            JobExpirationCheckInterval = TimeSpan.FromSeconds(1),
-            // TODO:
+            JobExpirationCheckInterval = TimeSpan.FromSeconds(1)
         };
 
         public MemoryStorageOptions MemoryStorageOptions { get; set; } = new MemoryStorageOptions
         {
             FetchNextJobTimeout = TimeSpan.FromSeconds(1),
             JobExpirationCheckInterval = TimeSpan.FromSeconds(1),
-            CountersAggregateInterval = TimeSpan.FromSeconds(1),
-            // TODO
+            CountersAggregateInterval = TimeSpan.FromSeconds(1)
         };
 
         public void Validate(string errorLocation, string propertyPath = "")

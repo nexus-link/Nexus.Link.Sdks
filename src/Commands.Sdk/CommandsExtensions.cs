@@ -8,6 +8,10 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using System.Collections.Generic;
+using Hangfire.Common;
+using Hangfire.Logging;
+using Hangfire.States;
+using Hangfire.Storage;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,32 +21,14 @@ namespace Nexus.Link.Commands.Sdk
 {
     public static class CommandsExtensions
     {
-        private const string CronSecondly = "* * * * * *";
-
         private static readonly BackgroundJobServerOptions BackgroundJobServerOptions = new BackgroundJobServerOptions
         {
-            SchedulePollingInterval = TimeSpan.FromSeconds(1)
+            SchedulePollingInterval = TimeSpan.FromSeconds(1),
+            WorkerCount = 1
         };
 
-        /// <summary>
-        /// Rest client to access Commands capability
-        /// </summary>
         private static ICommandsClient _commandsClient;
-
-        /// <summary>
-        /// The service name that we represent
-        /// </summary>
-        private static string _serviceName;
-
-        /// <summary>
-        /// The id of the instance that we represent
-        /// </summary>
-        private static string _instanceId;
-
-        /// <summary>
-        /// The action to run when commands have been fetched from Commands service.
-        /// Takes a list of commands as argument.
-        /// </summary>
+        internal static NexusCommandsOptions _options;
         private static Action<IEnumerable<NexusCommand>> _commandsCallback;
 
 #if NETCOREAPP
@@ -54,16 +40,16 @@ namespace Nexus.Link.Commands.Sdk
         /// </summary>
         public static IServiceCollection AddNexusCommands(this IServiceCollection services, NexusCommandsOptions options, ICommandsClient client)
         {
-            FulcrumApplication.Setup.Validate("Code location: 07318A47-3F9E-430D-8BAF-B9F640BB793A");
+            FulcrumApplication.Setup.Validate("Code location: A34467CC-0E3D-48B0-B8C4-65C4AC343FE1");
             InternalContract.RequireValidated(options, nameof(options));
             InternalContract.RequireNotNull(client, nameof(client));
 
             _commandsClient = client;
-            _serviceName = options.ServiceName;
-            _instanceId = options.InstanceId;
+            _options = options;
 
             services.AddHangfire(configuration =>
             {
+                configuration.UseLogProvider(new FulcrumHangfireLogProvider());
                 if (options.UseHangfireMemoryStorage) configuration.UseMemoryStorage(options.MemoryStorageOptions);
                 else configuration.UseSqlServerStorage(options.HangfireSqlConnectionString, options.SqlServerStorageOptions);
             });
@@ -72,7 +58,7 @@ namespace Nexus.Link.Commands.Sdk
         }
 
         /// <summary>
-        /// Sets upp the use of the Nexus Commands capability.
+        /// Setup the use of the Nexus Commands capability.
         /// </summary>
         /// <param name="app"></param>
         /// <param name="callback">When commands are available, this callback action will be invoked the commands</param>
@@ -100,8 +86,7 @@ namespace Nexus.Link.Commands.Sdk
 
             _commandsCallback = callback;
             _commandsClient = client;
-            _serviceName = options.ServiceName;
-            _instanceId = options.InstanceId;
+            _options = options;
 
             var hangfireConfiguration = GlobalConfiguration.Configuration;
 
@@ -128,7 +113,7 @@ namespace Nexus.Link.Commands.Sdk
             const string jobId = nameof(PollForCommands);
             var manager = new RecurringJobManager();
             manager.RemoveIfExists(jobId);
-            manager.AddOrUpdate(jobId, () => PollForCommands(), CronSecondly);
+            manager.AddOrUpdate(jobId, () => PollForCommands(), _options.PollingCronExpresson);
         }
 
         private static bool _fetchingCommands;
@@ -141,6 +126,7 @@ namespace Nexus.Link.Commands.Sdk
         /// Not intended for outside usage, but Hangfire requires a public function.
         /// </remarks>
         [AutomaticRetry(Attempts = 0, LogEvents = false, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
+        [OneSecondExpirationTime]
         public static async Task PollForCommands()
         {
             // One process at a time
@@ -149,7 +135,7 @@ namespace Nexus.Link.Commands.Sdk
 
             try
             {
-                var commands = await _commandsClient.ReadAsync(_serviceName, _instanceId);
+                var commands = await _commandsClient.ReadAsync(_options.ServiceName, _options.InstanceId);
                 if (commands != null)
                 {
                     var nexusCommands = commands as NexusCommand[] ?? commands.ToArray();
@@ -172,7 +158,63 @@ namespace Nexus.Link.Commands.Sdk
             {
                 _fetchingCommands = false;
             }
+        }
+    }
 
+    internal class OneSecondExpirationTimeAttribute : JobFilterAttribute, IApplyStateFilter
+    {
+        public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+        {
+            context.JobExpirationTimeout = TimeSpan.FromSeconds(1);
+        }
+
+        public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
+        {
+            context.JobExpirationTimeout = TimeSpan.FromSeconds(1);
+        }
+    }
+
+    internal class FulcrumHangfireLogProvider : ILogProvider
+    {
+        public ILog GetLogger(string name)
+        {
+            return new FulcrumHangfireLogger();
+        }
+    }
+
+    internal class FulcrumHangfireLogger : ILog
+    {
+        public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null)
+        {
+            var message = messageFunc?.Invoke();
+            switch (logLevel)
+            {
+                case LogLevel.Debug:
+                case LogLevel.Trace:
+                    if (FulcrumApplication.Setup.LogSeverityLevelThreshold > LogSeverityLevel.Verbose) return false;
+                    Libraries.Core.Logging.Log.LogVerbose(message, exception);
+                    break;
+                case LogLevel.Info:
+                    if (FulcrumApplication.Setup.LogSeverityLevelThreshold > LogSeverityLevel.Information) return false;
+                    Libraries.Core.Logging.Log.LogInformation(message, exception);
+                    break;
+                case LogLevel.Warn:
+                    if (FulcrumApplication.Setup.LogSeverityLevelThreshold > LogSeverityLevel.Warning) return false;
+                    Libraries.Core.Logging.Log.LogWarning(message, exception);
+                    break;
+                case LogLevel.Error:
+                    if (FulcrumApplication.Setup.LogSeverityLevelThreshold > LogSeverityLevel.Error) return false;
+                    Libraries.Core.Logging.Log.LogError(message, exception);
+                    break;
+                case LogLevel.Fatal:
+                    if (FulcrumApplication.Setup.LogSeverityLevelThreshold > LogSeverityLevel.Critical) return false;
+                    Libraries.Core.Logging.Log.LogCritical(message, exception);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
         }
     }
 }

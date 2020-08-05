@@ -8,7 +8,10 @@ namespace Commands.Sdk.UnitTests
 
     public class CommandsMemorySqlTests : CommandsTestsBase
     {
-        protected override NexusCommandsOptions CommandsOptions { get; } = new NexusCommandsOptions(ServiceName, InstanceId) { UseHangfireMemoryStorage = true };
-
+        protected override NexusCommandsOptions CommandsOptions { get; } = new NexusCommandsOptions(ServiceName, InstanceId)
+        {
+            UseHangfireMemoryStorage = true,
+            PollingCronExpresson = NexusCommandsOptions.CronSecondly
+        };
     }
 }
