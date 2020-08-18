@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Runtime.Caching;
-using Newtonsoft.Json;
-using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Decoupling;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
 using Xlent.Lever.AsyncCaller.Data.Queues;
@@ -15,7 +13,8 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
 {
     public static class RequestQueueHelper
     {
-        public const string PrioritizedQueuesSetting = "PrioritizedQueues";
+        public const string DefaultQueueName = "async-caller";
+        public const string PriorityQueueNameInterfix = "-priority-";
         public const string MemoryQueueConnectionString = "UseMemoryQueue=true";
 
         private static readonly ObjectCache RequestQueueCache = MemoryCache.Default;
@@ -51,54 +50,11 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
 
         private static string FindQueueName(int? priority, ILeverConfiguration config)
         {
+            var schemaVersion = config.Value<int?>(nameof(AnonymousSchema.SchemaVersion));
             string queueName;
-            if (config.Value<int?>("DistributionVersion") == 2)
-            {
-                queueName = GetQueueNameForDistributionVersion2(priority);
-            }
-            else
-            {
-                queueName = FindQueueNameDistributionVersion1(priority, config);
-            }
-
-            return queueName;
-        }
-
-        private static string FindQueueNameDistributionVersion1(int? priority, ILeverConfiguration config)
-        {
-            string queueName = null;
-            if (priority.HasValue)
-            {
-                // When using priority queue, there should be lever configuration for it
-                var prioQueues = config.Value<Dictionary<int, string>>(PrioritizedQueuesSetting);
-                if (prioQueues != null && prioQueues.ContainsKey((int)priority))
-                {
-                    queueName = prioQueues[(int)priority];
-                }
-                else
-                {
-                    Log.LogWarning($"Priority queue '{priority}' was not found in setting {PrioritizedQueuesSetting}: {JsonConvert.SerializeObject(prioQueues)}. Reverting to default queue.");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(queueName))
-            {
-                queueName = config.MandatoryValue<string>("QueueName");
-            }
-
-            return queueName;
-        }
-
-        public static string GetQueueNameForDistributionVersion2(int? priority)
-        {
-            if (!priority.HasValue)
-            {
-                return "async-caller-standard-queue";
-            }
-
-            var zeroPadding = priority < 10 ? "0" : "";
-            return $"async-caller-priority{zeroPadding}{priority}-queue";
-
+            if (schemaVersion == null || schemaVersion < 1) queueName = config.MandatoryValue<string>("QueueName");
+            else queueName = DefaultQueueName;
+            return priority.HasValue ? $"{queueName}{PriorityQueueNameInterfix}{priority}" : queueName;
         }
 
         private static RequestQueue MaybeUseMemoryQueue()

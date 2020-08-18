@@ -23,7 +23,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// </summary>
         JToken Context { get; set; }
         /// <summary>
-        /// The priority of the request (requires tenant configuration option "PrioritizedQueues")
+        /// The priority of the request (requires tenant configuration option "SchemaVersion" >= 1)
         /// </summary>
         int? Priority { get; set; }
         /// <summary>
