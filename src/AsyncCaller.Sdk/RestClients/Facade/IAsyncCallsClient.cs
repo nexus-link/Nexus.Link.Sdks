@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Health.Model;
+using RawRequest = Xlent.Lever.AsyncCaller.Data.Models.RawRequest;
 
 namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade
 {

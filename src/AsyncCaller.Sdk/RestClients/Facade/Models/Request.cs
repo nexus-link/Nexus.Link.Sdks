@@ -14,7 +14,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
         public RequestMessage CallOut { get; set; }
         public RequestMessage CallBack { get; set; }
 
-        public static async Task<Request> FromDataAsync(RawRequest source)
+        public static async Task<Request> FromDataAsync(Xlent.Lever.AsyncCaller.Data.Models.RawRequest source)
         {
             if (source == null) return null;
             return new Request
@@ -26,10 +26,10 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
                 Priority = source.Priority
             };
         }
-        public async Task<RawRequest> ToDataAsync()
+        public async Task<Xlent.Lever.AsyncCaller.Data.Models.RawRequest> ToDataAsync()
         {
 
-            return new RawRequest
+            return new Xlent.Lever.AsyncCaller.Data.Models.RawRequest
             {
                 Id = Id,
                 CallOut = CallOut == null ? null : await CallOut.ToDataAsync(),

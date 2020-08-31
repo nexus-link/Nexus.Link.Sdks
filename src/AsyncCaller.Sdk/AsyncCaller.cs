@@ -4,9 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using Xlent.Lever.AsyncCaller.Data.Models;
+
 #pragma warning disable 1591
 
 namespace Nexus.Link.AsyncCaller.Sdk

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
+using Xlent.Lever.AsyncCaller.Data.Models;
 
 #pragma warning disable 1591
 
