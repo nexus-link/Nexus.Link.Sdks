@@ -47,9 +47,11 @@ namespace Nexus.Link.AsyncCaller.Common.Models
         public async Task<byte[]> SerializeAsync(HttpRequestMessage request)
         {
             if (request == null) return null;
-            var memoryStream = new MemoryStream();
-            await SerializeAsync(request, memoryStream);
-            return memoryStream.ToArray();
+            using (var memoryStream = new MemoryStream())
+            {
+                await SerializeAsync(request, memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         public async Task SerializeAsync(HttpResponseMessage response, Stream stream)
@@ -66,9 +68,11 @@ namespace Nexus.Link.AsyncCaller.Common.Models
         public async Task<byte[]> SerializeAsync(HttpResponseMessage response)
         {
             if (response == null) return null;
-            var memoryStream = new MemoryStream();
-            await SerializeAsync(response, memoryStream);
-            return memoryStream.ToArray();
+            using (var memoryStream = new MemoryStream())
+            {
+                await SerializeAsync(response, memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static async Task SerializeAsync(HttpContent httpMessageContent, Stream stream)
@@ -91,7 +95,7 @@ namespace Nexus.Link.AsyncCaller.Common.Models
 
         private static async Task<HttpRequestMessage> DeserializeToRequestAsync(HttpContent content, string uriScheme)
         {
-            var request = new HttpRequestMessage { Content = content};
+            var request = new HttpRequestMessage { Content = content };
             request.Content.Headers.Add("Content-Type", "application/http;msgtype=request");
             if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
             return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
