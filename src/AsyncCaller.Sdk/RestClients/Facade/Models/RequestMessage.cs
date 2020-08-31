@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Sdk.Helpers;
+using Nexus.Link.AsyncCaller.Common.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 

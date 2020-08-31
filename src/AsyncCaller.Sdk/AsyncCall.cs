@@ -4,8 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.AsyncCaller.Common.Models;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.AsyncCaller.Sdk.Helpers;
 using Xlent.Lever.AsyncCaller.Data.Models;
 
 #pragma warning disable 1591

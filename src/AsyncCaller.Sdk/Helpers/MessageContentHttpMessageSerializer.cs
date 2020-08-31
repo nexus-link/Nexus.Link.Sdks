@@ -11,6 +11,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Helpers
     /// Does not close the stream since the stream can be used to store other objects
     /// so it has to be closed in the client
     /// </summary>
+    [Obsolete("Please use Nexus.Link.AsyncCaller.Common.Models.MessageContentHttpMessageSerializer")]
     public class MessageContentHttpMessageSerializer : IHttpMessageSerializerAsync
     {
         private readonly bool _bufferContent;
