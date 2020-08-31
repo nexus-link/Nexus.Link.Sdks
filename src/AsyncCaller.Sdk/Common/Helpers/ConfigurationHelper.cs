@@ -7,6 +7,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Helpers
 {
     public static class ConfigurationHelper
     {
+        /// <summary>
+        /// Find the Lever configuration value 'DefaultDeadlineTimeSpanInSeconds', using default value if missing
+        /// </summary>
         public static TimeSpan GetDefaultDeadlineTimeSpan(ILeverConfiguration config)
         {
             TimeSpan timeSpan;
