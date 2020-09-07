@@ -24,11 +24,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Helpers
             var cacheKey = $"RequestQueue|{tenant.Organization}|{tenant.Environment}|{priority}";
             if (RequestQueueCache[cacheKey] is RequestQueue requestQueue) return requestQueue;
 
-            requestQueue = MaybeUseMemoryQueue();
+            var queueName = FindQueueName(priority, config);
+            requestQueue = MaybeUseMemoryQueue(queueName);
             if (requestQueue != null) return requestQueue;
 
             var connectionString = config.MandatoryValue<string>("ConnectionString");
-            var queueName = FindQueueName(priority, config);
             var queue = CreateQueue(connectionString, queueName);
 
             requestQueue = new RequestQueue(queue, queueName);
@@ -57,14 +57,15 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Helpers
             return priority.HasValue ? $"{queueName}{MultipleQueueNameInterfix}{priority}" : queueName;
         }
 
-        private static RequestQueue MaybeUseMemoryQueue()
+        private static RequestQueue MaybeUseMemoryQueue(string queueName)
         {
             // Local development support
             var appSetting = ConfigurationManager.AppSettings["UseMemoryQueue"];
             var useMemoryQueue = appSetting != null && bool.Parse(appSetting);
             if (useMemoryQueue)
             {
-                return new RequestQueue(MemoryQueue.Instance(), MemoryQueue.Instance().QueueName);
+                var memoryQueue = MemoryQueue.Instance(queueName);
+                return new RequestQueue(memoryQueue, memoryQueue.QueueName);
             }
             return null;
         }
