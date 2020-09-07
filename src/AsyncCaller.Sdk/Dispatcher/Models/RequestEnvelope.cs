@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Common.Models;
-using ResponseContent = Nexus.Link.AsyncCaller.Dispatcher.Logic.ResponseContent;
+using Nexus.Link.AsyncCaller.Sdk.Common.Models;
+using ResponseContent = Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic.ResponseContent;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
 {
     public class RequestEnvelope
     {
@@ -56,10 +56,10 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             return await Task.FromResult(responseEnvelope);
         }
 
-        public static async Task<RequestEnvelope> FromDataAsync(Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope source, TimeSpan defaultDeadlineInSeconds)
+        public static async Task<RequestEnvelope> FromRawAsync(Data.Models.RawRequestEnvelope source, TimeSpan defaultDeadlineInSeconds)
         {
             if (source == null) return null;
-            var request = await Request.FromDataAsync(source.RawRequest);
+            var request = await Request.FromRawAsync(source.RawRequest);
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new RequestEnvelope(source.Organization, source.Environment, request, defaultDeadlineInSeconds)
             {
@@ -74,11 +74,11 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             return target;
         }
 
-        public async Task<Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope> ToDataAsync()
+        public async Task<Data.Models.RawRequestEnvelope> ToRawAsync()
         {
-            var request = await Request.ToDataAsync();
+            var request = await Request.ToRawAsync();
             var serializer = new MessageContentHttpMessageSerializer(true);
-            var target = new Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope
+            var target = new Data.Models.RawRequestEnvelope
             {
                 Organization = Organization,
                 Environment = Environment,

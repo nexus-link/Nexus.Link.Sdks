@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Exceptions
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Exceptions
 {
     internal class DeadlineReachedException : Exception
     {

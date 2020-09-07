@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Xlent.Lever.AsyncCaller.Data.Models;
-using Xlent.Lever.AsyncCaller.Storage.Queue;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Health.Model;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
-namespace Xlent.Lever.AsyncCaller.Data.Queues
+namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
 {
     public class RequestQueue : IRequestQueue
     {
@@ -35,28 +35,28 @@ namespace Xlent.Lever.AsyncCaller.Data.Queues
             return _queue;
         }
 
-        public async Task<string> EnqueueAsync(RequestEnvelope requestEnvelope, TimeSpan? timeSpanToWait = null)
+        public async Task<string> EnqueueAsync(RawRequestEnvelope rawRequestEnvelope, TimeSpan? timeSpanToWait = null)
         {
             var rest = timeSpanToWait == null ? "" : $", {timeSpanToWait}";
-            Log.LogInformation($"EnqueueAsync({requestEnvelope}{rest})");
-            await _queue.AddMessageAsync(requestEnvelope.Serialize(), timeSpanToWait);
-            return requestEnvelope.RawRequest.Id;
+            Log.LogInformation($"EnqueueAsync({rawRequestEnvelope}{rest})");
+            await _queue.AddMessageAsync(rawRequestEnvelope.Serialize(), timeSpanToWait);
+            return rawRequestEnvelope.RawRequest.Id;
         }
 
         /// <summary>
-        /// Put the <paramref name="requestEnvelope"/> again on the queue.
+        /// Put the <paramref name="rawRequestEnvelope"/> again on the queue.
         /// </summary>
-        /// <param name="requestEnvelope">The request envelope to put on the queue.</param>
+        /// <param name="rawRequestEnvelope">The request envelope to put on the queue.</param>
         /// <param name="latestAttemptAt">The time for the latest attempt. Null if this is a 
         ///     retry because we need to wait longer until next actual call.</param>
-        public async Task RequeueAsync(RequestEnvelope requestEnvelope, DateTimeOffset? latestAttemptAt = null)
+        public async Task RequeueAsync(RawRequestEnvelope rawRequestEnvelope, DateTimeOffset? latestAttemptAt = null)
         {
-            if (latestAttemptAt != null) requestEnvelope.Attempts++;
-            requestEnvelope.LatestAttemptAt = latestAttemptAt ?? requestEnvelope.LatestAttemptAt;
-            var timeSpanToWait = RetryDelay(requestEnvelope.Attempts);
+            if (latestAttemptAt != null) rawRequestEnvelope.Attempts++;
+            rawRequestEnvelope.LatestAttemptAt = latestAttemptAt ?? rawRequestEnvelope.LatestAttemptAt;
+            var timeSpanToWait = RetryDelay(rawRequestEnvelope.Attempts);
             var now = DateTimeOffset.Now;
-            requestEnvelope.NextAttemptAt = now.Add(timeSpanToWait);
-            await EnqueueAsync(requestEnvelope, timeSpanToWait);
+            rawRequestEnvelope.NextAttemptAt = now.Add(timeSpanToWait);
+            await EnqueueAsync(rawRequestEnvelope, timeSpanToWait);
         }
 
         public async Task ClearAsync()

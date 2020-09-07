@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
 
-namespace Nexus.Link.AsyncCaller.Common.Helpers
+namespace Nexus.Link.AsyncCaller.Sdk.Common.Helpers
 {
     public static class Convert
     {

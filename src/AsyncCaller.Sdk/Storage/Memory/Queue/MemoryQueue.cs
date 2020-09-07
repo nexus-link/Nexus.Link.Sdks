@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xlent.Lever.AsyncCaller.Storage.Queue;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Health.Model;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
-namespace Xlent.Lever.AsyncCaller.Storage.Memory.Queue
+namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
 {
     /// <summary>
     /// A generic interface for adding strings to a queue.

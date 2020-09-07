@@ -4,12 +4,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Common.Models;
+using Nexus.Link.AsyncCaller.Sdk.Common.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 
 namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
 {
+    // TODO: (Lars/Magnus) Consider using this instead of RawRequest for serialization
+    [Obsolete("Obsolete since 2020-09-10", true)]
     public class RequestMessage
     {
         public RequestMessage(string method, string requestUri)

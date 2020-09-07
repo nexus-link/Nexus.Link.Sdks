@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Xlent.Lever.AsyncCaller.Storage.Queue;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Health.Model;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Threads;
 
-namespace Xlent.Lever.AsyncCaller.Storage.Azure.Queue
+namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
 {
     public class AzureStorageQueue : IQueue
     {

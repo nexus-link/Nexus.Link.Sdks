@@ -3,9 +3,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using CM = Nexus.Link.AsyncCaller.Common.Models;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
 {
     public class ResponseContent
     {
@@ -14,7 +13,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
         public HttpContent Payload { get; set; }
         public HttpStatusCode StatusCode { get; set; }
 
-        public static ResponseContent FromData(CM.ResponseContent source)
+        public static ResponseContent FromData(Common.Models.ResponseContent source)
         {
             var target = new ResponseContent
             {
@@ -26,10 +25,10 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
             return target;
         }
 
-        public async Task<CM.ResponseContent> ToDataAsync()
+        public async Task<Common.Models.ResponseContent> ToDataAsync()
         {
             await Payload.LoadIntoBufferAsync();
-            var target = new CM.ResponseContent
+            var target = new Common.Models.ResponseContent
             {
                 Id = Id,
                 Context = Context,

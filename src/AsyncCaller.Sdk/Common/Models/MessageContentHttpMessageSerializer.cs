@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Logging;
 
-namespace Nexus.Link.AsyncCaller.Common.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
 {
     /// <summary>
     /// https://github.com/aliostad/CacheCow.git

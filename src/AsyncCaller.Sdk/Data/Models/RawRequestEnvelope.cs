@@ -4,14 +4,14 @@ using Nexus.Link.AsyncCaller.Sdk.Common.Helpers;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
 
-namespace Xlent.Lever.AsyncCaller.Data.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Data.Models
 {
-    public class RequestEnvelope
+    public class RawRequestEnvelope
     {
-       public static RequestEnvelope Create(Tenant tenant, ILeverConfiguration config, RawRequest rawRequest)
+       public static RawRequestEnvelope Create(Tenant tenant, ILeverConfiguration config, RawRequest rawRequest)
         {
             var timeSpan = ConfigurationHelper.GetDefaultDeadlineTimeSpan(config);
-            var envelope = new RequestEnvelope
+            var envelope = new RawRequestEnvelope
             {
                 Organization = tenant.Organization,
                 Environment = tenant.Environment,
@@ -42,9 +42,9 @@ namespace Xlent.Lever.AsyncCaller.Data.Models
             return JsonConvert.SerializeObject(this);
         }
 
-        public static RequestEnvelope Deserialize(string serializedString)
+        public static RawRequestEnvelope Deserialize(string serializedString)
         {
-            return JsonConvert.DeserializeObject<RequestEnvelope>(serializedString);
+            return JsonConvert.DeserializeObject<RawRequestEnvelope>(serializedString);
         }
 
         public override string ToString()

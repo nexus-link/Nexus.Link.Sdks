@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Nexus.Link.AsyncCaller.Common.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
 {
     public class ResponseContent
     {

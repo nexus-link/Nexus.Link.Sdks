@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nexus.Link.AsyncCaller.Sdk;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.Libraries.Core.Application;
-using Xlent.Lever.AsyncCaller.Data.Models;
 
 namespace AsyncCaller.Sdk.UnitTests
 {

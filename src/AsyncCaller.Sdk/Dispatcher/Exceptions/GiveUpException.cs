@@ -1,7 +1,7 @@
 ﻿using System;
-using Nexus.Link.AsyncCaller.Dispatcher.Models;
+using Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Exceptions
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Exceptions
 {
     internal class GiveUpException : Exception
     {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Configuration;
 using System.Runtime.Caching;
+using Nexus.Link.AsyncCaller.Sdk.Data.Queues;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue;
+using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Decoupling;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
-using Xlent.Lever.AsyncCaller.Data.Queues;
-using Xlent.Lever.AsyncCaller.Storage.Azure.Queue;
-using Xlent.Lever.AsyncCaller.Storage.Memory.Queue;
-using Xlent.Lever.AsyncCaller.Storage.Queue;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Helpers
 {
     public static class RequestQueueHelper
     {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Health.Model;
 
-namespace Xlent.Lever.AsyncCaller.Storage.Queue
+namespace Nexus.Link.AsyncCaller.Sdk.Storage.Queue
 {
     /// <summary>
     /// A generic interface for adding strings to a queue.

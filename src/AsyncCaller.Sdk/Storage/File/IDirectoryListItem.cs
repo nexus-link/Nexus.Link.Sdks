@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Xlent.Lever.AsyncCaller.Storage.File
+namespace Nexus.Link.AsyncCaller.Sdk.Storage.File
 {
     /// <summary>
     /// A generic interface for adding strings to a queue.

@@ -4,10 +4,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncCaller.Dispatcher.Exceptions;
-using Nexus.Link.AsyncCaller.Dispatcher.Helpers;
-using Nexus.Link.AsyncCaller.Dispatcher.Models;
 using Nexus.Link.AsyncCaller.Sdk.Common.Helpers;
+using Nexus.Link.AsyncCaller.Sdk.Data.Queues;
+using Nexus.Link.AsyncCaller.Sdk.Dispatcher.Exceptions;
+using Nexus.Link.AsyncCaller.Sdk.Dispatcher.Helpers;
+using Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Error.Model;
@@ -18,10 +19,9 @@ using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.Libraries.Web.RestClientHelper;
-using Xlent.Lever.AsyncCaller.Data.Queues;
-using RequestEnvelope = Nexus.Link.AsyncCaller.Dispatcher.Models.RequestEnvelope;
+using RequestEnvelope = Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models.RequestEnvelope;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
 {
     public class RequestHandler
     {
@@ -29,16 +29,16 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
         private readonly RequestEnvelope _envelope;
         private readonly IHttpClient _sender;
         private readonly TimeSpan _defaultDeadlineInSeconds;
-        private readonly Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope _originalRequestEnvelope;
+        private readonly Data.Models.RawRequestEnvelope _originalRawRequestEnvelope;
 
-        public RequestHandler(IHttpClient sender, Tenant tenant, ILeverConfiguration config, Xlent.Lever.AsyncCaller.Data.Models.RequestEnvelope requestEnvelope)
+        public RequestHandler(IHttpClient sender, Tenant tenant, ILeverConfiguration config, Data.Models.RawRequestEnvelope rawRequestEnvelope)
         {
             _sender = sender;
-            var priority = requestEnvelope?.RawRequest?.Priority;
+            var priority = rawRequestEnvelope?.RawRequest?.Priority;
             _requestQueue = RequestQueueHelper.GetRequestQueueOrThrow(tenant, config, priority);
-            _originalRequestEnvelope = requestEnvelope;
+            _originalRawRequestEnvelope = rawRequestEnvelope;
             _defaultDeadlineInSeconds = ConfigurationHelper.GetDefaultDeadlineTimeSpan(config);
-            _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromDataAsync(_originalRequestEnvelope, _defaultDeadlineInSeconds));
+            _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromRawAsync(_originalRawRequestEnvelope, _defaultDeadlineInSeconds));
         }
 
         public async Task ProcessOneRequestAsync()
@@ -96,7 +96,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
         {
             if (!AcceptsCallback) return;
             var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
-            var dataEnvelope = await requestEnvelope.ToDataAsync();
+            var dataEnvelope = await requestEnvelope.ToRawAsync();
             await _requestQueue.EnqueueAsync(dataEnvelope);
         }
 
@@ -116,14 +116,14 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Logic
             }
             if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync()}), but there is no callback address.");
             var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
-            var dataEnvelope = await requestEnvelope.ToDataAsync();
+            var dataEnvelope = await requestEnvelope.ToRawAsync();
             await _requestQueue.EnqueueAsync(dataEnvelope);
         }
 
         private async Task PutBackLastInQueueAsync(DateTimeOffset? latestAttemptAt = null)
         {
-            _envelope.Request = await Request.FromDataAsync(_originalRequestEnvelope.RawRequest);
-            var dataEnvelope = await _envelope.ToDataAsync();
+            _envelope.Request = await Request.FromRawAsync(_originalRawRequestEnvelope.RawRequest);
+            var dataEnvelope = await _envelope.ToRawAsync();
             await Task.Delay(TimeSpan.FromSeconds(1));
             await _requestQueue.RequeueAsync(dataEnvelope, latestAttemptAt);
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xlent.Lever.AsyncCaller.Data.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Data.Models
 {
     /// <summary>
     /// Represents a request for us to try to call the specified url and come back with the result

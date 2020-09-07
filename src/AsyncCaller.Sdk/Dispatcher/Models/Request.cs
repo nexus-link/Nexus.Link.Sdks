@@ -1,12 +1,13 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.AsyncCaller.Common.Models;
+using Nexus.Link.AsyncCaller.Sdk.Common.Models;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Threads;
-using Xlent.Lever.AsyncCaller.Data.Models;
+using Convert = Nexus.Link.AsyncCaller.Sdk.Common.Helpers.Convert;
 
-namespace Nexus.Link.AsyncCaller.Dispatcher.Models
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
 {
     /// <summary>
     /// Represents a request for us to try to call the specified url and come back with the result
@@ -15,6 +16,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
     {
         public string Id { get; set; }
         public JToken Context { get; set; }
+        public int? Priority { get; set; }
         public HttpRequestMessage CallOut { get; set; }
         public HttpRequestMessage CallBack { get; set; }
 
@@ -36,27 +38,29 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Models
             }
         }
 
-        public static async Task<Request> FromDataAsync(RawRequest source)
+        public static async Task<Request> FromRawAsync(RawRequest source)
         {
             if (source == null) return null;
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new Request
             {
                 Id = source.Id,
-                Context = Nexus.Link.AsyncCaller.Common.Helpers.Convert.ToJson(source.Context),
+                Context = Convert.ToJson(source.Context),
+                Priority = source.Priority,
                 CallOut = await serializer.DeserializeToRequestAsync(source.CallOut, source.CallOutUriScheme),
                 CallBack = await serializer.DeserializeToRequestAsync(source.CallBack, source.CallBackUriScheme)
             };
             return target;
         }
 
-        public async Task<RawRequest> ToDataAsync()
+        public async Task<RawRequest> ToRawAsync()
         {
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new RawRequest
             {
                 Id = Id,
-                Context = Nexus.Link.AsyncCaller.Common.Helpers.Convert.ToByteArray(Context),
+                Context = Convert.ToByteArray(Context),
+                Priority = Priority,
                 CallOut = await serializer.SerializeAsync(CallOut),
                 CallOutUriScheme = CallOut.RequestUri.Scheme,
                 CallBack = await serializer.SerializeAsync(CallBack),

@@ -6,7 +6,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
     /// <summary>
     /// Represents a request for us to try to call the specified url and come back with the result
     /// </summary>
-    [Obsolete("Please use Xlent.Lever.AsyncCaller.Data.Models.RawRequest")]
+    [Obsolete("Please use Xlent.Lever.AsyncCaller.Data.Models.RawRequest. Obsolete since 2020-09-10", true)]
     public class RawRequest
     {
         public string Id { get; set; }
