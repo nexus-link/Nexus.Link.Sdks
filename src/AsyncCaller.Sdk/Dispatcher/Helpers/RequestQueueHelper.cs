@@ -14,7 +14,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
     public static class RequestQueueHelper
     {
         public const string DefaultQueueName = "async-caller";
-        public const string PriorityQueueNameInterfix = "-priority-";
+        public const string MultipleQueueNameInterfix = "-";
         public const string MemoryQueueConnectionString = "UseMemoryQueue=true";
 
         private static readonly ObjectCache RequestQueueCache = MemoryCache.Default;
@@ -54,7 +54,7 @@ namespace Nexus.Link.AsyncCaller.Dispatcher.Helpers
             string queueName;
             if (schemaVersion == null || schemaVersion < 1) queueName = config.MandatoryValue<string>("QueueName");
             else queueName = DefaultQueueName;
-            return priority.HasValue ? $"{queueName}{PriorityQueueNameInterfix}{priority}" : queueName;
+            return priority.HasValue ? $"{queueName}{MultipleQueueNameInterfix}{priority}" : queueName;
         }
 
         private static RequestQueue MaybeUseMemoryQueue()
