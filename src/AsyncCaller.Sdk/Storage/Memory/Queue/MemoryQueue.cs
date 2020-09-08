@@ -95,5 +95,10 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
         {
             return await Task.FromResult(new HealthInfo("MemoryQueue") { Status = HealthInfo.StatusEnum.Ok, Message = "Ok" });
         }
+
+        public override string ToString()
+        {
+            return $"[name: {QueueName}, item count: {_queue.Count}]";
+        }
     }
 }
