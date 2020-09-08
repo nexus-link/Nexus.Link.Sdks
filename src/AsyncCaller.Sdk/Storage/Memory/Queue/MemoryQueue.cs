@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Health.Model;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
@@ -28,7 +29,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
         {
             MemoryQueue memoryQueue = null;
             if (Instances.ContainsKey(queueName)) memoryQueue = Instances[queueName];
-            if (memoryQueue != null) return memoryQueue;
+            if (memoryQueue != null)
+            {
+                Log.LogVerbose($"Returning existing memory queue: {memoryQueue}");
+                return memoryQueue;
+            }
 
             lock (LockObject)
             {
@@ -38,6 +43,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
                 memoryQueue = new MemoryQueue();
                 memoryQueue.MaybeCreateAndConnect(queueName);
                 Instances.Add(queueName, memoryQueue);
+                Log.LogVerbose($"Created memory queue: {memoryQueue}");
                 return memoryQueue;
             }
         }
@@ -72,6 +78,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
             lock (LockObject)
             {
                 if (_queue == null) return;
+                Log.LogVerbose($"Clearing memory queue: {this}");
                 _queue.Clear();
             }
             await Task.Yield();
@@ -81,6 +88,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
         {
             lock (LockObject)
             {
+                Log.LogVerbose($"Get one message of: {_queue.Count}");
                 if (!_queue.Any()) return null;
                 return _queue.Dequeue();
             }
