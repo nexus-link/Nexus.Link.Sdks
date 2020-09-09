@@ -4,9 +4,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
+using Nexus.Link.AsyncCaller.Sdk.Common.Models;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.AsyncCaller.Sdk.Helpers;
 
 #pragma warning disable 1591
 
@@ -42,6 +42,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public HttpRequestMessage CallOut { get; internal set; }
         public HttpRequestMessage CallBack { get; internal set; }
         public JToken Context { get; set; }
+        public int? Priority { get; set; }
 
         public IAsyncCall SetJsonContent(JToken content)
         {
@@ -70,6 +71,12 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public IAsyncCall SetContext(JToken context)
         {
             Context = context;
+            return this;
+        }
+
+        public IAsyncCall SetPriority(int? priority)
+        {
+            Priority = priority;
             return this;
         }
 
@@ -164,7 +171,8 @@ namespace Nexus.Link.AsyncCaller.Sdk
                 CallOutUriScheme = CallOut?.RequestUri?.Scheme,
                 CallBack = callBack,
                 CallBackUriScheme = CallBack?.RequestUri?.Scheme,
-                Context = Context == null ? null : Encoding.UTF8.GetBytes(Context.ToString(Formatting.None))
+                Context = Context == null ? null : Encoding.UTF8.GetBytes(Context.ToString(Formatting.None)),
+                Priority = Priority
             };
         }
     }

@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Base;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Health.Model;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using RawRequest = Nexus.Link.AsyncCaller.Sdk.Data.Models.RawRequest;
 
 namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade
 {
@@ -20,10 +21,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade
         {
         }
 
-        public async Task<string> PostAsync(Request request)
+        [Obsolete("Please use PostRawAsync. Obsolete since 2020-09-10")]
+        public async Task<string> PostAsync(Dispatcher.Models.Request request)
         {
             const string relativeUrl = "/AsyncCalls";
-            return await RestClient.PostAsync<string, Request>(relativeUrl, request);
+            return await RestClient.PostAsync<string, Dispatcher.Models.Request>(relativeUrl, request);
         }
 
         public async Task<string> PostRawAsync(RawRequest rawRequest)

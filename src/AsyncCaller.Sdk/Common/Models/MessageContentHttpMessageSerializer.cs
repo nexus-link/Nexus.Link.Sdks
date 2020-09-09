@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Logging;
 
-namespace Nexus.Link.AsyncCaller.Sdk.Helpers
+namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
 {
     /// <summary>
     /// https://github.com/aliostad/CacheCow.git
@@ -47,9 +47,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Helpers
         public async Task<byte[]> SerializeAsync(HttpRequestMessage request)
         {
             if (request == null) return null;
-            var memoryStream = new MemoryStream();
-            await SerializeAsync(request, memoryStream);
-            return memoryStream.ToArray();
+            using (var memoryStream = new MemoryStream())
+            {
+                await SerializeAsync(request, memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         public async Task SerializeAsync(HttpResponseMessage response, Stream stream)
@@ -66,9 +68,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Helpers
         public async Task<byte[]> SerializeAsync(HttpResponseMessage response)
         {
             if (response == null) return null;
-            var memoryStream = new MemoryStream();
-            await SerializeAsync(response, memoryStream);
-            return memoryStream.ToArray();
+            using (var memoryStream = new MemoryStream())
+            {
+                await SerializeAsync(response, memoryStream);
+                return memoryStream.ToArray();
+            }
         }
 
         private static async Task SerializeAsync(HttpContent httpMessageContent, Stream stream)

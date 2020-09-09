@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nexus.Link.AsyncCaller.Sdk;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.Libraries.Core.Application;
 
 namespace AsyncCaller.Sdk.UnitTests
@@ -28,8 +28,6 @@ namespace AsyncCaller.Sdk.UnitTests
                 .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
                 .Callback((RawRequest r) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
-            //asyncCall
-            //    .SetCallback(HttpMethod.Get, "http://ignore");
             await asyncCall.ExecuteAsync();
             Assert.IsNotNull(foundRawRequest);
             Assert.IsNull(foundRawRequest.CallBack);
@@ -38,6 +36,23 @@ namespace AsyncCaller.Sdk.UnitTests
             Assert.IsNull(foundRawRequest.Context);
             var expectedTitle = $"GET {asyncCall.CallOut.RequestUri} ({foundRawRequest.Id})";
             Assert.AreEqual(expectedTitle, foundRawRequest.Title);
+            Assert.IsNull(foundRawRequest.Priority);
+        }
+
+        [TestMethod]
+        public async Task PriorityAsyncCall()
+        {
+            RawRequest foundRawRequest = null;
+            var asyncCallerMock = new Mock<IAsyncCaller>();
+            var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"))
+                .SetPriority(2);
+            asyncCallerMock
+                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
+                .Callback((RawRequest r) => foundRawRequest = r)
+                .ReturnsAsync("ignore");
+            await asyncCall.ExecuteAsync();
+            Assert.IsNotNull(foundRawRequest);
+            Assert.AreEqual(2, foundRawRequest.Priority);
         }
     }
 }

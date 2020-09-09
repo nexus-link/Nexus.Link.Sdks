@@ -27,16 +27,17 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.0.25</Version>
+      <Version>2.1.0</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
       <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
       <PackageLanguage>en-US</PackageLanguage>
       <Description>Configurations library to support features in the Nexus Link concept</Description>
-      <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+      <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.1.0 Support for complex types in LeverConfiguration.Value() and LeverConfiguration.MandatoryValue()
         2.0.25 Bump
         2.0.19 Fix: PackageProjectUrl for this nuget package
         2.0.18 Bump

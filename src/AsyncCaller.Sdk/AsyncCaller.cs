@@ -3,10 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Rest;
+using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade;
-using Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+
 #pragma warning disable 1591
 
 namespace Nexus.Link.AsyncCaller.Sdk
@@ -64,12 +65,32 @@ namespace Nexus.Link.AsyncCaller.Sdk
             return asyncCall;
         }
 
+        public IAsyncCall CreateCall(HttpMethod method, string uri, int priority)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+            InternalContract.Require(uri, (u) => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
+
+            var asyncCall = new AsyncCall(this, method, uri)
+                .SetPriority(priority);
+            return asyncCall;
+        }
+
         public IAsyncCall CreateCall(HttpMethod method, Uri uri)
         {
             InternalContract.RequireNotNull(method, nameof(method));
             InternalContract.RequireNotNull(uri, nameof(uri));
 
             var asyncCall = new AsyncCall(this, method, uri);
+            return asyncCall;
+        }
+
+        public IAsyncCall CreateCall(HttpMethod method, Uri uri, int priority)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+            InternalContract.RequireNotNull(uri, nameof(uri));
+
+            var asyncCall = new AsyncCall(this, method, uri)
+                .SetPriority(priority);
             return asyncCall;
         }
 

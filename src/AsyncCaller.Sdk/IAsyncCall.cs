@@ -23,6 +23,10 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// </summary>
         JToken Context { get; set; }
         /// <summary>
+        /// The priority of the request (requires tenant configuration option "SchemaVersion" >= 1)
+        /// </summary>
+        int? Priority { get; set; }
+        /// <summary>
         /// Sets the URI for the callback to the value in <paramref name="uri"/>, and the method to POST.
         /// </summary>
         /// <returns>"this", to allow for chained calls.</returns>
@@ -62,6 +66,13 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// </summary>
         /// <returns>"this", to allow for chained calls.</returns>
         IAsyncCall SetContext(JToken context);
+        /// <summary>
+        /// Set the priority level of the request
+        /// </summary>
+        /// <remarks>Default is null</remarks>
+        /// <returns>"this", to allow for chained calls.</returns>
+        /// <returns></returns>
+        IAsyncCall SetPriority(int? priority);
         /// <summary>
         /// Set the id for this request to <paramref name="id"/>.
         /// </summary>
