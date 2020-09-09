@@ -26,7 +26,7 @@
     <PackageProjectUrl>https://github.com/nexus-link/Nexus.Link.Sdks</PackageProjectUrl>
     <PackageLanguage>en-US</PackageLanguage>
     <Description>SDK for Nexus async caller service.</Description>
-    <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
+    <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       2.1.0 Support for Async Caller Dispatching in Azure functions and for multiple queues
