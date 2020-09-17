@@ -59,7 +59,7 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
             FulcrumAssert.IsNotNullOrWhiteSpace(_fundamentalsServiceBaseUrl, null, "We need a url to Fundamentals");
 
             var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl);
-            return AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+            return publicKeyXml == null ? null : AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
     }
 }

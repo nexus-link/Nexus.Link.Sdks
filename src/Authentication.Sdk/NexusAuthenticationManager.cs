@@ -71,8 +71,7 @@ namespace Nexus.Link.Authentication.Sdk
         public new static async Task<RsaSecurityKey> GetPublicRsaKeyAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
         {
             var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, token);
-            FulcrumAssert.IsNotNullOrWhiteSpace(publicKeyXml);
-            return CreateRsaSecurityKeyFromXmlString(publicKeyXml);
+            return publicKeyXml == null ? null :  CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
 
         public new static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
