@@ -145,7 +145,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
             }
         }
 
-        private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string contentType)
+        private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string msgTypeHeader)
         {
             try
             {
@@ -154,10 +154,13 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
                 var originalContentAsString = await originalContent.ReadAsStringAsync();
                 if (originalContentAsString.Contains("Expires: -1"))
                 {
-                    var contentAsString = originalContentAsString.Replace("Expires: -1\r\n", $"Expires: {DateTimeOffset.Now.AddYears(1):R}");
+                    var contentAsString = originalContentAsString.Replace("Expires: -1\r\n", "");
                     var response = new HttpResponseMessage { Content = new StringContent(contentAsString) };
-                    response.Content.Headers.Remove("Content-Type");   // We want our own special content type
-                    response.Content.Headers.Add("Content-Type", contentType);
+
+                    // Prepare for the ReadAsHttpResponseMessageAsync() method by setting the Content-Type header to "application/http; msgtype=..."
+                    response.Content.Headers.Remove("Content-Type");
+                    response.Content.Headers.Add("Content-Type", msgTypeHeader);
+
                     Log.LogVerbose("Removed header 'Expires: -1' to compensate for dot net core bug");
                     return response;
                 }
