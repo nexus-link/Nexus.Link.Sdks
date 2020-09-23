@@ -61,6 +61,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
             {
                 await response.Content.LoadIntoBufferAsync();
             }
+
             var httpMessageContent = new HttpMessageContent(response);
             await SerializeAsync(httpMessageContent, stream);
         }
@@ -97,8 +98,23 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
         {
             var request = new HttpRequestMessage { Content = content };
             request.Content.Headers.Add("Content-Type", "application/http;msgtype=request");
-            if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
-            return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
+                return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
+
+            }
+            catch (Exception)
+            {
+                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=request");
+                if (httpResponseMessage != null)
+                {
+                    if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
+                    return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
+                }
+                throw;
+            }
         }
 
         public async Task<HttpResponseMessage> DeserializeToResponseAsync(Stream stream)
@@ -116,7 +132,45 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
         {
             var response = new HttpResponseMessage { Content = content };
             response.Content.Headers.Add("Content-Type", "application/http;msgtype=response");
-            return await response.Content.ReadAsHttpResponseMessageAsync();
+
+            try
+            {
+                return await response.Content.ReadAsHttpResponseMessageAsync();
+            }
+            catch (Exception)
+            {
+                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=response");
+                if (httpResponseMessage != null) return await httpResponseMessage.Content.ReadAsHttpResponseMessageAsync();
+                throw;
+            }
+        }
+
+        private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string msgTypeHeader)
+        {
+            try
+            {
+                // Bug in dot net core (Expires header = -1)
+                await originalContent.LoadIntoBufferAsync();
+                var originalContentAsString = await originalContent.ReadAsStringAsync();
+                if (originalContentAsString.Contains("Expires: -1"))
+                {
+                    var contentAsString = originalContentAsString.Replace("Expires: -1\r\n", "");
+                    var response = new HttpResponseMessage { Content = new StringContent(contentAsString) };
+
+                    // Prepare for the ReadAsHttpResponseMessageAsync() method by setting the Content-Type header to "application/http; msgtype=..."
+                    response.Content.Headers.Remove("Content-Type");
+                    response.Content.Headers.Add("Content-Type", msgTypeHeader);
+
+                    Log.LogVerbose("Removed header 'Expires: -1' to compensate for dot net core bug");
+                    return response;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Log.LogError("Error trying to replace header Expires: -1", e);
+            }
+            return null;
         }
     }
 }
