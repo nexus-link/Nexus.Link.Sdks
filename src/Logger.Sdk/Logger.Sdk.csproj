@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.0.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.0.6" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.15.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>2.1.28</Version>
+    <Version>2.1.29</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +28,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
+      2.1.29 Bump
       2.1.28 Bump
       2.1.22 Fix: PackageProjectUrl for this nuget package
       2.1.21 Bump

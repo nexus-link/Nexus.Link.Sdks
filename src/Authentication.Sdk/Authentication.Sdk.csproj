@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.14.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.10.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.15.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
   </ItemGroup>
 
@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>2.2.21</Version>
+      <Version>2.2.22</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -29,6 +29,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.2.22 Bump
         2.2.21 Bump
         2.2.14 Fix: PackageProjectUrl for this nuget package
         2.2.13 Bump
