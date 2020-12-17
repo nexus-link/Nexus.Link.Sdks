@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.9.14" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.10.2" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -36,6 +36,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.1.1 Bump
       3.1.0 Added RestClient for Concepts service.
       3.0.0 Moved ValueOrLockId to Libraries.Core.
       2.0.23 Bump
