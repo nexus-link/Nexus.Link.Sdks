@@ -16,6 +16,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
 
         // We must always have at least this much time until deadline to enter a new message
         private static readonly TimeSpan MinimumBuffer = TimeSpan.FromSeconds(10);
+        // There is a maximum wait time that Azure Storage Queue can accept for InitialVisibilityDelay: "The argument 'initialVisibilityDelay' is larger than maximum of '6.23:59:59"
+        private static readonly TimeSpan MaximumSpanToWaitForAzureStorageQueue = TimeSpan.FromDays(7)-TimeSpan.FromSeconds(1);
+        private static readonly Random Random;
 
         [Obsolete("Use the constructor with IQueue and string.")]
         // ReSharper disable once UnusedParameter.Local
@@ -28,6 +31,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         {
             _queue = queue;
             _queue.MaybeCreateAndConnect(name);
+        }
+
+        static RequestQueue()
+        {
+            Random = new Random();
         }
 
         public IQueue GetQueue()
@@ -53,7 +61,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         {
             if (latestAttemptAt != null) rawRequestEnvelope.Attempts++;
             rawRequestEnvelope.LatestAttemptAt = latestAttemptAt ?? rawRequestEnvelope.LatestAttemptAt;
-            var timeSpanToWait = RetryDelay(rawRequestEnvelope.Attempts);
+            var timeSpanToWait = RetryDelay(rawRequestEnvelope.Attempts, MaximumSpanToWaitForAzureStorageQueue);
             var now = DateTimeOffset.Now;
             rawRequestEnvelope.NextAttemptAt = now.Add(timeSpanToWait);
             await EnqueueAsync(rawRequestEnvelope, timeSpanToWait);
@@ -65,17 +73,20 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         }
 
         // TODO: Is this a good algorithm for calculating how long time we should wait until we retry again?
-        private static TimeSpan RetryDelay(int attempts)
+        private static TimeSpan RetryDelay(int attempts, TimeSpan maxDelay)
         {
             InternalContract.RequireGreaterThanOrEqualTo(0, attempts, nameof(attempts));
+            InternalContract.RequireGreaterThanOrEqualTo(TimeSpan.FromSeconds(1), maxDelay, nameof(maxDelay));
             // Random delay (factor 4 for the first hour, then factor 2)
             var factor = attempts < 7 ? 4 : 2;
-            var random = new Random();
-            var lowerEnd = (int) Math.Pow(factor, attempts);
+            // Protect the 2^power to overflow the capacity of int, by maximizing the final value to be around a year in seconds.
+            var power = Math.Min(attempts, 24);
+            var lowerEnd = (int) Math.Pow(factor, power);
             var upperEnd = lowerEnd * factor;
-            var delayInSeconds = random.Next(lowerEnd, upperEnd);
-            var delayInSecondsAsTimeSpan = TimeSpan.FromSeconds(delayInSeconds);
-            return delayInSecondsAsTimeSpan;
+            var delayInSeconds = Random.Next(lowerEnd, upperEnd);
+            var delayAsTimeSpan = TimeSpan.FromSeconds(delayInSeconds);
+            if (delayAsTimeSpan > maxDelay) delayAsTimeSpan = maxDelay;
+            return delayAsTimeSpan;
         }
 
         /// <inheritdoc />
