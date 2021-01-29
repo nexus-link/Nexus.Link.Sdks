@@ -167,6 +167,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
                 var body = "";
                 if (contentIndex != -1)
                 {
+                    // Keep one CRLF in the header part (to correctly replace 'Expires: -1' if it is last)
+                    contentIndex += 2;
+
                     headers = originalContentAsString.Substring(0, contentIndex);
                     body = originalContentAsString.Substring(contentIndex);
                 }
