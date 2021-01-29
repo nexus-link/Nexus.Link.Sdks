@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Logging;
 
@@ -140,35 +141,60 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
             catch (Exception)
             {
                 var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=response");
-                if (httpResponseMessage != null) return await httpResponseMessage.Content.ReadAsHttpResponseMessageAsync();
+                if (httpResponseMessage != null)
+                {
+                    response = await httpResponseMessage.Content.ReadAsHttpResponseMessageAsync();
+                    return response;
+                }
                 throw;
             }
         }
+
+        private static readonly Regex ServerHeaderRegex = new Regex("^Server: (.*,.*)$", RegexOptions.Multiline);
 
         private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string msgTypeHeader)
         {
             try
             {
-                // Bug in dot net core (Expires header = -1)
+                // Bug in dot net core 1: Expires header = -1
+                // Bug in dot net core 2: Can't handle comma (,) in Server header
                 await originalContent.LoadIntoBufferAsync();
                 var originalContentAsString = await originalContent.ReadAsStringAsync();
-                if (originalContentAsString.Contains("Expires: -1"))
+
+                // Do not replace in body part of content
+                var contentIndex = originalContentAsString.IndexOf("\r\n\r\n", StringComparison.Ordinal); // https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
+                string headers;
+                var body = "";
+                if (contentIndex != -1)
                 {
-                    var contentAsString = originalContentAsString.Replace("Expires: -1\r\n", "");
+                    headers = originalContentAsString.Substring(0, contentIndex);
+                    body = originalContentAsString.Substring(contentIndex);
+                }
+                else
+                {
+                    headers = originalContentAsString;
+                }
+
+                if (headers.Contains("Expires: -1") || ServerHeaderRegex.IsMatch(headers))
+                {
+                    headers = headers.Replace("Expires: -1\r\n", "");
+                    headers = ServerHeaderRegex.Replace(headers, match => "Server: " + match.Groups[1].Value.Replace(",", ""));
+                    var contentAsString = headers + body;
                     var response = new HttpResponseMessage { Content = new StringContent(contentAsString) };
 
                     // Prepare for the ReadAsHttpResponseMessageAsync() method by setting the Content-Type header to "application/http; msgtype=..."
                     response.Content.Headers.Remove("Content-Type");
                     response.Content.Headers.Add("Content-Type", msgTypeHeader);
 
-                    Log.LogVerbose("Removed header 'Expires: -1' to compensate for dot net core bug");
+                    if (originalContentAsString.Contains("Expires: -1")) Log.LogVerbose("Removed header 'Expires: -1' to compensate for dot net core bug");
+                    if (ServerHeaderRegex.IsMatch(originalContentAsString)) Log.LogVerbose("Removed comma from Server header to compensate for dot net core bug");
                     return response;
                 }
 
             }
             catch (Exception e)
             {
-                Log.LogError("Error trying to replace header Expires: -1", e);
+                Log.LogError("Error trying to compensate for dotnet core bugs (replace header Expires: -1 or comma in Server header)", e);
             }
             return null;
         }
