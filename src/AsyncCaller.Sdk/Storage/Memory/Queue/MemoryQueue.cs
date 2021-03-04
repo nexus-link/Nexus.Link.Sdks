@@ -68,6 +68,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
             lock (LockObject)
             {
                 FulcrumAssert.IsNotNull(_queue, $"{Namespace}: 9BD616FD-3867-453C-93C6-13B4767A6FE5", $"Expected the queue ({QueueName}) to exist. Did you forget to call MaybeCreateAndConnect()?");
+                Log.LogVerbose($"Add message {message}");
                 _queue.Enqueue(message);
             }
             await Task.Yield();
@@ -88,7 +89,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
         {
             lock (LockObject)
             {
-                Log.LogVerbose($"Get one message of: {_queue.Count}");
+                Log.LogVerbose($"Get one message of: {_queue.Count}; {DateTimeOffset.Now:O}");
                 if (!_queue.Any()) return null;
                 return _queue.Dequeue();
             }

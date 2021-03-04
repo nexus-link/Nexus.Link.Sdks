@@ -48,7 +48,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
                 Payload = response.Content
             };
             var dataAsync = await responseContent.ToDataAsync();
-            request.CallOut.Content = new StringContent(dataAsync.Serialize(), Encoding.UTF8, dataAsync.PayloadMediaType);
+            request.CallOut.Content = new StringContent(dataAsync.Serialize(), Encoding.UTF8, "application/json");
             var responseEnvelope = new RequestEnvelope(requestEnvelope.Organization, requestEnvelope.Environment, request, defaultDeadlineInSeconds)
             {
                 OriginalRequestId = requestEnvelope.OriginalRequestId
