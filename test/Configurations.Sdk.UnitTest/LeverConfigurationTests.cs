@@ -36,6 +36,39 @@ namespace Configurations.Sdk.UnitTest
         }
 
         [TestMethod]
+        public void Ints_Can_Be_Configured_As_Strings()
+        {
+            var config = CreateLeverConfiguration(JObject.FromObject(new
+            {
+                x = "1"
+            }));
+            Assert.AreEqual(1, config.Value<int>("x"));
+            Assert.AreEqual(1, config.MandatoryValue<int?>("x"));
+        }
+
+        [TestMethod]
+        public void Bools_Can_Be_Used()
+        {
+            var config = CreateLeverConfiguration(JObject.FromObject(new
+            {
+                x = true
+            }));
+            Assert.AreEqual(true, config.Value<bool>("x"));
+            Assert.AreEqual(true, config.MandatoryValue<bool?>("x"));
+        }
+
+        [TestMethod]
+        public void Bools_Can_Be_Configured_As_Strings()
+        {
+            var config = CreateLeverConfiguration(JObject.FromObject(new
+            {
+                x = "true"
+            }));
+            Assert.AreEqual(true, config.Value<bool>("x"));
+            Assert.AreEqual(true, config.MandatoryValue<bool?>("x"));
+        }
+
+        [TestMethod]
         public void Strings_Can_Be_Used()
         {
             var config = CreateLeverConfiguration(JObject.FromObject(new
@@ -52,6 +85,17 @@ namespace Configurations.Sdk.UnitTest
             var config = CreateLeverConfiguration(JObject.FromObject(new
             {
                 x = 1.1
+            }));
+            Assert.AreEqual(1.1, config.Value<double>("x"));
+            Assert.AreEqual(1.1, config.MandatoryValue<double?>("x"));
+        }
+
+        [TestMethod]
+        public void Doubles_Can_Be_Configured_As_String()
+        {
+            var config = CreateLeverConfiguration(JObject.FromObject(new
+            {
+                x = "1.1"
             }));
             Assert.AreEqual(1.1, config.Value<double>("x"));
             Assert.AreEqual(1.1, config.MandatoryValue<double?>("x"));
@@ -79,6 +123,19 @@ namespace Configurations.Sdk.UnitTest
             }));
             CollectionAssert.AreEqual(array, config.Value<List<int>>("x"));
             CollectionAssert.AreEqual(array, config.MandatoryValue<List<int>>("x"));
+        }
+
+        [TestMethod]
+        public void Arrays_Of_Ints_Can_Be_Configured_As_Strings()
+        {
+            var stringArray = new[] { "1", "2", "3" };
+            var intArray = new[] { 1, 2, 3 };
+            var config = CreateLeverConfiguration(JObject.FromObject(new
+            {
+                x = stringArray
+            }));
+            CollectionAssert.AreEqual(intArray, config.Value<List<int>>("x"));
+            CollectionAssert.AreEqual(intArray, config.MandatoryValue<List<int>>("x"));
         }
 
         [TestMethod]
