@@ -15,7 +15,9 @@ namespace Nexus.Link.Configurations.Sdk
     public class LeverConfiguration : ILeverConfiguration
     {
         private static readonly string Namespace = typeof(LeverConfiguration).Namespace;
-        private readonly Tenant _tenant;
+
+        /// <inheritdoc />
+        public Tenant Tenant { get; }
         private readonly string _service;
         /// <summary>
         /// This is where all the configuration values are stored
@@ -35,7 +37,7 @@ namespace Nexus.Link.Configurations.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(service, nameof(service));
             InternalContract.RequireNotNull(jObject, nameof(jObject));
 
-            _tenant = tenant;
+            Tenant = tenant;
             _service = service;
             JObject = jObject;
         }
@@ -54,7 +56,7 @@ namespace Nexus.Link.Configurations.Sdk
         {
             InternalContract.RequireNotNull(key, nameof(key));
             var value = Value<T>(key);
-            FulcrumAssert.IsNotNull(value, $"{Namespace}: B2D26B5A-AAAD-4283-A4D7-D96232311AC6", $"Mandatory key ({key}) not found in service {_service} configuration for tentant {_tenant}.");
+            FulcrumAssert.IsNotNull(value, $"{Namespace}: B2D26B5A-AAAD-4283-A4D7-D96232311AC6", $"Mandatory key ({key}) not found in service {_service} configuration for tenant {Tenant}.");
 #if DEBUG
             var type = typeof(T);
             InternalContract.Require(IsNullable(type), $"The type {type.FullName} was expected to be nullable. Use the method Value<T>() instead of MandatoryValue<T>().");
