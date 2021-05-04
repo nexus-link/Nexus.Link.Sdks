@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
@@ -28,7 +28,7 @@ namespace Nexus.Link.Authentication.Sdk
     {
         private static readonly string Namespace = typeof(AuthenticationManager).Namespace;
         private static readonly HttpClient HttpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
-        private static readonly Dictionary<string, TokenCache> TokenCaches = new Dictionary<string, TokenCache>();
+        private static readonly ConcurrentDictionary<string, TokenCache> TokenCaches = new ConcurrentDictionary<string, TokenCache>();
         private readonly TokenCache _tokenCache;
         public Tenant Tenant { get; }
         public Uri ServiceUri { get; }
