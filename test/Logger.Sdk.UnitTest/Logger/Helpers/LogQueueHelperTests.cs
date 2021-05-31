@@ -27,7 +27,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
         [TestInitialize]
         public void RunBeforeEachTest()
         {
-            FulcrumApplicationHelper.UnitTestSetup(typeof(SdkTests).FullName);
+            FulcrumApplicationHelper.UnitTestSetup(typeof(LogQueueHelperTests).FullName);
 
             _legacyLoggerMock = new Mock<ILogClient>();
             LoggingServiceConfigurationMock = new Mock<ILeverServiceConfiguration>();

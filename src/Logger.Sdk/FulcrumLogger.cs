@@ -1,4 +1,5 @@
-﻿using Microsoft.Rest;
+﻿using System;
+using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -19,21 +20,29 @@ namespace Nexus.Link.Logger.Sdk
         private readonly ISyncLogger _messagesBuffer;
         private readonly ILogQueueHelper<LogMessage> _storageHandler;
 
+        /// <param name="loggingServiceConfiguration">Access to TenantLoggingConfiguration</param>
+        public FulcrumLogger(ILeverServiceConfiguration loggingServiceConfiguration) : this(new LogQueueHelper<LogMessage>(loggingServiceConfiguration))
+        {
+        }
+
         /// <param name="baseUri">Where the fundamentals log service is located.</param>
         /// <param name="authenticationCredentials">Credentials to the log service.</param>
+        [Obsolete("Using fundamentals' logging endpoint is discouraged")]
         public FulcrumLogger(string baseUri, ServiceClientCredentials authenticationCredentials) :
              this(new LogClient(baseUri, authenticationCredentials), new LogQueueHelper<LogMessage>())
         {
         }
 
         /// <param name="logClient">The fundamentals log client</param>
+        [Obsolete("Using fundamentals' logging endpoint is discouraged")]
         public FulcrumLogger(ILogClient logClient) :
             this(logClient, new LogQueueHelper<LogMessage>())
         {
         }
 
         /// <param name="logClient">The fundamentals log client</param>
-        /// <param name="serviceConfiguration">Access to TennantLoggingConfiguration</param>
+        /// <param name="loggingServiceConfiguration">Access to TenantLoggingConfiguration</param>
+        [Obsolete("Using fundamentals' logging endpoint is discouraged")]
         public FulcrumLogger(ILogClient logClient, ILeverServiceConfiguration loggingServiceConfiguration) :
             this(logClient, new LogQueueHelper<LogMessage>(loggingServiceConfiguration))
         {
@@ -42,13 +51,20 @@ namespace Nexus.Link.Logger.Sdk
         /// <summary>
         /// Unit Tests Constructor
         /// </summary>
-        public FulcrumLogger(ILogClient logClient, ILogQueueHelper<LogMessage> logQueueHelper)
+        public FulcrumLogger(ILogQueueHelper<LogMessage> logQueueHelper)
         {
-            InternalContract.RequireNotNull(logClient, nameof(logClient));
             InternalContract.RequireNotNull(logQueueHelper, nameof(logQueueHelper));
 
             _messagesBuffer = new QueueToAsyncLogger(this);
             _storageHandler = logQueueHelper;
+        }
+
+        /// <summary>
+        /// Legacy Unit Tests Constructor
+        /// </summary>
+        [Obsolete("Using fundamentals' logging endpoint is discouraged")]
+        public FulcrumLogger(ILogClient logClient, ILogQueueHelper<LogMessage> logQueueHelper) : this(logQueueHelper)
+        {
             _legacyLoggerClient = logClient;
         }
 
@@ -94,6 +110,8 @@ namespace Nexus.Link.Logger.Sdk
             }
             else
             {
+                FulcrumAssert.IsNotNull(_legacyLoggerClient, null, "When using this logger without a storage queue configuration, an ILogClient must be provided.");
+
                 // Fallback restclient logger to fundamentals
                 await _legacyLoggerClient.LogAsync(tenant, logMessage);
             }

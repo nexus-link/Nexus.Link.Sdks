@@ -14,7 +14,7 @@ using Nexus.Link.Logger.Sdk.RestClients;
 namespace Logger.Sdk.UnitTest.Logger
 {
     [TestClass]
-    public class SdkTests
+    public class LeagcyLoggerTests
     {
         private Mock<ILogClient> _logClientMock;
 
@@ -23,7 +23,7 @@ namespace Logger.Sdk.UnitTest.Logger
         [TestInitialize]
         public void Initialize()
         {
-            FulcrumApplicationHelper.UnitTestSetup(typeof(SdkTests).FullName);
+            FulcrumApplicationHelper.UnitTestSetup(typeof(LeagcyLoggerTests).FullName);
 
             _logClientMock = new Mock<ILogClient>();
 
@@ -34,7 +34,9 @@ namespace Logger.Sdk.UnitTest.Logger
             // ReSharper disable once ObjectCreationAsStatement
             FulcrumApplication.Context.ClientTenant = Tenant;
 
+#pragma warning disable 618
             FulcrumApplication.Setup.SynchronousFastLogger = new FulcrumLogger(_logClientMock.Object);
+#pragma warning restore 618
         }
 
         [TestMethod]
@@ -108,7 +110,7 @@ namespace Logger.Sdk.UnitTest.Logger
 
             Assert.IsTrue(logCalled.WaitOne(TimeSpan.FromSeconds(3)), "LogAsync was never called");
             Assert.IsNotNull(loggedMessage);
-            Assert.AreEqual(typeof(SdkTests).FullName, loggedMessage.Originator);
+            Assert.AreEqual(typeof(LeagcyLoggerTests).FullName, loggedMessage.Originator);
             Assert.IsTrue(loggedMessage.Message.Contains(message));
             Assert.AreEqual(correlationId, loggedMessage.CorrelationId);
             Assert.AreEqual(logSeverityLevel, loggedMessage.SeverityLevel);
@@ -137,7 +139,7 @@ namespace Logger.Sdk.UnitTest.Logger
 
             Assert.IsTrue(logCalled.WaitOne(TimeSpan.FromSeconds(3)), "LogAsync was never called");
             Assert.IsNotNull(loggedMessage);
-            Assert.AreEqual(typeof(SdkTests).FullName, loggedMessage.Originator);
+            Assert.AreEqual(typeof(LeagcyLoggerTests).FullName, loggedMessage.Originator);
             Assert.AreEqual(correlationId, loggedMessage.CorrelationId);
             Assert.AreEqual(LogSeverityLevel.Error, loggedMessage.SeverityLevel);
             Assert.IsNotNull(loggedMessage.Timestamp);

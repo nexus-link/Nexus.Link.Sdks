@@ -16,8 +16,6 @@ namespace Logger.Sdk.UnitTest.Logger
     [TestClass]
     public class FulcrumLoggerTests
     {
-        private Mock<ILogClient> LegacyLoggerMock { get; set; }
-
         private Mock<ILogQueueHelper<LogMessage>> LogQueueHelperMock { get; set; }
 
         private FulcrumLogger SystemUnderTest { get; set; }
@@ -27,15 +25,14 @@ namespace Logger.Sdk.UnitTest.Logger
         [TestInitialize]
         public void RunBeforeEachTest()
         {
-            FulcrumApplicationHelper.UnitTestSetup(typeof(SdkTests).FullName);
+            FulcrumApplicationHelper.UnitTestSetup(typeof(LeagcyLoggerTests).FullName);
 
-            LegacyLoggerMock = new Mock<ILogClient>();
             LogQueueHelperMock = new Mock<ILogQueueHelper<LogMessage>>();
 
             // To setup Tenant on value provider
             // ReSharper disable once ObjectCreationAsStatement
             FulcrumApplication.Context.ClientTenant = Tenant;
-            SystemUnderTest = new FulcrumLogger( LegacyLoggerMock.Object, LogQueueHelperMock.Object);
+            SystemUnderTest = new FulcrumLogger(LogQueueHelperMock.Object);
         }
 
         /// <summary>
@@ -51,7 +48,7 @@ namespace Logger.Sdk.UnitTest.Logger
             IWritableQueue<LogMessage> storageQueue = new MemoryQueue<LogMessage>("MSTestMemQueue");
             LogQueueHelperMock
                 .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
-                .Returns(Task<(bool, IWritableQueue<LogMessage>)>.FromResult((true, storageQueue)));
+                .Returns(Task.FromResult((true, storageQueue)));
 
             var logRecord = new LogRecord
             {
@@ -76,17 +73,22 @@ namespace Logger.Sdk.UnitTest.Logger
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task LogMessageIsPushedToFundamentals()
+        public async Task Legacy_LogMessageIsPushedToFundamentals()
         {
             // Arrange
+            var legacyLoggerMock = new Mock<ILogClient>();
+#pragma warning disable 618
+            SystemUnderTest = new FulcrumLogger(legacyLoggerMock.Object, LogQueueHelperMock.Object);
+#pragma warning restore 618
+
             var logMessageSpy = new LogMessage();
-            LegacyLoggerMock
+            legacyLoggerMock
                 .Setup(f => f.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>()))
                 .Callback<Tenant, LogMessage[]>((tenant, logMessage) => logMessageSpy = logMessage[0]);
 
             LogQueueHelperMock
                 .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
-                .Returns(Task<(bool, IWritableQueue<LogMessage>)>.FromResult((false, default(IWritableQueue<LogMessage>))));
+                .Returns(Task.FromResult((false, default(IWritableQueue<LogMessage>))));
 
             var logRecord = new LogRecord
             {
