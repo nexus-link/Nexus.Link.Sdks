@@ -32,7 +32,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="DefaultContextId">DefaultContextId.</param>
         /// <param name="CanCreateInstancesManually">CanCreateInstancesManually.</param>
         /// <param name="CanCreateInstancesAutomatically">CanCreateInstancesAutomatically.</param>
-        public Concept(Guid? Id = default(Guid?), string TechnicalName = default(string), string FriendlyName = default(string), Guid? DefaultContextId = default(Guid?), bool? CanCreateInstancesManually = default(bool?), bool? CanCreateInstancesAutomatically = default(bool?))
+        public Concept(Guid? Id = default, string TechnicalName = default, string FriendlyName = default, Guid? DefaultContextId = default, bool? CanCreateInstancesManually = default, bool? CanCreateInstancesAutomatically = default)
         {
             this.Id = Id;
             this.TechnicalName = TechnicalName;

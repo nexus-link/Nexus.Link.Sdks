@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.Cache;
 using Nexus.Link.KeyTranslator.Sdk.Models;
@@ -121,7 +122,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
             if (_translateRequests.IsEmpty) return;
             var serviceRequestKeys = GetRequestKeysNotInCache(_translateRequests.Keys);
@@ -171,12 +172,12 @@ namespace Nexus.Link.KeyTranslator.Sdk
             return serviceRequestKeys;
         }
 
-        private async Task<Dictionary<string, TranslateResponse>> CallKeyTranslatorAsync(IEnumerable<string> serviceRequestKeys)
+        private async Task<Dictionary<string, TranslateResponse>> CallKeyTranslatorAsync(IEnumerable<string> serviceRequestKeys, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(serviceRequestKeys, nameof(serviceRequestKeys));
             FulcrumAssert.IsNotNull(TranslateClient);
             var result =
-                await TranslateClient.TranslateBatchAsync(serviceRequestKeys.Select(k => TranslateRequest.ToFacade(GetTranslateRequest(k))));
+                await TranslateClient.TranslateBatchAsync(serviceRequestKeys.Select(k => TranslateRequest.ToFacade(GetTranslateRequest(k))), cancellationToken);
             FulcrumAssert.IsNotNull(result);
             var translateResponses = new Dictionary<string, TranslateResponse>();
             foreach (var item in result)

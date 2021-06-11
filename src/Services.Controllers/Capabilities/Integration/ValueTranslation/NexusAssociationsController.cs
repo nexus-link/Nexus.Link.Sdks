@@ -31,7 +31,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         [HttpPost]
         [Route("{sourceConceptValuePath}")]
         public Task AssociateAsync(string sourceConceptValuePath, string[] targetConceptValuePaths,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
@@ -48,7 +48,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         [HttpGet]
         [Route("{sourceConceptValuePath}/Context/{targetContextName}/ValueOrLock")]
         public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
@@ -61,7 +61,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         [HttpGet]
         [Route("{sourceConceptValuePath}/Client/{targetClientName}/ValueOrLock")]
         public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
@@ -74,7 +74,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         [HttpPost]
         [Route("{sourceConceptValuePath}/Locks/{lockId}")]
         public Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
@@ -88,7 +88,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         [HttpDelete]
         [Route("{sourceConceptValuePath}/Locks/{lockId}")]
         public Task ReleaseLockAsync(string sourceConceptValuePath, string lockId,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));

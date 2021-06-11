@@ -12,6 +12,6 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         IQueue GetQueue();
         Task<string> EnqueueAsync(RawRequestEnvelope rawRequestEnvelope, TimeSpan? timeSpanToWait = null, CancellationToken cancellationToken = default);
         Task RequeueAsync(RawRequestEnvelope rawRequestEnvelope, DateTimeOffset? latestAttemptAt = null, CancellationToken cancellationToken = default);
-        Task ClearAsync();
+        Task ClearAsync(CancellationToken cancellationToken = default);
     }
 }

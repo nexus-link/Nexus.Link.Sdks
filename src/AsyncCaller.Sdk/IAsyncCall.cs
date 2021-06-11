@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -118,6 +119,6 @@ namespace Nexus.Link.AsyncCaller.Sdk
         /// Execute the configured asynchronous call.
         /// </summary>
         /// <returns></returns>
-        Task<string> ExecuteAsync();
+        Task<string> ExecuteAsync(CancellationToken cancellationToken = default);
     }
 }

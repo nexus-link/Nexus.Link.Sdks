@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models;
@@ -14,24 +15,24 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Clients
         {
         }
 
-        public async Task<Instance> GetOneAsync(Guid instanceId)
+        public async Task<Instance> GetOneAsync(Guid instanceId, CancellationToken cancellationToken = default)
         {
             var relativeUrl = $"/Instances/{instanceId}";
-            var result = await RestClient.GetAsync<Instance>(relativeUrl);
+            var result = await RestClient.GetAsync<Instance>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
 
-        public async Task<Instance> UpdateAsync(Guid instanceId, Instance instance)
+        public async Task<Instance> UpdateAsync(Guid instanceId, Instance instance, CancellationToken cancellationToken = default)
         {
             var relativeUrl = $"/Instances/{instanceId}";
-            var result = await RestClient.PutAndReturnUpdatedObjectAsync(relativeUrl, instance);
+            var result = await RestClient.PutAndReturnUpdatedObjectAsync(relativeUrl, instance, cancellationToken: cancellationToken);
             return result;
         }
 
-        public async Task DeleteAsync(Guid instanceId)
+        public async Task DeleteAsync(Guid instanceId, CancellationToken cancellationToken = default)
         {
             var relativeUrl = $"/Instances/{instanceId}";
-            await RestClient.DeleteAsync(relativeUrl);
+            await RestClient.DeleteAsync(relativeUrl, cancellationToken: cancellationToken);
         }
     }
 }

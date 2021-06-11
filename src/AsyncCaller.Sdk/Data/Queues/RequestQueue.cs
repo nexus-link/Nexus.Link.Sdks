@@ -69,9 +69,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
             await EnqueueAsync(rawRequestEnvelope, timeSpanToWait, cancellationToken);
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(CancellationToken cancellationToken = default)
         {
-            await _queue.ClearAsync();
+            await _queue.ClearAsync(cancellationToken);
         }
 
         // TODO: Is this a good algorithm for calculating how long time we should wait until we retry again?

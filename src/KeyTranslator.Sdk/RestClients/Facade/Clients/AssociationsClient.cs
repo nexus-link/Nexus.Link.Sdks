@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
@@ -14,10 +15,10 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         {
         }
 
-        public async Task CreateAsync(Association association)
+        public async Task CreateAsync(Association association, CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "/Associations";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, association);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, association, cancellationToken: cancellationToken);
         }
     }
 }

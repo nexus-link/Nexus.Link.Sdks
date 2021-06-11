@@ -28,7 +28,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// </summary>
         /// <param name="Id">Id.</param>
         /// <param name="FriendlyName">FriendlyName.</param>
-        public Form(Guid? Id = default(Guid?), string FriendlyName = default(string))
+        public Form(Guid? Id = default, string FriendlyName = default)
         {
             this.Id = Id;
             this.FriendlyName = FriendlyName;

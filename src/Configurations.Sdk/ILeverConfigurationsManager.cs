@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Configurations;
 
@@ -13,8 +14,9 @@ namespace Nexus.Link.Configurations.Sdk
         /// Get a configuration for the specified tenant.
         /// </summary>
         /// <param name="tenant"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant);
+        Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant, CancellationToken cancellationToken = default);
         /// <summary>
         /// Clear the cache of tenant configurations.
         /// </summary>

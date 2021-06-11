@@ -48,7 +48,7 @@ namespace Logger.Sdk.UnitTest.Logger
             // Arrange
             IWritableQueue<LogMessage> storageQueue = new MemoryQueue<LogMessage>("MSTestMemQueue");
             LogQueueHelperMock
-                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
+                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((true, storageQueue)));
 
             var logRecord = new LogRecord
@@ -88,7 +88,7 @@ namespace Logger.Sdk.UnitTest.Logger
                 .Callback<Tenant, LogMessage[]>((tenant, logMessage) => logMessageSpy = logMessage[0]);
 
             LogQueueHelperMock
-                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
+                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((false, default(IWritableQueue<LogMessage>))));
 
             var logRecord = new LogRecord

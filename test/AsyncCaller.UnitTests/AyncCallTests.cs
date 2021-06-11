@@ -28,7 +28,7 @@ namespace AsyncCaller.Sdk.UnitTests
             var asyncCallerMock = new Mock<IAsyncCaller>();
             var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"));
             asyncCallerMock
-                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
+                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
                 .Callback((RawRequest r) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();
@@ -50,7 +50,7 @@ namespace AsyncCaller.Sdk.UnitTests
             var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"))
                 .SetPriority(2);
             asyncCallerMock
-                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
+                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
                 .Callback((RawRequest r) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();

@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.12.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.0.3" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -23,7 +23,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.0.0 Added CancellationToken where missing.
+      3.0.0 Added CancellationToken where missing for async methods.
       2.0.25 Bump
       2.0.17 Fix: PackageProjectUrl for this nuget package
       2.0.16 Bump

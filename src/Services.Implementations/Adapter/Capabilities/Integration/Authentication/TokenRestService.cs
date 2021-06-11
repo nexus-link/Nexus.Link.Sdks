@@ -16,13 +16,13 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         }
 
         /// <inheritdoc />
-        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials, CancellationToken token = default(CancellationToken))
+        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials, CancellationToken token = default)
         {
             return RestClient.PostAsync<AuthenticationToken, AuthenticationCredentials>("", credentials, null, token);
         }
 
         /// <inheritdoc />
-        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
+        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default)
         {
             return RestClient.GetAsync<string>("PublicKeyAsXml", null, token);
         }

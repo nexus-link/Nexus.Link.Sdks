@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
@@ -22,7 +23,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             _loggingServiceConfiguration = loggingServiceConfiguration;
         }
 
-        public async Task<(bool HasStorageQueue, IWritableQueue<T> WritableQueue)> TryGetQueueAsync(Tenant tenant)
+        public async Task<(bool HasStorageQueue, IWritableQueue<T> WritableQueue)> TryGetQueueAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireValidated(tenant, nameof(tenant));

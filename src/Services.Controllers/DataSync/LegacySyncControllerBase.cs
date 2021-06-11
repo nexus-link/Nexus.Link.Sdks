@@ -55,7 +55,7 @@ namespace Nexus.Link.Services.Controllers.DataSync
         /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<TModel>> LegacyReadAsync(string id,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             try
@@ -96,7 +96,7 @@ namespace Nexus.Link.Services.Controllers.DataSync
         /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult> LegacyUpdateAsync(string id, [FromBody] TModel item,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace Nexus.Link.Services.Controllers.DataSync
         /// </summary>
         [HttpPost("")]
         public async Task<ActionResult<string>> LegacyCreateAsync([FromBody] TModelCreate item,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             try
             {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
-namespace Nexus.Link.Services.Implementations.Startup
+namespace Nexus.Link.Services.Implementations.Common.Startup
 {
     /// <summary>
     /// Adds the Nexus configuration database as a configuration source

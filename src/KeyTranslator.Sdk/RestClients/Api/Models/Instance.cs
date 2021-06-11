@@ -33,7 +33,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="Value">Value.</param>
         /// <param name="IsPreferred">IsPreferred.</param>
         /// <param name="IsValid">IsValid.</param>
-        public Instance(Guid? Id = default(Guid?), Guid? ConceptId = default(Guid?), Guid? ContextId = default(Guid?), Guid? FormId = default(Guid?), string Value = default(string), bool? IsPreferred = default(bool?), bool? IsValid = default(bool?))
+        public Instance(Guid? Id = default, Guid? ConceptId = default, Guid? ContextId = default, Guid? FormId = default, string Value = default, bool? IsPreferred = default, bool? IsValid = default)
         {
             this.Id = Id;
             this.ConceptId = ConceptId;

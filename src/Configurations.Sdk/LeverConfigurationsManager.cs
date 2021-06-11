@@ -43,7 +43,7 @@ namespace Nexus.Link.Configurations.Sdk
         }
 
         /// <inheritdoc />
-        public async Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant)
+        public async Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
@@ -53,18 +53,18 @@ namespace Nexus.Link.Configurations.Sdk
             if (configuration != null) return configuration;
 
             var serviceUri = new Uri(_configurationsServiceUri, $"api/v1/{tenant.Organization}/{tenant.Environment}/Configurations/{_serviceName}");
-            var jObject = await GetConfigurationAsync(serviceUri);
+            var jObject = await GetConfigurationAsync(serviceUri, cancellationToken);
             configuration = new LeverConfiguration(tenant, _serviceName, jObject);
             _cache.Add(tenant, _serviceName, configuration);
             return configuration;
         }
 
-        private async Task<JObject> GetConfigurationAsync(Uri serviceUri)
+        private async Task<JObject> GetConfigurationAsync(Uri serviceUri, CancellationToken cancellationToken)
         {
             InternalContract.RequireNotNull(serviceUri, nameof(serviceUri));
 
             var request = new HttpRequestMessage(HttpMethod.Get, serviceUri);
-            await _serviceClientCredentials.ProcessHttpRequestAsync(request, default(CancellationToken));
+            await _serviceClientCredentials.ProcessHttpRequestAsync(request, default);
             var response = await HttpClient.SendAsync(request);
             FulcrumAssert.IsNotNull(response, $"{Namespace}: 332DE55E-8A40-482A-BA9D-0223C077A096", $"Expected a non-null response from GET {serviceUri}");
             FulcrumAssert.IsTrue(response.IsSuccessStatusCode, $"{Namespace}: BB3F6675-E5A6-4C96-924D-53FB18B636A4", $"Response status code was {response.StatusCode}. Expected all non-success responses to be thrown as Fulcrum Exceptions.");

@@ -34,7 +34,7 @@ namespace Nexus.Link.Services.Controllers.Events
 
         /// <inheritdoc />
         [HttpPost("")]
-        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken token = default(CancellationToken))
+        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken token = default)
         {
             ServiceContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             var @event = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson.ToString(Formatting.None));
@@ -47,7 +47,7 @@ namespace Nexus.Link.Services.Controllers.Events
         /// <inheritdoc />
         [HttpPost("Entities/{entityName}/Events/{eventName}/Versions/{majorVersion}")]
         public async Task ReceiveEventExplicitlyAsync(string entityName, string eventName, int majorVersion,
-            JToken eventAsJson, CancellationToken token = default(CancellationToken))
+            JToken eventAsJson, CancellationToken token = default)
         {
             ServiceContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             var @event = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson.ToString(Formatting.None));

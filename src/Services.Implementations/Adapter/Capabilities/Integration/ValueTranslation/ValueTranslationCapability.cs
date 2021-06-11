@@ -43,7 +43,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
         private class NotImplementedConceptService : IConceptService
         {
             /// <inheritdoc />
-            public Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName, CancellationToken cancellationToken = default(CancellationToken))
+            public Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName, CancellationToken cancellationToken = default)
             {
                 throw new FulcrumNotImplementedException("This method is not expected to be called from a Nexus Adapter.");
             }

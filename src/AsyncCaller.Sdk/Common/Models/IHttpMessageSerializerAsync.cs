@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
@@ -9,9 +10,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
     /// </summary>
     public interface IHttpMessageSerializerAsync
     {
-        Task SerializeAsync(HttpResponseMessage response, Stream stream);
-        Task SerializeAsync(HttpRequestMessage request, Stream stream);
-        Task<HttpResponseMessage> DeserializeToResponseAsync(Stream stream);
-        Task<HttpRequestMessage> DeserializeToRequestAsync(Stream stream, string uriScheme);
+        Task SerializeAsync(HttpResponseMessage response, Stream stream, CancellationToken cancellationToken = default);
+        Task SerializeAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken = default);
+        Task<HttpResponseMessage> DeserializeToResponseAsync(Stream stream, CancellationToken cancellationToken = default);
+        Task<HttpRequestMessage> DeserializeToRequestAsync(Stream stream, string uriScheme, CancellationToken cancellationToken = default);
     }
 }

@@ -31,7 +31,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.BusinessEvent
         /// <inheritdoc />
         [HttpPost]
         [Route("")]
-        public virtual Task PublishAsync(JToken @event, CancellationToken token = default(CancellationToken))
+        public virtual Task PublishAsync(JToken @event, CancellationToken token = default)
         {
             ServiceContract.RequireNotNull(@event, nameof(@event));
             ServiceContract.Require(@event.Type == JTokenType.Object, $"The {nameof(@event)} parameter must be a JSON object.");

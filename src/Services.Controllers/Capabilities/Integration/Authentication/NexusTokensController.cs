@@ -29,7 +29,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.Authenticatio
         /// <inheritdoc />
         [HttpPost]
         [Route("")]
-        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials, CancellationToken token = default(CancellationToken))
+        public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials, CancellationToken token = default)
         {
             ServiceContract.RequireNotNull(credentials, nameof(credentials));
             ServiceContract.RequireValidated(credentials, nameof(credentials));
@@ -38,7 +38,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.Authenticatio
 
         /// <inheritdoc />
         [HttpGet("PublicKeyAsXml")]
-        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
+        public Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default)
         {
             return Capability.TokenService.GetPublicRsaKeyAsXmlAsync(token);
         }

@@ -28,7 +28,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         /// </summary>
         /// <param name="Request">Request.</param>
         /// <param name="Value">Value.</param>
-        public TranslateResponse(TranslateRequest Request = default(TranslateRequest), string Value = default(string))
+        public TranslateResponse(TranslateRequest Request = default, string Value = default)
         {
             this.Request = Request;
             this.Value = Value;

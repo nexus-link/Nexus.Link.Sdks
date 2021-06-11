@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Common.Models;
 using ResponseContent = Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic.ResponseContent;
@@ -32,7 +33,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
             Request = request;
         }
 
-        public static async Task<RequestEnvelope> GetResponseAsRequestEnvelopeAsync(RequestEnvelope requestEnvelope, HttpResponseMessage response, TimeSpan defaultDeadlineInSeconds)
+        public static async Task<RequestEnvelope> GetResponseAsRequestEnvelopeAsync(RequestEnvelope requestEnvelope, HttpResponseMessage response, TimeSpan defaultDeadlineInSeconds, CancellationToken cancellationToken = default)
         {
             var request = new Request
             {
@@ -56,10 +57,10 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
             return await Task.FromResult(responseEnvelope);
         }
 
-        public static async Task<RequestEnvelope> FromRawAsync(Data.Models.RawRequestEnvelope source, TimeSpan defaultDeadlineInSeconds)
+        public static async Task<RequestEnvelope> FromRawAsync(Data.Models.RawRequestEnvelope source, TimeSpan defaultDeadlineInSeconds, CancellationToken cancellationToken = default)
         {
             if (source == null) return null;
-            var request = await Request.FromRawAsync(source.RawRequest);
+            var request = await Request.FromRawAsync(source.RawRequest, cancellationToken);
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new RequestEnvelope(source.Organization, source.Environment, request, defaultDeadlineInSeconds)
             {
@@ -67,16 +68,16 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
                 Attempts = source.Attempts,
                 CreatedAt = source.CreatedAt,
                 LatestAttemptAt = source.LatestAttemptAt,
-                LatestResponse = await serializer.DeserializeToResponseAsync(source.LatestResponse),
+                LatestResponse = await serializer.DeserializeToResponseAsync(source.LatestResponse, cancellationToken),
                 DeadlineAt = source.DeadlineAt,
                 NextAttemptAt = source.NextAttemptAt
             };
             return target;
         }
 
-        public async Task<Data.Models.RawRequestEnvelope> ToRawAsync()
+        public async Task<Data.Models.RawRequestEnvelope> ToRawAsync(CancellationToken cancellationToken = default)
         {
-            var request = await Request.ToRawAsync();
+            var request = await Request.ToRawAsync(cancellationToken);
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new Data.Models.RawRequestEnvelope
             {
@@ -87,7 +88,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
                 Attempts = Attempts,
                 CreatedAt = CreatedAt,
                 LatestAttemptAt = LatestAttemptAt,
-                LatestResponse = await serializer.SerializeAsync(LatestResponse),
+                LatestResponse = await serializer.SerializeAsync(LatestResponse, cancellationToken),
                 DeadlineAt = DeadlineAt,
                 NextAttemptAt = NextAttemptAt
             };

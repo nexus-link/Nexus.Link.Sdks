@@ -27,7 +27,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         /// <remarks>This method is not complete yet. It does not support adding doublets. It will throw <see cref="FulcrumNotImplementedException"/> in those cases.
         /// To implement that, we will need a new service method in <see cref="IAssociationsClient"/>.</remarks>
         public async Task AssociateAsync(string sourceConceptValuePath, string [] targetConceptValuePaths,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
@@ -77,7 +77,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
 
         /// <inheritdoc />
         public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
@@ -87,7 +87,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
 
         /// <inheritdoc />
         public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
@@ -97,7 +97,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
 
         /// <inheritdoc />
         public async Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             ServiceContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
@@ -122,7 +122,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public Task ReleaseLockAsync(string conceptValuePath, string lockId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task ReleaseLockAsync(string conceptValuePath, string lockId, CancellationToken cancellationToken = default)
         {
             return _translatorClient.ReleaseLock2Async(conceptValuePath, lockId, cancellationToken);
         }

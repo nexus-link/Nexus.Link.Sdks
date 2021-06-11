@@ -20,7 +20,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
 
         /// <inheritdoc />
         public Task AssociateAsync(string sourceConceptValuePath, string [] targetConceptValuePaths,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNull(targetConceptValuePaths, nameof(targetConceptValuePaths));
@@ -34,7 +34,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
 
         /// <inheritdoc />
         public Task<ValueOrLockId> TranslateToContextOrLockAsync(string sourceConceptValuePath, string targetContextName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(targetContextName, nameof(targetContextName));
@@ -45,7 +45,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
 
         /// <inheritdoc />
         public Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(targetClientName, nameof(targetClientName));
@@ -56,7 +56,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
 
         /// <inheritdoc />
         public Task AssociateUsingLockAsync(string sourceConceptValuePath, string lockId, string targetConceptValuePath, 
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(sourceConceptValuePath, nameof(sourceConceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(targetConceptValuePath, nameof(targetConceptValuePath));
@@ -67,7 +67,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
 
         /// <inheritdoc />
         public Task ReleaseLockAsync(string conceptValuePath, string lockId,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(conceptValuePath, nameof(conceptValuePath));
             InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));

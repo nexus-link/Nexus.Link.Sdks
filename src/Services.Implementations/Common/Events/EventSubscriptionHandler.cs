@@ -14,7 +14,7 @@ using Nexus.Link.Services.Contracts;
 using Nexus.Link.Services.Contracts.Events;
 using JsonHelper = Nexus.Link.Libraries.Core.Json.JsonHelper;
 
-namespace Nexus.Link.Services.Implementations.Adapter.Events
+namespace Nexus.Link.Services.Implementations.Common.Events
 {
     /// <summary>
     /// Handle the event subscriptions for an adapter
@@ -30,7 +30,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// <param name="event"></param>
         /// <param name="cancellationToken"></param>
         /// <typeparam name="T"></typeparam>
-        public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default(CancellationToken))
+        public delegate Task EventReceiverDelegateAsync<in T>(T @event, CancellationToken cancellationToken = default)
             where T : IPublishableEvent;
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Events
         /// Call the registered method for this event
         /// </summary>
         /// <exception cref="FulcrumNotImplementedException"></exception>
-        public async Task CallEventReceiverAsync(JObject eventAsJObject)
+        public async Task CallEventReceiverAsync(JObject eventAsJObject, CancellationToken cancellationToken = default)
         {
             var publishableEvent = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJObject);
             try

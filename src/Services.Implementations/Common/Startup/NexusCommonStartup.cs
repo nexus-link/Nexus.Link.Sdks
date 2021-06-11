@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nexus.Link.Libraries.Web.AspNet.Authorize;
 using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Contracts.Events;
-using Nexus.Link.Services.Implementations.Adapter.Events;
+using Nexus.Link.Services.Implementations.Common.Events;
 
 namespace Nexus.Link.Services.Implementations.Common.Startup
 {

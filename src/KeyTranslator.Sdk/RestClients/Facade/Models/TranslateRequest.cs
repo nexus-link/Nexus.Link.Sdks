@@ -28,7 +28,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         /// </summary>
         /// <param name="SourceInstancePath">SourceInstancePath.</param>
         /// <param name="TargetContextPath">TargetContextPath.</param>
-        public TranslateRequest(string SourceInstancePath = default(string), string TargetContextPath = default(string))
+        public TranslateRequest(string SourceInstancePath = default, string TargetContextPath = default)
         {
             this.SourceInstancePath = SourceInstancePath;
             this.TargetContextPath = TargetContextPath;

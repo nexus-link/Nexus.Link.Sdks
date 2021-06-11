@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -25,7 +26,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             return target;
         }
 
-        public async Task<Common.Models.ResponseContent> ToDataAsync()
+        public async Task<Common.Models.ResponseContent> ToDataAsync(CancellationToken cancellationToken = default)
         {
             await Payload.LoadIntoBufferAsync();
             var target = new Common.Models.ResponseContent

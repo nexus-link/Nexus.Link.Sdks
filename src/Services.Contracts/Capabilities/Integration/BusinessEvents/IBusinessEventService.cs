@@ -14,6 +14,6 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.BusinessEvents
         /// </summary>
         /// <param name="event">The event to publish.</param>
         /// <param name="token">Propagates notification that operations should be canceled.</param>
-        Task PublishAsync(JToken @event, CancellationToken token = default(CancellationToken));
+        Task PublishAsync(JToken @event, CancellationToken token = default);
     }
 }

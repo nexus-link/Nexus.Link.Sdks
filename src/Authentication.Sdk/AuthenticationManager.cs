@@ -83,7 +83,7 @@ namespace Nexus.Link.Authentication.Sdk
             ServiceUri = new Uri(baseUri, path);
         }
 
-        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNull(tokenCredentials, nameof(tokenCredentials));
@@ -94,20 +94,20 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNull(maximumExpirationSpan, nameof(maximumExpirationSpan));
 
             var authentication = new AuthenticationManager(tenant, serviceUri);
-            return await authentication.GetJwtTokenAsync(tokenCredentials, minimumExpirationSpan, maximumExpirationSpan);
+            return await authentication.GetJwtTokenAsync(tokenCredentials, minimumExpirationSpan, maximumExpirationSpan, cancellationToken);
         }
 
-        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan)
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, CancellationToken cancellationToken = default)
         {
-            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, minimumExpirationSpan, TimeSpan.FromHours(24));
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, minimumExpirationSpan, TimeSpan.FromHours(24), cancellationToken);
         }
 
-        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials)
+        public static async Task<AuthenticationToken> GetJwtTokenAsync(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, CancellationToken cancellationToken = default)
         {
-            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24));
+            return await GetJwtTokenAsync(tenant, serviceUri, tokenCredentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24), cancellationToken);
         }
 
-        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
+        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tokenCredentials, nameof(tokenCredentials));
             InternalContract.RequireNotNullOrWhiteSpace(tokenCredentials.ClientId, nameof(tokenCredentials.ClientId));
@@ -117,17 +117,17 @@ namespace Nexus.Link.Authentication.Sdk
 
             var token = _tokenCache.Get(_type, tokenCredentials, minimumExpirationSpan);
             if (token != null) return token;
-            token = await RequestAndCacheJwtTokenAsync(tokenCredentials, maximumExpirationSpan);
+            token = await RequestAndCacheJwtTokenAsync(tokenCredentials, maximumExpirationSpan, cancellationToken);
             return token;
         }
 
-        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials)
+        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tokenCredentials, nameof(tokenCredentials));
             InternalContract.RequireNotNullOrWhiteSpace(tokenCredentials.ClientId, nameof(tokenCredentials.ClientId));
             InternalContract.RequireNotNullOrWhiteSpace(tokenCredentials.ClientSecret, nameof(tokenCredentials.ClientSecret));
 
-            return await GetJwtTokenAsync(tokenCredentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24));
+            return await GetJwtTokenAsync(tokenCredentials, TimeSpan.FromHours(1), TimeSpan.FromHours(24), cancellationToken);
         }
 
         public static ITokenRefresherWithServiceClient CreateTokenRefresher(Tenant tenant, string serviceUri, IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
@@ -200,12 +200,12 @@ namespace Nexus.Link.Authentication.Sdk
             return ValidateToken(token, publicKey, issuer);
         }
 
-        public async Task<string> GetPublicKeyXmlAsync(CancellationToken token = default(CancellationToken))
+        public async Task<string> GetPublicKeyXmlAsync(CancellationToken token = default)
         {
             return await GetPublicKeyXmlAsync(Tenant, ServiceUri.AbsolutePath, token);
         }
 
-        public async Task<RsaSecurityKey> GetPublicRsaKeyAsync(CancellationToken token = default(CancellationToken))
+        public async Task<RsaSecurityKey> GetPublicRsaKeyAsync(CancellationToken token = default)
         {
             return await GetPublicRsaKeyAsync(Tenant, ServiceUri.AbsolutePath, token);
         }
@@ -228,12 +228,12 @@ namespace Nexus.Link.Authentication.Sdk
 
         private static readonly MemoryCache PublicKeyCache = new MemoryCache(new MemoryCacheOptions());
 
-        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
+        public static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default)
         {
             return await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, "AuthServicePublicKey", token);
         }
 
-        public static async Task<RsaSecurityKey> GetPublicRsaKeyAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default(CancellationToken))
+        public static async Task<RsaSecurityKey> GetPublicRsaKeyAsync(Tenant tenant, string fundamentalsBaseUrl, CancellationToken token = default)
         {
             var publicKeyXml = await GetPublicKeyXmlAsync(tenant, fundamentalsBaseUrl, token);
             FulcrumAssert.IsNotNullOrWhiteSpace(publicKeyXml);
@@ -330,21 +330,21 @@ namespace Nexus.Link.Authentication.Sdk
             return Validation.GetClaimValue(type, principal);
         }
 
-        public async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
+        public async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientId, nameof(credentials.ClientId));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            var token = await RequestJwtTokenAsync(credentials, lifeSpan);
+            var token = await RequestJwtTokenAsync(credentials, lifeSpan, cancellationToken);
             FulcrumAssert.IsNotNull(token, $"{Namespace}: A9CC803F-A45A-4F93-AF4E-BA455E29893D", $"Failed to get a token for client {ServiceDescription(credentials.ClientId)}.");
 
             _tokenCache.AddOrUpdate(_type, credentials, token);
             return token;
         }
 
-        private async Task<AuthenticationToken> RequestJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
+        private async Task<AuthenticationToken> RequestJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientId, nameof(credentials.ClientId));
@@ -368,7 +368,7 @@ namespace Nexus.Link.Authentication.Sdk
                 request.Headers.Add("Authorization", $"Basic {basicCredentialsAsBase64}");
                 request.Headers.Add("User-Agent", $"{credentials.ClientId}_{Tenant.Organization}_{Tenant.Environment}");
 
-                var response = await HttpClient.SendAsync(request);
+                var response = await HttpClient.SendAsync(request, cancellationToken);
                 data = response.Content == null ? null : await response.Content.ReadAsStringAsync();
                 if (data == null) return null;
                 return JsonConvert.DeserializeObject<AuthenticationToken>(data);

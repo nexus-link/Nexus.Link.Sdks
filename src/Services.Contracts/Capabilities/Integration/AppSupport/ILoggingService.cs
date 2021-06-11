@@ -14,6 +14,6 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="token">Propagates notification that operations should be canceled.</param>
-        Task LogAsync(JToken message, CancellationToken token = default(CancellationToken));
+        Task LogAsync(JToken message, CancellationToken token = default);
     }
 }

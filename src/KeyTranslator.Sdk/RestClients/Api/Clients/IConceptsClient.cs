@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models;
 
@@ -8,42 +9,42 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Clients
     public interface IConceptsClient
     {
 
-        Task<IEnumerable<Concept>> GetAllAsync();
+        Task<IEnumerable<Concept>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Task<Concept> GetOneAsync(string conceptId);
+        Task<Concept> GetOneAsync(string conceptId, CancellationToken cancellationToken = default);
 
-        Task<Concept> UpdateAsync(string conceptId, Concept concept);
+        Task<Concept> UpdateAsync(string conceptId, Concept concept, CancellationToken cancellationToken = default);
 
-        Task<Concept> CreateAsync(string technicalName);
+        Task<Concept> CreateAsync(string technicalName, CancellationToken cancellationToken = default);
 
-        Task DeleteAsync(string conceptId);
+        Task DeleteAsync(string conceptId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Context>> GetAllContextsAsync(string conceptId);
+        Task<IEnumerable<Context>> GetAllContextsAsync(string conceptId, CancellationToken cancellationToken = default);
 
-        Task<Context> GetContextAsync(string conceptId, string contextId);
+        Task<Context> GetContextAsync(string conceptId, string contextId, CancellationToken cancellationToken = default);
 
-        Task<Context> UpdateContextAsync(string conceptId, string contextId, Context context);
+        Task<Context> UpdateContextAsync(string conceptId, string contextId, Context context, CancellationToken cancellationToken = default);
 
-        Task<Context> CreateContextAsync(string conceptId,  string technicalName);
+        Task<Context> CreateContextAsync(string conceptId,  string technicalName, CancellationToken cancellationToken = default);
 
-        Task DeleteContextAsync(string conceptId, string contextId);
+        Task DeleteContextAsync(string conceptId, string contextId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Form>> GetAllFormsAsync(string conceptId);
+        Task<IEnumerable<Form>> GetAllFormsAsync(string conceptId, CancellationToken cancellationToken = default);
 
-        Task<Form> GetFormAsync(string conceptId, Guid formId);
+        Task<Form> GetFormAsync(string conceptId, Guid formId, CancellationToken cancellationToken = default);
 
-        Task<Form> UpdateFormAsync(string conceptId, Guid formId, Form form);
+        Task<Form> UpdateFormAsync(string conceptId, Guid formId, Form form, CancellationToken cancellationToken = default);
 
-        Task<Form> CreateFormAsync(string conceptId,  string friendlyName);
+        Task<Form> CreateFormAsync(string conceptId,  string friendlyName, CancellationToken cancellationToken = default);
 
-        Task DeleteFormAsync(string conceptId, Guid formId);
+        Task DeleteFormAsync(string conceptId, Guid formId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Instance>> GetAllInstancesByContextAsync(string conceptId, string contextId);
+        Task<IEnumerable<Instance>> GetAllInstancesByContextAsync(string conceptId, string contextId, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Instance>> GetAllInstancesByFormAsync(string conceptId, Guid formId);
+        Task<IEnumerable<Instance>> GetAllInstancesByFormAsync(string conceptId, Guid formId, CancellationToken cancellationToken = default);
 
-        Task<Instance> GetInstanceAsync(string conceptId, string contextId, string value);
+        Task<Instance> GetInstanceAsync(string conceptId, string contextId, string value, CancellationToken cancellationToken = default);
 
-        Task<Instance> CreateInstanceAsync(string conceptId, string contextId, Guid formId,  string value);
+        Task<Instance> CreateInstanceAsync(string conceptId, string contextId, Guid formId,  string value, CancellationToken cancellationToken = default);
     }
 }

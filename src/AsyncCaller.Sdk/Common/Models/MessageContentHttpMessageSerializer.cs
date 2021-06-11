@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Logging;
 
@@ -26,7 +27,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
             _bufferContent = bufferContent;
         }
 
-        public async Task SerializeAsync(HttpRequestMessage request, Stream stream)
+        public async Task SerializeAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken = default)
         {
             if (request == null) return;
             if (_bufferContent && (request.Content != null))
@@ -42,20 +43,20 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
                 }
             }
             var httpMessageContent = new HttpMessageContent(request);
-            await SerializeAsync(httpMessageContent, stream);
+            await SerializeAsync(httpMessageContent, stream, cancellationToken);
         }
 
-        public async Task<byte[]> SerializeAsync(HttpRequestMessage request)
+        public async Task<byte[]> SerializeAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (request == null) return null;
             using (var memoryStream = new MemoryStream())
             {
-                await SerializeAsync(request, memoryStream);
+                await SerializeAsync(request, memoryStream, cancellationToken);
                 return memoryStream.ToArray();
             }
         }
 
-        public async Task SerializeAsync(HttpResponseMessage response, Stream stream)
+        public async Task SerializeAsync(HttpResponseMessage response, Stream stream, CancellationToken cancellationToken = default)
         {
             if (response == null) return;
             if (_bufferContent && (response.Content != null))
@@ -64,86 +65,86 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
             }
 
             var httpMessageContent = new HttpMessageContent(response);
-            await SerializeAsync(httpMessageContent, stream);
+            await SerializeAsync(httpMessageContent, stream, cancellationToken);
         }
 
-        public async Task<byte[]> SerializeAsync(HttpResponseMessage response)
+        public async Task<byte[]> SerializeAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
             if (response == null) return null;
             using (var memoryStream = new MemoryStream())
             {
-                await SerializeAsync(response, memoryStream);
+                await SerializeAsync(response, memoryStream, cancellationToken);
                 return memoryStream.ToArray();
             }
         }
 
-        private static async Task SerializeAsync(HttpContent httpMessageContent, Stream stream)
+        private static async Task SerializeAsync(HttpContent httpMessageContent, Stream stream, CancellationToken cancellationToken = default)
         {
             var buffer = await httpMessageContent.ReadAsByteArrayAsync();
             await Task.Factory.FromAsync(stream.BeginWrite, stream.EndWrite,
                 buffer, 0, buffer.Length, null, TaskCreationOptions.AttachedToParent);
         }
 
-        public async Task<HttpRequestMessage> DeserializeToRequestAsync(Stream stream, string uriScheme)
+        public async Task<HttpRequestMessage> DeserializeToRequestAsync(Stream stream, string uriScheme, CancellationToken cancellationToken = default)
         {
-            return await DeserializeToRequestAsync(new StreamContent(stream), uriScheme);
+            return await DeserializeToRequestAsync(new StreamContent(stream), uriScheme, cancellationToken);
         }
 
-        public async Task<HttpRequestMessage> DeserializeToRequestAsync(byte[] byteArray, string uriScheme)
+        public async Task<HttpRequestMessage> DeserializeToRequestAsync(byte[] byteArray, string uriScheme, CancellationToken cancellationToken = default)
         {
             if (byteArray == null) return null;
-            return await DeserializeToRequestAsync(new ByteArrayContent(byteArray), uriScheme);
+            return await DeserializeToRequestAsync(new ByteArrayContent(byteArray), uriScheme, cancellationToken);
         }
 
-        private static async Task<HttpRequestMessage> DeserializeToRequestAsync(HttpContent content, string uriScheme)
+        private static async Task<HttpRequestMessage> DeserializeToRequestAsync(HttpContent content, string uriScheme, CancellationToken cancellationToken)
         {
             var request = new HttpRequestMessage { Content = content };
             request.Content.Headers.Add("Content-Type", "application/http;msgtype=request");
 
             try
             {
-                if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
-                return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
+                if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync(cancellationToken);
+                return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme, cancellationToken);
 
             }
             catch (Exception)
             {
-                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=request");
+                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=request", cancellationToken);
                 if (httpResponseMessage != null)
                 {
-                    if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync();
-                    return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme);
+                    if (string.IsNullOrWhiteSpace(uriScheme)) return await request.Content.ReadAsHttpRequestMessageAsync(cancellationToken);
+                    return await request.Content.ReadAsHttpRequestMessageAsync(uriScheme, cancellationToken);
                 }
                 throw;
             }
         }
 
-        public async Task<HttpResponseMessage> DeserializeToResponseAsync(Stream stream)
+        public async Task<HttpResponseMessage> DeserializeToResponseAsync(Stream stream, CancellationToken cancellationToken = default)
         {
-            return await DeserializeToResponseAsync(new StreamContent(stream));
+            return await DeserializeToResponseAsync(new StreamContent(stream), cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> DeserializeToResponseAsync(byte[] byteArray)
+        public async Task<HttpResponseMessage> DeserializeToResponseAsync(byte[] byteArray, CancellationToken cancellationToken = default)
         {
             if (byteArray == null) return null;
-            return await DeserializeToResponseAsync(new ByteArrayContent(byteArray));
+            return await DeserializeToResponseAsync(new ByteArrayContent(byteArray), cancellationToken);
         }
 
-        private static async Task<HttpResponseMessage> DeserializeToResponseAsync(HttpContent content)
+        private static async Task<HttpResponseMessage> DeserializeToResponseAsync(HttpContent content, CancellationToken cancellationToken)
         {
             var response = new HttpResponseMessage { Content = content };
             response.Content.Headers.Add("Content-Type", "application/http;msgtype=response");
 
             try
             {
-                return await response.Content.ReadAsHttpResponseMessageAsync();
+                return await response.Content.ReadAsHttpResponseMessageAsync(cancellationToken);
             }
             catch (Exception)
             {
-                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=response");
+                var httpResponseMessage = await MaybeRemoveExpiresHeader(content, "application/http;msgtype=response", cancellationToken);
                 if (httpResponseMessage != null)
                 {
-                    response = await httpResponseMessage.Content.ReadAsHttpResponseMessageAsync();
+                    response = await httpResponseMessage.Content.ReadAsHttpResponseMessageAsync(cancellationToken);
                     return response;
                 }
                 throw;
@@ -152,7 +153,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
 
         private static readonly Regex ServerHeaderRegex = new Regex("^Server: (.*,.*)$", RegexOptions.Multiline);
 
-        private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string msgTypeHeader)
+        private static async Task<HttpResponseMessage> MaybeRemoveExpiresHeader(HttpContent originalContent, string msgTypeHeader, CancellationToken cancellationToken)
         {
             try
             {

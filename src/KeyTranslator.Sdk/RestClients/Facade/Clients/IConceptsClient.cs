@@ -35,6 +35,6 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         /// ]
         /// </example>
         Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName,
-            CancellationToken cancellationToken = default (CancellationToken));
+            CancellationToken cancellationToken = default);
     }
 }

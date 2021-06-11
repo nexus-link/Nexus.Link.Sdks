@@ -41,12 +41,12 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             _envelope = ThreadHelper.CallAsyncFromSync(async () => await RequestEnvelope.FromRawAsync(_originalRawRequestEnvelope, _defaultDeadlineInSeconds));
         }
 
-        public async Task ProcessOneRequestAsync()
+        public async Task ProcessOneRequestAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                if (IsTimeForNextCall) await SendRequestAndHandleResponseAsync();
-                else await PutBackLastInQueueAsync();
+                if (IsTimeForNextCall) await SendRequestAndHandleResponseAsync(cancellationToken);
+                else await PutBackLastInQueueAsync(cancellationToken: cancellationToken);
             }
             catch (GiveUpException e)
             {
@@ -55,16 +55,16 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             }
         }
 
-        private async Task SendRequestAndHandleResponseAsync()
+        private async Task SendRequestAndHandleResponseAsync(CancellationToken cancellationToken)
         {
             var envelopeAsString = _envelope.ToString();
             try
             {
                 if (HasReachedDeadLine) throw new DeadlineReachedException(_envelope.DeadlineAt);
-                var response = await _sender.SendAsync(_envelope.Request.CallOut, CancellationToken.None);
+                var response = await _sender.SendAsync(_envelope.Request.CallOut, cancellationToken);
                 FulcrumAssert.IsNotNull(response, $"Expected to receive a non-null response when making the call for {envelopeAsString}.");
-                if (response.IsSuccessStatusCode) await HandleSuccessfulResponseAsync(response);
-                else await HandleFailureResponseAsync(response);
+                if (response.IsSuccessStatusCode) await HandleSuccessfulResponseAsync(response, cancellationToken);
+                else await HandleFailureResponseAsync(response, cancellationToken: cancellationToken);
             }
             catch (GiveUpException)
             {
@@ -88,19 +88,19 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
                     StatusCode = HttpStatusCode.BadGateway,
                     Content = new StringContent(e.Message, Encoding.UTF8, "text/plain")
                 };
-                await HandleFailureResponseAsync(internalErrorResponse, true);
+                await HandleFailureResponseAsync(internalErrorResponse, true, cancellationToken);
             }
         }
 
-        private async Task HandleSuccessfulResponseAsync(HttpResponseMessage response)
+        private async Task HandleSuccessfulResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             if (!AcceptsCallback) return;
-            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
-            var dataEnvelope = await requestEnvelope.ToRawAsync();
-            await _requestQueue.EnqueueAsync(dataEnvelope);
+            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds, cancellationToken);
+            var dataEnvelope = await requestEnvelope.ToRawAsync(cancellationToken);
+            await _requestQueue.EnqueueAsync(dataEnvelope, cancellationToken: cancellationToken);
         }
 
-        private async Task HandleFailureResponseAsync(HttpResponseMessage response, bool internalError = false)
+        private async Task HandleFailureResponseAsync(HttpResponseMessage response, bool internalError = false, CancellationToken cancellationToken = default)
         {
             if (!HasEarlierResponse || !internalError)
             {
@@ -108,19 +108,19 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
                 _envelope.LatestAttemptAt = DateTimeOffset.Now;
             }
 
-            if (await IsTemporaryFailureAsync(response))
+            if (await IsTemporaryFailureAsync(response, cancellationToken))
             {
                 Log.LogInformation($"TemporaryFailure({response.StatusCode}) -> Put back last in queue '{_requestQueue.GetQueue().QueueName}'");
                 await PutBackLastInQueueAsync(DateTimeOffset.Now);
                 return;
             }
-            if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync()}), but there is no callback address.");
-            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds);
-            var dataEnvelope = await requestEnvelope.ToRawAsync();
-            await _requestQueue.EnqueueAsync(dataEnvelope);
+            if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync(cancellationToken: cancellationToken)}), but there is no callback address.");
+            var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds, cancellationToken);
+            var dataEnvelope = await requestEnvelope.ToRawAsync(cancellationToken);
+            await _requestQueue.EnqueueAsync(dataEnvelope, cancellationToken: cancellationToken);
         }
 
-        private async Task PutBackLastInQueueAsync(DateTimeOffset? latestAttemptAt = null)
+        private async Task PutBackLastInQueueAsync(DateTimeOffset? latestAttemptAt = null, CancellationToken cancellationToken = default)
         {
             _envelope.Request = await Request.FromRawAsync(_originalRawRequestEnvelope.RawRequest);
             var dataEnvelope = await _envelope.ToRawAsync();
@@ -135,7 +135,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
         /// </summary>
         /// <param name="responseMessage"></param>
         /// <returns></returns>
-        private static async Task<bool> IsTemporaryFailureAsync(HttpResponseMessage responseMessage)
+        private static async Task<bool> IsTemporaryFailureAsync(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
             // Get status code and content from response message
             HttpStatusCode statusCode = responseMessage.StatusCode;

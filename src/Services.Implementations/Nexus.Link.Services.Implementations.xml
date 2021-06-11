@@ -219,41 +219,6 @@
             <param name="services">From the parameter to Startup.ConfigureServices.</param>
             <remarks>Always override this to inject your services.</remarks>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEventAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventReceiverLogic.ReceiveEventExplicitlyAsync(System.String,System.String,System.Int32,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler">
-            <summary>
-            Handle the event subscriptions for an adapter
-            </summary>
-        </member>
-        <member name="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1">
-            <summary>
-            A delegate for receiving events
-            </summary>
-            <param name="event"></param>
-            <param name="cancellationToken"></param>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.HasSubscriptions">
-            <summary>
-            True if any subscription has been added to this subscription handler.
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{Nexus.Link.Services.Contracts.Events.IPublishableEvent})">
-            <summary>
-            Add another <see cref="T:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1"/>
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler.CallEventReceiverAsync(Newtonsoft.Json.Linq.JObject)">
-            <summary>
-            Call the registered method for this event
-            </summary>
-            <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
-        </member>
         <member name="T:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability">
             <inheritdoc />
         </member>
@@ -487,6 +452,41 @@
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Startup.NexusBusinessApiStartup.Validate(System.String,System.String)">
             <inheritdoc />
         </member>
+        <member name="M:Nexus.Link.Services.Implementations.Common.Events.EventReceiverLogic.ReceiveEventAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Common.Events.EventReceiverLogic.ReceiveEventExplicitlyAsync(System.String,System.String,System.Int32,Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler">
+            <summary>
+            Handle the event subscriptions for an adapter
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1">
+            <summary>
+            A delegate for receiving events
+            </summary>
+            <param name="event"></param>
+            <param name="cancellationToken"></param>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.HasSubscriptions">
+            <summary>
+            True if any subscription has been added to this subscription handler.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.Add``1(Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.EventReceiverDelegateAsync{Nexus.Link.Services.Contracts.Events.IPublishableEvent})">
+            <summary>
+            Add another <see cref="T:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.EventReceiverDelegateAsync`1"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler.CallEventReceiverAsync(Newtonsoft.Json.Linq.JObject,System.Threading.CancellationToken)">
+            <summary>
+            Call the registered method for this event
+            </summary>
+            <exception cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumNotImplementedException"></exception>
+        </member>
         <member name="T:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup">
             <summary>
             Helper class for the different steps in the Startup.cs file.
@@ -501,7 +501,7 @@
         <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.DependencyInjectServicesAdvanced(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.IServiceProvider)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Adapter.Events.EventSubscriptionHandler,System.IServiceProvider)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusCommonStartup.AddSubscriptions(Nexus.Link.Services.Implementations.Common.Events.EventSubscriptionHandler,System.IServiceProvider)">
             <summary>
             This is where the adapter can add events that it wants to subscribe to.
             </summary>
@@ -514,23 +514,23 @@
             </summary>
             <param name="services"></param>
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider">
+        <member name="T:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationProvider">
             <summary>
             A configuration provider that gets configuration data from the Nexus configuration database
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationProvider.Load">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationProvider.Load">
             <inheritdoc />
         </member>
-        <member name="T:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource">
+        <member name="T:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationSource">
             <summary>
             Adds the Nexus configuration database as a configuration source
             </summary>
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
             <inheritdoc />
         </member>
-        <member name="M:Nexus.Link.Services.Implementations.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
+        <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
             <inheritdoc />
         </member>
         <member name="T:Nexus.Link.Services.Implementations.Singleton`1">
