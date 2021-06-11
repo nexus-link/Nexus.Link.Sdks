@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
@@ -24,19 +25,19 @@ namespace Nexus.Link.Logger.Sdk.RestClients
 
 
         /// <inheritdoc />
-        public async Task LogAsync(Tenant tenant, params LogMessage[] logs)
+        public async Task LogAsync(Tenant tenant, CancellationToken cancellationToken = default, params LogMessage[] logs)
         {
             if (logs == null) return;
             if (logs.Length == 1)
             {
                 var log = logs[0];
                 var relativeUrl = $"{tenant.Organization}/{tenant.Environment}/Log";
-                await RestClient.PostNoResponseContentAsync(relativeUrl, log);
+                await RestClient.PostNoResponseContentAsync(relativeUrl, log, cancellationToken: cancellationToken);
             }
             else
             {
                 var relativeUrl = $"{tenant.Organization}/{tenant.Environment}/Logs";
-                await RestClient.PostNoResponseContentAsync(relativeUrl, logs);
+                await RestClient.PostNoResponseContentAsync(relativeUrl, logs, cancellationToken: cancellationToken);
             }
         }
     }

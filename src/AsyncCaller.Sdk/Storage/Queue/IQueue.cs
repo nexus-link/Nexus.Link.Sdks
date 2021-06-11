@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Health.Model;
 
@@ -25,11 +26,12 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Queue
         /// </summary>
         /// <param name="message">The message to add</param>
         /// <param name="timeSpanToWait">An optional time span to wait before the item can be taken from the queue.</param>
-        Task AddMessageAsync(string message, TimeSpan? timeSpanToWait = null);
+        /// <param name="cancellationToken"></param>
+        Task AddMessageAsync(string message, TimeSpan? timeSpanToWait = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// "Reset"; clear the queue of all items.
         /// </summary>
-        Task ClearAsync();
+        Task ClearAsync(CancellationToken cancellationToken = default);
     }
 }

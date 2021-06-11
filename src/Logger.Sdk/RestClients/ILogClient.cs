@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
@@ -12,6 +13,6 @@ namespace Nexus.Link.Logger.Sdk.RestClients
         /// Log <paramref name="logs"/>.
         /// </summary>
         /// <returns></returns>
-        Task LogAsync(Tenant tenant, params LogMessage[] logs);
+        Task LogAsync(Tenant tenant, CancellationToken cancellationToken = default, params LogMessage[] logs);
     }
 }

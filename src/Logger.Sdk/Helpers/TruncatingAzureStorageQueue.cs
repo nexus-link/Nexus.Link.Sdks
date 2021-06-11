@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Queue.Model;
 using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nexus.Link.Logger.Sdk.Helpers
@@ -30,7 +31,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
         /// .NET Storage API uses base64 encoding for string and binary payloads as a default, so the
         /// overhead of the necessary base64 encoding (+ 33 %) leads to a maximum useful payload of just 49,152 bytes (48 KB)
         /// </summary>
-        public Task AddMessageAsync(T message, TimeSpan? timeSpanToWait = null)
+        public Task AddMessageAsync(T message, TimeSpan? timeSpanToWait = null, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(message, nameof(message));
 
@@ -120,9 +121,9 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             return Encoding.UTF8.GetString(buffer, 0, bytesUsed);
         }
 
-        public Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
-            return _baseQueue.GetResourceHealthAsync(tenant);
+            return _baseQueue.GetResourceHealthAsync(tenant, cancellationToken);
         }
 
         public string Name => _baseQueue.Name;

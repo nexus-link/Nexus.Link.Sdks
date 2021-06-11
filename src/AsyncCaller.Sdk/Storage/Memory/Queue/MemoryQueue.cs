@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
@@ -63,7 +64,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
             return true;
         }
 
-        public async Task AddMessageAsync(string message, TimeSpan? timeSpanToWait = null)
+        public async Task AddMessageAsync(string message, TimeSpan? timeSpanToWait = null, CancellationToken cancellationToken = default)
         {
             lock (LockObject)
             {
@@ -74,7 +75,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
             await Task.Yield();
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(CancellationToken cancellationToken = default)
         {
             lock (LockObject)
             {
@@ -90,17 +91,16 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Memory.Queue
             lock (LockObject)
             {
                 Log.LogVerbose($"Get one message of: {_queue.Count}; {DateTimeOffset.Now:O}");
-                if (!_queue.Any()) return null;
-                return _queue.Dequeue();
+                return _queue.Any() ? _queue.Dequeue() : null;
             }
         }
 
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult(new HealthResponse("MemoryQueue"));
         }
 
-        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant)
+        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult(new HealthInfo("MemoryQueue") { Status = HealthInfo.StatusEnum.Ok, Message = "Ok" });
         }

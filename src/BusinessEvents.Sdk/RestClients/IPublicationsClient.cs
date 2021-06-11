@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -11,10 +12,10 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
         /// </summary>
         /// <param name="publicationId">The id of the publication.</param>
         /// <param name="content">The content of the event.</param>
-        Task PublishAsync(Guid publicationId, JToken content);
+        Task PublishAsync(Guid publicationId, JToken content, CancellationToken cancellationToken = default);
 
         [Obsolete]
-        Task PublishAsync(Guid publicationId, JToken content, string correlationId);
+        Task PublishAsync(Guid publicationId, JToken content, string correlationId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Send an event directly to a subscriber endpoint
@@ -25,11 +26,12 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
         /// <param name="minorVersion">The minor version</param>
         /// <param name="clientName">The publisher client</param>
         /// <param name="eventBody">The event body to be sent.</param>
-        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody);
+        /// <param name="cancellationToken"></param>
+        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, CancellationToken cancellationToken = default);
 
         [Obsolete]
-        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId);
+        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId, CancellationToken cancellationToken = default);
 
-        Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName);
+        Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName, CancellationToken cancellationToken = default);
     }
 }

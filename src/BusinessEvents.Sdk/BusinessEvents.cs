@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -59,10 +60,11 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <param name="publicationId">The id of the publication.</param>
         /// <param name="content">The content of the event.</param>
         /// <param name="correlationId">Optional Correlation id</param>
+        /// <param name="cancellationToken"></param>
         [Obsolete("Use version without correlation id", false)]
-        public async Task PublishAsync(Guid publicationId, JToken content, string correlationId)
+        public async Task PublishAsync(Guid publicationId, JToken content, string correlationId, CancellationToken cancellationToken = default)
         {
-            await PublishAsync(publicationId, content);
+            await PublishAsync(publicationId, content, cancellationToken);
         }
 
         /// <summary>
@@ -70,10 +72,11 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// </summary>
         /// <param name="publicationId">The id of the publication.</param>
         /// <param name="content">The content of the event.</param>
-        public async Task PublishAsync(Guid publicationId, JToken content)
+        /// <param name="cancellationToken"></param>
+        public async Task PublishAsync(Guid publicationId, JToken content, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(content, nameof(content));
-            await _publicationsClient.PublishAsync(publicationId, content);
+            await _publicationsClient.PublishAsync(publicationId, content, cancellationToken);
         }
 
         /// <summary>
@@ -82,44 +85,44 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <param name="publicationId">The id of the publication.</param>
         /// <param name="content">The content of the event.</param>
         /// <param name="clientName">The technical name of the publishing client</param>
-        public async Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName)
+        public async Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(content, nameof(content));
             InternalContract.RequireNotNull(clientName, nameof(content));
-            await _publicationsClient.PublishWithClientNameAsync(publicationId, content, clientName);
+            await _publicationsClient.PublishWithClientNameAsync(publicationId, content, clientName, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody)
+        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(eventBody, nameof(eventBody));
 
-            await _publicationsClient.PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody);
+            await _publicationsClient.PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody, cancellationToken);
         }
 
         /// <summary>
         /// Deprecated
         /// </summary>
         [Obsolete("Use version without correlation id", true)]
-        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId)
+        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId, CancellationToken cancellationToken = default)
         {
-            await PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody);
+            await PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody, cancellationToken);
         }
 
         /// <summary>
         /// Get the health for the BusinessEvents service.
         /// </summary>
         /// <returns>A description of the health for the BusinessEvents service.</returns>
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
-            var result = await _serviceMetasClient.GetResourceHealthAsync(tenant);
+            var result = await _serviceMetasClient.GetResourceHealthAsync(tenant, cancellationToken);
             return result;
         }
 
         /// <inheritdoc />
-        public async Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload)
+        public async Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload, CancellationToken cancellationToken = default)
         {
-            return await _testBenchClient.Publish(entity, @event, major, minor, clientName, payload);
+            return await _testBenchClient.PublishAsync(entity, @event, major, minor, clientName, payload);
         }
 
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -64,7 +65,7 @@ namespace AsyncCaller.Sdk.UnitTests
             TimeSpan? actualTimeSpan = null;
             var queueMock = new Mock<IQueue>();
             queueMock
-                .Setup(ac => ac.AddMessageAsync(It.IsAny<string>(), It.Is<TimeSpan?>(span => span != null)))
+                .Setup(ac => ac.AddMessageAsync(It.IsAny<string>(), It.Is<TimeSpan?>(span => span != null), It.IsAny<CancellationToken>()))
                 .Callback((string s, TimeSpan? ts) => actualTimeSpan = ts)
                 .Returns(Task.CompletedTask);
             queueMock

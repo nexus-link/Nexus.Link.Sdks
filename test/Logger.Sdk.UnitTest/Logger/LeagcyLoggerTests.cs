@@ -74,7 +74,7 @@ namespace Logger.Sdk.UnitTest.Logger
             var logCalled = new ManualResetEvent(false);
             var correlationId = Guid.NewGuid().ToString();
 
-            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
+            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
                 (tenant, msgs) =>
                 {
                     var msg = msgs.FirstOrDefault(m => m.CorrelationId == correlationId);
@@ -123,7 +123,7 @@ namespace Logger.Sdk.UnitTest.Logger
             LogMessage loggedMessage = null;
             var logCalled = new ManualResetEvent(false);
 
-            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
+            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
                 (tenant, msgs) =>
                 {
                     loggedMessage = msgs.FirstOrDefault();

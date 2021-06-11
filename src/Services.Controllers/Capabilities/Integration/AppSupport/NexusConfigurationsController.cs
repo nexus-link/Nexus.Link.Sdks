@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Crud.AspNet.ControllerHelpers;
 using Nexus.Link.Libraries.Crud.AspNet.Controllers;
 using Nexus.Link.Libraries.Crud.Interfaces;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
@@ -32,11 +33,14 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.AppSupport
         /// </summary>
         protected readonly ICrud<JToken, string> CrudController;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="capability"></param>
         public NexusConfigurationsController(IAppSupportCapability capability)
         {
             Capability = capability;
-            CrudController = new CrudController<JToken>(capability.ConfigurationService);
+            CrudController = new CrudControllerHelper<JToken>(capability.ConfigurationService);
         }
 
         /// <inheritdoc />

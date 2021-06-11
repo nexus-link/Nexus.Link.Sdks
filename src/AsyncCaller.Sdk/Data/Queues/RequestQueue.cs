@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
@@ -43,11 +44,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
             return _queue;
         }
 
-        public async Task<string> EnqueueAsync(RawRequestEnvelope rawRequestEnvelope, TimeSpan? timeSpanToWait = null)
+        public async Task<string> EnqueueAsync(RawRequestEnvelope rawRequestEnvelope, TimeSpan? timeSpanToWait = null, CancellationToken cancellationToken = default)
         {
             var rest = timeSpanToWait == null ? "" : $", {timeSpanToWait}";
             Log.LogInformation($"EnqueueAsync({rawRequestEnvelope}{rest})");
-            await _queue.AddMessageAsync(rawRequestEnvelope.Serialize(), timeSpanToWait);
+            await _queue.AddMessageAsync(rawRequestEnvelope.Serialize(), timeSpanToWait, cancellationToken);
             return rawRequestEnvelope.RawRequest.Id;
         }
 
@@ -57,14 +58,15 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         /// <param name="rawRequestEnvelope">The request envelope to put on the queue.</param>
         /// <param name="latestAttemptAt">The time for the latest attempt. Null if this is a 
         ///     retry because we need to wait longer until next actual call.</param>
-        public async Task RequeueAsync(RawRequestEnvelope rawRequestEnvelope, DateTimeOffset? latestAttemptAt = null)
+        /// <param name="cancellationToken"></param>
+        public async Task RequeueAsync(RawRequestEnvelope rawRequestEnvelope, DateTimeOffset? latestAttemptAt = null, CancellationToken cancellationToken = default)
         {
             if (latestAttemptAt != null) rawRequestEnvelope.Attempts++;
             rawRequestEnvelope.LatestAttemptAt = latestAttemptAt ?? rawRequestEnvelope.LatestAttemptAt;
             var timeSpanToWait = RetryDelay(rawRequestEnvelope.Attempts, MaximumSpanToWaitForAzureStorageQueue);
             var now = DateTimeOffset.Now;
             rawRequestEnvelope.NextAttemptAt = now.Add(timeSpanToWait);
-            await EnqueueAsync(rawRequestEnvelope, timeSpanToWait);
+            await EnqueueAsync(rawRequestEnvelope, timeSpanToWait, cancellationToken);
         }
 
         public async Task ClearAsync()
@@ -90,9 +92,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
         }
 
         /// <inheritdoc />
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
-            if (_queue != null) return await _queue.GetResourceHealthAsync(tenant);
+            if (_queue != null) return await _queue.GetResourceHealthAsync(tenant, cancellationToken);
             var response = new HealthResponse("RequestQueue")
             {
                 Status = HealthResponse.StatusEnum.Error,
@@ -101,9 +103,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
             return response;
         }
 
-        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant)
+        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant, CancellationToken cancellationToken = default)
         {
-            if (_queue != null) return await _queue.GetResourceHealth2Async(tenant);
+            if (_queue != null) return await _queue.GetResourceHealth2Async(tenant, cancellationToken);
             var response = new HealthInfo("RequestQueue")
             {
                 Status = HealthInfo.StatusEnum.Error,

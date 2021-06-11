@@ -9,6 +9,7 @@ using Nexus.Link.Logger.Sdk;
 using Nexus.Link.Logger.Sdk.Helpers;
 using Nexus.Link.Logger.Sdk.RestClients;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Logger.Sdk.UnitTest.Logger
@@ -83,7 +84,7 @@ namespace Logger.Sdk.UnitTest.Logger
 
             var logMessageSpy = new LogMessage();
             legacyLoggerMock
-                .Setup(f => f.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>()))
+                .Setup(f => f.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>()))
                 .Callback<Tenant, LogMessage[]>((tenant, logMessage) => logMessageSpy = logMessage[0]);
 
             LogQueueHelperMock

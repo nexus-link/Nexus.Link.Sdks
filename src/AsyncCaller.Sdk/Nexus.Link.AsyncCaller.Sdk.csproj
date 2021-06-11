@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>2.1.7</Version>
+    <Version>3.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -29,7 +29,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.1.7 Bump
+      3.0.0 Added CancellationToken where missing.
       2.1.6 Fix for Content-Type in Callback request (it's always application/json, not the content-type from the server response)
       2.1.5 Fix for dotnet core regarding HTTP header "Expires: -1"
       2.1.4 Compensate for bug in dotnet core regarding commas in Server header not allowed
