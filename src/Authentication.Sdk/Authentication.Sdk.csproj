@@ -19,7 +19,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>2.2.23</Version>
+      <Version>2.2.24</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -29,6 +29,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.2.24 Bump
         2.2.23 Use ConcurrentDictionary for token cache in AuthenticationManager to avoid "The collection's state is no longer correct." (especially in unit tests)
         2.2.22 Bump
         2.2.21 Bump

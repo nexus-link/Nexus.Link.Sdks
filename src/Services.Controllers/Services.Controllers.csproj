@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.4.1</Version>
+    <Version>2.4.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -27,7 +27,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.4.1 Bump
+      2.4.2 Bump
       2.4.0 Support for Value Translator Concept service
       2.3.2 Corrected wrong order of paramter. More descriptive name for parameters. Added XML documentation.
       2.3.1 Added ValueTranslationCapability
