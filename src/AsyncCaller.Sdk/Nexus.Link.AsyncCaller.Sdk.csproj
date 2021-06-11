@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.11.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="4.21.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.12.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.0.1" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
