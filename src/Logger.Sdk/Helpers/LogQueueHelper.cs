@@ -34,14 +34,14 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             if (_loggingServiceConfiguration == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
-                    $"Will use serviceconfiguration due to ILeverServiceConfiguration was not provided.");
+                    $"Will use service configuration due to ILeverServiceConfiguration was not provided.");
 
                 return (AzureStorageQueueIsCreated.No, null);
             }
 
             try
             {
-                tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant);
+                tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant, cancellationToken);
             }
             catch (Exception)
             {

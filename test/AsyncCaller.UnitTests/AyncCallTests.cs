@@ -29,7 +29,7 @@ namespace AsyncCaller.Sdk.UnitTests
             var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"));
             asyncCallerMock
                 .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
-                .Callback((RawRequest r) => foundRawRequest = r)
+                .Callback((RawRequest r, CancellationToken ct) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();
             Assert.IsNotNull(foundRawRequest);
@@ -51,7 +51,7 @@ namespace AsyncCaller.Sdk.UnitTests
                 .SetPriority(2);
             asyncCallerMock
                 .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
-                .Callback((RawRequest r) => foundRawRequest = r)
+                .Callback((RawRequest r, CancellationToken ct) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();
             Assert.IsNotNull(foundRawRequest);
@@ -66,7 +66,7 @@ namespace AsyncCaller.Sdk.UnitTests
             var queueMock = new Mock<IQueue>();
             queueMock
                 .Setup(ac => ac.AddMessageAsync(It.IsAny<string>(), It.Is<TimeSpan?>(span => span != null), It.IsAny<CancellationToken>()))
-                .Callback((string s, TimeSpan? ts) => actualTimeSpan = ts)
+                .Callback((string s, TimeSpan? ts, CancellationToken ct) => actualTimeSpan = ts)
                 .Returns(Task.CompletedTask);
             queueMock
                 .Setup(ac => ac.MaybeCreateAndConnect(It.IsAny<string>()));
