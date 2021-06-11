@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Authentication.Sdk.Logic;
@@ -23,7 +24,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
             _tokenCache = new TokenCache();
         }
 
-        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan)
+        public async Task<AuthenticationToken> GetJwtTokenAsync(IAuthenticationCredentials tokenCredentials, TimeSpan minimumExpirationSpan, TimeSpan maximumExpirationSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tokenCredentials, nameof(tokenCredentials));
             InternalContract.RequireNotNullOrWhiteSpace(tokenCredentials.ClientId, nameof(tokenCredentials.ClientId));
@@ -33,32 +34,32 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
 
             var token = _tokenCache.Get(_type, tokenCredentials, minimumExpirationSpan);
             if (token != null) return token;
-            token = await RequestAndCacheJwtTokenAsync(tokenCredentials, maximumExpirationSpan);
+            token = await RequestAndCacheJwtTokenAsync(tokenCredentials, maximumExpirationSpan, cancellationToken);
             return token;
         }
 
-        public async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
+        public async Task<AuthenticationToken> RequestAndCacheJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientId, nameof(credentials.ClientId));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            var token = await RequestJwtTokenAsync(credentials, lifeSpan);
+            var token = await RequestJwtTokenAsync(credentials, lifeSpan, cancellationToken);
             FulcrumAssert.IsNotNull(token, CodeLocation.AsString(), $"Failed to get a token for client {credentials.ClientId}.");
 
             _tokenCache.AddOrUpdate(_type, credentials, token);
             return token;
         }
 
-        private async Task<AuthenticationToken> RequestJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan)
+        private async Task<AuthenticationToken> RequestJwtTokenAsync(IAuthenticationCredentials credentials, TimeSpan lifeSpan, CancellationToken cancellationToken)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientId, nameof(credentials.ClientId));
             InternalContract.RequireNotNullOrWhiteSpace(credentials.ClientSecret, nameof(credentials.ClientSecret));
             InternalContract.RequireNotNull(lifeSpan, nameof(lifeSpan));
 
-            return await _tokenService.ObtainAccessTokenAsync(credentials as AuthenticationCredentials);
+            return await _tokenService.ObtainAccessTokenAsync(credentials as AuthenticationCredentials, cancellationToken);
         }
         private static string Base64Encode(string plainText)
         {

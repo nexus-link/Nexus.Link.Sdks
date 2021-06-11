@@ -34,7 +34,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
         /// <inheritdoc />
         [Route("{conceptName}/Instances")]
         [HttpGet]
-        public Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(conceptName, nameof(conceptName));
             return Capability.ConceptService.GetAllInstancesAsync(conceptName, cancellationToken);

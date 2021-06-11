@@ -6,7 +6,7 @@ using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport;
 
 // https://medium.com/@dneimke/custom-configuration-in-net-core-2-193ff6f02046
-namespace Nexus.Link.Services.Implementations.Startup
+namespace Nexus.Link.Services.Implementations.Common.Startup
 {
     /// <summary>
     /// A configuration provider that gets configuration data from the Nexus configuration database

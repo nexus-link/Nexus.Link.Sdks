@@ -20,7 +20,7 @@ namespace Nexus.Link.Services.Contracts.Events
         /// <summary>
         /// See <see cref="IBusinessEventService.PublishAsync"/>.
         /// </summary>
-        public static Task PublishAsync(this IPublishableEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task PublishAsync(this IPublishableEvent @event, CancellationToken cancellationToken = default)
         {
             InternalContract.Require(BusinessEventService != null, $"Publish failed, prerequisite was not fulfilled: The Business API SDK must set the {typeof(EventExtensions).FullName}.{nameof(BusinessEventService)} property.");
             if (BusinessEventService == null) return Task.CompletedTask;

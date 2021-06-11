@@ -17,7 +17,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(JToken @event, CancellationToken token = default(CancellationToken))
+        public Task PublishAsync(JToken @event, CancellationToken token = default)
         {
             InternalContract.RequireNotNull(@event, nameof(@event));
             return RestClient.PostNoResponseContentAsync<JToken>("", @event, null, token);

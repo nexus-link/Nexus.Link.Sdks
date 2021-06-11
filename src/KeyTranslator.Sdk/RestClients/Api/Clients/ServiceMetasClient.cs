@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
@@ -10,10 +11,10 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Clients
         {
         }
 
-        public async Task<HealthResponse> ServiceHealthAsync()
+        public async Task<HealthResponse> ServiceHealthAsync(CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "ServicesMeta/ServiceHealth";
-            var result = await RestClient.GetAsync<HealthResponse>(relativeUrl);
+            var result = await RestClient.GetAsync<HealthResponse>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
     }

@@ -10,7 +10,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Services.Contracts.Events;
 
-namespace Nexus.Link.Services.Implementations.Adapter.Events
+namespace Nexus.Link.Services.Implementations.Common.Events
 {
     internal class EventReceiverLogic : IEventReceiver
     {

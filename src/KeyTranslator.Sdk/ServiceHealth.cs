@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models;
@@ -20,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
         }
 
         /// <inheritdoc />
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireValidated(tenant, nameof(tenant));

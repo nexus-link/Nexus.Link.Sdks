@@ -3,7 +3,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.AspNet.Startup;
 using Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration;
 using Nexus.Link.Services.Implementations.Adapter.Startup.Configuration;
-using Nexus.Link.Services.Implementations.Startup;
+using Nexus.Link.Services.Implementations.Common.Startup;
 
 namespace Nexus.Link.Services.Implementations.Adapter.Startup
 {

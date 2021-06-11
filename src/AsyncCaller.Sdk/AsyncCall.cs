@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -144,9 +145,9 @@ namespace Nexus.Link.AsyncCaller.Sdk
             return AddCallbackAuthorization($"Bearer {token}");
         }
 
-        public virtual async Task<string> ExecuteAsync()
+        public virtual async Task<string> ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            var rawRequest = await GetRawRequestAsync();
+            var rawRequest = await GetRawRequestAsync(cancellationToken);
             return await _asyncCaller.ExecuteAsync(rawRequest);
         }
 
@@ -155,7 +156,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
             return $"{CallOut.Method} {CallOut.RequestUri} ({Id})";
         }
 
-        private async Task<RawRequest> GetRawRequestAsync()
+        private async Task<RawRequest> GetRawRequestAsync(CancellationToken cancellationToken)
         {
             var serializer = new MessageContentHttpMessageSerializer(true);
             var callOutTask = serializer.SerializeAsync(CallOut);

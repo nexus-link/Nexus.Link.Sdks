@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.BusinessEvents.Sdk.RestClients.Models;
 using Nexus.Link.Libraries.Core.Health.Model;
@@ -16,7 +17,8 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <param name="minorVersion">The minor version</param>
         /// <param name="clientName">The publisher client</param>
         /// <param name="eventBody">The event body to be sent.</param>
-        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody);
+        /// <param name="cancellationToken"></param>
+        Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Test publish an event to see if it meets the requirements (types and translations)
@@ -27,7 +29,8 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <param name="minor"></param>
         /// <param name="clientName"></param>
         /// <param name="payload"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload);
+        Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients;
 
@@ -49,7 +50,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
         /// <summary>
         /// Execute all translations.
         /// </summary>
-        Task ExecuteAsync();
+        Task ExecuteAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a translation after the batch has been executed.

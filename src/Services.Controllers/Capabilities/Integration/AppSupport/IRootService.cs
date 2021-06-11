@@ -6,6 +6,6 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.AppSupport
 {
     public interface IRootService
     {
-        Task<ContentResult> Welcome(CancellationToken token = default(CancellationToken));
+        Task<ContentResult> Welcome(CancellationToken token = default);
     }
 }

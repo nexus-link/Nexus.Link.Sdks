@@ -71,7 +71,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
 
         /// <inheritdoc />
         public override Task<PageEnvelope<TModel>> ReadAllWithPagingAsync(int offset, int? limit = null,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             if (FulcrumApplication.IsInProductionOrProductionSimulation)
                 throw new FulcrumNotImplementedException(
@@ -81,7 +81,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
 
         /// <inheritdoc />
         public override Task<PageEnvelope<TModel>> ReadChildrenWithPagingAsync(string parentId, int offset, int? limit = null,
-            CancellationToken token = default(CancellationToken))
+            CancellationToken token = default)
         {
             if (FulcrumApplication.IsInProductionOrProductionSimulation)
                 throw new FulcrumNotImplementedException(
@@ -90,7 +90,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
         }
 
         /// <inheritdoc />
-        public override Task DeleteAsync(string id, CancellationToken token = default(CancellationToken))
+        public override Task DeleteAsync(string id, CancellationToken token = default)
         {
             if (FulcrumApplication.IsInProductionOrProductionSimulation)
                 throw new FulcrumNotImplementedException(
@@ -99,7 +99,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
         }
 
         /// <inheritdoc />
-        public override Task DeleteChildrenAsync(string masterId, CancellationToken token = default(CancellationToken))
+        public override Task DeleteChildrenAsync(string masterId, CancellationToken token = default)
         {
             if (FulcrumApplication.IsInProductionOrProductionSimulation)
                 throw new FulcrumNotImplementedException(
@@ -108,7 +108,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
         }
 
         /// <inheritdoc />
-        public override Task DeleteAllAsync(CancellationToken token = default(CancellationToken))
+        public override Task DeleteAllAsync(CancellationToken token = default)
         {
             if (FulcrumApplication.IsInProductionOrProductionSimulation)
                 throw new FulcrumNotImplementedException(

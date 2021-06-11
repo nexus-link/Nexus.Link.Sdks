@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -27,8 +28,8 @@ namespace AsyncCaller.Sdk.UnitTests
             var asyncCallerMock = new Mock<IAsyncCaller>();
             var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"));
             asyncCallerMock
-                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
-                .Callback((RawRequest r) => foundRawRequest = r)
+                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
+                .Callback((RawRequest r, CancellationToken ct) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();
             Assert.IsNotNull(foundRawRequest);
@@ -49,8 +50,8 @@ namespace AsyncCaller.Sdk.UnitTests
             var asyncCall = new AsyncCall(asyncCallerMock.Object, HttpMethod.Get, new Uri("http://ignore"))
                 .SetPriority(2);
             asyncCallerMock
-                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>()))
-                .Callback((RawRequest r) => foundRawRequest = r)
+                .Setup(ac => ac.ExecuteAsync(It.IsAny<RawRequest>(), It.IsAny<CancellationToken>()))
+                .Callback((RawRequest r, CancellationToken ct) => foundRawRequest = r)
                 .ReturnsAsync("ignore");
             await asyncCall.ExecuteAsync();
             Assert.IsNotNull(foundRawRequest);
@@ -64,8 +65,8 @@ namespace AsyncCaller.Sdk.UnitTests
             TimeSpan? actualTimeSpan = null;
             var queueMock = new Mock<IQueue>();
             queueMock
-                .Setup(ac => ac.AddMessageAsync(It.IsAny<string>(), It.Is<TimeSpan?>(span => span != null)))
-                .Callback((string s, TimeSpan? ts) => actualTimeSpan = ts)
+                .Setup(ac => ac.AddMessageAsync(It.IsAny<string>(), It.Is<TimeSpan?>(span => span != null), It.IsAny<CancellationToken>()))
+                .Callback((string s, TimeSpan? ts, CancellationToken ct) => actualTimeSpan = ts)
                 .Returns(Task.CompletedTask);
             queueMock
                 .Setup(ac => ac.MaybeCreateAndConnect(It.IsAny<string>()));

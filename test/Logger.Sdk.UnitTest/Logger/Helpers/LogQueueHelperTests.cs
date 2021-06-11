@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Configurations.Sdk;
@@ -50,7 +51,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
             var json = @"{""LoggerConnectionString"":""usedevstorage=true"",""QueueName"":""queuefortest""}";
             var config = new LeverConfiguration(Tenant, "Logging", JObject.Parse(json));
 
-            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>())).ReturnsAsync(config);
+            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
             /// Act
             var result = await SystemUnderTest.TryGetQueueAsync(Tenant);
@@ -74,7 +75,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
             var json = @"{""Key1"":""some value""}";
             var config = new LeverConfiguration(Tenant, "Logging", JObject.Parse(json));
 
-            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>())).ReturnsAsync(config);
+            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
             /// Act
             var result = await SystemUnderTest.TryGetQueueAsync(Tenant);
@@ -96,7 +97,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
             var json = @"{""LoggerConnectionString"":""usedevstorage=true""}";
             var config = new LeverConfiguration(Tenant, "Logging", JObject.Parse(json));
 
-            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>())).ReturnsAsync(config);
+            LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
             /// Act
             var result = await SystemUnderTest.TryGetQueueAsync(Tenant);

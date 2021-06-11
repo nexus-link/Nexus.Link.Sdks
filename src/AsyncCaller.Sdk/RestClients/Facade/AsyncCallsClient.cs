@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.AsyncCaller.Sdk.RestClients.Base;
@@ -22,28 +23,28 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade
         }
 
         [Obsolete("Please use PostRawAsync. Obsolete since 2020-09-10")]
-        public async Task<string> PostAsync(Dispatcher.Models.Request request)
+        public async Task<string> PostAsync(Dispatcher.Models.Request request, CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "/AsyncCalls";
-            return await RestClient.PostAsync<string, Dispatcher.Models.Request>(relativeUrl, request);
+            return await RestClient.PostAsync<string, Dispatcher.Models.Request>(relativeUrl, request, cancellationToken: cancellationToken);
         }
 
-        public async Task<string> PostRawAsync(RawRequest rawRequest)
+        public async Task<string> PostRawAsync(RawRequest rawRequest, CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "/AsyncCalls/Raw";
-            return await RestClient.PostAsync<string, RawRequest>(relativeUrl, rawRequest);
+            return await RestClient.PostAsync<string, RawRequest>(relativeUrl, rawRequest, cancellationToken: cancellationToken);
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "/AsyncCalls/Queues/Clear";
-            await RestClient.PostNoResponseContentAsync(relativeUrl);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, cancellationToken: cancellationToken);
         }
 
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "ServiceMetas/ServiceHealth";
-            return await RestClient.GetAsync<HealthResponse>(relativeUrl);
+            return await RestClient.GetAsync<HealthResponse>(relativeUrl, cancellationToken: cancellationToken);
         }
     }
 }

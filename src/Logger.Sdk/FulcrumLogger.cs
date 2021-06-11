@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
@@ -77,7 +78,7 @@ namespace Nexus.Link.Logger.Sdk
         }
 
         /// <inheritdoc />
-        public async Task LogAsync(LogRecord logRecord)
+        public async Task LogAsync(LogRecord logRecord, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(logRecord, nameof(logRecord));
             InternalContract.RequireValidated(logRecord, nameof(logRecord));
@@ -106,14 +107,14 @@ namespace Nexus.Link.Logger.Sdk
             if (tenantSink.HasStorageQueue)
             {
                 // Log to Azure Storage Queue for tenant
-                await tenantSink.WritableQueue.AddMessageAsync(logMessage);
+                await tenantSink.WritableQueue.AddMessageAsync(logMessage, cancellationToken: cancellationToken);
             }
             else
             {
                 FulcrumAssert.IsNotNull(_legacyLoggerClient, null, "When using this logger without a storage queue configuration, an ILogClient must be provided.");
 
-                // Fallback restclient logger to fundamentals
-                await _legacyLoggerClient.LogAsync(tenant, logMessage);
+                // Fallback REST client logger to fundamentals
+                await _legacyLoggerClient.LogAsync(tenant, cancellationToken, logMessage);
             }
         }
 

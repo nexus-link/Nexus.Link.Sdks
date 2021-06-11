@@ -30,7 +30,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="ClientId">ClientId.</param>
         /// <param name="ConceptId">ConceptId.</param>
         /// <param name="ContextId">ContextId.</param>
-        public DefaultContext(Guid? Id = default(Guid?), Guid? ClientId = default(Guid?), Guid? ConceptId = default(Guid?), Guid? ContextId = default(Guid?))
+        public DefaultContext(Guid? Id = default, Guid? ClientId = default, Guid? ConceptId = default, Guid? ContextId = default)
         {
             this.Id = Id;
             this.ClientId = ClientId;

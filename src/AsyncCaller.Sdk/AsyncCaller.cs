@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.AsyncCaller.Sdk.Data.Models;
@@ -94,7 +95,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
             return asyncCall;
         }
 
-        public virtual async Task<string> ExecuteAsync(RawRequest rawRequest)
+        public virtual async Task<string> ExecuteAsync(RawRequest rawRequest, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(rawRequest, nameof(rawRequest));
             return await RestClient.PostRawAsync(rawRequest);

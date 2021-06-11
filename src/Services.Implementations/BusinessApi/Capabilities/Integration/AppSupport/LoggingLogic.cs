@@ -18,7 +18,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public Task LogAsync(JToken message, CancellationToken token = default(CancellationToken))
+        public Task LogAsync(JToken message, CancellationToken token = default)
         {
             var logRecord = message.ToObject<LogRecord>();
             return _logger.LogAsync(logRecord);

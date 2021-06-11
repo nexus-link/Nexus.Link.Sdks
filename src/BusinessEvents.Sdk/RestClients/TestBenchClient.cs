@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -18,10 +19,10 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
             if (authenticationCredentials == null) throw new ArgumentNullException(nameof(tenant));
         }
 
-        public async Task<PublicationTestResult> Publish(string entity, string @event, int major, int minor, string clientName, JToken payload)
+        public async Task<PublicationTestResult> PublishAsync(string entity, string @event, int major, int minor, string clientName, JToken payload, CancellationToken cancellationToken = default)
         {
             var relativeUrl = $"TestBench/{entity}/{@event}/{major}/{minor}/Publish?clientName={clientName}";
-            return await RestClient.PostAsync<PublicationTestResult, JToken>(relativeUrl, payload);
+            return await RestClient.PostAsync<PublicationTestResult, JToken>(relativeUrl, payload, cancellationToken: cancellationToken);
         }
     }
 }

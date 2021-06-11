@@ -36,7 +36,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="GeneratedNumberOfCharacters">GeneratedNumberOfCharacters.</param>
         /// <param name="GeneratedAllowedCharacters">GeneratedAllowedCharacters.</param>
         /// <param name="IsCaseSensitive">IsCaseSensitive.</param>
-        public Context(Guid? Id = default(Guid?), string TechnicalName = default(string), string FriendlyName = default(string), bool? IsNewestPreferred = default(bool?), bool? CanCreateInstancesManually = default(bool?), bool? CanCreateInstancesAutomatically = default(bool?), bool? HasAutomaticInstanceGeneration = default(bool?), int? GeneratedNumberOfCharacters = default(int?), string GeneratedAllowedCharacters = default(string), bool? IsCaseSensitive = default(bool?))
+        public Context(Guid? Id = default, string TechnicalName = default, string FriendlyName = default, bool? IsNewestPreferred = default, bool? CanCreateInstancesManually = default, bool? CanCreateInstancesAutomatically = default, bool? HasAutomaticInstanceGeneration = default, int? GeneratedNumberOfCharacters = default, string GeneratedAllowedCharacters = default, bool? IsCaseSensitive = default)
         {
             this.Id = Id;
             this.TechnicalName = TechnicalName;

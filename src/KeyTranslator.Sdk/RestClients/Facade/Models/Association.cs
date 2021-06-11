@@ -31,7 +31,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         /// <param name="TargetClientName">TargetClientName.</param>
         /// <param name="TargetValue">TargetValue.</param>
         /// <param name="LockId">LockId.</param>
-        public Association(string SourcePath = default(string), string TargetContextName = default(string), string TargetClientName = default(string), string TargetValue = default(string), string LockId = default(string))
+        public Association(string SourcePath = default, string TargetContextName = default, string TargetClientName = default, string TargetValue = default, string LockId = default)
         {
             this.SourcePath = SourcePath;
             this.TargetContextName = TargetContextName;

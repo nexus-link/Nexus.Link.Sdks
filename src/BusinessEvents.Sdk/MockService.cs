@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -31,35 +32,35 @@ namespace Nexus.Link.BusinessEvents.Sdk
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(Guid publicationId, JToken content)
+        public Task PublishAsync(Guid publicationId, JToken content, CancellationToken cancellationToken = default)
         {
             throw new FulcrumNotImplementedException("Please use an other PublishAsync method.");
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(Guid publicationId, JToken content, string correlationId)
+        public Task PublishAsync(Guid publicationId, JToken content, string correlationId, CancellationToken cancellationToken = default)
         {
             throw new FulcrumNotImplementedException("Please use an other PublishAsync method.");
         }
 
         /// <inheritdoc />
-        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody)
+        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, CancellationToken cancellationToken = default)
         {
             var relativeUrl = $"{entityName}/{eventName}/{majorVersion}/{minorVersion}?clientName={clientName}";
             foreach (var restClient in _restClients)
             {
-                await restClient.PostNoResponseContentAsync(relativeUrl, eventBody);
+                await restClient.PostNoResponseContentAsync(relativeUrl, eventBody, cancellationToken: cancellationToken);
             }
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId)
+        public Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId, CancellationToken cancellationToken = default)
         {
             throw new FulcrumNotImplementedException("Please use an other PublishAsync method.");
         }
 
         /// <inheritdoc />
-        public Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName)
+        public Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName, CancellationToken cancellationToken = default)
         {
             throw new FulcrumNotImplementedException("Please use an other PublishAsync method.");
         }

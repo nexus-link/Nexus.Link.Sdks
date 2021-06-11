@@ -26,7 +26,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         /// <inheritdoc />
         public Task<AuthenticationToken> ObtainAccessTokenAsync(AuthenticationCredentials credentials,
             CancellationToken token =
-                default(CancellationToken))
+                default)
         {
             InternalContract.RequireNotNull(credentials, nameof(credentials));
             InternalContract.RequireValidated(credentials, nameof(credentials));
@@ -34,7 +34,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public async Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default(CancellationToken))
+        public async Task<string> GetPublicRsaKeyAsXmlAsync(CancellationToken token = default)
         {
             if (_publicKey != null) return _publicKey;
             var publicKey = await _semaphore.ExecuteAsync(GetKeyFromNexus, token);
@@ -43,7 +43,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             return _publicKey;
         }
 
-        private async Task<string> GetKeyFromNexus(CancellationToken token = default(CancellationToken))
+        private async Task<string> GetKeyFromNexus(CancellationToken token = default)
         {
             var rsaPublicKey =
                 await _authenticationManager.GetPublicKeyXmlAsync(token);

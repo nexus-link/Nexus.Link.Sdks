@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
@@ -22,7 +23,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             _loggingServiceConfiguration = loggingServiceConfiguration;
         }
 
-        public async Task<(bool HasStorageQueue, IWritableQueue<T> WritableQueue)> TryGetQueueAsync(Tenant tenant)
+        public async Task<(bool HasStorageQueue, IWritableQueue<T> WritableQueue)> TryGetQueueAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireValidated(tenant, nameof(tenant));
@@ -33,14 +34,14 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             if (_loggingServiceConfiguration == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
-                    $"Will use serviceconfiguration due to ILeverServiceConfiguration was not provided.");
+                    $"Will use service configuration due to ILeverServiceConfiguration was not provided.");
 
                 return (AzureStorageQueueIsCreated.No, null);
             }
 
             try
             {
-                tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant);
+                tenantLoggingConfiguration = await _loggingServiceConfiguration.GetConfigurationForAsync(tenant, cancellationToken);
             }
             catch (Exception)
             {

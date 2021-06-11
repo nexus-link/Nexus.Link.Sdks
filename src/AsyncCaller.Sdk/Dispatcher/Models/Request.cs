@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.AsyncCaller.Sdk.Common.Models;
@@ -38,7 +39,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
             }
         }
 
-        public static async Task<Request> FromRawAsync(RawRequest source)
+        public static async Task<Request> FromRawAsync(RawRequest source, CancellationToken cancellationToken = default)
         {
             if (source == null) return null;
             var serializer = new MessageContentHttpMessageSerializer(true);
@@ -47,13 +48,13 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
                 Id = source.Id,
                 Context = Convert.ToJson(source.Context),
                 Priority = source.Priority,
-                CallOut = await serializer.DeserializeToRequestAsync(source.CallOut, source.CallOutUriScheme),
-                CallBack = await serializer.DeserializeToRequestAsync(source.CallBack, source.CallBackUriScheme)
+                CallOut = await serializer.DeserializeToRequestAsync(source.CallOut, source.CallOutUriScheme, cancellationToken),
+                CallBack = await serializer.DeserializeToRequestAsync(source.CallBack, source.CallBackUriScheme, cancellationToken)
             };
             return target;
         }
 
-        public async Task<RawRequest> ToRawAsync()
+        public async Task<RawRequest> ToRawAsync(CancellationToken cancellationToken = default)
         {
             var serializer = new MessageContentHttpMessageSerializer(true);
             var target = new RawRequest
@@ -61,9 +62,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
                 Id = Id,
                 Context = Convert.ToByteArray(Context),
                 Priority = Priority,
-                CallOut = await serializer.SerializeAsync(CallOut),
+                CallOut = await serializer.SerializeAsync(CallOut, cancellationToken),
                 CallOutUriScheme = CallOut.RequestUri.Scheme,
-                CallBack = await serializer.SerializeAsync(CallBack),
+                CallBack = await serializer.SerializeAsync(CallBack, cancellationToken),
                 CallBackUriScheme = CallBack?.RequestUri?.Scheme
             };
             target.SetTitle(CallOut.Method.ToString(), CallOut.RequestUri);

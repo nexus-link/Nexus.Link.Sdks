@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Data.Models;
 
@@ -13,6 +14,6 @@ namespace Nexus.Link.AsyncCaller.Sdk
         IAsyncCall CreateCall(HttpMethod method, Uri uri, int priority);
         IAsyncCall CreateCall(HttpMethod method, string uri);
         IAsyncCall CreateCall(HttpMethod method, string uri, int priority);
-        Task<string> ExecuteAsync(RawRequest rawRequest);
+        Task<string> ExecuteAsync(RawRequest rawRequest, CancellationToken cancellationToken = default);
     }
 }

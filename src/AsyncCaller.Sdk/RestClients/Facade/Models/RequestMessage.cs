@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncCaller.Sdk.Common.Models;
 using Nexus.Link.Libraries.Core.Assert;
@@ -26,11 +27,11 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
         public byte[] ContentAsByteArray { get; set; }
         public string ContentType { get; set; }
 
-        public static async Task<RequestMessage> FromDataAsync(byte[] byteArray, string uriScheme)
+        public static async Task<RequestMessage> FromDataAsync(byte[] byteArray, string uriScheme, CancellationToken cancellationToken = default)
         {
             if (byteArray == null) return null;
             var serializer = new MessageContentHttpMessageSerializer(true);
-            var source = await serializer.DeserializeToRequestAsync(byteArray, uriScheme);
+            var source = await serializer.DeserializeToRequestAsync(byteArray, uriScheme, cancellationToken);
             var target = new RequestMessage(source.Method.Method, source.RequestUri.AbsoluteUri)
             {
                 ContentAsByteArray = await source.Content.ReadAsByteArrayAsync(),
@@ -40,7 +41,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
             return target;
         }
 
-        public async Task<byte[]> ToDataAsync()
+        public async Task<byte[]> ToDataAsync(CancellationToken cancellationToken = default)
         {
             var target = new HttpRequestMessage(MethodToData(Method), new Uri(RequestUri))
             {
@@ -49,7 +50,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
             if (target.Content != null && ContentType != null) target.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(ContentType);
             ToData(Headers, target.Headers);
             var serializer = new MessageContentHttpMessageSerializer(true);
-            return await serializer.SerializeAsync(target);
+            return await serializer.SerializeAsync(target, cancellationToken);
         }
 
         private HttpMethod MethodToData(string method)

@@ -35,7 +35,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
         /// ]
         /// </example>
         Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName,
-            CancellationToken cancellationToken = default (CancellationToken));
+            CancellationToken cancellationToken = default);
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -51,18 +52,18 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
             return success;
         }
 
-        public async Task AddMessageAsync(string message, TimeSpan? timeSpanToWait)
+        public async Task AddMessageAsync(string message, TimeSpan? timeSpanToWait, CancellationToken cancellationToken = default)
         {
             FulcrumAssert.IsNotNull(_queue, $"{Namespace}: 99A13992-135C-4624-AED7-1FEA9D02C925", "There is no connection to a queue. Please call Connect() before adding messages to the queue.");
-            await _queue.AddMessageAsync(new CloudQueueMessage(message), null, timeSpanToWait, null, null);
+            await _queue.AddMessageAsync(new CloudQueueMessage(message), null, timeSpanToWait, null, null, cancellationToken);
         }
 
-        public async Task ClearAsync()
+        public async Task ClearAsync(CancellationToken cancellationToken = default)
         {
-            await _queue.ClearAsync();
+            await _queue.ClearAsync(null, null, cancellationToken);
         }
 
-        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant)
+        public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             var response = new HealthResponse("AzureStorageQueue");
             if (_queue == null)
@@ -73,7 +74,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
             return await Task.FromResult(response);
         }
 
-        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant)
+        public async Task<HealthInfo> GetResourceHealth2Async(Tenant tenant, CancellationToken cancellationToken = default)
         {
             var response = new HealthInfo("AzureStorageQueue")
             {

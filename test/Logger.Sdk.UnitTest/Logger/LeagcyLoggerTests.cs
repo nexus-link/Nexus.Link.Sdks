@@ -28,7 +28,8 @@ namespace Logger.Sdk.UnitTest.Logger
             _logClientMock = new Mock<ILogClient>();
 
             var config = new Mock<ILeverConfiguration>();
-            config.Setup(x => x.Value<string>("UseMemoryQueue")).Returns("true");
+            config.Setup(x => x.Value<string>("UseMemoryQueue"))
+                .Returns("true");
 
             // To setup Tenant on value provider
             // ReSharper disable once ObjectCreationAsStatement
@@ -74,10 +75,11 @@ namespace Logger.Sdk.UnitTest.Logger
             var logCalled = new ManualResetEvent(false);
             var correlationId = Guid.NewGuid().ToString();
 
-            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
-                (tenant, msgs) =>
+            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>()))
+                .Returns(Task.CompletedTask).Callback<Tenant, CancellationToken, LogMessage[]>(
+                (tenant, ct, messages) =>
                 {
-                    var msg = msgs.FirstOrDefault(m => m.CorrelationId == correlationId);
+                    var msg = messages.FirstOrDefault(m => m.CorrelationId == correlationId);
                     if (msg == null) return;
                     loggedMessage = msg;
                     logCalled.Set();
@@ -123,10 +125,12 @@ namespace Logger.Sdk.UnitTest.Logger
             LogMessage loggedMessage = null;
             var logCalled = new ManualResetEvent(false);
 
-            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>())).Returns(Task.CompletedTask).Callback<Tenant, LogMessage[]>(
-                (tenant, msgs) =>
+            _logClientMock.Setup(mock => mock.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>()))
+                .Returns(Task.CompletedTask)
+                .Callback<Tenant, CancellationToken, LogMessage[]>(
+                (tenant, ct, messages) =>
                 {
-                    loggedMessage = msgs.FirstOrDefault();
+                    loggedMessage = messages.FirstOrDefault();
                     logCalled.Set();
                 });
             const string correlationId = "443D3DDA-BD04-4DDE-B5A3-65FFFBAC110D";

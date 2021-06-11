@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Nexus.Link.Libraries.Core.Assert;
@@ -22,7 +23,7 @@ namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
         /// Synchronize a main key with other keys.
         /// </summary>
         /// <remarks>This is useful when a business flow creates instances of the same entity in different system and wants to associate them in DSE.</remarks>
-        public async Task SynchronizedEntityAssociatedAsync(KeyAssociations associations)
+        public async Task SynchronizedEntityAssociatedAsync(KeyAssociations associations, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(associations, nameof(associations));
 

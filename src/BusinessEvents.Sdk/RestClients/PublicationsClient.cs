@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -19,18 +20,18 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
 
         }
 
-        public async Task PublishAsync(Guid publicationId, JToken content)
+        public async Task PublishAsync(Guid publicationId, JToken content, CancellationToken cancellationToken = default)
         {
             await PublishWithClientNameAsync(publicationId, content, null);
         }
 
         [Obsolete]
-        public async Task PublishAsync(Guid publicationId, JToken content, string correlationId)
+        public async Task PublishAsync(Guid publicationId, JToken content, string correlationId, CancellationToken cancellationToken = default)
         {
-            await PublishAsync(publicationId, content);
+            await PublishAsync(publicationId, content, cancellationToken);
         }
 
-        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody)
+        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(entityName, nameof(entityName));
             InternalContract.RequireNotNullOrWhiteSpace(eventName, nameof(eventName));
@@ -39,22 +40,22 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
             InternalContract.RequireNotNull(eventBody, nameof(eventBody));
 
             var relativeUrl = $"Publications/{entityName}/{eventName}/{majorVersion}/{minorVersion}?clientName={clientName}";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, eventBody);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, eventBody, cancellationToken: cancellationToken);
         }
 
         [Obsolete]
-        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId)
+        public async Task PublishAsync(string entityName, string eventName, int majorVersion, int minorVersion, string clientName, JToken eventBody, string correlationId, CancellationToken cancellationToken = default)
         {
-            await PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody);
+            await PublishAsync(entityName, eventName, majorVersion, minorVersion, clientName, eventBody, cancellationToken);
         }
 
-        public async Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName)
+        public async Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName, CancellationToken cancellationToken = default)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
             var relativeUrl = $"Publications/{publicationId}";
             if (!string.IsNullOrWhiteSpace(clientName)) relativeUrl += $"/AsClient/{clientName}";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, content);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, content, cancellationToken: cancellationToken);
         }
     }
 }

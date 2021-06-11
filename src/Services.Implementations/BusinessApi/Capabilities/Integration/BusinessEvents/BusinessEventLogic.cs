@@ -31,7 +31,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public Task PublishAsync(JToken eventAsJson, CancellationToken token = default(CancellationToken))
+        public Task PublishAsync(JToken eventAsJson, CancellationToken token = default)
         {
             InternalContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             var @event = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson.ToString(Formatting.None));

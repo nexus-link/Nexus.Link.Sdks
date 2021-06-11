@@ -29,7 +29,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="Id">Id.</param>
         /// <param name="TechnicalName">TechnicalName.</param>
         /// <param name="FriendlyName">FriendlyName.</param>
-        public Client(Guid? Id = default(Guid?), string TechnicalName = default(string), string FriendlyName = default(string))
+        public Client(Guid? Id = default, string TechnicalName = default, string FriendlyName = default)
         {
             this.Id = Id;
             this.TechnicalName = TechnicalName;

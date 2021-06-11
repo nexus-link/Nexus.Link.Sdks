@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Authentication.Sdk;
 using Nexus.Link.Libraries.Core.Assert;
@@ -64,7 +65,7 @@ namespace Nexus.Link.Configurations.Sdk
         public string ServiceName { get; }
 
         /// <inheritdoc />
-        public async Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant)
+        public async Task<ILeverConfiguration> GetConfigurationForAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireNotNullOrWhiteSpace(tenant.Environment, nameof(tenant.Environment));
@@ -72,15 +73,15 @@ namespace Nexus.Link.Configurations.Sdk
 
             var configuration = ConfigurationCache.Get(tenant, ServiceName);
             if (configuration != null) return configuration;
-            configuration = await _configurationsManager.GetConfigurationForAsync(tenant);
+            configuration = await _configurationsManager.GetConfigurationForAsync(tenant, cancellationToken);
             ConfigurationCache.Add(tenant, ServiceName, configuration);
             return configuration;
         }
 
         /// <inheritdoc />
-        public async Task<ILeverConfiguration> GetConfigurationAsync()
+        public async Task<ILeverConfiguration> GetConfigurationAsync(CancellationToken cancellationToken = default)
         {
-            return await GetConfigurationForAsync(ServiceTenant);
+            return await GetConfigurationForAsync(ServiceTenant, cancellationToken);
         }
     }
 }

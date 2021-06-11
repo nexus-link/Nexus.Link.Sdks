@@ -63,7 +63,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         /// <param name="Status">Status.</param>
         /// <param name="Resource">Resource.</param>
         /// <param name="Resources">Resources.</param>
-        public HealthResponse(string Message = default(string), StatusEnum? Status = default(StatusEnum?), string Resource = default(string), List<HealthResponse> Resources = default(List<HealthResponse>))
+        public HealthResponse(string Message = default, StatusEnum? Status = default, string Resource = default, List<HealthResponse> Resources = default)
         {
             this.Message = Message;
             this.Status = Status;

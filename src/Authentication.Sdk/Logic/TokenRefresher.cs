@@ -50,7 +50,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
         {
         }
 
-        public async Task<AuthenticationToken> GetJwtTokenAsync()
+        public async Task<AuthenticationToken> GetJwtTokenAsync(CancellationToken cancellationToken = default)
         {
             var token = await _authenticationManager.GetJwtTokenAsync(_credentials, _minimumTimeSpan, _maximumTimeSpan);
             if (TokenNeedsRefresh(token)) RefreshTokenInBackground();
@@ -66,7 +66,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
         {
             InternalContract.RequireNotNull(request, nameof(request));
 
-            var token = await GetJwtTokenAsync();
+            var token = await GetJwtTokenAsync(cancellationToken);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
             await base.ProcessHttpRequestAsync(request, cancellationToken);
         }

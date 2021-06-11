@@ -17,7 +17,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.AppSupport
         // The default
         [HttpGet("")]
         [Produces("text/html")]
-        public virtual Task<ContentResult> Welcome(CancellationToken token = default(CancellationToken))
+        public virtual Task<ContentResult> Welcome(CancellationToken token = default)
         {
             var result = new ContentResult {
                 ContentType = "text/html",

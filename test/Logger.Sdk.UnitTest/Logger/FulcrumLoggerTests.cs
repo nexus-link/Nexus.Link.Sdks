@@ -9,6 +9,7 @@ using Nexus.Link.Logger.Sdk;
 using Nexus.Link.Logger.Sdk.Helpers;
 using Nexus.Link.Logger.Sdk.RestClients;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Logger.Sdk.UnitTest.Logger
@@ -47,7 +48,7 @@ namespace Logger.Sdk.UnitTest.Logger
             // Arrange
             IWritableQueue<LogMessage> storageQueue = new MemoryQueue<LogMessage>("MSTestMemQueue");
             LogQueueHelperMock
-                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
+                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((true, storageQueue)));
 
             var logRecord = new LogRecord
@@ -69,7 +70,7 @@ namespace Logger.Sdk.UnitTest.Logger
         /// <summary>
         /// Given Tenant not configured for virtual service Logging
         /// When LogAsync
-        /// Then Logrecord is transformed and pushed to the fallback restclient logger for fundamentals
+        /// Then Log record is transformed and pushed to the fallback REST client logger for fundamentals
         /// </summary>
         /// <returns></returns>
         [TestMethod]
@@ -83,16 +84,16 @@ namespace Logger.Sdk.UnitTest.Logger
 
             var logMessageSpy = new LogMessage();
             legacyLoggerMock
-                .Setup(f => f.LogAsync(It.IsAny<Tenant>(), It.IsAny<LogMessage[]>()))
-                .Callback<Tenant, LogMessage[]>((tenant, logMessage) => logMessageSpy = logMessage[0]);
+                .Setup(f => f.LogAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>(), It.IsAny<LogMessage[]>()))
+                .Callback<Tenant, CancellationToken, LogMessage[]>((tenant, t, logMessage) => logMessageSpy = logMessage[0]);
 
             LogQueueHelperMock
-                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>()))
+                .Setup(f => f.TryGetQueueAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((false, default(IWritableQueue<LogMessage>))));
 
             var logRecord = new LogRecord
             {
-                Message = "Message for fundmentals",
+                Message = "Message for fundamentals",
                 SeverityLevel = LogSeverityLevel.Warning,
                 TimeStamp = DateTimeOffset.Now
             };

@@ -19,7 +19,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
 
         /// <inheritdoc />
         public async Task<IEnumerable<IDictionary<string, string>>> GetAllInstancesAsync(string conceptName,
-            CancellationToken cancellationToken = default (CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var result = await RestClient.GetAsync<IEnumerable<IDictionary<string, string>>>($"Concepts/{conceptName}/Instances", null, cancellationToken);
             return result;
