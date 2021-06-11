@@ -33,7 +33,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             InternalContract.RequireNotNull(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
             InternalContract.RequireValidated(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
 
-            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject);
+            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, token);
         }
 
         /// <inheritdoc />
@@ -75,7 +75,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
                     + $" Will trust the event {nameof(publishableEvent.Metadata)}.");
             }
 
-            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject);
+            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, token);
         }
     }
 }

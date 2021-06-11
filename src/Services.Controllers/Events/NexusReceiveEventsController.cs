@@ -25,8 +25,10 @@ namespace Nexus.Link.Services.Controllers.Events
         /// The logic for this controller
         /// </summary>
         protected readonly IEventReceiver Logic;
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public NexusReceiveEventsController(IEventReceiver logic)
         {
             Logic = logic;

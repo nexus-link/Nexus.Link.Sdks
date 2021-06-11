@@ -14,7 +14,9 @@ namespace Nexus.Link.KeyTranslator.Sdk
 
         private readonly IServiceMetasClient _translateClient;
         
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ServiceHealth(IServiceMetasClient translateClient)
         {
             _translateClient = translateClient;
@@ -27,7 +29,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
             InternalContract.RequireValidated(tenant, nameof(tenant));
             try
             {
-                var result = await _translateClient.ServiceHealthAsync(tenant);
+                var result = await _translateClient.ServiceHealthAsync(tenant, cancellationToken);
                 return result;
             }
             catch (Exception e)

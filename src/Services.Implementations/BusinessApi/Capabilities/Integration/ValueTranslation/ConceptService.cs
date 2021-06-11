@@ -11,8 +11,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     public class ConceptService : IConceptService
     {
         private readonly ConceptsClient _conceptsClient;
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ConceptService(ConceptsClient conceptsClient)
         {
             _conceptsClient = conceptsClient;

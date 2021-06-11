@@ -34,7 +34,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             if (_loggingServiceConfiguration == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,
-                    $"Will use service configuration due to ILeverServiceConfiguration was not provided.");
+                    "Will use service configuration due to ILeverServiceConfiguration was not provided.");
 
                 return (AzureStorageQueueIsCreated.No, null);
             }
@@ -58,7 +58,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
                 return (AzureStorageQueueIsCreated.No, null);
             }
 
-            var queueName = tenantLoggingConfiguration?.Value<string>("QueueName");
+            var queueName = tenantLoggingConfiguration.Value<string>("QueueName");
             if (queueName == null)
             {
                 LogHelper.FallbackSafeLog(LogSeverityLevel.Warning,

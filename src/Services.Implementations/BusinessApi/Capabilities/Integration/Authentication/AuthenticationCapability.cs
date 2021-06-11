@@ -9,7 +9,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     /// <inheritdoc />
     public class AuthenticationCapability : IAuthenticationCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AuthenticationCapability(string serviceBaseUrl, ServiceClientCredentials serviceClientCredentials)
         {
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));

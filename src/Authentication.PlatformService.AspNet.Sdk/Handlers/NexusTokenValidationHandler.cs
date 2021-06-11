@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Authentication.AspNet.Sdk.Handlers;
@@ -54,11 +55,11 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
             return false;
         }
 
-        protected override async Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
+        protected override async Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(_fundamentalsServiceBaseUrl, null, "We need a url to Fundamentals");
 
-            var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl);
+            var publicKeyXml = await NexusAuthenticationManager.GetPublicKeyXmlAsync(tenant, _fundamentalsServiceBaseUrl, cancellationToken);
             return publicKeyXml == null ? null : AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyXml);
         }
     }

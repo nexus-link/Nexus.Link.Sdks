@@ -11,8 +11,10 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     /// <inheritdoc />
     public class AppSupportCapability : IAppSupportCapability
     {
-        
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AppSupportCapability(IHttpSender httpSender)
         {
             if (FulcrumApplication.IsInDevelopment)
@@ -35,10 +37,6 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         // ReSharper disable once InconsistentNaming
         private class LoggingService_NotImplemented : ILoggingService
         {
-            public LoggingService_NotImplemented()
-            {
-            }
-
             /// <inheritdoc />
             public Task LogAsync(JToken message, CancellationToken token = new CancellationToken())
             {

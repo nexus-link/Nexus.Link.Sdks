@@ -29,7 +29,13 @@ namespace Nexus.Link.Services.Contracts.DataSync
         IDataSyncTesting<TModel>
         where TModel : TModelCreate
     {
+        /// <summary>
+        /// The name of the client
+        /// </summary>
         protected readonly string ClientName;
+        /// <summary>
+        /// The name of the entity
+        /// </summary>
         protected readonly string EntityName;
 
         /// <inheritdoc />
@@ -55,6 +61,12 @@ namespace Nexus.Link.Services.Contracts.DataSync
             await PublishEvent(id, token);
         }
 
+        /// <summary>
+        /// Publish a <see cref="DataSyncEntityWasUpdated"/> event.
+        /// </summary>
+        /// <param name="id">The id of the updated object.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         protected virtual async Task PublishEvent(string id, CancellationToken token)
         {
             var updatedEvent = new DataSyncEntityWasUpdated

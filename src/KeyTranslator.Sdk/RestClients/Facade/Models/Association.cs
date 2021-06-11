@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
     /// Association
     /// </summary>
     [DataContract]
-    public partial class Association :  IEquatable<Association>, IValidatableObject
+    public class Association :  IEquatable<Association>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Association" /> class.
@@ -99,7 +99,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as Association);
+            return Equals(obj as Association);
         }
 
         /// <summary>
@@ -115,29 +115,29 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
 
             return 
                 (
-                    this.SourcePath == other.SourcePath ||
-                    this.SourcePath != null &&
-                    this.SourcePath.Equals(other.SourcePath)
+                    SourcePath == other.SourcePath ||
+                    SourcePath != null &&
+                    SourcePath.Equals(other.SourcePath)
                 ) && 
                 (
-                    this.TargetContextName == other.TargetContextName ||
-                    this.TargetContextName != null &&
-                    this.TargetContextName.Equals(other.TargetContextName)
+                    TargetContextName == other.TargetContextName ||
+                    TargetContextName != null &&
+                    TargetContextName.Equals(other.TargetContextName)
                 ) && 
                 (
-                    this.TargetClientName == other.TargetClientName ||
-                    this.TargetClientName != null &&
-                    this.TargetClientName.Equals(other.TargetClientName)
+                    TargetClientName == other.TargetClientName ||
+                    TargetClientName != null &&
+                    TargetClientName.Equals(other.TargetClientName)
                 ) && 
                 (
-                    this.TargetValue == other.TargetValue ||
-                    this.TargetValue != null &&
-                    this.TargetValue.Equals(other.TargetValue)
+                    TargetValue == other.TargetValue ||
+                    TargetValue != null &&
+                    TargetValue.Equals(other.TargetValue)
                 ) && 
                 (
-                    this.LockId == other.LockId ||
-                    this.LockId != null &&
-                    this.LockId.Equals(other.LockId)
+                    LockId == other.LockId ||
+                    LockId != null &&
+                    LockId.Equals(other.LockId)
                 );
         }
 
@@ -150,18 +150,18 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.SourcePath != null)
-                    hash = hash * 59 + this.SourcePath.GetHashCode();
-                if (this.TargetContextName != null)
-                    hash = hash * 59 + this.TargetContextName.GetHashCode();
-                if (this.TargetClientName != null)
-                    hash = hash * 59 + this.TargetClientName.GetHashCode();
-                if (this.TargetValue != null)
-                    hash = hash * 59 + this.TargetValue.GetHashCode();
-                if (this.LockId != null)
-                    hash = hash * 59 + this.LockId.GetHashCode();
+                if (SourcePath != null)
+                    hash = hash * 59 + SourcePath.GetHashCode();
+                if (TargetContextName != null)
+                    hash = hash * 59 + TargetContextName.GetHashCode();
+                if (TargetClientName != null)
+                    hash = hash * 59 + TargetClientName.GetHashCode();
+                if (TargetValue != null)
+                    hash = hash * 59 + TargetValue.GetHashCode();
+                if (LockId != null)
+                    hash = hash * 59 + LockId.GetHashCode();
                 return hash;
             }
         }

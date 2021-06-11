@@ -7,7 +7,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     /// <inheritdoc />
     public class BusinessEventsCapability : IBusinessEventsCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public BusinessEventsCapability(string serviceBaseUrl, ServiceClientCredentials serviceClientCredentials)
         {
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));

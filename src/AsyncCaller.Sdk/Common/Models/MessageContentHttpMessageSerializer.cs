@@ -30,7 +30,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
         public async Task SerializeAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken = default)
         {
             if (request == null) return;
-            if (_bufferContent && (request.Content != null))
+            if (_bufferContent && request.Content != null)
             {
                 try
                 {
@@ -59,7 +59,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Models
         public async Task SerializeAsync(HttpResponseMessage response, Stream stream, CancellationToken cancellationToken = default)
         {
             if (response == null) return;
-            if (_bufferContent && (response.Content != null))
+            if (_bufferContent && response.Content != null)
             {
                 await response.Content.LoadIntoBufferAsync();
             }

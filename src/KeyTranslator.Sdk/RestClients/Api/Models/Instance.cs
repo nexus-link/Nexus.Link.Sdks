@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
     /// Instance
     /// </summary>
     [DataContract]
-    public partial class Instance :  IEquatable<Instance>, IValidatableObject
+    public class Instance :  IEquatable<Instance>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Instance" /> class.
@@ -121,7 +121,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as Instance);
+            return Equals(obj as Instance);
         }
 
         /// <summary>
@@ -137,44 +137,44 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    Id == other.Id ||
+                    Id != null &&
+                    Id.Equals(other.Id)
                 ) && 
                 (
-                    this.ConceptId == other.ConceptId ||
-                    this.ConceptId != null &&
-                    this.ConceptId.Equals(other.ConceptId)
+                    ConceptId == other.ConceptId ||
+                    ConceptId != null &&
+                    ConceptId.Equals(other.ConceptId)
                 ) && 
                 (
-                    this.ContextId == other.ContextId ||
-                    this.ContextId != null &&
-                    this.ContextId.Equals(other.ContextId)
+                    ContextId == other.ContextId ||
+                    ContextId != null &&
+                    ContextId.Equals(other.ContextId)
                 ) && 
                 (
-                    this.FormId == other.FormId ||
-                    this.FormId != null &&
-                    this.FormId.Equals(other.FormId)
+                    FormId == other.FormId ||
+                    FormId != null &&
+                    FormId.Equals(other.FormId)
                 ) && 
                 (
-                    this.Value == other.Value ||
-                    this.Value != null &&
-                    this.Value.Equals(other.Value)
+                    Value == other.Value ||
+                    Value != null &&
+                    Value.Equals(other.Value)
                 ) && 
                 (
-                    this.IsPreferred == other.IsPreferred ||
-                    this.IsPreferred != null &&
-                    this.IsPreferred.Equals(other.IsPreferred)
+                    IsPreferred == other.IsPreferred ||
+                    IsPreferred != null &&
+                    IsPreferred.Equals(other.IsPreferred)
                 ) && 
                 (
-                    this.IsValid == other.IsValid ||
-                    this.IsValid != null &&
-                    this.IsValid.Equals(other.IsValid)
+                    IsValid == other.IsValid ||
+                    IsValid != null &&
+                    IsValid.Equals(other.IsValid)
                 ) && 
                 (
-                    this.VersionTag == other.VersionTag ||
-                    this.VersionTag != null &&
-                    this.VersionTag.Equals(other.VersionTag)
+                    VersionTag == other.VersionTag ||
+                    VersionTag != null &&
+                    VersionTag.Equals(other.VersionTag)
                 );
         }
 
@@ -187,24 +187,24 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.ConceptId != null)
-                    hash = hash * 59 + this.ConceptId.GetHashCode();
-                if (this.ContextId != null)
-                    hash = hash * 59 + this.ContextId.GetHashCode();
-                if (this.FormId != null)
-                    hash = hash * 59 + this.FormId.GetHashCode();
-                if (this.Value != null)
-                    hash = hash * 59 + this.Value.GetHashCode();
-                if (this.IsPreferred != null)
-                    hash = hash * 59 + this.IsPreferred.GetHashCode();
-                if (this.IsValid != null)
-                    hash = hash * 59 + this.IsValid.GetHashCode();
-                if (this.VersionTag != null)
-                    hash = hash * 59 + this.VersionTag.GetHashCode();
+                if (Id != null)
+                    hash = hash * 59 + Id.GetHashCode();
+                if (ConceptId != null)
+                    hash = hash * 59 + ConceptId.GetHashCode();
+                if (ContextId != null)
+                    hash = hash * 59 + ContextId.GetHashCode();
+                if (FormId != null)
+                    hash = hash * 59 + FormId.GetHashCode();
+                if (Value != null)
+                    hash = hash * 59 + Value.GetHashCode();
+                if (IsPreferred != null)
+                    hash = hash * 59 + IsPreferred.GetHashCode();
+                if (IsValid != null)
+                    hash = hash * 59 + IsValid.GetHashCode();
+                if (VersionTag != null)
+                    hash = hash * 59 + VersionTag.GetHashCode();
                 return hash;
             }
         }

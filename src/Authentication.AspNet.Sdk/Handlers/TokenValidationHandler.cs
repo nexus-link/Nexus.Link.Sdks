@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Authentication.Sdk;
@@ -70,7 +71,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             return false;
         }
 
-        protected override Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant)
+        protected override Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(_publicKey);
         }

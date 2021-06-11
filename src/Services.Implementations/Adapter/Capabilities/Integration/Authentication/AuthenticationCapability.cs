@@ -7,7 +7,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
     public class AuthenticationCapability : IAuthenticationCapability
     {
         
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AuthenticationCapability(IHttpSender httpSender)
         {
             TokenService = new TokenRestService(httpSender.CreateHttpSender("Tokens"));

@@ -17,8 +17,8 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         {
             InternalContract.RequireNotNull(tenant, nameof(tenant));
             InternalContract.RequireValidated(tenant, nameof(tenant));
-            string relativeUrl = $"ServiceMetas/{tenant.Organization}/{tenant.Environment}/ServiceHealth";
-            var result = await RestClient.GetAsync<HealthResponse>(relativeUrl);
+            var relativeUrl = $"ServiceMetas/{tenant.Organization}/{tenant.Environment}/ServiceHealth";
+            var result = await RestClient.GetAsync<HealthResponse>(relativeUrl, cancellationToken: cancellationToken);
             return result;
         }
     }

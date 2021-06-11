@@ -23,7 +23,7 @@ using System.Net.Http;
 namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 {
 
-    public abstract class TokenValidationHandlerBase : CompatibilityDelegatingHandler
+    public abstract class TokenValidationHandlerBase : CompatibilityDelegatingHandlerWithCancellationSupport
     {
         protected string Issuer;
 
@@ -42,7 +42,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 #endif
 
 
-        protected override async Task InvokeAsync(CompabilityInvocationContext context)
+        protected override async Task InvokeAsync(CompabilityInvocationContext context, CancellationToken cancellationToken)
         {
             var token = GetToken(context);
             if (token != null)
@@ -54,7 +54,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 var possiblePlatformServiceTenantFromToken = CheckTokenForPlatformService(token);
                 if (possiblePlatformServiceTenantFromToken != null) tenant = possiblePlatformServiceTenantFromToken;
 
-                var publicKey = await GetPublicKeyAsync(tenant);
+                var publicKey = await GetPublicKeyAsync(tenant, cancellationToken);
                 if (publicKey == null)
                 {
                     Log.LogError($"Could not fetch public key for tenant '{tenant}'");
@@ -74,7 +74,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                 FulcrumApplication.Context.CallingClientName = GetRequestUserAgent(context);
             }
 
-            await CallNextDelegateAsync(context);
+            await CallNextDelegateAsync(context, cancellationToken);
         }
 
         private static Tenant CheckTokenForPlatformService(string token)
@@ -148,9 +148,9 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 #endif
         }
 
-        protected abstract Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant);
+        protected abstract Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant, CancellationToken cancellationToken = default);
 
-        private string GetRequestUserAgent(CompabilityInvocationContext context)
+        private static string GetRequestUserAgent(CompabilityInvocationContext context)
         {
             return GetRequestHeaderValues("User-Agent", context)?.FirstOrDefault();
         }

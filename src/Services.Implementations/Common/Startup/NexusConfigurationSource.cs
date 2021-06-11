@@ -10,8 +10,10 @@ namespace Nexus.Link.Services.Implementations.Common.Startup
     {
         private readonly string _authenticationClientId;
         private readonly IConfigurationService _configurationService;
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public NexusConfigurationSource(string authenticationClientId, IConfigurationService configurationService)
         {
             _authenticationClientId = authenticationClientId;

@@ -13,7 +13,9 @@ namespace Nexus.Link.KeyTranslator.Sdk
     {
         private readonly ITranslateClient _translateClient;
         
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public TranslatorService(ITranslateClient translateClient)
         {
             _translateClient = translateClient;
@@ -30,7 +32,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
             return result.ToDictionary(item => item.Request.SourceInstancePath, item => item.Value);
         }
 
-        private string GetTargetContextPath(string sourceContextPath, string targetClientName)
+        private static string GetTargetContextPath(string sourceContextPath, string targetClientName)
         {
             var conceptValue = ConceptValue.Parse(sourceContextPath);
             return $"({conceptValue.ConceptName}!~{targetClientName})";

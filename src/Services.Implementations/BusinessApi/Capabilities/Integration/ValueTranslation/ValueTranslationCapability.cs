@@ -11,7 +11,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     /// <inheritdoc />
     public class ValueTranslationCapability : IValueTranslationCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ValueTranslationCapability(string serviceBaseUrl, ServiceClientCredentials serviceClientCredentials)
         {
             InternalContract.RequireNotNullOrWhiteSpace(serviceBaseUrl, nameof(serviceBaseUrl));

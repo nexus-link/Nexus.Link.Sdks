@@ -21,7 +21,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         public Task LogAsync(JToken message, CancellationToken token = default)
         {
             InternalContract.RequireNotNull(message, nameof(message));
-            return RestClient.PostNoResponseContentAsync<JToken>("", message, null, token);
+            return RestClient.PostNoResponseContentAsync("", message, null, token);
         }
     }
 }

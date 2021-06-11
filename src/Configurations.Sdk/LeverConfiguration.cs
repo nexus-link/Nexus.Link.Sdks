@@ -47,8 +47,7 @@ namespace Nexus.Link.Configurations.Sdk
         {
             InternalContract.RequireNotNull(key, nameof(key));
             var token = JObject[key];
-            if (token == null) return default;
-            return token.ToObject<T>();
+            return token == null ? default : token.ToObject<T>();
         }
 
         /// <inheritdoc />

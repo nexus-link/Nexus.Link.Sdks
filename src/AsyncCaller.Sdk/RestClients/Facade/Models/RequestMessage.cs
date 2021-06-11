@@ -53,7 +53,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
             return await serializer.SerializeAsync(target, cancellationToken);
         }
 
-        private HttpMethod MethodToData(string method)
+        private static HttpMethod MethodToData(string method)
         {
             InternalContract.RequireNotNull(method, nameof(method));
             switch (method.ToUpper())

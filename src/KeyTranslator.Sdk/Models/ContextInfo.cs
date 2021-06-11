@@ -45,8 +45,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         {
             var match = Regex.Match(path, ExclamationMarkSyntaxPattern);
             if (match.Groups.Count < 3) throw new ArgumentException($"Could not parse \"{path}\" into a context path with pattern \"({{concept}}!{{context}})\".");
-            string contextName, clientName;
-            ExtractContextNameAndClientName(match.Groups[2].Value, out contextName, out clientName);
+            ExtractContextNameAndClientName(match.Groups[2].Value, out var contextName, out var clientName);
             var contextPath = new ContextInfo
             {
                 UseExclamationSyntax = true,
@@ -72,8 +71,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         {
             var match = Regex.Match(path, SlashSyntaxPattern);
             if (match.Groups.Count < 3) throw new ArgumentException($"Could not parse \"{path}\" into a context path with pattern \"{{concept}}/{{context}}\".");
-            string contextName, clientName;
-            ExtractContextNameAndClientName(match.Groups[2].Value, out contextName, out clientName);
+            ExtractContextNameAndClientName(match.Groups[2].Value, out var contextName, out var clientName);
             var contextPath = new ContextInfo
             {
                 UseExclamationSyntax = false,
@@ -102,8 +100,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         public static ContextInfo ToContextInfo(IContextInfo contextInfoAsInterface)
         {
             if (contextInfoAsInterface == null) return null;
-            var contextInfoAsClass = contextInfoAsInterface as ContextInfo;
-            if (contextInfoAsClass == null)
+            if (!(contextInfoAsInterface is ContextInfo contextInfoAsClass))
             {
                 throw new ApplicationException($"Unexpected data type for context info \"{contextInfoAsInterface}\".");
             }
@@ -116,8 +113,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            var contextInfo = obj as ContextInfo;
-            return contextInfo != null && Equals(contextInfo);
+            return obj is ContextInfo contextInfo && Equals(contextInfo);
         }
 
         protected bool Equals(ContextInfo other)

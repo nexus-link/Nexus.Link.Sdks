@@ -20,8 +20,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
         {
             lock (_cache)
             {
-                AuthenticationToken token;
-                _cache.TryGetValue(CacheKey(type, credentials), out token);
+                _cache.TryGetValue(CacheKey(type, credentials), out var token);
                 if (token == null) return null;
                 if (HasExpired(token))
                 {

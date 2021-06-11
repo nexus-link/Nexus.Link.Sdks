@@ -111,10 +111,10 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             if (await IsTemporaryFailureAsync(response, cancellationToken))
             {
                 Log.LogInformation($"TemporaryFailure({response.StatusCode}) -> Put back last in queue '{_requestQueue.GetQueue().QueueName}'");
-                await PutBackLastInQueueAsync(DateTimeOffset.Now);
+                await PutBackLastInQueueAsync(DateTimeOffset.Now, cancellationToken);
                 return;
             }
-            if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync(cancellationToken: cancellationToken)}), but there is no callback address.");
+            if (!AcceptsCallback) throw new GiveUpException(_envelope, $"We received a response  ({await response.ToLogStringAsync(cancellationToken)}), but there is no callback address.");
             var requestEnvelope = await RequestEnvelope.GetResponseAsRequestEnvelopeAsync(_envelope, response, _defaultDeadlineInSeconds, cancellationToken);
             var dataEnvelope = await requestEnvelope.ToRawAsync(cancellationToken);
             await _requestQueue.EnqueueAsync(dataEnvelope, cancellationToken: cancellationToken);
@@ -122,10 +122,10 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
 
         private async Task PutBackLastInQueueAsync(DateTimeOffset? latestAttemptAt = null, CancellationToken cancellationToken = default)
         {
-            _envelope.Request = await Request.FromRawAsync(_originalRawRequestEnvelope.RawRequest);
-            var dataEnvelope = await _envelope.ToRawAsync();
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            await _requestQueue.RequeueAsync(dataEnvelope, latestAttemptAt);
+            _envelope.Request = await Request.FromRawAsync(_originalRawRequestEnvelope.RawRequest, cancellationToken);
+            var dataEnvelope = await _envelope.ToRawAsync(cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            await _requestQueue.RequeueAsync(dataEnvelope, latestAttemptAt, cancellationToken);
         }
 
         /// <summary>
@@ -134,11 +134,12 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
         /// Strategy for resend based on FulcrumError.sRetryMeaningful and otherwise the http status codes. Http status codes that will trigger a resend are 404, 408, 425, 429, 500 and above, except 510 and 526.
         /// </summary>
         /// <param name="responseMessage"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         private static async Task<bool> IsTemporaryFailureAsync(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
             // Get status code and content from response message
-            HttpStatusCode statusCode = responseMessage.StatusCode;
+            var statusCode = responseMessage.StatusCode;
             string content = null;
 
             // Get content if it exists

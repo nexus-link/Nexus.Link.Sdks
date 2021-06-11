@@ -22,8 +22,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         /// Must be set if the business API should publish events itself as publisher.
         /// </summary>
         public bool ForInternalUseInBusinessApi { get; set; }
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public BusinessEventLogic(string serviceBaseUrl, ServiceClientCredentials serviceClient)
         {
             _businessEventsService =
@@ -51,7 +53,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
                 metadata.MajorVersion,
                 metadata.MinorVersion,
                 publisherName,
-                eventAsJson);
+                eventAsJson, token);
         }
     }
 }

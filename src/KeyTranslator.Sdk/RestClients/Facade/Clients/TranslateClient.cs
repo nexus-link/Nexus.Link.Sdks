@@ -57,7 +57,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         public async Task ReleaseLockAsync(string instancePath, string lockId,
             CancellationToken cancellationToken = default)
         {
-            string relativeUrl = $"Translate/{WebUtility.UrlEncode(instancePath)}/ReleaseLock";
+            var relativeUrl = $"Translate/{WebUtility.UrlEncode(instancePath)}/ReleaseLock";
             await RestClient.PostNoResponseContentAsync(relativeUrl, lockId, null, cancellationToken);
         }
 

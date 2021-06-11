@@ -82,26 +82,26 @@ namespace AsyncCaller.Sdk.UnitTests
             _runBackgroundJob = false;
         }
 
-        private async Task<RequestHandler> CreateRequestHandler(RequestEnvelope envelope)
+        private async Task<RequestHandler> CreateRequestHandler(RequestEnvelope envelope, CancellationToken cancellationToken)
         {
             var rawEnvelope = await envelope.ToRawAsync();
             return new RequestHandler(_httpClientMock.Object, Tenant, _leverConfigurationMock.Object, rawEnvelope);
         }
 
         [TestMethod]
-        public async Task ResponseCode_From_Failed_Request_Is_ApplicationJson_In_Callback()
+        public async Task ResponseCode_From_Failed_Request_Is_ApplicationJson_In_Callback(CancellationToken cancellationToken = default)
         {
             // Arrange
             var resetEvent = new ManualResetEvent(false);
 
             _queueAction = async rawEnvelope =>
             {
-                var envelope = await RequestEnvelope.FromRawAsync(rawEnvelope, TimeSpan.FromSeconds(1));
+                var envelope = await RequestEnvelope.FromRawAsync(rawEnvelope, TimeSpan.FromSeconds(1), cancellationToken);
                 Log.LogInformation($"Action on {rawEnvelope.RawRequest.Title}");
 
                 // Process Out and Callback
-                var handler = await CreateRequestHandler(envelope);
-                await handler.ProcessOneRequestAsync();
+                var handler = await CreateRequestHandler(envelope, cancellationToken);
+                await handler.ProcessOneRequestAsync(cancellationToken);
 
             };
 
@@ -111,7 +111,7 @@ namespace AsyncCaller.Sdk.UnitTests
 
             _httpClientMock
                 .Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
-                .Callback(async (HttpRequestMessage httpRequest, CancellationToken cancellationToken) =>
+                .Callback(async (HttpRequestMessage httpRequest, CancellationToken ct) =>
                 {
                     Log.LogInformation($"Http client mock: {httpRequest.RequestUri}");
                     if (httpRequest.RequestUri.ToString().Contains("/callback"))
@@ -120,7 +120,7 @@ namespace AsyncCaller.Sdk.UnitTests
                         resetEvent.Set();
                     }
                 })
-                .ReturnsAsync((HttpRequestMessage httpRequest, CancellationToken cancellationToken) =>
+                .ReturnsAsync((HttpRequestMessage httpRequest, CancellationToken ct) =>
                 {
                     if (httpRequest.RequestUri.ToString().Contains("/out"))
                     {

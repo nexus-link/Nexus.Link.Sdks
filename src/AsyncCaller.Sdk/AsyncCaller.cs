@@ -54,13 +54,13 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public AsyncCaller(string uri, Tenant tenant, ServiceClientCredentials serviceClientCredentials)
             : this(uri == null ? null : new Uri(uri), tenant, serviceClientCredentials)
         {
-            InternalContract.Require(uri, (u) => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
+            InternalContract.Require(uri, u => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
         }
 
         public IAsyncCall CreateCall(HttpMethod method, string uri)
         {
             InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(uri, (u) => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
+            InternalContract.Require(uri, u => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
 
             var asyncCall = new AsyncCall(this, method, uri);
             return asyncCall;
@@ -69,7 +69,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public IAsyncCall CreateCall(HttpMethod method, string uri, int priority)
         {
             InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(uri, (u) => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
+            InternalContract.Require(uri, u => Uri.IsWellFormedUriString(u, UriKind.Absolute), nameof(uri));
 
             var asyncCall = new AsyncCall(this, method, uri)
                 .SetPriority(priority);
@@ -98,7 +98,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public virtual async Task<string> ExecuteAsync(RawRequest rawRequest, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(rawRequest, nameof(rawRequest));
-            return await RestClient.PostRawAsync(rawRequest);
+            return await RestClient.PostRawAsync(rawRequest, cancellationToken);
         }
     }
 }

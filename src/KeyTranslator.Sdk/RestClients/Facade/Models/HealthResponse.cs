@@ -23,7 +23,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
     /// HealthResponse
     /// </summary>
     [DataContract]
-    public partial class HealthResponse :  IEquatable<HealthResponse>, IValidatableObject
+    public class HealthResponse :  IEquatable<HealthResponse>, IValidatableObject
     {
         /// <summary>
         /// Gets or Sets Status
@@ -119,7 +119,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as HealthResponse);
+            return Equals(obj as HealthResponse);
         }
 
         /// <summary>
@@ -135,24 +135,24 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
 
             return 
                 (
-                    this.Message == other.Message ||
-                    this.Message != null &&
-                    this.Message.Equals(other.Message)
+                    Message == other.Message ||
+                    Message != null &&
+                    Message.Equals(other.Message)
                 ) && 
                 (
-                    this.Status == other.Status ||
-                    this.Status != null &&
-                    this.Status.Equals(other.Status)
+                    Status == other.Status ||
+                    Status != null &&
+                    Status.Equals(other.Status)
                 ) && 
                 (
-                    this.Resource == other.Resource ||
-                    this.Resource != null &&
-                    this.Resource.Equals(other.Resource)
+                    Resource == other.Resource ||
+                    Resource != null &&
+                    Resource.Equals(other.Resource)
                 ) && 
                 (
-                    this.Resources == other.Resources ||
-                    this.Resources != null &&
-                    this.Resources.SequenceEqual(other.Resources)
+                    Resources == other.Resources ||
+                    Resources != null &&
+                    Resources.SequenceEqual(other.Resources)
                 );
         }
 
@@ -165,16 +165,16 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Message != null)
-                    hash = hash * 59 + this.Message.GetHashCode();
-                if (this.Status != null)
-                    hash = hash * 59 + this.Status.GetHashCode();
-                if (this.Resource != null)
-                    hash = hash * 59 + this.Resource.GetHashCode();
-                if (this.Resources != null)
-                    hash = hash * 59 + this.Resources.GetHashCode();
+                if (Message != null)
+                    hash = hash * 59 + Message.GetHashCode();
+                if (Status != null)
+                    hash = hash * 59 + Status.GetHashCode();
+                if (Resource != null)
+                    hash = hash * 59 + Resource.GetHashCode();
+                if (Resources != null)
+                    hash = hash * 59 + Resources.GetHashCode();
                 return hash;
             }
         }

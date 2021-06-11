@@ -22,7 +22,7 @@ namespace Nexus.Link.BusinessEvents.Sdk.RestClients
 
         public async Task PublishAsync(Guid publicationId, JToken content, CancellationToken cancellationToken = default)
         {
-            await PublishWithClientNameAsync(publicationId, content, null);
+            await PublishWithClientNameAsync(publicationId, content, null, cancellationToken);
         }
 
         [Obsolete]

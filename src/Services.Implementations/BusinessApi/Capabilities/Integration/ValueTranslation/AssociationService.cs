@@ -15,8 +15,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     {
         private readonly TranslateClient _translatorClient;
         private readonly IAssociationsClient _associationsClient;
-
-        /// <inheritdoc />
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AssociationService(TranslateClient translatorClient, IAssociationsClient associationsClient)
         {
             _translatorClient = translatorClient;
@@ -48,7 +50,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
             {
                 var targetConceptValue = ConceptValue.Parse(targetConceptValuePath);
 
-                ValueOrLockId valueOrLockId = null;
+                ValueOrLockId valueOrLockId;
                 string targetContextOrClient;
                 if (targetConceptValue.ClientName == null)
                 {
@@ -118,7 +120,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
                 TargetClientName = targetConceptValue.ClientName,
                 TargetValue = targetConceptValue.Value
             };
-            await _associationsClient.CreateAsync(association);
+            await _associationsClient.CreateAsync(association, cancellationToken);
         }
 
         /// <inheritdoc />

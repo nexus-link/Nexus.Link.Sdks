@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
-using Nexus.Link.KeyTranslator.Sdk.Models;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 

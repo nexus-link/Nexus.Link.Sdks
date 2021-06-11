@@ -14,7 +14,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
 {
     public class TruncatingAzureStorageQueue<T> : IWritableQueue<T>
     {
-        private IWritableQueue<T> _baseQueue;
+        private readonly IWritableQueue<T> _baseQueue;
 
         public TruncatingAzureStorageQueue(string connectionString, string name)
         {
@@ -43,9 +43,9 @@ namespace Nexus.Link.Logger.Sdk.Helpers
                 if (Encoding.UTF8.GetByteCount(JsonConvert.SerializeObject(logMessage)) > maxLength)
                 {
                     LogHelper.FallbackSafeLog(LogSeverityLevel.Critical,
-                        $"Azure Storage Queue messages cannot be larger than 65536 bytes, so the text message part in the logmessage was truncated.");
+                        "Azure Storage Queue messages cannot be larger than 65536 bytes, so the text message part in the logmessage was truncated.");
 
-                    // Safelog the full original message prior to truncating
+                    // SafeLog the full original message prior to truncating
                     LogHelper.FallbackSafeLog(LogSeverityLevel.Warning, JsonConvert.SerializeObject(logMessage));
 
                     // Truncate to accommodate Azure Storage Queue object maxsize
@@ -53,7 +53,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
                 }
             }
 
-            return _baseQueue.AddMessageAsync(message, timeSpanToWait);
+            return _baseQueue.AddMessageAsync(message, timeSpanToWait, cancellationToken);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             var isTruncated = false;
             var processDepth = 0;
 
-            while (true && (processDepth++ < 10))
+            while (true && processDepth++ < 10)
             {
                 var byteCount = Encoding.UTF8.GetByteCount(JsonConvert.SerializeObject(logMessage));
                 if (byteCount <= maxNumberOfBytes)
@@ -103,16 +103,16 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             var buffer = new byte[maxLength];
             var messageChars = input.ToCharArray();
             encoder.Convert(
-                chars: messageChars,
-                charIndex: 0,
-                charCount: messageChars.Length,
-                bytes: buffer,
-                byteIndex: 0,
-                byteCount: buffer.Length,
-                flush: false,
-                charsUsed: out var charsUsed,
-                bytesUsed: out var bytesUsed,
-                completed: out var completed);
+                messageChars,
+                0,
+                messageChars.Length,
+                buffer,
+                0,
+                buffer.Length,
+                false,
+                out _,
+                out var bytesUsed,
+                out _);
 
             // I don't think we can return message.Substring(0, charsUsed)
             // as that's the number of UTF-16 chars, not the number of codepoints

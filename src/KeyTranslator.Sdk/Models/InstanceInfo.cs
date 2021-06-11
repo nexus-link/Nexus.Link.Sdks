@@ -46,8 +46,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         {
             var match = Regex.Match(path, ExclamationMarkSyntaxPattern);
             if (match.Groups.Count < 4) throw new ArgumentException($"Could not parse \"{path}\" into a instance path with pattern \"({{concept}}!{{context}}!{{value}})\".");
-            string contextName, clientName;
-            ExtractContextNameAndClientName(match.Groups[2].Value, out contextName, out clientName);
+            ExtractContextNameAndClientName(match.Groups[2].Value, out var contextName, out var clientName);
             var instancePath = new InstanceInfo
             {
                 UseExclamationSyntax = true,
@@ -63,8 +62,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         {
             var match = Regex.Match(path, SlashSyntaxPattern);
             if (match.Groups.Count < 4) throw new ArgumentException($"Could not parse \"{path}\" into a instance path with pattern \"{{concept}}/{{context}}/{{value}}\".");
-            string contextName, clientName;
-            ExtractContextNameAndClientName(match.Groups[2].Value, out contextName, out clientName);
+            ExtractContextNameAndClientName(match.Groups[2].Value, out var contextName, out var clientName);
             var instancePath = new InstanceInfo
             {
                 UseExclamationSyntax = false,
@@ -94,8 +92,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         public static InstanceInfo ToInstanceInfo(IInstanceInfo instanceInfoAsInterface)
         {
             if (instanceInfoAsInterface == null) return null;
-            var instanceInfoAsClass = instanceInfoAsInterface as InstanceInfo;
-            if (instanceInfoAsClass == null)
+            if (!(instanceInfoAsInterface is InstanceInfo instanceInfoAsClass))
             {
                 throw new ApplicationException($"Unexpected data type for instance info \"{instanceInfoAsInterface}\".");
             }
@@ -108,8 +105,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.Models
         /// <filterpriority>2</filterpriority>
         public override bool Equals(object obj)
         {
-            var contextInfo = obj as InstanceInfo;
-            return contextInfo != null && Equals(contextInfo);
+            return obj is InstanceInfo contextInfo && Equals(contextInfo);
         }
 
         protected bool Equals(InstanceInfo other)

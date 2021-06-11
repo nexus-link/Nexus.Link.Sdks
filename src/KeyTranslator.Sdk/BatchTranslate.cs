@@ -29,7 +29,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
 
         static BatchTranslate()
         {
-            var cacheMinutesString = (string)null; // TODO ConfigurationManager.AppSettings["KeyTranslatorClientCacheMinutes"];
+            const string cacheMinutesString = (string)null; // TODO ConfigurationManager.AppSettings["KeyTranslatorClientCacheMinutes"];
             var cacheMinutes = string.IsNullOrEmpty(cacheMinutesString) ? 5 : int.Parse(cacheMinutesString);
             var cachePhysicalMemoryLimitPercentageString = (string)null; // TODO ConfigurationManager.AppSettings["KeyTranslatorCachePhysicalMemoryLimitPercentage"];
             var cachePhysicalMemoryLimitPercentage = string.IsNullOrEmpty(cachePhysicalMemoryLimitPercentageString) ? 10 : int.Parse(cachePhysicalMemoryLimitPercentageString);
@@ -41,7 +41,10 @@ namespace Nexus.Link.KeyTranslator.Sdk
         /// </summary>
         public static void ResetCache()
         {
-            TranslateResponseCache.ResetCache();
+            lock (TranslateResponseCache)
+            {
+                TranslateResponseCache.ResetCache();
+            }
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
             _translateRequests.TryAdd(index, translateRequest);
             if (action != null)
             {
-                var actionList = _actions.GetOrAdd(index, (i) => new List<Action<string>>());
+                var actionList = _actions.GetOrAdd(index, i => new List<Action<string>>());
                 actionList.Add(action);
             }
 
@@ -128,7 +131,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
             var serviceRequestKeys = GetRequestKeysNotInCache(_translateRequests.Keys);
             if (serviceRequestKeys.Any())
             {
-                var responses = await CallKeyTranslatorAsync(serviceRequestKeys);
+                var responses = await CallKeyTranslatorAsync(serviceRequestKeys, cancellationToken);
                 CollectAndCacheResponses(serviceRequestKeys, responses);
             }
             CallActions();

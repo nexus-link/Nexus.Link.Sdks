@@ -8,7 +8,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
             <inheritdoc />
@@ -38,7 +40,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
             <inheritdoc />
@@ -68,7 +72,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
@@ -132,7 +138,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.#ctor(Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.TranslatorService">
             <inheritdoc />
@@ -223,7 +231,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger,Nexus.Link.Libraries.Web.RestClientHelper.IHttpSender)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.AppSupportCapability.ConfigurationService">
             <inheritdoc />
@@ -244,7 +254,10 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.LoggingLogic.#ctor(Nexus.Link.Libraries.Core.Logging.IAsyncLogger)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
+            <param name="logger"></param>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.AppSupport.LoggingLogic.LogAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -253,7 +266,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.AuthenticationCapability.TokenService">
             <inheritdoc />
@@ -262,7 +277,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.#ctor(Nexus.Link.Authentication.Sdk.AuthenticationManager)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.Authentication.TokenLogic.ObtainAccessTokenAsync(Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationCredentials,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -279,7 +296,9 @@
             </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventLogic.PublishAsync(Newtonsoft.Json.Linq.JToken,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -288,7 +307,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.BusinessEvents.BusinessEventsCapability.BusinessEventService">
             <inheritdoc />
@@ -297,7 +318,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.TranslateClient,Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.IAssociationsClient)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.AssociationService.AssociateAsync(System.String,System.String[],System.Threading.CancellationToken)">
             <inheritdoc />
@@ -320,7 +343,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ConceptService.#ctor(Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients.ConceptsClient)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ConceptService.GetAllInstancesAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -329,7 +354,9 @@
             <inheritdoc />
         </member>
         <member name="M:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="P:Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integration.ValueTranslation.ValueTranslationCapability.TranslatorService">
             <inheritdoc />
@@ -528,7 +555,9 @@
             </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationSource.#ctor(System.String,Nexus.Link.Services.Contracts.Capabilities.Integration.AppSupport.IConfigurationService)">
-            <inheritdoc />
+            <summary>
+            Constructor
+            </summary>
         </member>
         <member name="M:Nexus.Link.Services.Implementations.Common.Startup.NexusConfigurationSource.Build(Microsoft.Extensions.Configuration.IConfigurationBuilder)">
             <inheritdoc />

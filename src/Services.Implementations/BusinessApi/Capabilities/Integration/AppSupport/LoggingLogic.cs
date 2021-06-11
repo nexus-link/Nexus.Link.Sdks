@@ -11,7 +11,10 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     {
         private readonly IAsyncLogger _logger;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="logger"></param>
         public LoggingLogic(IAsyncLogger logger)
         {
             _logger = logger;
@@ -21,7 +24,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         public Task LogAsync(JToken message, CancellationToken token = default)
         {
             var logRecord = message.ToObject<LogRecord>();
-            return _logger.LogAsync(logRecord);
+            return _logger.LogAsync(logRecord, token);
         }
     }
 }

@@ -6,7 +6,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.B
     /// <inheritdoc />
     public class BusinessEventsCapability : IBusinessEventsCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public BusinessEventsCapability(IHttpSender httpSender)
         {
             BusinessEventService = new BusinessEventRestService(httpSender.CreateHttpSender("Events"));

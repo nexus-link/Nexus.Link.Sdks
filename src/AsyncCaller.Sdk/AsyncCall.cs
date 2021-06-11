@@ -148,7 +148,7 @@ namespace Nexus.Link.AsyncCaller.Sdk
         public virtual async Task<string> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             var rawRequest = await GetRawRequestAsync(cancellationToken);
-            return await _asyncCaller.ExecuteAsync(rawRequest);
+            return await _asyncCaller.ExecuteAsync(rawRequest, cancellationToken);
         }
 
         public override string ToString()
@@ -159,8 +159,8 @@ namespace Nexus.Link.AsyncCaller.Sdk
         private async Task<RawRequest> GetRawRequestAsync(CancellationToken cancellationToken)
         {
             var serializer = new MessageContentHttpMessageSerializer(true);
-            var callOutTask = serializer.SerializeAsync(CallOut);
-            var callBackTask = serializer.SerializeAsync(CallBack);
+            var callOutTask = serializer.SerializeAsync(CallOut, cancellationToken);
+            var callBackTask = serializer.SerializeAsync(CallBack, cancellationToken);
             var callOut = await callOutTask;
             var callBack = await callBackTask;
 

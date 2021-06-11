@@ -16,8 +16,8 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
         private MemoryQueue<LogMessage> AzureQueueMock { get; set; }
         private TruncatingAzureStorageQueue<LogMessage> SystemUnderTest { get; set; }
         private Mock<IFallbackLogger> FallbackLoggerMock { get; set; }
-        private static string LONG_STRING_65000_CHARS = new string('*', 65000);
-        private static string MEDIUM_STRING_32000_CHARS = new string('X', 32000);
+        private static readonly string LONG_STRING_65000_CHARS = new string('*', 65000);
+        private static readonly string MEDIUM_STRING_32000_CHARS = new string('X', 32000);
 
         [TestInitialize]
         public void RunBeforeEachTest()

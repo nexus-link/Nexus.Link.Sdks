@@ -28,7 +28,7 @@ namespace Nexus.Link.DatasyncEngine.Sdk.RestClients
             InternalContract.RequireNotNull(associations, nameof(associations));
 
             const string relativeUrl = "Match/SynchronizedEntity/Associated";
-            await RestClient.PostNoResponseContentAsync(relativeUrl, associations);
+            await RestClient.PostNoResponseContentAsync(relativeUrl, associations, cancellationToken: cancellationToken);
         }
     }
 }

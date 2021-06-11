@@ -65,7 +65,7 @@ namespace Nexus.Link.Configurations.Sdk
 
             var request = new HttpRequestMessage(HttpMethod.Get, serviceUri);
             await _serviceClientCredentials.ProcessHttpRequestAsync(request, default);
-            var response = await HttpClient.SendAsync(request);
+            var response = await HttpClient.SendAsync(request, cancellationToken);
             FulcrumAssert.IsNotNull(response, $"{Namespace}: 332DE55E-8A40-482A-BA9D-0223C077A096", $"Expected a non-null response from GET {serviceUri}");
             FulcrumAssert.IsTrue(response.IsSuccessStatusCode, $"{Namespace}: BB3F6675-E5A6-4C96-924D-53FB18B636A4", $"Response status code was {response.StatusCode}. Expected all non-success responses to be thrown as Fulcrum Exceptions.");
             var configurationString = response.Content == null ? null : await response.Content.ReadAsStringAsync();

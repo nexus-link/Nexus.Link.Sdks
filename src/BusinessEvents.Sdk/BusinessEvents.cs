@@ -85,6 +85,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <param name="publicationId">The id of the publication.</param>
         /// <param name="content">The content of the event.</param>
         /// <param name="clientName">The technical name of the publishing client</param>
+        /// <param name="cancellationToken"></param>
         public async Task PublishWithClientNameAsync(Guid publicationId, JToken content, string clientName, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(content, nameof(content));
@@ -122,7 +123,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// <inheritdoc />
         public async Task<PublicationTestResult> TestBenchPublish(string entity, string @event, int major, int minor, string clientName, JToken payload, CancellationToken cancellationToken = default)
         {
-            return await _testBenchClient.PublishAsync(entity, @event, major, minor, clientName, payload);
+            return await _testBenchClient.PublishAsync(entity, @event, major, minor, clientName, payload, cancellationToken);
         }
 
     }

@@ -52,7 +52,7 @@ namespace Nexus.Link.Authentication.Sdk.Logic
 
         public async Task<AuthenticationToken> GetJwtTokenAsync(CancellationToken cancellationToken = default)
         {
-            var token = await _authenticationManager.GetJwtTokenAsync(_credentials, _minimumTimeSpan, _maximumTimeSpan);
+            var token = await _authenticationManager.GetJwtTokenAsync(_credentials, _minimumTimeSpan, _maximumTimeSpan, cancellationToken);
             if (TokenNeedsRefresh(token)) RefreshTokenInBackground();
             return token;
         }

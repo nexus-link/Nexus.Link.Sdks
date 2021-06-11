@@ -103,11 +103,11 @@ namespace Nexus.Link.Logger.Sdk
                 typeof(FulcrumLogger).Namespace + ": 96F4F38C-4A06-4DF9-A7F0-105134EA30C5");
 
             // Exceptions are handled in QueueToAsyncLogger by LogHelper.FallbackToSimpleLoggingFailSafe
-            var tenantSink = await _storageHandler.TryGetQueueAsync(tenant);
-            if (tenantSink.HasStorageQueue)
+            var (hasStorageQueue, writableQueue) = await _storageHandler.TryGetQueueAsync(tenant, cancellationToken);
+            if (hasStorageQueue)
             {
                 // Log to Azure Storage Queue for tenant
-                await tenantSink.WritableQueue.AddMessageAsync(logMessage, cancellationToken: cancellationToken);
+                await writableQueue.AddMessageAsync(logMessage, cancellationToken: cancellationToken);
             }
             else
             {

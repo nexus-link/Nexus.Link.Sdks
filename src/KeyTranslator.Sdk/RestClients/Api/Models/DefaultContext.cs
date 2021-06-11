@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
     /// DefaultContext
     /// </summary>
     [DataContract]
-    public partial class DefaultContext :  IEquatable<DefaultContext>, IValidatableObject
+    public class DefaultContext :  IEquatable<DefaultContext>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultContext" /> class.
@@ -97,7 +97,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as DefaultContext);
+            return Equals(obj as DefaultContext);
         }
 
         /// <summary>
@@ -113,29 +113,29 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    Id == other.Id ||
+                    Id != null &&
+                    Id.Equals(other.Id)
                 ) && 
                 (
-                    this.ClientId == other.ClientId ||
-                    this.ClientId != null &&
-                    this.ClientId.Equals(other.ClientId)
+                    ClientId == other.ClientId ||
+                    ClientId != null &&
+                    ClientId.Equals(other.ClientId)
                 ) && 
                 (
-                    this.ConceptId == other.ConceptId ||
-                    this.ConceptId != null &&
-                    this.ConceptId.Equals(other.ConceptId)
+                    ConceptId == other.ConceptId ||
+                    ConceptId != null &&
+                    ConceptId.Equals(other.ConceptId)
                 ) && 
                 (
-                    this.ContextId == other.ContextId ||
-                    this.ContextId != null &&
-                    this.ContextId.Equals(other.ContextId)
+                    ContextId == other.ContextId ||
+                    ContextId != null &&
+                    ContextId.Equals(other.ContextId)
                 ) && 
                 (
-                    this.VersionTag == other.VersionTag ||
-                    this.VersionTag != null &&
-                    this.VersionTag.Equals(other.VersionTag)
+                    VersionTag == other.VersionTag ||
+                    VersionTag != null &&
+                    VersionTag.Equals(other.VersionTag)
                 );
         }
 
@@ -148,18 +148,18 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.ClientId != null)
-                    hash = hash * 59 + this.ClientId.GetHashCode();
-                if (this.ConceptId != null)
-                    hash = hash * 59 + this.ConceptId.GetHashCode();
-                if (this.ContextId != null)
-                    hash = hash * 59 + this.ContextId.GetHashCode();
-                if (this.VersionTag != null)
-                    hash = hash * 59 + this.VersionTag.GetHashCode();
+                if (Id != null)
+                    hash = hash * 59 + Id.GetHashCode();
+                if (ClientId != null)
+                    hash = hash * 59 + ClientId.GetHashCode();
+                if (ConceptId != null)
+                    hash = hash * 59 + ConceptId.GetHashCode();
+                if (ContextId != null)
+                    hash = hash * 59 + ContextId.GetHashCode();
+                if (VersionTag != null)
+                    hash = hash * 59 + VersionTag.GetHashCode();
                 return hash;
             }
         }

@@ -18,7 +18,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         public async Task<IDictionary<string, InstancesExistsResult>> InstancesExists(IEnumerable<string> conceptKeys, CancellationToken cancellationToken = default)
         {
             const string relativeUrl = "Instances/Exists";
-            return await RestClient.PostAsync<IDictionary<string, InstancesExistsResult>, IEnumerable<string>>(relativeUrl, conceptKeys);
+            return await RestClient.PostAsync<IDictionary<string, InstancesExistsResult>, IEnumerable<string>>(relativeUrl, conceptKeys, cancellationToken: cancellationToken);
         }
     }
 }

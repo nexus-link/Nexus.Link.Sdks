@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
     /// TranslateRequest
     /// </summary>
     [DataContract]
-    public partial class TranslateRequest :  IEquatable<TranslateRequest>, IValidatableObject
+    public class TranslateRequest :  IEquatable<TranslateRequest>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslateRequest" /> class.
@@ -75,7 +75,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as TranslateRequest);
+            return Equals(obj as TranslateRequest);
         }
 
         /// <summary>
@@ -91,14 +91,14 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
 
             return 
                 (
-                    this.SourceInstancePath == other.SourceInstancePath ||
-                    this.SourceInstancePath != null &&
-                    this.SourceInstancePath.Equals(other.SourceInstancePath)
+                    SourceInstancePath == other.SourceInstancePath ||
+                    SourceInstancePath != null &&
+                    SourceInstancePath.Equals(other.SourceInstancePath)
                 ) && 
                 (
-                    this.TargetContextPath == other.TargetContextPath ||
-                    this.TargetContextPath != null &&
-                    this.TargetContextPath.Equals(other.TargetContextPath)
+                    TargetContextPath == other.TargetContextPath ||
+                    TargetContextPath != null &&
+                    TargetContextPath.Equals(other.TargetContextPath)
                 );
         }
 
@@ -111,12 +111,12 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.SourceInstancePath != null)
-                    hash = hash * 59 + this.SourceInstancePath.GetHashCode();
-                if (this.TargetContextPath != null)
-                    hash = hash * 59 + this.TargetContextPath.GetHashCode();
+                if (SourceInstancePath != null)
+                    hash = hash * 59 + SourceInstancePath.GetHashCode();
+                if (TargetContextPath != null)
+                    hash = hash * 59 + TargetContextPath.GetHashCode();
                 return hash;
             }
         }

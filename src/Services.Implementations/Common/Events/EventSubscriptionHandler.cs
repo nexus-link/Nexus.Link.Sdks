@@ -91,7 +91,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
                 var i = typedEvent as IPublishableEvent;
                 FulcrumAssert.IsNotNull(i, CodeLocation.AsString(), $"Could not cast event to {nameof(IPublishableEvent)}.\rEvent: {eventAsJObject}");
                 InternalContract.RequireValidated(i, nameof(eventAsJObject));
-                await eventDelegateInfo.Delegate(i);
+                await eventDelegateInfo.Delegate(i, cancellationToken);
             }
             catch (Exception e)
             {
@@ -101,7 +101,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             }
         }
 
-        private string DelegateLogString(object d)
+        private static string DelegateLogString(object d)
         {
             if (d == null) return "NULL delegate";
             if (!(d is EventReceiverDelegateAsync<IPublishableEvent> asyncDelegate)) return $"(FAILED to cast {d.GetType().FullName})";

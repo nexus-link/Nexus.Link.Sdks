@@ -38,8 +38,7 @@ namespace Services.Controllers.UnitTests
         [TestMethod]
         public async Task Publish()
         {
-            var myEvent = new MyEvent();
-            myEvent.DataField = Guid.NewGuid().ToString();
+            var myEvent = new MyEvent {DataField = Guid.NewGuid().ToString()};
             MyEvent receivedEvent = null;
             _businessEventsCapabilityMoq
                 .Setup(capability =>

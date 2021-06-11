@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
     /// Context
     /// </summary>
     [DataContract]
-    public partial class Context :  IEquatable<Context>, IValidatableObject
+    public class Context :  IEquatable<Context>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Context" /> class.
@@ -145,7 +145,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as Context);
+            return Equals(obj as Context);
         }
 
         /// <summary>
@@ -161,59 +161,59 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    Id == other.Id ||
+                    Id != null &&
+                    Id.Equals(other.Id)
                 ) && 
                 (
-                    this.TechnicalName == other.TechnicalName ||
-                    this.TechnicalName != null &&
-                    this.TechnicalName.Equals(other.TechnicalName)
+                    TechnicalName == other.TechnicalName ||
+                    TechnicalName != null &&
+                    TechnicalName.Equals(other.TechnicalName)
                 ) && 
                 (
-                    this.FriendlyName == other.FriendlyName ||
-                    this.FriendlyName != null &&
-                    this.FriendlyName.Equals(other.FriendlyName)
+                    FriendlyName == other.FriendlyName ||
+                    FriendlyName != null &&
+                    FriendlyName.Equals(other.FriendlyName)
                 ) && 
                 (
-                    this.IsNewestPreferred == other.IsNewestPreferred ||
-                    this.IsNewestPreferred != null &&
-                    this.IsNewestPreferred.Equals(other.IsNewestPreferred)
+                    IsNewestPreferred == other.IsNewestPreferred ||
+                    IsNewestPreferred != null &&
+                    IsNewestPreferred.Equals(other.IsNewestPreferred)
                 ) && 
                 (
-                    this.CanCreateInstancesManually == other.CanCreateInstancesManually ||
-                    this.CanCreateInstancesManually != null &&
-                    this.CanCreateInstancesManually.Equals(other.CanCreateInstancesManually)
+                    CanCreateInstancesManually == other.CanCreateInstancesManually ||
+                    CanCreateInstancesManually != null &&
+                    CanCreateInstancesManually.Equals(other.CanCreateInstancesManually)
                 ) && 
                 (
-                    this.CanCreateInstancesAutomatically == other.CanCreateInstancesAutomatically ||
-                    this.CanCreateInstancesAutomatically != null &&
-                    this.CanCreateInstancesAutomatically.Equals(other.CanCreateInstancesAutomatically)
+                    CanCreateInstancesAutomatically == other.CanCreateInstancesAutomatically ||
+                    CanCreateInstancesAutomatically != null &&
+                    CanCreateInstancesAutomatically.Equals(other.CanCreateInstancesAutomatically)
                 ) &&
                 (
-                    this.HasAutomaticInstanceGeneration == other.HasAutomaticInstanceGeneration ||
-                    this.HasAutomaticInstanceGeneration != null &&
-                    this.HasAutomaticInstanceGeneration.Equals(other.HasAutomaticInstanceGeneration)
+                    HasAutomaticInstanceGeneration == other.HasAutomaticInstanceGeneration ||
+                    HasAutomaticInstanceGeneration != null &&
+                    HasAutomaticInstanceGeneration.Equals(other.HasAutomaticInstanceGeneration)
                 ) &&
                 (
-                    this.GeneratedNumberOfCharacters == other.GeneratedNumberOfCharacters ||
-                    this.GeneratedNumberOfCharacters != null &&
-                    this.GeneratedNumberOfCharacters.Equals(other.GeneratedNumberOfCharacters)
+                    GeneratedNumberOfCharacters == other.GeneratedNumberOfCharacters ||
+                    GeneratedNumberOfCharacters != null &&
+                    GeneratedNumberOfCharacters.Equals(other.GeneratedNumberOfCharacters)
                 ) &&
                 (
-                    this.GeneratedAllowedCharacters == other.GeneratedAllowedCharacters ||
-                    this.GeneratedAllowedCharacters != null &&
-                    this.GeneratedAllowedCharacters.Equals(other.GeneratedAllowedCharacters)
+                    GeneratedAllowedCharacters == other.GeneratedAllowedCharacters ||
+                    GeneratedAllowedCharacters != null &&
+                    GeneratedAllowedCharacters.Equals(other.GeneratedAllowedCharacters)
                 ) &&
                 (
-                    this.IsCaseSensitive == other.IsCaseSensitive ||
-                    this.IsCaseSensitive != null &&
-                    this.IsCaseSensitive.Equals(other.IsCaseSensitive)
+                    IsCaseSensitive == other.IsCaseSensitive ||
+                    IsCaseSensitive != null &&
+                    IsCaseSensitive.Equals(other.IsCaseSensitive)
                 ) && 
                 (
-                    this.VersionTag == other.VersionTag ||
-                    this.VersionTag != null &&
-                    this.VersionTag.Equals(other.VersionTag)
+                    VersionTag == other.VersionTag ||
+                    VersionTag != null &&
+                    VersionTag.Equals(other.VersionTag)
                 );
         }
 
@@ -226,30 +226,30 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.TechnicalName != null)
-                    hash = hash * 59 + this.TechnicalName.GetHashCode();
-                if (this.FriendlyName != null)
-                    hash = hash * 59 + this.FriendlyName.GetHashCode();
-                if (this.IsNewestPreferred != null)
-                    hash = hash * 59 + this.IsNewestPreferred.GetHashCode();
-                if (this.CanCreateInstancesManually != null)
-                    hash = hash * 59 + this.CanCreateInstancesManually.GetHashCode();
-                if (this.CanCreateInstancesAutomatically != null)
-                    hash = hash * 59 + this.CanCreateInstancesAutomatically.GetHashCode();
-                if (this.HasAutomaticInstanceGeneration != null)
-                    hash = hash * 59 + this.HasAutomaticInstanceGeneration.GetHashCode();
-                if (this.GeneratedNumberOfCharacters != null)
-                    hash = hash * 59 + this.GeneratedNumberOfCharacters.GetHashCode();
-                if (this.GeneratedAllowedCharacters != null)
-                    hash = hash * 59 + this.GeneratedAllowedCharacters.GetHashCode();
-                if (this.IsCaseSensitive != null)
-                    hash = hash * 59 + this.IsCaseSensitive.GetHashCode();
-                if (this.VersionTag != null)
-                    hash = hash * 59 + this.VersionTag.GetHashCode();
+                if (Id != null)
+                    hash = hash * 59 + Id.GetHashCode();
+                if (TechnicalName != null)
+                    hash = hash * 59 + TechnicalName.GetHashCode();
+                if (FriendlyName != null)
+                    hash = hash * 59 + FriendlyName.GetHashCode();
+                if (IsNewestPreferred != null)
+                    hash = hash * 59 + IsNewestPreferred.GetHashCode();
+                if (CanCreateInstancesManually != null)
+                    hash = hash * 59 + CanCreateInstancesManually.GetHashCode();
+                if (CanCreateInstancesAutomatically != null)
+                    hash = hash * 59 + CanCreateInstancesAutomatically.GetHashCode();
+                if (HasAutomaticInstanceGeneration != null)
+                    hash = hash * 59 + HasAutomaticInstanceGeneration.GetHashCode();
+                if (GeneratedNumberOfCharacters != null)
+                    hash = hash * 59 + GeneratedNumberOfCharacters.GetHashCode();
+                if (GeneratedAllowedCharacters != null)
+                    hash = hash * 59 + GeneratedAllowedCharacters.GetHashCode();
+                if (IsCaseSensitive != null)
+                    hash = hash * 59 + IsCaseSensitive.GetHashCode();
+                if (VersionTag != null)
+                    hash = hash * 59 + VersionTag.GetHashCode();
                 return hash;
             }
         }

@@ -36,7 +36,7 @@ namespace Nexus.Link.Services.Contracts.Capabilities.Integration.ValueTranslatio
         /// <param name="sourceConceptValuePath">The concept value that we would like to translate.</param>
         /// <param name="targetClientName">The name of the target client for the translation; the client whose context we will use as the target context.</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>Either a translation or a lock id. The lock id is supposed to be used in <see cref=""/>.</returns>
+        /// <returns>Either a translation or a lock id. The lock id is supposed to be used in <see cref="AssociateUsingLockAsync"/>.</returns>
         Task<ValueOrLockId> TranslateToClientOrLockAsync(string sourceConceptValuePath, string targetClientName,
             CancellationToken cancellationToken = default);
 

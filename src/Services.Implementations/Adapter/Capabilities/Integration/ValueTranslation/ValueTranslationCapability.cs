@@ -12,7 +12,9 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
     /// <inheritdoc />
     public class ValueTranslationCapability : IValueTranslationCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ValueTranslationCapability(IHttpSender httpSender)
         {
             InternalContract.RequireNotNull(httpSender, nameof(httpSender));

@@ -8,7 +8,9 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
     /// <inheritdoc />
     public class AppSupportCapability : IAppSupportCapability
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AppSupportCapability(IAsyncLogger logger, IHttpSender httpSender)
         {
             LoggingService = new LoggingLogic(logger);

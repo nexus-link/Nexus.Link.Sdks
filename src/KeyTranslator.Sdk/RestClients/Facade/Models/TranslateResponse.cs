@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
     /// TranslateResponse
     /// </summary>
     [DataContract]
-    public partial class TranslateResponse :  IEquatable<TranslateResponse>, IValidatableObject
+    public class TranslateResponse :  IEquatable<TranslateResponse>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslateResponse" /> class.
@@ -75,7 +75,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as TranslateResponse);
+            return Equals(obj as TranslateResponse);
         }
 
         /// <summary>
@@ -91,14 +91,13 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
 
             return 
                 (
-                    this.Request == other.Request ||
-                    this.Request != null &&
-                    this.Request.Equals(other.Request)
+                    Request != null &&
+                    Request.Equals(other.Request)
                 ) && 
                 (
-                    this.Value == other.Value ||
-                    this.Value != null &&
-                    this.Value.Equals(other.Value)
+                    Value == other.Value ||
+                    Value != null &&
+                    Value.Equals(other.Value)
                 );
         }
 
@@ -111,12 +110,12 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Request != null)
-                    hash = hash * 59 + this.Request.GetHashCode();
-                if (this.Value != null)
-                    hash = hash * 59 + this.Value.GetHashCode();
+                if (Request != null)
+                    hash = hash * 59 + Request.GetHashCode();
+                if (Value != null)
+                    hash = hash * 59 + Value.GetHashCode();
                 return hash;
             }
         }

@@ -23,23 +23,25 @@ namespace Nexus.Link.KeyTranslator.Sdk.Cache
         /// <param name="physicalMemoryLimitPercentage">The memory limit for the cache (in percent of available memory, 0-100).</param>
         public SimpleMemoryCache(string name, TimeSpan slidingExpiration, int physicalMemoryLimitPercentage)
         {
-            if ((physicalMemoryLimitPercentage < 0) || (physicalMemoryLimitPercentage > 100))
+            if (physicalMemoryLimitPercentage < 0 || physicalMemoryLimitPercentage > 100)
             {
                 throw new ArgumentOutOfRangeException(nameof(physicalMemoryLimitPercentage), "Value must be in the range 0-100.");
             }
-            var cacheSettings = new NameValueCollection(3);
-            cacheSettings.Add("physicalMemoryLimitPercentage", Convert.ToString(physicalMemoryLimitPercentage));
-            cacheSettings.Add("pollingInterval", Convert.ToString("00:00:10"));
+
+            var cacheSettings = new NameValueCollection(3)
+            {
+                {"physicalMemoryLimitPercentage", Convert.ToString(physicalMemoryLimitPercentage)},
+                {"pollingInterval", Convert.ToString("00:00:10")}
+            };
             _cache = new MemoryCache(name, cacheSettings);
-            _policy = new CacheItemPolicy { SlidingExpiration = slidingExpiration,  };
+            _policy = new CacheItemPolicy { SlidingExpiration = slidingExpiration};
         }
 
         public void Dispose()
         {
             _cache.ToList().ForEach(a =>
             {
-                var value = a.Value as TValue;
-                if (value != null) _cache.Remove(a.Key);
+                if (a.Value is TValue) _cache.Remove(a.Key);
             });
         }
 

@@ -37,6 +37,7 @@ namespace Nexus.Link.Configurations.Sdk
         /// Add a configuration for a specific tenant
         /// </summary>
         /// <param name="tenant"></param>
+        /// <param name="serviceName"></param>
         /// <param name="configuration"></param>
         public void Add(Tenant tenant, string serviceName, ILeverConfiguration configuration)
         {

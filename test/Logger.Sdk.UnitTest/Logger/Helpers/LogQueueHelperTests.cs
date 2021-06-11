@@ -40,9 +40,9 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
         }
 
         /// <summary>
-        /// Given tennantconfiguration for virtual service 'Logging'
-        /// When TryGetQueue<T>
-        /// Then a new TruncatingAzureStorageQueue<T> is created
+        /// Given tenant configuration for virtual service 'Logging'
+        /// When TryGetQueue{T}
+        /// Then a new TruncatingAzureStorageQueue{T} is created
         /// </summary>
         [TestMethod]
         public async Task GetStorageQueue()
@@ -53,19 +53,19 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
 
             LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
-            /// Act
-            var result = await SystemUnderTest.TryGetQueueAsync(Tenant);
+            // Act
+            var (hasStorageQueue, writableQueue) = await SystemUnderTest.TryGetQueueAsync(Tenant);
 
             // Assert
-            Assert.IsTrue(result.HasStorageQueue,
+            Assert.IsTrue(hasStorageQueue,
                 "Successful outcome");
-            Assert.AreEqual(typeof(TruncatingAzureStorageQueue<string>), result.WritableQueue.GetType(),
+            Assert.AreEqual(typeof(TruncatingAzureStorageQueue<string>), writableQueue.GetType(),
                 "A storageQueue is returned");
         }
 
         /// <summary>
         /// Given tennantconfiguration missing LoggerConnectionString
-        /// When TryGetQueue<T>
+        /// When TryGetQueue{T}
         /// Then fail
         /// </summary>
         [TestMethod]
@@ -77,7 +77,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
 
             LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
-            /// Act
+            // Act
             var result = await SystemUnderTest.TryGetQueueAsync(Tenant);
 
             // Assert
@@ -87,7 +87,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
 
         /// <summary>
         /// Given tennantconfiguration missing QueueName
-        /// When TryGetQueue<T>
+        /// When TryGetQueue{T}
         /// Then fail
         /// </summary>
         [TestMethod]
@@ -99,7 +99,7 @@ namespace Logger.Sdk.UnitTest.Logger.Helpers
 
             LoggingServiceConfigurationMock.Setup(f => f.GetConfigurationForAsync(It.IsAny<Tenant>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
 
-            /// Act
+            // Act
             var result = await SystemUnderTest.TryGetQueueAsync(Tenant);
 
             // Assert

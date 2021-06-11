@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Configurations.Sdk;
 using Nexus.Link.Libraries.Core.Application;
@@ -172,7 +171,7 @@ namespace Configurations.Sdk.UnitTest
             var dict = new Dictionary<int, string>
             {
                 { 1, "a" },
-                { 2, "b" },
+                { 2, "b" }
             };
             var config = CreateLeverConfiguration(JObject.FromObject(new
             {

@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
     /// Concept
     /// </summary>
     [DataContract]
-    public partial class Concept :  IEquatable<Concept>, IValidatableObject
+    public class Concept :  IEquatable<Concept>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Concept" /> class.
@@ -113,7 +113,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as Concept);
+            return Equals(obj as Concept);
         }
 
         /// <summary>
@@ -129,39 +129,39 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    Id == other.Id ||
+                    Id != null &&
+                    Id.Equals(other.Id)
                 ) && 
                 (
-                    this.TechnicalName == other.TechnicalName ||
-                    this.TechnicalName != null &&
-                    this.TechnicalName.Equals(other.TechnicalName)
+                    TechnicalName == other.TechnicalName ||
+                    TechnicalName != null &&
+                    TechnicalName.Equals(other.TechnicalName)
                 ) && 
                 (
-                    this.FriendlyName == other.FriendlyName ||
-                    this.FriendlyName != null &&
-                    this.FriendlyName.Equals(other.FriendlyName)
+                    FriendlyName == other.FriendlyName ||
+                    FriendlyName != null &&
+                    FriendlyName.Equals(other.FriendlyName)
                 ) && 
                 (
-                    this.DefaultContextId == other.DefaultContextId ||
-                    this.DefaultContextId != null &&
-                    this.DefaultContextId.Equals(other.DefaultContextId)
+                    DefaultContextId == other.DefaultContextId ||
+                    DefaultContextId != null &&
+                    DefaultContextId.Equals(other.DefaultContextId)
                 ) && 
                 (
-                    this.CanCreateInstancesManually == other.CanCreateInstancesManually ||
-                    this.CanCreateInstancesManually != null &&
-                    this.CanCreateInstancesManually.Equals(other.CanCreateInstancesManually)
+                    CanCreateInstancesManually == other.CanCreateInstancesManually ||
+                    CanCreateInstancesManually != null &&
+                    CanCreateInstancesManually.Equals(other.CanCreateInstancesManually)
                 ) && 
                 (
-                    this.CanCreateInstancesAutomatically == other.CanCreateInstancesAutomatically ||
-                    this.CanCreateInstancesAutomatically != null &&
-                    this.CanCreateInstancesAutomatically.Equals(other.CanCreateInstancesAutomatically)
+                    CanCreateInstancesAutomatically == other.CanCreateInstancesAutomatically ||
+                    CanCreateInstancesAutomatically != null &&
+                    CanCreateInstancesAutomatically.Equals(other.CanCreateInstancesAutomatically)
                 ) && 
                 (
-                    this.VersionTag == other.VersionTag ||
-                    this.VersionTag != null &&
-                    this.VersionTag.Equals(other.VersionTag)
+                    VersionTag == other.VersionTag ||
+                    VersionTag != null &&
+                    VersionTag.Equals(other.VersionTag)
                 );
         }
 
@@ -174,22 +174,22 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.TechnicalName != null)
-                    hash = hash * 59 + this.TechnicalName.GetHashCode();
-                if (this.FriendlyName != null)
-                    hash = hash * 59 + this.FriendlyName.GetHashCode();
-                if (this.DefaultContextId != null)
-                    hash = hash * 59 + this.DefaultContextId.GetHashCode();
-                if (this.CanCreateInstancesManually != null)
-                    hash = hash * 59 + this.CanCreateInstancesManually.GetHashCode();
-                if (this.CanCreateInstancesAutomatically != null)
-                    hash = hash * 59 + this.CanCreateInstancesAutomatically.GetHashCode();
-                if (this.VersionTag != null)
-                    hash = hash * 59 + this.VersionTag.GetHashCode();
+                if (Id != null)
+                    hash = hash * 59 + Id.GetHashCode();
+                if (TechnicalName != null)
+                    hash = hash * 59 + TechnicalName.GetHashCode();
+                if (FriendlyName != null)
+                    hash = hash * 59 + FriendlyName.GetHashCode();
+                if (DefaultContextId != null)
+                    hash = hash * 59 + DefaultContextId.GetHashCode();
+                if (CanCreateInstancesManually != null)
+                    hash = hash * 59 + CanCreateInstancesManually.GetHashCode();
+                if (CanCreateInstancesAutomatically != null)
+                    hash = hash * 59 + CanCreateInstancesAutomatically.GetHashCode();
+                if (VersionTag != null)
+                    hash = hash * 59 + VersionTag.GetHashCode();
                 return hash;
             }
         }

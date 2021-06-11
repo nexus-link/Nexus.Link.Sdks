@@ -37,13 +37,13 @@ namespace Logger.Sdk.UnitTest.Logger
         }
 
         /// <summary>
-        /// Given Tenantconfiguration for virtual service Logging
+        /// Given Tenant configuration for virtual service Logging
         /// When LogAsync
-        /// Then Logrecord is transformed and pushed to a WritableQueue<LogMessage>
+        /// Then Log record is transformed and pushed to a WritableQueue{LogMessage}
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task FulcrumLoggerConvertLogrecordAndPushToWritableQueue()
+        public async Task FulcrumLoggerConvertLogRecordAndPushToWritableQueue()
         {
             // Arrange
             IWritableQueue<LogMessage> storageQueue = new MemoryQueue<LogMessage>("MSTestMemQueue");
@@ -62,7 +62,7 @@ namespace Logger.Sdk.UnitTest.Logger
             await SystemUnderTest.LogAsync(logRecord);
 
             // Assert
-            var logMessage = await (storageQueue as IReadableQueue<LogMessage>).GetOneMessageNoBlockAsync();
+            var logMessage = await ((IReadableQueue<LogMessage>) storageQueue).GetOneMessageNoBlockAsync();
             Assert.AreEqual(logRecord.Message, logMessage.Message,
                 "Expect message pushed to persistent storage");
         }

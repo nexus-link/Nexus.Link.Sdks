@@ -21,7 +21,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
     /// Form
     /// </summary>
     [DataContract]
-    public partial class Form :  IEquatable<Form>, IValidatableObject
+    public class Form :  IEquatable<Form>, IValidatableObject
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Form" /> class.
@@ -81,7 +81,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
         public override bool Equals(object obj)
         {
             // credit: http://stackoverflow.com/a/10454552/677735
-            return this.Equals(obj as Form);
+            return Equals(obj as Form);
         }
 
         /// <summary>
@@ -97,19 +97,19 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
 
             return 
                 (
-                    this.Id == other.Id ||
-                    this.Id != null &&
-                    this.Id.Equals(other.Id)
+                    Id == other.Id ||
+                    Id != null &&
+                    Id.Equals(other.Id)
                 ) && 
                 (
-                    this.FriendlyName == other.FriendlyName ||
-                    this.FriendlyName != null &&
-                    this.FriendlyName.Equals(other.FriendlyName)
+                    FriendlyName == other.FriendlyName ||
+                    FriendlyName != null &&
+                    FriendlyName.Equals(other.FriendlyName)
                 ) && 
                 (
-                    this.VersionTag == other.VersionTag ||
-                    this.VersionTag != null &&
-                    this.VersionTag.Equals(other.VersionTag)
+                    VersionTag == other.VersionTag ||
+                    VersionTag != null &&
+                    VersionTag.Equals(other.VersionTag)
                 );
         }
 
@@ -122,14 +122,14 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Api.Models
             // credit: http://stackoverflow.com/a/263416/677735
             unchecked // Overflow is fine, just wrap
             {
-                int hash = 41;
+                var hash = 41;
                 // Suitable nullity checks etc, of course :)
-                if (this.Id != null)
-                    hash = hash * 59 + this.Id.GetHashCode();
-                if (this.FriendlyName != null)
-                    hash = hash * 59 + this.FriendlyName.GetHashCode();
-                if (this.VersionTag != null)
-                    hash = hash * 59 + this.VersionTag.GetHashCode();
+                if (Id != null)
+                    hash = hash * 59 + Id.GetHashCode();
+                if (FriendlyName != null)
+                    hash = hash * 59 + FriendlyName.GetHashCode();
+                if (VersionTag != null)
+                    hash = hash * 59 + VersionTag.GetHashCode();
                 return hash;
             }
         }

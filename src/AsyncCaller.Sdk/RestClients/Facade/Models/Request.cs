@@ -18,7 +18,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.RestClients.Facade.Models
         private string GetSchema(string uri)
         {
             if (uri == null) return null;
-            Regex rgx = new Regex(@"^http[s]?");
+            var rgx = new Regex(@"^http[s]?");
             return rgx.Match(uri).Value;
         }
 
