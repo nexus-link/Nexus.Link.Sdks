@@ -89,19 +89,19 @@ namespace AsyncCaller.Sdk.UnitTests
         }
 
         [TestMethod]
-        public async Task ResponseCode_From_Failed_Request_Is_ApplicationJson_In_Callback(CancellationToken cancellationToken = default)
+        public async Task ResponseCode_From_Failed_Request_Is_ApplicationJson_In_Callback()
         {
             // Arrange
             var resetEvent = new ManualResetEvent(false);
 
             _queueAction = async rawEnvelope =>
             {
-                var envelope = await RequestEnvelope.FromRawAsync(rawEnvelope, TimeSpan.FromSeconds(1), cancellationToken);
+                var envelope = await RequestEnvelope.FromRawAsync(rawEnvelope, TimeSpan.FromSeconds(1));
                 Log.LogInformation($"Action on {rawEnvelope.RawRequest.Title}");
 
                 // Process Out and Callback
-                var handler = await CreateRequestHandler(envelope, cancellationToken);
-                await handler.ProcessOneRequestAsync(cancellationToken);
+                var handler = await CreateRequestHandler(envelope, CancellationToken.None);
+                await handler.ProcessOneRequestAsync();
 
             };
 
