@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.12.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.DatasyncEngine.Sdk</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -23,7 +23,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
-      2.0.0 Added CancellationToken where missing.
+      2.0.1 Added CancellationToken where missing.
       1.0.2 First release
       1.0.1 First release
     </PackageReleaseNotes>

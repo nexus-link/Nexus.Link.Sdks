@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.12.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.0.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.3.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.BusinessEvents.Sdk</PackageId>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -23,6 +23,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.1.1 Bump
       3.1.0 Added RegisterSubscriptions
       3.0.0 Added CancellationToken where missing for async methods.
       2.0.25 Bump
