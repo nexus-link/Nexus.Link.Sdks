@@ -19,6 +19,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
     public class BusinessEvents : IBusinessEvents
     {
         private readonly IPublicationsClient _publicationsClient;
+        private readonly ISubscriptionsClient _subscriptionsClient;
         private readonly IServiceMetasClient _serviceMetasClient;
         private readonly ITestBenchClient _testBenchClient;
 
@@ -36,6 +37,7 @@ namespace Nexus.Link.BusinessEvents.Sdk
             InternalContract.RequireNotNull(authenticationCredentials, nameof(authenticationCredentials));
 
             _publicationsClient = new PublicationsClient(serviceUrl, tenant, authenticationCredentials);
+            _subscriptionsClient = new SubscriptionsClient(serviceUrl, tenant, authenticationCredentials);
             _serviceMetasClient = new ServiceMetasClient(serviceUrl);
             _testBenchClient = new TestBenchClient(serviceUrl, tenant, authenticationCredentials);
         }
@@ -126,5 +128,10 @@ namespace Nexus.Link.BusinessEvents.Sdk
             return await _testBenchClient.PublishAsync(entity, @event, major, minor, clientName, payload, cancellationToken);
         }
 
+        /// <inheritdoc />
+        public async Task RegisterSubscriptions(string clientName, List<ClientSubscription> clientSubscriptions, CancellationToken cancellationToken = default)
+        {
+            await _subscriptionsClient.RegisterSubscriptions(clientName, clientSubscriptions, cancellationToken);
+        }
     }
 }
