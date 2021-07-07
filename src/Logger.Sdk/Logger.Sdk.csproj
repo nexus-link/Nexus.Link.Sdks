@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -28,6 +28,7 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
+      3.0.1 Bump
       3.0.0 Added CancellationToken where missing for async methods.
       2.2.2 Bump
       2.2.0 Don't require ILogClient for FulcrumLogger. Make constructors with ILogClient obsolete.
