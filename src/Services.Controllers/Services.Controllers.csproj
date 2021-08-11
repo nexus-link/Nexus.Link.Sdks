@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.25.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.27.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.6.2" />
   </ItemGroup>
 

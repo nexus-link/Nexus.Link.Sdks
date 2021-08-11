@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.3.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.16.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.4.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
@@ -19,7 +19,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.0.2</Version>
+    <Version>3.1.0-beta</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -29,6 +29,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.1.0 Support for refreshing authentication
       3.0.2 Added CancellationToken where missing.
       2.1.6 Fix for Content-Type in Callback request (it's always application/json, not the content-type from the server response)
       2.1.5 Fix for dotnet core regarding HTTP header "Expires: -1"
