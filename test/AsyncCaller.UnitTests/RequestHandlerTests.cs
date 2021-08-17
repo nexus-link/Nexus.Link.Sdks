@@ -227,7 +227,7 @@ namespace AsyncCaller.Sdk.UnitTests
                         });
                         var refreshResult = new RefreshAuthenticationResult
                         {
-                            Headers = new List<RefreshAuthenticationHeader> { new RefreshAuthenticationHeader { Name = "Authorization", Value = $"Bearer {bearerToken}" } }
+                            Headers = new List<RefreshAuthenticationHeader> { new RefreshAuthenticationHeader { Name = "Authorization", Value = new List<string> { $"Bearer {bearerToken}" } } }
                         };
                         return new HttpResponseMessage(HttpStatusCode.OK)
                         {
@@ -249,7 +249,7 @@ namespace AsyncCaller.Sdk.UnitTests
             await _queue.AddMessageAsync((await requestEnvelope.ToRawAsync()).Serialize());
 
             // Assert
-            Assert.IsTrue(resetEvent.WaitOne(TimeSpan.FromMilliseconds(1000)), "This asynchronous request didn't finish in time");
+            Assert.IsTrue(resetEvent.WaitOne(TimeSpan.FromMilliseconds(2000)), "This asynchronous request didn't finish in time");
             _serviceAuthenticationHelperMock.Verify();
         }
 
@@ -286,7 +286,7 @@ namespace AsyncCaller.Sdk.UnitTests
         public async Task Gives_Up_If_Token_Is_Expired_And_No_AuthenticationSettings_Are_Present()
         {
             // Arrange
-            _leverConfigurationMock.Setup(x => x.Value<AuthenticationSettings>("Authentication")).Returns((AuthenticationSettings) null);
+            _leverConfigurationMock.Setup(x => x.Value<AuthenticationSettings>("Authentication")).Returns((AuthenticationSettings)null);
 
             var oldToken = new JwtSecurityTokenHandler().CreateEncodedJwt(new SecurityTokenDescriptor
             {

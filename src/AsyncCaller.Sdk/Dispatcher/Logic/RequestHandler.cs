@@ -256,7 +256,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
                 }
                 foreach (var authHeader in authenticationResult.Headers)
                 {
-                    _envelope.Request.CallOut.Headers.Add(authHeader.Name, new List<string> { authHeader.Value });
+                    _envelope.Request.CallOut.Headers.Add(authHeader.Name, authHeader.Value);
                 }
             }
             else

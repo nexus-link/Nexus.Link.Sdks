@@ -1,4 +1,6 @@
-﻿namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
+﻿using System.Collections.Generic;
+
+namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
 {
     /// <summary>
     /// Represents a HTTP header key/value pair
@@ -13,6 +15,6 @@
         /// <summary>
         /// The value of the HTTP header
         /// </summary>
-        public string Value { get; set; }
+        public List<string> Value { get; set; }
     }
 }
