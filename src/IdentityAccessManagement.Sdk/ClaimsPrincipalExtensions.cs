@@ -1,5 +1,5 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using IdentityAccessManagement.Sdk.Handlers;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 

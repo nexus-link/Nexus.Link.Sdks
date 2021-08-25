@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using IdentityAccessManagement.Sdk.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -99,7 +100,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
         {
             var principal = FulcrumApplication.Context.UserPrincipal as ClaimsPrincipal;
             if (principal == null) return;
-            
+
             //TODO: Handle this
             var userId = principal.Claims.FirstOrDefault(claim => claim.Type == "UserId");
             if (userId == null) return;
@@ -146,12 +147,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
                 return;
             }
 
-            // Validate tenant
-            //TODO: We should always set claims principle. Do we have access to tenant in user tokens? Do we care?
-            if (ClaimHasCorrectTenant(claimsPrincipal, tenant))
-            {
-                SetClaimsPrincipal(claimsPrincipal, context);
-            }
+            SetClaimsPrincipal(claimsPrincipal, context);
         }
 
         private static void SetClaimsPrincipal(ClaimsPrincipal claimsPrincipal, HttpContext context)
@@ -161,11 +157,11 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
             //TODO: Handle if principal to set is ClientPrincipal or user principal. Maybe to different handlers?
             FulcrumApplication.Context.ClientPrincipal = claimsPrincipal;
             FulcrumApplication.Context.CallingClientName = claimsPrincipal.GetClientName();
-            
+
             context.User = claimsPrincipal;
         }
 
-
+        // TODO: Should we use this?
         protected bool ClaimHasCorrectTenant(ClaimsPrincipal claimsPrincipal, Tenant tenant)
         {
             if (claimsPrincipal == null)

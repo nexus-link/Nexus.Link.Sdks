@@ -39,8 +39,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            var authorizationHeaderExists =
-                request.Headers.TryGetValue("Authorization", out var authorizationValues);
+            var authorizationHeaderExists = request.Headers.TryGetValue("Authorization", out var authorizationValues);
 
             if (!authorizationHeaderExists) return null;
 
@@ -48,8 +47,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
             if (authorizationArray.Length > 1)
             {
                 // ReSharper disable once UnusedVariable
-                var message =
-                    $"There was more than one authorization value in the header: {string.Join(", ", authorizationArray)}. The first one was picked as User Authorization";
+                var message = $"There was more than one authorization value in the header: {string.Join(", ", authorizationArray)}. The first one was picked as User Authorization";
                 Log.LogWarning(message);
             }
 
@@ -59,8 +57,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
 
     public static class SaveUserAuthorizationExtension
     {
-        public static IApplicationBuilder UseNexusSaveCorrelationId(
-            this IApplicationBuilder builder)
+        public static IApplicationBuilder UseNexusSaveCorrelationId(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<SaveUserAuthorization>();
         }

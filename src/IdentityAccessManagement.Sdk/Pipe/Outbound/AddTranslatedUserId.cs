@@ -12,7 +12,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Outbound
     public class AddTranslatedUserId : DelegatingHandler
     {
         private readonly IContextValueProvider _provider;
-        private static string ContextKey = "UserId";
+        private static string ContextKey = "TranslatedUserId";
 
         public AddTranslatedUserId()
         {
@@ -33,7 +33,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Outbound
             {
                 if (!request.Headers.TryGetValues("Nexus-Translated-User-Id", out IEnumerable<string> values))
                 {
-                    request.Headers.Add("Nexus-User-Authorization", translatedUserId);
+                    request.Headers.Add("Nexus-Translated-User-Id", translatedUserId);
                 }
             }
 

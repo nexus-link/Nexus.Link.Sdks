@@ -7,7 +7,7 @@ using System.Xml;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Libraries.Core.Error.Logic;
 
-namespace IdentityAccessManagement.Sdk
+namespace IdentityAccessManagement.Sdk.Handlers
 {
     public class IamAuthenticationManager
     {
