@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.3.2" /> 
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">

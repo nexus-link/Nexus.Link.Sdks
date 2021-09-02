@@ -36,12 +36,14 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
             FulcrumAssert.IsNotNull(_publicKey);
         }
 
-        public IamTokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, string issuer)
+        public IamTokenValidationHandler(RequestDelegate next, string issuer, string publicKeyAsXmlString, int rsaKeySizeInBits = 2048)
         {
             InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
+            InternalContract.RequireGreaterThan(0, rsaKeySizeInBits, nameof(rsaKeySizeInBits));
+
             _next = next;
-            _publicKey = IamAuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
             Issuer = issuer;
+            _publicKey = IamAuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString, rsaKeySizeInBits);
             _provider = new AsyncLocalContextValueProvider();
             FulcrumAssert.IsNotNull(_publicKey);
         }
@@ -63,7 +65,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
                 {
                     FulcrumAssert.IsNotNull(FulcrumApplication.Context.ClientPrincipal);
                     //Token was system: Set UserPrincipal
-                    var userToken = GetToken(context, "Nexus-User-Authorization");
+                    var userToken = GetToken(context, Constants.NexusTranslatedUserIdHeaderName);
                     if (userToken != null)
                     {
                         ValidateTokenAndSetClaimsPrincipal(context, token);

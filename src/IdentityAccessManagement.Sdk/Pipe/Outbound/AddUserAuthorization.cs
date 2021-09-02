@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Context;
@@ -31,9 +30,9 @@ namespace IdentityAccessManagement.Sdk.Pipe.Outbound
 
             if (!string.IsNullOrWhiteSpace(userAuthorization))
             {
-                if (!request.Headers.TryGetValues("Nexus-User-Authorization", out IEnumerable<string> values))
+                if (!request.Headers.TryGetValues(Constants.NexusUserAuthorizationHeaderName, out _))
                 {
-                    request.Headers.Add("Nexus-User-Authorization", userAuthorization);
+                    request.Headers.Add(Constants.NexusUserAuthorizationHeaderName, userAuthorization);
                 }
             }
 

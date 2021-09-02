@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Context;
@@ -31,9 +30,9 @@ namespace IdentityAccessManagement.Sdk.Pipe.Outbound
 
             if (!string.IsNullOrWhiteSpace(translatedUserId))
             {
-                if (!request.Headers.TryGetValues("Nexus-Translated-User-Id", out IEnumerable<string> values))
+                if (!request.Headers.TryGetValues(Constants.NexusTranslatedUserIdHeaderName, out _))
                 {
-                    request.Headers.Add("Nexus-Translated-User-Id", translatedUserId);
+                    request.Headers.Add(Constants.NexusTranslatedUserIdHeaderName, translatedUserId);
                 }
             }
 

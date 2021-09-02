@@ -11,11 +11,9 @@ namespace IdentityAccessManagement.Sdk.Handlers
 {
     public class IamAuthenticationManager
     {
-        public const int RsaKeySizeInBits = 2048;
-
-        public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
+        public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml, int rsaKeySizeInBits)
         {
-            var provider = new RSACryptoServiceProvider(RsaKeySizeInBits);
+            var provider = new RSACryptoServiceProvider(rsaKeySizeInBits);
             try
             {
                 provider.FromXmlString(publicKeyXml);
@@ -64,6 +62,7 @@ namespace IdentityAccessManagement.Sdk.Handlers
 
             rsa.ImportParameters(parameters);
         }
+
         public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer)
         {
             try
