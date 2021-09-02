@@ -32,7 +32,6 @@
     <Description>SDK for Nexus Data Synchronization Engine service.</Description>
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
       2.0. Symbols
       2.0.1 Added CancellationToken where missing.
