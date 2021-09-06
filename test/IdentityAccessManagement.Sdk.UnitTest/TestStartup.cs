@@ -45,7 +45,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             var userJwt = CreateJwt(UserName, signingCredentials);
             UserAuthorizationHeader = userJwt;
 
-            services.AddNexusIdentityAccessManagement(validationKey, Issuer, Audience);
+            services.AddNexusIdentityAccessManagement(Issuer, Audience);
             services.AddMvc(options => options.EnableEndpointRouting = false);
         }
 
