@@ -1,9 +1,11 @@
-﻿using IdentityAccessManagement.Sdk.Handlers;
+﻿using System.Threading.Tasks;
+using IdentityAccessManagement.Sdk.Handlers;
 using IdentityAccessManagement.Sdk.Pipe.Inbound;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 
 namespace IdentityAccessManagement.Sdk.Pipe
@@ -18,15 +20,23 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.Events.OnTokenValidated = context =>
+                    {
+                        FulcrumApplication.Context.ClientPrincipal = context.HttpContext.User; // TODO: Here? Or as middleware?
+                        return Task.CompletedTask;
+                    };
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = validationKey,
                         ValidIssuer = issuer,
                         ValidateIssuer = issuer != null,
                         ValidAudience = audience,
-                        ValidateAudience = audience != null
+                        ValidateAudience = audience != null,
+                        SaveSigninToken = true, // TODO
                     };
                     IamAuthenticationManager.TokenValidationParameters = options.TokenValidationParameters;
+
                 });
         }
 

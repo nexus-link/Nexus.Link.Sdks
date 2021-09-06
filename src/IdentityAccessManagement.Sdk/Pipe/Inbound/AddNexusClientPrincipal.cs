@@ -16,6 +16,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
 
         public async Task InvokeAsync(HttpContext context)
         {
+            // TODO: Moved
             FulcrumApplication.Context.ClientPrincipal = context.User;
             await _next(context);
         }
