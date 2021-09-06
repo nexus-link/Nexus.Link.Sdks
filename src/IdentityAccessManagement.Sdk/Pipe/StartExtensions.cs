@@ -48,11 +48,6 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 });
         }
 
-        public static void UseNexusIdentityAccessManagement(this IApplicationBuilder app)
-        {
-            app.UseAuthentication();
-        }
-
         private static void SaveUserAuthorizationToExecutionContext(HttpContext context)
         {
             var userAuthorization = ExtractUserAuthorizationFromHeader(context);

@@ -68,7 +68,8 @@ namespace IdentityAccessManagement.Sdk.UnitTest
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseNexusIdentityAccessManagement();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseMvc();
         }
     }
