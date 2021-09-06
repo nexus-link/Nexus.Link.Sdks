@@ -23,3 +23,4 @@ jobs:
     nugetProjectsPath: 'src/Services.Contracts/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
+    publishVstsFeed: 'Nexus Libs/nexus-nugets'

@@ -4,15 +4,26 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Nexus.Link.DatasyncEngine.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.DatasyncEngine.Sdk</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.17.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.DatasyncEngine.Sdk</PackageId>
-    <Version>2.0.1</Version>
+    <Version>2.0.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -21,8 +32,8 @@
     <Description>SDK for Nexus Data Synchronization Engine service.</Description>
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReleaseNotes>
+      2.0. Symbols
       2.0.1 Added CancellationToken where missing.
       1.0.2 First release
       1.0.1 First release

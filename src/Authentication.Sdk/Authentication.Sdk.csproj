@@ -4,12 +4,23 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>Nexus.Link.Authentication.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Authentication.Sdk</AssemblyName>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.14.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.3.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.17.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.5.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
@@ -19,7 +30,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>3.3.1</Version>
+      <Version>3.3.2</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -29,6 +40,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        3.3.2 Symbols
         3.3.1 Added missing CancellationToken for async methods.
         2.2.24 Bump
         2.2.23 Use ConcurrentDictionary for token cache in AuthenticationManager to avoid "The collection's state is no longer correct." (especially in unit tests)
