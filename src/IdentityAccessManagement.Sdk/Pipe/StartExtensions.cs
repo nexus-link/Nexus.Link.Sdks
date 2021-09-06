@@ -26,6 +26,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
                         ValidAudience = audience,
                         ValidateAudience = audience != null
                     };
+                    IamAuthenticationManager.TokenValidationParameters = options.TokenValidationParameters;
                 });
         }
 

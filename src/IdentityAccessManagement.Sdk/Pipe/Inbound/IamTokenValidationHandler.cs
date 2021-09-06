@@ -11,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Context;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
@@ -19,7 +18,6 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
 {
     public class IamTokenValidationHandler
     {
-        private readonly RsaSecurityKey _publicKey;
         protected string Issuer;
         private readonly RequestDelegate _next;
         private readonly IContextValueProvider _provider;
@@ -30,10 +28,8 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _next = next;
-            _publicKey = publicKey;
             Issuer = issuer;
             _provider = new AsyncLocalContextValueProvider();
-            FulcrumAssert.IsNotNull(_publicKey);
         }
 
         public IamTokenValidationHandler(RequestDelegate next, string issuer, string publicKeyAsXmlString, int rsaKeySizeInBits = 2048)
@@ -43,9 +39,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
 
             _next = next;
             Issuer = issuer;
-            _publicKey = IamAuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString, rsaKeySizeInBits);
             _provider = new AsyncLocalContextValueProvider();
-            FulcrumAssert.IsNotNull(_publicKey);
         }
 
         protected async Task InvokeAsync(HttpContext context, CancellationToken cancellationToken)
@@ -65,7 +59,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
                 {
                     FulcrumAssert.IsNotNull(FulcrumApplication.Context.ClientPrincipal);
                     //Token was system: Set UserPrincipal
-                    var userToken = GetToken(context, Constants.NexusTranslatedUserIdHeaderName);
+                    var userToken = GetToken(context, Constants.NexusUserAuthorizationHeaderName);
                     if (userToken != null)
                     {
                         ValidateTokenAndSetClaimsPrincipal(context, token);
@@ -89,13 +83,7 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
             var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
             FulcrumAssert.IsNotNull(tenant, "Could not verify claims principal, because the application tenant was set to null.");
 
-            if (_publicKey == null)
-            {
-                Log.LogError($"{nameof(_publicKey)} was unexpectedly null");
-                throw new FulcrumUnauthorizedException("See log for more information");
-            }
-
-            VerifyTokenAndSetClaimsPrincipal(token, _publicKey, tenant, context);
+            VerifyTokenAndSetClaimsPrincipal(token, context);
         }
 
         private void MaybeSetUserId()
@@ -129,15 +117,14 @@ namespace IdentityAccessManagement.Sdk.Pipe.Inbound
             return headerValues;
         }
 
-        private void VerifyTokenAndSetClaimsPrincipal(string token, RsaSecurityKey publicKey, Tenant tenant, HttpContext context)
+        private void VerifyTokenAndSetClaimsPrincipal(string token, HttpContext context)
         {
             InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
-            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
             ClaimsPrincipal claimsPrincipal = null;
             try
             {
-                claimsPrincipal = IamAuthenticationManager.ValidateToken(token, publicKey, Issuer);
+                claimsPrincipal = IamAuthenticationManager.ValidateToken(token);
             }
             catch (Exception e1)
             {

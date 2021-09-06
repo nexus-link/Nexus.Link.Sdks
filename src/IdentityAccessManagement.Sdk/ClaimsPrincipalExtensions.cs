@@ -1,6 +1,5 @@
-﻿using System.Security.Claims;
-using IdentityAccessManagement.Sdk.Handlers;
-using Nexus.Link.Libraries.Core.Logging;
+﻿using System.Linq;
+using System.Security.Claims;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 
 namespace IdentityAccessManagement.Sdk
@@ -9,45 +8,34 @@ namespace IdentityAccessManagement.Sdk
     {
         public static string GetClientName(this ClaimsPrincipal principal)
         {
-            var result = IamAuthenticationManager.GetClaimValue(ClaimTypes.Name, principal);
+            var result = principal.GetClaimValue(ClaimTypes.Name);
             return result;
         }
 
         public static string GetOrganization(this ClaimsPrincipal principal)
         {
-            var result = IamAuthenticationManager.GetClaimValue(ClaimTypeNames.Organization, principal);
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                result = IamAuthenticationManager.GetClaimValue(ClaimTypeNames.LegacyOrganization, principal);
-                if (!string.IsNullOrWhiteSpace(result))
-                {
-                    Log.LogVerbose($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyOrganization}. Please issue a new token.");
-                }
-            }
+            var result = principal.GetClaimValue(ClaimTypeNames.Organization);
             return result;
         }
 
         public static string GetEnvironment(this ClaimsPrincipal principal)
         {
-            var result = IamAuthenticationManager.GetClaimValue(ClaimTypeNames.Environment, principal);
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                result = IamAuthenticationManager.GetClaimValue(ClaimTypeNames.LegacyEnvironment, principal);
-                if (!string.IsNullOrWhiteSpace(result))
-                {
-                    Log.LogVerbose($"Note! The token uses the legacy attribute {ClaimTypeNames.LegacyEnvironment}. Please issue a new token.");
-                }
-            }
+            var result = principal.GetClaimValue(ClaimTypeNames.Environment);
             return result;
         }
 
-        /// <summary>
-        /// Tells if this principal has the "api" role, indicating the client is a customer's Nexus api.
-        /// </summary>
-        public static bool IsNexusApi(this ClaimsPrincipal principal)
+
+        public static bool HasRole(this ClaimsPrincipal principal, string role)
         {
-            var result = IamAuthenticationManager.HasRole(NexusAuthenticationRoles.Api, principal);
+            var result = principal.IsInRole(role);
             return result;
         }
+
+        public static string GetClaimValue(this ClaimsPrincipal principal, string type)
+        {
+            var claim = principal.Identities.FirstOrDefault()?.Claims.FirstOrDefault(c => c.Type == type);
+            return claim?.Value;
+        }
+
     }
 }

@@ -4,13 +4,21 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Xml;
+using IdentityAccessManagement.Sdk.Pipe;
 using Microsoft.IdentityModel.Tokens;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 
 namespace IdentityAccessManagement.Sdk.Handlers
 {
     public class IamAuthenticationManager
     {
+        /// <summary>
+        /// The token validation parameters used to setup AddJwtBearer in <see cref="StartExtensions.AddNexusIdentityAccessManagement(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.IdentityModel.Tokens.SecurityKey,string,string)"/>
+        /// </summary>
+        public static TokenValidationParameters TokenValidationParameters { get; internal set; }
+
         public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml, int rsaKeySizeInBits)
         {
             var provider = new RSACryptoServiceProvider(rsaKeySizeInBits);
@@ -63,37 +71,18 @@ namespace IdentityAccessManagement.Sdk.Handlers
             rsa.ImportParameters(parameters);
         }
 
-        public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer)
+        public static ClaimsPrincipal ValidateToken(string token)
         {
+            FulcrumAssert.IsNotNull(TokenValidationParameters, CodeLocation.AsString(), $"Use {nameof(StartExtensions)}.{nameof(StartExtensions.AddNexusIdentityAccessManagement)}.");
             try
             {
                 var securityTokenHandler = new JwtSecurityTokenHandler();
-                var validationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = publicKey,
-                    ValidIssuer = issuer
-                };
-
-                return securityTokenHandler.ValidateToken(token, validationParameters, out _);
+                return securityTokenHandler.ValidateToken(token, TokenValidationParameters, out _);
             }
             catch (Exception e) when (e is SecurityTokenException || e is ArgumentException)
             {
                 throw new FulcrumUnauthorizedException("Could not validate token: " + e.Message, e);
             }
-        }
-
-        public static bool HasRole(string role, ClaimsPrincipal principal)
-        {
-            var result = principal.IsInRole(role);
-            return result;
-        }
-
-        public static string GetClaimValue(string type, ClaimsPrincipal principal)
-        {
-            var claim = principal.Identities.First().Claims.FirstOrDefault(c => c.Type == type);
-            return claim?.Value;
         }
     }
 }
