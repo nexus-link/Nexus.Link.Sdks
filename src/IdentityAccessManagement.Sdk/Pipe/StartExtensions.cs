@@ -24,6 +24,17 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnTokenValidated = context =>
+                        {
+                            SaveUserAuthorizationToExecutionContext(context.HttpContext);
+                            SaveUserAuthorizationHeaderToExecutionContext(context.HttpContext);
+
+                            FulcrumApplication.Context.ClientPrincipal = context.HttpContext.User; // TODO: Here? Or as middleware?
+                            return Task.CompletedTask;
+                        }
+                };
                     options.Events.OnTokenValidated = context =>
                     {
                         SaveUserAuthorizationToExecutionContext(context.HttpContext);
