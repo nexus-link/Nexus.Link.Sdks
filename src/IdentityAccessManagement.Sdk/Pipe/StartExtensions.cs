@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityAccessManagement.Sdk.Handlers;
-using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,46 +16,63 @@ namespace IdentityAccessManagement.Sdk.Pipe
 {
     public static class StartExtensions
     {
-        public static void AddNexusIdentityAccessManagement(this IServiceCollection services, string authority, string audience)
+        /// <summary>
+        /// Adds Nexus Identity Access Management capability to inbound pipe to handle authentication.
+        /// </summary>
+        /// <remarks>Also use <see cref="UseNexusIdentityAccessManagement"/> in your <code>Configure(IApplicationBuilder)</code></remarks>
+        public static void AddNexusIdentityAccessManagement(this IServiceCollection services, string authority, string audience, Action<JwtBearerOptions> jwtBearerOptionsAction = null)
         {
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Events = new JwtBearerEvents()
-                    {
-                        OnTokenValidated = context =>
-                        {
-                            SaveUserAuthorizationToExecutionContext(context.HttpContext);
-                            SaveUserAuthorizationHeaderToExecutionContext(context.HttpContext);
-
-                            FulcrumApplication.Context.ClientPrincipal = context.HttpContext.User; // TODO: Here? Or as middleware?
-                            return Task.CompletedTask;
-                        }
-                };
-                    options.Events.OnTokenValidated = context =>
-                    {
-                        SaveUserAuthorizationToExecutionContext(context.HttpContext);
-                        SaveUserAuthorizationHeaderToExecutionContext(context.HttpContext);
-
-                        FulcrumApplication.Context.ClientPrincipal = context.HttpContext.User; // TODO: Here? Or as middleware?
-                        return Task.CompletedTask;
-                    };
-
-                    options.Authority = authority; //Base URL to Idp
+                    options.Authority = authority; // Base URL to Idp
                     options.Audience = audience;
 
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                    options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
-                    options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
+                    options.TokenValidationParameters.NameClaimType = ClaimTypes.Name; // TODO: ClaimTypes.Name or JwtClaimTypes.Name?
+                    options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
+                    //options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name; // TODO: From IRM docs
+                    //options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
 
                     //TODO: Add support for introspection (Reference tokens) (https://irmdevdocs.z16.web.core.windows.net/articles/CIAM/satta-upp-nytt-projekt-som-anvander-ciam/skydda-ett-api.html)
                     // if token does not contain a dot, it is a reference token
                     //options.ForwardDefaultSelector = Selector.ForwardReferenceToken("introspection");
 
-
+                    jwtBearerOptionsAction?.Invoke(options);
                 });
+        }
+
+        /// <summary>
+        /// Activates Nexus Identity Access Management capability to inbound pipe to handle authentication.
+        /// Adds <code>UseAuthentication()</code> and <code>UseAuthorization</code> to <see cref="app"/>.
+        /// </summary>
+        /// <remarks>Also use <see cref="AddNexusIdentityAccessManagement"/> in your <code>ConfigureServices(IServiceCollection)</code></remarks>
+        public static void UseNexusIdentityAccessManagement(this IApplicationBuilder app)
+        {
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseMiddleware<SaveNexusAuthorizationToExecutionContext>();
+        }
+    }
+
+    public class SaveNexusAuthorizationToExecutionContext
+    {
+        private readonly RequestDelegate _next;
+
+        public SaveNexusAuthorizationToExecutionContext(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            FulcrumApplication.Context.ClientPrincipal = context.User;
+            SaveUserAuthorizationToExecutionContext(context);
+            SaveUserAuthorizationHeaderToExecutionContext(context);
+
+            await _next.Invoke(context);
         }
 
         private static void SaveUserAuthorizationToExecutionContext(HttpContext context)

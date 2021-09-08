@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using IdentityAccessManagement.Sdk.Pipe;
-using IdentityAccessManagement.Sdk.Pipe.Outbound;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,7 +17,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             _output = output;
         }
 
-        [Fact(Skip = "need to find a good way to mock open id connect")]
+        [Fact]
         public async Task Request_Is_Authorized()
         {
             using var httpClient = _factory.CreateClient();
@@ -34,7 +33,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             Assert.Equal("Home", information.Name);
         }
 
-        [Fact(Skip = "need to find a good way to mock open id connect")]
+        [Fact]
         public async Task Client_And_User_Principals_Are_Setup_By_Pipe()
         {
             using var httpClient = _factory.CreateClient();
@@ -46,7 +45,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             var information = JsonConvert.DeserializeObject<HomeInformation>(result);
-            
+
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(TestStartup.ClientName, information?.ClientPrincipalName);
             Assert.Equal(TestStartup.UserName, information?.UserPrincipalName);
