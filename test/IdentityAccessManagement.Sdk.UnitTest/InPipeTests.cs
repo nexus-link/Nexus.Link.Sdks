@@ -1,6 +1,8 @@
+using System.Net;
 using System.Threading.Tasks;
 using IdentityAccessManagement.Sdk.Pipe;
 using Newtonsoft.Json;
+using Nexus.Link.Libraries.Web.Pipe;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,7 +32,20 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             Assert.True(response.IsSuccessStatusCode);
-            Assert.Equal("Home", information.Name);
+            Assert.Equal("Home", information.Data);
+        }
+
+        [Fact]
+        public async Task Api_Is_Protected()
+        {
+            using var httpClient = _factory.CreateClient();
+
+            var response = await httpClient.GetAsync("api/home/information");
+            var result = await response.Content.ReadAsStringAsync();
+
+            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -49,6 +64,27 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(TestStartup.ClientName, information?.ClientPrincipalName);
             Assert.Equal(TestStartup.UserName, information?.UserPrincipalName);
+        }
+
+        [Fact]
+        public async Task User_Principal_Is_Propagated_RestClient()
+        {
+            HomeController.Factory = _factory;
+
+            using var httpClient = _factory.CreateClient();
+            httpClient.DefaultRequestHeaders.Authorization = TestStartup.AuthorizationHeader;
+            httpClient.DefaultRequestHeaders.Add(Constants.NexusUserAuthorizationHeaderName, TestStartup.UserAuthorizationHeader);
+
+            var response = await httpClient.GetAsync("api/home/fetchdata");
+            var result = await response.Content.ReadAsStringAsync();
+            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+
+            var information = JsonConvert.DeserializeObject<HomeInformation>(result);
+
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.NotNull(information?.Data);
+            // Expect "fetchdata" endpoint to return User Auth Header content
+            Assert.True(information.Data.Contains("Bearer "), information.Data);
         }
     }
 }

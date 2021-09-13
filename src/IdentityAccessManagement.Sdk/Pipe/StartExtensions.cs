@@ -11,6 +11,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Web.Pipe;
 
 namespace IdentityAccessManagement.Sdk.Pipe
 {
@@ -52,7 +53,6 @@ namespace IdentityAccessManagement.Sdk.Pipe
         public static void UseNexusIdentityAccessManagement(this IApplicationBuilder app)
         {
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UseMiddleware<SaveNexusAuthorizationToExecutionContext>();
         }
     }

@@ -65,8 +65,10 @@ namespace IdentityAccessManagement.Sdk.UnitTest
                 Expires = DateTime.UtcNow.AddHours(1),
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
+                    //new Claim(JwtClaimTypes.Subject, clientName),       // TODO: Sync with AddJwtBearer in StartExtensions
+                    //new Claim(JwtRegisteredClaimNames.Sub, "consumer"), // TODO: Sync with AddJwtBearer in StartExtensions
                     new Claim(ClaimTypes.Role, "consumer"),
-                    new Claim(ClaimTypes.Name, clientName)
+                    new Claim(ClaimTypes.Name, clientName) // unique_name
                 }),
                 Issuer = Issuer,
                 Audience = Audience
