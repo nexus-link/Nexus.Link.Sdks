@@ -1,0 +1,26 @@
+resources:
+  repositories:
+  - repository: azure-devops-tools
+    type: github
+    endpoint: 'xlent-link-admin'
+    name: 'nexus-link/nexus-azure-devops-tools'
+    ref: 'refs/heads/master'
+ 
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+  paths:
+    include:
+    - 'src/IdentityAccessManagement.Sdk/*'   
+    
+jobs:
+- template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
+  parameters:
+    jobName: 'IdentityAccessManagementSdk'
+    testProjectsPath: '**/test/IdentityAccessManagement.Sdk.UnitTests/*.csproj'
+    nugetProjectsPath: '**/src/IdentityAccessManagement.Sdk/*.csproj'
+    nuGetFeedType: external
+    publishFeedCredentials: 'prd-nexus-nuget-external'
+    publishVstsFeed: 'Nexus Libs/nexus-nugets'
