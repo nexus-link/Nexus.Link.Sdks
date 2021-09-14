@@ -34,7 +34,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Data.Queues
             _queue.MaybeCreateAndConnect(name);
         }
 
-        static RequestQueue()
+static RequestQueue()
         {
             Random = new Random();
         }

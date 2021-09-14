@@ -30,7 +30,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.0.3</Version>
+    <Version>3.0.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -40,6 +40,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.0.4 Fix: Catch exception if could not access Azure queue
       3.0.3 Symbols
       3.0.2 Added CancellationToken where missing.
       2.1.6 Fix for Content-Type in Callback request (it's always application/json, not the content-type from the server response)

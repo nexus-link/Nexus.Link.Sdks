@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Nexus.Link.AsyncCaller.Sdk.Storage.Queue;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Health.Model;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Threads;
@@ -16,6 +17,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
         private static readonly string Namespace = typeof(AzureStorageQueue).Namespace;
         private CloudQueue _queue;
         private readonly CloudQueueClient _queueClient;
+        private readonly Uri _queueEndpoint;
 
         public string QueueName
         {
@@ -30,6 +32,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
         {
             InternalContract.RequireNotNull(connectionString, nameof(connectionString));
             var storageAccount = CloudStorageAccount.Parse(connectionString);
+            _queueEndpoint = storageAccount.QueueEndpoint;
             _queueClient = storageAccount.CreateCloudQueueClient();
             FulcrumAssert.IsNotNull(_queueClient, $"{Namespace}: F0EF67D4-9F1A-426B-B2C6-41557D3CC947", "Could not create a cloud queue client.");
         }
@@ -48,8 +51,15 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
             FulcrumAssert.IsNotNull(_queueClient, $"{Namespace}: 5DD337BE-B1A6-493D-95D5-B05C9717F14A", $"Expected to have a queue client ready for queue {name}.");
             _queue = _queueClient.GetQueueReference(name);
             FulcrumAssert.IsNotNull(_queue, $"{Namespace}: 117B4E2E-C94C-462D-8A2B-130805EFE69B", $"Failed to create a queue reference to {name}");
-            var success = ThreadHelper.CallAsyncFromSync(async () => await _queue.CreateIfNotExistsAsync());
-            return success;
+            try
+            {
+                var created = ThreadHelper.CallAsyncFromSync(async () => await _queue.CreateIfNotExistsAsync());
+                return created;
+            }
+            catch (Exception e)
+            {
+                throw new FulcrumResourceException($"Could not connect to queue '{name}' on storage '{_queueEndpoint}': {e.Message}", e);
+            }
         }
 
         public async Task AddMessageAsync(string message, TimeSpan? timeSpanToWait, CancellationToken cancellationToken = default)
