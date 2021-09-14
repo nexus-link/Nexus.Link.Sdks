@@ -19,7 +19,7 @@ jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
     jobName: 'IdentityAccessManagementSdk'
-    testProjectsPath: '**/test/IdentityAccessManagement.Sdk.UnitTests/*.csproj'
+    testProjectsPath: '**/test/IdentityAccessManagement.Sdk.UnitTest/*.csproj'
     nugetProjectsPath: '**/src/IdentityAccessManagement.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
