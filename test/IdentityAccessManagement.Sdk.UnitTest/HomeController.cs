@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityAccessManagement.Sdk.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Link.Libraries.Core.Application;
@@ -9,7 +10,8 @@ using Nexus.Link.Libraries.Web.Pipe.Outbound;
 
 namespace IdentityAccessManagement.Sdk.UnitTest
 {
-    [Authorize(Roles = "consumer")]
+    [Authorize]
+    [ScopeRequirement("consumer")]
     [Route("api/home")]
     public class HomeController : Controller
     {

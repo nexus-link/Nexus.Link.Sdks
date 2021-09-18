@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +23,25 @@ namespace IdentityAccessManagement.Sdk.Pipe
         /// Adds Nexus Identity Access Management capability to inbound pipe to handle authentication.
         /// </summary>
         /// <remarks>Also use <see cref="UseNexusIdentityAccessManagement"/> in your <code>Configure(IApplicationBuilder)</code></remarks>
+        public static void AddNexusIdentityAccessManagement(this IServiceCollection services, string authority, Action<JwtBearerOptions> jwtBearerOptionsAction = null)
+        {
+            AddNexusIdentityAccessManagement(services, authority, (List<string>)null, jwtBearerOptionsAction);
+        }
+
+        /// <summary>
+        /// Adds Nexus Identity Access Management capability to inbound pipe to handle authentication.
+        /// </summary>
+        /// <remarks>Also use <see cref="UseNexusIdentityAccessManagement"/> in your <code>Configure(IApplicationBuilder)</code></remarks>
         public static void AddNexusIdentityAccessManagement(this IServiceCollection services, string authority, string audience, Action<JwtBearerOptions> jwtBearerOptionsAction = null)
+        {
+            AddNexusIdentityAccessManagement(services, authority, new List<string> { audience }, jwtBearerOptionsAction);
+        }
+
+        /// <summary>
+        /// Adds Nexus Identity Access Management capability to inbound pipe to handle authentication.
+        /// </summary>
+        /// <remarks>Also use <see cref="UseNexusIdentityAccessManagement"/> in your <code>Configure(IApplicationBuilder)</code></remarks>
+        public static void AddNexusIdentityAccessManagement(this IServiceCollection services, string authority, List<string> validAudiences, Action<JwtBearerOptions> jwtBearerOptionsAction = null)
         {
 
             services
@@ -29,13 +49,13 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 .AddJwtBearer(options =>
                 {
                     options.Authority = authority; // Base URL to Idp
-                    options.Audience = audience;
+                    options.Audience = validAudiences?.Count == 1 ? validAudiences.First() : null;
+                    options.TokenValidationParameters.ValidAudiences = validAudiences;
+                    options.TokenValidationParameters.ValidateAudience = validAudiences != null && validAudiences.Any();
 
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                    options.TokenValidationParameters.NameClaimType = ClaimTypes.Name; // TODO: ClaimTypes.Name or JwtClaimTypes.Name?
-                    options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
-                    //options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name; // TODO: From IRM docs
-                    //options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
+                    options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name; // TODO: From IRM docs
+                    options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
 
                     //TODO: Add support for introspection (Reference tokens) (https://irmdevdocs.z16.web.core.windows.net/articles/CIAM/satta-upp-nytt-projekt-som-anvander-ciam/skydda-ett-api.html)
                     // if token does not contain a dot, it is a reference token
@@ -118,7 +138,8 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 ValidateActor = false,
                 ValidateLifetime = false,
                 ValidateTokenReplay = false,
-                SignatureValidator = (t, parameters) => new JwtSecurityToken(t)
+                SignatureValidator = (t, parameters) => new JwtSecurityToken(t),
+                NameClaimType = JwtClaimTypes.Name
             };
 
             var validator = new JwtSecurityTokenHandler();

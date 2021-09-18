@@ -1,8 +1,10 @@
 using System.Net;
 using System.Threading.Tasks;
-using IdentityAccessManagement.Sdk.Pipe;
 using Newtonsoft.Json;
+using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
+using UnitTests.Support;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,12 +13,13 @@ namespace IdentityAccessManagement.Sdk.UnitTest
     public class InPipeTests : IClassFixture<CustomWebApplicationFactory<TestStartup>>
     {
         private readonly CustomWebApplicationFactory<TestStartup> _factory;
-        private readonly ITestOutputHelper _output;
 
         public InPipeTests(CustomWebApplicationFactory<TestStartup> factory, ITestOutputHelper output)
         {
+            FulcrumApplicationHelper.UnitTestSetup(nameof(InPipeTests));
+            FulcrumApplication.Setup.SynchronousFastLogger = new XUnitFulcrumLogger(output);
+
             _factory = factory;
-            _output = output;
         }
 
         [Fact]
@@ -29,7 +32,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             var result = await response.Content.ReadAsStringAsync();
             var information = JsonConvert.DeserializeObject<HomeInformation>(result);
 
-            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+            Log.LogInformation($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal("Home", information.Data);
@@ -43,7 +46,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             var response = await httpClient.GetAsync("api/home/information");
             var result = await response.Content.ReadAsStringAsync();
 
-            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+            Log.LogInformation($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
@@ -57,7 +60,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
 
             var response = await httpClient.GetAsync("api/home/information");
             var result = await response.Content.ReadAsStringAsync();
-            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+            Log.LogInformation($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             var information = JsonConvert.DeserializeObject<HomeInformation>(result);
 
@@ -77,7 +80,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
 
             var response = await httpClient.GetAsync("api/home/fetchdata");
             var result = await response.Content.ReadAsStringAsync();
-            _output.WriteLine($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
+            Log.LogInformation($"RESPONSE CODE: {response.StatusCode}, RESULT: {result}");
 
             var information = JsonConvert.DeserializeObject<HomeInformation>(result);
 

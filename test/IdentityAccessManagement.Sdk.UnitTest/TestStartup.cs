@@ -5,13 +5,13 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using IdentityAccessManagement.Sdk.Pipe;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Nexus.Link.Libraries.Core.Application;
 
 namespace IdentityAccessManagement.Sdk.UnitTest
 {
@@ -37,8 +37,6 @@ namespace IdentityAccessManagement.Sdk.UnitTest
 
         public void ConfigureServices(IServiceCollection services)
         {
-            FulcrumApplicationHelper.UnitTestSetup("unitests");
-
             var rsaProvider = new RSACryptoServiceProvider(RsaKeySizeInBits);
             var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsaProvider.ExportParameters(true)), "RS256");
 
@@ -65,10 +63,8 @@ namespace IdentityAccessManagement.Sdk.UnitTest
                 Expires = DateTime.UtcNow.AddHours(1),
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
-                    //new Claim(JwtClaimTypes.Subject, clientName),       // TODO: Sync with AddJwtBearer in StartExtensions
-                    //new Claim(JwtRegisteredClaimNames.Sub, "consumer"), // TODO: Sync with AddJwtBearer in StartExtensions
-                    new Claim(ClaimTypes.Role, "consumer"),
-                    new Claim(ClaimTypes.Name, clientName) // unique_name
+                    new Claim(JwtClaimTypes.Name, clientName),
+                    new Claim(JwtClaimTypes.Scope, "consumer")
                 }),
                 Issuer = Issuer,
                 Audience = Audience

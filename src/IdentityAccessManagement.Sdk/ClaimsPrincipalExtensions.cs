@@ -8,7 +8,7 @@ namespace IdentityAccessManagement.Sdk
     {
         public static string GetClientName(this ClaimsPrincipal principal)
         {
-            var result = principal.GetClaimValue(ClaimTypes.Name);
+            var result = principal.Identity.Name;
             return result;
         }
 

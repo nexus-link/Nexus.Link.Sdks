@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\IdentityAccessManagement.Sdk\IdentityAccessManagement.Sdk.csproj" />
+    <ProjectReference Include="..\UnitTests.Support\UnitTests.Support.csproj" />
   </ItemGroup>
 
   <ItemGroup>

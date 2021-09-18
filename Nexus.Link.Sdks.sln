@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nexus.Link.AsyncCaller.Sdk", "src\AsyncCaller.Sdk\Nexus.Link.AsyncCaller.Sdk.csproj", "{AC0B63AD-E18A-4D8E-93CC-D50F9DA4FA5C}"
 EndProject
@@ -56,7 +56,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configurations.Sdk.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityAccessManagement.Sdk", "src\IdentityAccessManagement.Sdk\IdentityAccessManagement.Sdk.csproj", "{6C24CD06-A613-4D73-8693-91F8A35C2AFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityAccessManagement.Sdk.UnitTest", "test\IdentityAccessManagement.Sdk.UnitTest\IdentityAccessManagement.Sdk.UnitTest.csproj", "{01EC282F-F321-49A6-9424-70D4B4F40F62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityAccessManagement.Sdk.UnitTest", "test\IdentityAccessManagement.Sdk.UnitTest\IdentityAccessManagement.Sdk.UnitTest.csproj", "{01EC282F-F321-49A6-9424-70D4B4F40F62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.Support", "test\UnitTests.Support\UnitTests.Support.csproj", "{27F2F017-4E05-4B10-B406-3D229444AC27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -349,6 +351,20 @@ Global
 		{01EC282F-F321-49A6-9424-70D4B4F40F62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01EC282F-F321-49A6-9424-70D4B4F40F62}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{01EC282F-F321-49A6-9424-70D4B4F40F62}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.int|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{27F2F017-4E05-4B10-B406-3D229444AC27}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -361,6 +377,7 @@ Global
 		{40E27565-6A71-483C-A6D3-EFA1EFEA298D} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 		{5A98DE21-FCE1-49B2-BD87-DEC2F76D6044} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 		{01EC282F-F321-49A6-9424-70D4B4F40F62} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
+		{27F2F017-4E05-4B10-B406-3D229444AC27} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {929016C1-D948-4CB9-AD95-8115E93A6B9E}
