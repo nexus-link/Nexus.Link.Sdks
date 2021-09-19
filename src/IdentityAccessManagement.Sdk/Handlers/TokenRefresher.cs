@@ -34,7 +34,7 @@ namespace IdentityAccessManagement.Sdk.Handlers
 
         public override async Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await GetTokenAsync(request, cancellationToken);
+            var token = await GetTokenAsync(cancellationToken);
             if (!string.IsNullOrWhiteSpace(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -73,7 +73,7 @@ namespace IdentityAccessManagement.Sdk.Handlers
             throw new Exception(error);
         }
 
-        public async Task<string> GetTokenAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<string> GetTokenAsync(CancellationToken cancellationToken)
         {
             var cacheKey = $"IdentityAccessManagement.Sdk.Handlers.TokenRefresher:{_options.ClientId}";
             var token = await _cache.GetOrCreateAsync(cacheKey, async entry =>
