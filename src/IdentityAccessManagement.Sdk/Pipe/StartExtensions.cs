@@ -54,7 +54,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
                     options.TokenValidationParameters.ValidateAudience = validAudiences != null && validAudiences.Any();
 
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                    options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name; // TODO: From IRM docs
+                    options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
                     options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
 
                     //TODO: Add support for introspection (Reference tokens) (https://irmdevdocs.z16.web.core.windows.net/articles/CIAM/satta-upp-nytt-projekt-som-anvander-ciam/skydda-ett-api.html)
@@ -89,6 +89,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
         public async Task InvokeAsync(HttpContext context)
         {
             FulcrumApplication.Context.ClientPrincipal = context.User;
+            FulcrumApplication.Context.CallingClientName = FulcrumApplication.Context.ClientPrincipal?.Identity?.Name;
             SaveUserAuthorizationToExecutionContext(context);
             SaveUserAuthorizationHeaderToExecutionContext(context);
 
