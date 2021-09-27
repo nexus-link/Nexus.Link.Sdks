@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.6.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.19.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
+  </ItemGroup>
+
+</Project>

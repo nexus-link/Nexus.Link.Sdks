@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.3.4" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.9.2" />
+  </ItemGroup>
+
+</Project>
