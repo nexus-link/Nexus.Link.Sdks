@@ -33,18 +33,10 @@ namespace AsyncManager.Sdk.UnitTests
         public void CreateClient()
         {
             // act
-            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object, "https://example.com");
+            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object);
 
             // assert
             Assert.NotNull(client);
-        }
-
-        [Theory]
-        [MemberData(nameof(TestDataGenerator.IncorrectUrls), MemberType = typeof(TestDataGenerator))]
-        public void BadClientUrl(string url)
-        {
-            // act & assert
-            Assert.Throws<FulcrumContractException>(() => new AsyncRequestClient(_tenant, _httpSenderMock.Object, url));
         }
 
 
@@ -54,7 +46,7 @@ namespace AsyncManager.Sdk.UnitTests
             // arrange
             SetupSenderMockResponse(Guid.NewGuid().ToString())
                 .Verifiable();
-            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object, "http://example.com");
+            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
 
             // act
@@ -70,7 +62,7 @@ namespace AsyncManager.Sdk.UnitTests
             // arrange
             var expectedRequestId = Guid.NewGuid().ToString();
             var actualRequest = TestDataGenerator.DefaultAsyncHttpRequest;
-            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object, "http://example.com");
+            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
             SetupSenderMockResponse(expectedRequestId)
                 .Verifiable();
@@ -88,7 +80,7 @@ namespace AsyncManager.Sdk.UnitTests
         {
             // arrange
             var expectedRequestId = Guid.NewGuid().ToString();
-            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object, "http://example.com");
+            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object);
             SetupSenderMockResponse(expectedRequestId)
                 .Callback((HttpMethod method, string url, HttpRequestCreate body, Dictionary<string, List<string>> headers,
                     CancellationToken token) =>
@@ -107,7 +99,7 @@ namespace AsyncManager.Sdk.UnitTests
         {
             // arrange
             var expectedRequestId = Guid.NewGuid();
-            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object, "http://example.com");
+            var client = new AsyncRequestClient(_tenant, _httpSenderMock.Object);
 
             // act & assert
             await Assert.ThrowsAsync<FulcrumContractException>(() => client.SendRequestAsync(incorrectRequest));
