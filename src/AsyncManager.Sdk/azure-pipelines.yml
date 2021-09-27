@@ -19,7 +19,7 @@ jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
     jobName: 'AsyncManager_Sdk'
-    testProjectsPath: 'tests/AsyncManager.Sdk.UnitTests/*.csproj'
+    testProjectsPath: 'test/AsyncManager.Sdk.UnitTests/*.csproj'
     nugetProjectsPath: 'src/AsyncManager.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
