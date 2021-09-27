@@ -1,12 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</AssemblyName>
+    <RootNamespace>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.3.4" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.9.2" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
+    <Version>1.0.0</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Support for the Nexus Link WorkflowEngine SDK.</Description>
+    <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      1.0.0 First release
+    </PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
 
 </Project>
