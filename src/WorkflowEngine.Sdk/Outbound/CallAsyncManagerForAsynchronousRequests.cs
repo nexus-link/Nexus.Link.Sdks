@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
@@ -17,11 +18,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
     public class CallAsyncManagerForAsynchronousRequests : DelegatingHandler
     {
-        private readonly IAsyncRequestMgmtCapability _asyncManagementCapability;
+        private readonly IAsyncRequestClient _asyncRequestClient;
 
-        public CallAsyncManagerForAsynchronousRequests(IAsyncRequestMgmtCapability asyncManagementCapability)
+        public CallAsyncManagerForAsynchronousRequests(IAsyncRequestClient asyncRequestClient)
         {
-            _asyncManagementCapability = asyncManagementCapability;
+            _asyncRequestClient = asyncRequestClient;
         }
 
         /// <summary>
@@ -39,15 +40,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             }
 
             // Send the request to AM
-            var requestData = await new RequestData().FromAsync(request, cancellationToken);
-            FulcrumAssert.IsTrue(!requestData.Headers.ContainsKey(Constants.ExecutionIdHeaderName), CodeLocation.AsString());
-            var executionId = AsyncWorkflowStatic.Context.AsyncExecutionContext?.ExecutionId;
-            FulcrumAssert.IsNotNull(executionId, CodeLocation.AsString());
-
-            // TODO: Use new version
-            //var requestId = await _asyncManagementCapability.Request.CreateAsyncRequestAsync(executionId!.Value.ToString(), requestData, cancellationToken);
-            var item = new HttpRequestCreate().From(requestData);
-            var requestId = await _asyncManagementCapability.Request.CreateAsync(item, cancellationToken);
+            var requestId = await _asyncRequestClient
+                .CreateRequest(request.Method, request.RequestUri.AbsoluteUri.ToString(), 0.5)
+                .AddHeaders(request.Headers)
+                .SendAsync(cancellationToken);
+            // TODO: Set callback
+            // TODO: Save the request id so we can get the response later.
             // TODO: PostponeException should take string
             throw new PostponeException(MapperHelper.MapToType<Guid, string>(requestId));
         }
