@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncManager.Sdk.Abstract;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
@@ -13,15 +13,15 @@ using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Services
+namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     public class AsyncContextService : IAsyncContextService
     {
-        private readonly IAsyncManagementCapabilityForClient _asyncManagementCapability;
+        private readonly IAsyncRequestMgmtCapability _asyncManagementCapability;
 
         public Dictionary<Guid, AsyncExecutionContext> ExecutionContexts { get; } = new Dictionary<Guid, AsyncExecutionContext>();
 
-        public AsyncContextService(IAsyncManagementCapabilityForClient asyncManagementCapability)
+        public AsyncContextService(IAsyncRequestMgmtCapability asyncManagementCapability)
         {
             _asyncManagementCapability = asyncManagementCapability;
         }

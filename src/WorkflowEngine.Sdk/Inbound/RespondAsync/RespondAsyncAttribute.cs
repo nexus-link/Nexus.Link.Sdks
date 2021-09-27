@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync
 {
     // Allowed values for a respond async strategy
     public enum RespondAsyncOpinionEnum

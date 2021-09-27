@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class WorkflowVersionCollection : IWorkflowVersionCollection
     {

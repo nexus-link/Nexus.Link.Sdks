@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Web.Serialization;
 
 #if NETCOREAPP
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync
 {
     public interface IExecuteAsync
     {

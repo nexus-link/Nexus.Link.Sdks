@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncManager.Sdk.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Serialization;
-using WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions;
 
-namespace WorkflowEngine.Sdk.Inbound
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class ResponseHandler : ResponseHandlerBase
     {
-        public IAsyncManagementCapabilityForClient AsyncManagementCapability { get; }
+        public IAsyncRequestMgmtCapability AsyncMgmtCapability { get; }
 
         /// <inheritdoc />
-        public ResponseHandler(IAsyncManagementCapabilityForClient asyncManagementCapability, string urlFormat) : base(urlFormat)
+        public ResponseHandler(IAsyncRequestMgmtCapability asyncManagementCapability, string urlFormat) : base(urlFormat)
         {
-            AsyncManagementCapability = asyncManagementCapability;
+            AsyncMgmtCapability = asyncManagementCapability;
         }
 
         public override async Task<ResponseData> GetResponseAsync(Guid requestId, CancellationToken cancellationToken = default)
         {
-            var response = await AsyncManagementCapability.Response.GetResponseAsync(requestId.ToString(), cancellationToken);
+            var asyncMgmtResponse= await AsyncMgmtCapability.RequestResponse.ReadResponseAsync(requestId.ToString(), cancellationToken);
+            var response = new ResponseData().From(asyncMgmtResponse);
             return response;
         }
 
@@ -33,7 +35,7 @@ namespace WorkflowEngine.Sdk.Inbound
                 var success = RespondAsyncFilterSupport.TryGetExecutionId(requestData.Headers, out var executionId);
                 FulcrumAssert.IsTrue(success, CodeLocation.AsString());
                 // Serialize the response and make it available to the caller
-                AsyncManagementCapability.Response.CreateResponse(executionId.ToString(), responseData.BodyAsString);
+                AsyncMgmtCapability.Response.CreateResponse(executionId.ToString(), responseData.BodyAsString);
             }
             return Task.CompletedTask;
         }

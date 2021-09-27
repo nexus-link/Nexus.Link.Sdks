@@ -1,21 +1,21 @@
 ﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncManager.Sdk.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Web.Serialization;
-using WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
 
-namespace WorkflowEngine.Sdk.Inbound
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class RequestExecutor : RequestExecutorBase
     {
-        public IAsyncManagementCapabilityForClient AsyncManagementCapability { get; }
+        public IAsyncRequestMgmtCapability AsyncMgmtCapability { get; }
 
-        public RequestExecutor(IAsyncManagementCapabilityForClient asyncManagementCapability, HttpClient httpClient) : base(httpClient)
+        public RequestExecutor(IAsyncRequestMgmtCapability asyncManagementCapability, HttpClient httpClient) : base(httpClient)
         {
             // TODO: Change RequestExecutorBase to accept the HttpClient in the constructor. 
             HttpClient = httpClient;
-            AsyncManagementCapability = asyncManagementCapability;
+            AsyncMgmtCapability = asyncManagementCapability;
         }
 
         /// <inheritdoc />

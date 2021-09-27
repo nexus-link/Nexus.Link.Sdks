@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync
 {
     /// <summary>
     /// Method to get an action result

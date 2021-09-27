@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Error.Logic;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
 {
     /// <summary>
     /// Normally you should be able to use this class without overriding it.

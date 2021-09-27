@@ -10,11 +10,11 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 using WorkflowEngine.Persistence.Abstract;
 using WorkflowEngine.Persistence.Abstract.Entities;
-using WorkflowEngine.Sdk.Support;
 
-namespace WorkflowEngine.Sdk.Services
+namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     public class TransitionService : ITransitionService
     {

@@ -1,21 +1,21 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncManager.Sdk.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Libraries.Web.Serialization;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 
-namespace WorkflowEngine.Sdk.Outbound
+namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
     public class CallAsyncManagerForAsynchronousRequests : DelegatingHandler
     {
-        private readonly IAsyncManagementCapabilityForClient _asyncManagementCapability;
+        private readonly IAsyncRequestMgmtCapability _asyncManagementCapability;
 
-        public CallAsyncManagerForAsynchronousRequests(IAsyncManagementCapabilityForClient asyncManagementCapability)
+        public CallAsyncManagerForAsynchronousRequests(IAsyncRequestMgmtCapability asyncManagementCapability)
         {
             _asyncManagementCapability = asyncManagementCapability;
         }

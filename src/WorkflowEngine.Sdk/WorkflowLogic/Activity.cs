@@ -4,19 +4,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Json;
-using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using WorkflowEngine.Sdk.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Json;
+using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Model;
 using AsyncExecutionContext = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model.AsyncExecutionContext;
 using PostponeException = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions.PostponeException;
 
-namespace WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
         Activity activity,
@@ -144,7 +144,7 @@ namespace WorkflowEngine.Sdk.WorkflowLogic
                 subRequest.Description = Title;
                 subRequest.HasCompleted = true;
                 // TODO: Save the subRequest
-                // await e.AsyncManagementCapability.Context.AddSubRequestAsync(context.ExecutionId.ToString(), _workflowActivity.Id, subRequest, cancellationToken);
+                // await e.AsyncMgmtCapability.Context.AddSubRequestAsync(context.ExecutionId.ToString(), _workflowActivity.Id, subRequest, cancellationToken);
                 // TODO: Update the DB ActivityInstance with FinishedAt
                 // TODO: Create/update LatestResponse in DB
                 return result;

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using WorkflowEngine.Sdk.Model;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Model;
 
-namespace WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityAction : Activity
     {

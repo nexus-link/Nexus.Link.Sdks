@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync
 {
     /// <summary>
     /// Methods for deciding if a request should be responded to asynchronously and to actually execute a postponed request.

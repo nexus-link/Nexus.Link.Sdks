@@ -4,7 +4,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.Helpers;
 using WorkflowEngine.Persistence.Abstract.Entities;
 
-namespace WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     public static class TransitionExtensions
     {

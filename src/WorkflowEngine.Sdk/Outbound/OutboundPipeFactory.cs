@@ -2,7 +2,7 @@
 using System.Net.Http;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 
-namespace WorkflowEngine.Sdk.Outbound
+namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
     /// <summary>
     /// A factory class to create delegating handlers for outgoing HTTP requests.

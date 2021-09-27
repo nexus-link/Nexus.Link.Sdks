@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using WorkflowEngine.Sdk.Interfaces;
-using WorkflowEngine.Sdk.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Model;
 
-namespace WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     internal class ActivityFlow : IActivityFlow
     {

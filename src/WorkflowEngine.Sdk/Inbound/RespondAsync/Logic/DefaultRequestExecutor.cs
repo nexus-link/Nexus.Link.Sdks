@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 
 #if NETCOREAPP
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
 {
     public class DefaultRequestExecutor : RequestExecutorBase
     {

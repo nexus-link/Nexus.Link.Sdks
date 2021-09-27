@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
 {
     public abstract class ResponseHandlerBase : IResponseHandler
     {

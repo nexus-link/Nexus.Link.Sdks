@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
 {
     public class ResponseHandlerInMemory : ResponseHandlerBase
     {

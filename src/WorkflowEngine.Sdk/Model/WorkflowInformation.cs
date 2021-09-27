@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Error.Logic;
 
-namespace WorkflowEngine.Sdk.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
     public class WorkflowInformation
     {

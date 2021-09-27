@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync
 {
     public interface IResponseHandler : IGetActionResult
     {

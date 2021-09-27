@@ -1,6 +1,6 @@
-﻿using WorkflowEngine.Sdk.WorkflowLogic;
+﻿using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
-namespace WorkflowEngine.Sdk.Interfaces
+namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IWorkflowVersionCollection
     {

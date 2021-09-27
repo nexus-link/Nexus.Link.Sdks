@@ -1,8 +1,8 @@
-﻿using Nexus.Link.Libraries.Web.RestClientHelper;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 
-namespace WorkflowEngine.Sdk.RestClients
+namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class WorkflowRestClients : IWorkflowCapabilityForClient
     {

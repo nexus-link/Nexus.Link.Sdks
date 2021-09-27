@@ -8,7 +8,7 @@ using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.Libraries.Web.AspNet.Serialization;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic
 {
     /// <summary>
     /// Normally you should be able to use this class without overriding it.

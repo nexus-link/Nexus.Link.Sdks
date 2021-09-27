@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncManager.Sdk.Abstract;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Queue.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Libraries.Web.Serialization;
-using WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
 
-namespace WorkflowEngine.Sdk.Inbound
+namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class RespondAsyncFilterSupport : DefaultRespondAsyncFilterSupport
     {
-        public IAsyncManagementCapabilityForClient AsyncManager { get; }
+        public IAsyncRequestMgmtCapability AsyncManager { get; }
 
-        public RespondAsyncFilterSupport(IAsyncManagementCapabilityForClient asyncManager, HttpClient httpClient, string asyncManagerUrl)
+        public RespondAsyncFilterSupport(IAsyncRequestMgmtCapability asyncManager, HttpClient httpClient, string asyncManagerUrl)
         : base(
             new ChannelQueue<RequestData>(100),
             new RequestExecutor(asyncManager, httpClient),
