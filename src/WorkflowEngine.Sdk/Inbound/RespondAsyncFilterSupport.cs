@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -17,15 +18,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class RespondAsyncFilterSupport : DefaultRespondAsyncFilterSupport
     {
-        public IAsyncRequestMgmtCapability AsyncManager { get; }
+        public IAsyncRequestClient AsyncRequestClient { get; }
 
-        public RespondAsyncFilterSupport(IAsyncRequestMgmtCapability asyncManager, HttpClient httpClient, string asyncManagerUrl)
+        public RespondAsyncFilterSupport(IAsyncRequestClient asyncRequestClient, HttpClient httpClient, string asyncManagerUrl)
         : base(
             new ChannelQueue<RequestData>(100),
-            new RequestExecutor(asyncManager, httpClient),
-            new ResponseHandler(asyncManager, asyncManagerUrl + @"/requests/{0}/responses"))
+            new RequestExecutor(asyncRequestClient, httpClient),
+            new ResponseHandler(asyncRequestClient, asyncManagerUrl + @"/requests/{0}/responses"))
         {
-            AsyncManager = asyncManager;
+            AsyncRequestClient = asyncRequestClient;
         }
 
         /// <inheritdoc />

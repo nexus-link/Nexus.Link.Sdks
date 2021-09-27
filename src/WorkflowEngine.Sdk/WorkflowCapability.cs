@@ -1,3 +1,4 @@
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
@@ -8,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 {
     public class WorkflowCapability : IWorkflowCapability
     {
-        public WorkflowCapability(IAsyncRequestMgmtCapability asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
+        public WorkflowCapability(IAsyncRequestClient asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
         {
             AsyncContext = new AsyncContextService(asyncManagementCapability);
             WorkflowForm = new WorkflowFormService(configurationTables);

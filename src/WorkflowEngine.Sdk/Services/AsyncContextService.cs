@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
@@ -18,13 +19,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     public class AsyncContextService : IAsyncContextService
     {
-        private readonly IAsyncRequestMgmtCapability _asyncManagementCapability;
+        private readonly IAsyncRequestClient _asyncRequestClient;
 
         public Dictionary<Guid, AsyncExecutionContext> ExecutionContexts { get; } = new Dictionary<Guid, AsyncExecutionContext>();
 
-        public AsyncContextService(IAsyncRequestMgmtCapability asyncManagementCapability)
+        public AsyncContextService(IAsyncRequestClient asyncRequestClient)
         {
-            _asyncManagementCapability = asyncManagementCapability;
+            _asyncRequestClient = asyncRequestClient;
         }
 
         /// <inheritdoc />
@@ -51,16 +52,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             #region Local methods
             async Task UpdateResponseValueAsync(SubRequest subRequest)
             {
-                if (subRequest.HasCompleted) return;
-                if (!subRequest.RequestId.HasValue) return;
+                throw new FulcrumNotImplementedException(nameof(UpdateResponseValueAsync));
+                //if (subRequest.HasCompleted) return;
+                //if (!subRequest.RequestId.HasValue) return;
 
-                var requestIdAsString = subRequest.RequestId.Value.ToString();
-                var response = await _asyncManagementCapability.RequestResponse.ReadResponseAsync(requestIdAsString, cancellationToken);
+                //var requestIdAsString = subRequest.RequestId.Value.ToString();
+                //var response = await _asyncRequestClient.RequestResponse.ReadResponseAsync(requestIdAsString, cancellationToken);
 
-                if (response == null) throw new PostponeException();
-                // TODO: Handle response that was an exception
-                subRequest.ResultValueAsJson = response.Content;
-                subRequest.HasCompleted = true;
+                //if (response == null) throw new PostponeException();
+                //// TODO: Handle response that was an exception
+                //subRequest.ResultValueAsJson = response.Content;
+                //subRequest.HasCompleted = true;
             }
             #endregion
 

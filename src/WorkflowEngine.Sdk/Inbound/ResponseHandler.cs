@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -13,19 +14,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class ResponseHandler : ResponseHandlerBase
     {
-        public IAsyncRequestMgmtCapability AsyncMgmtCapability { get; }
+        public IAsyncRequestClient AsyncRequestClient { get; }
 
         /// <inheritdoc />
-        public ResponseHandler(IAsyncRequestMgmtCapability asyncManagementCapability, string urlFormat) : base(urlFormat)
+        public ResponseHandler(IAsyncRequestClient asyncRequestClient, string urlFormat) : base(urlFormat)
         {
-            AsyncMgmtCapability = asyncManagementCapability;
+            AsyncRequestClient = asyncRequestClient;
         }
 
         public override async Task<ResponseData> GetResponseAsync(Guid requestId, CancellationToken cancellationToken = default)
         {
-            var asyncMgmtResponse= await AsyncMgmtCapability.RequestResponse.ReadResponseAsync(requestId.ToString(), cancellationToken);
-            var response = new ResponseData().From(asyncMgmtResponse);
-            return response;
+            throw new FulcrumNotImplementedException(nameof(GetResponseAsync));
+            //var asyncMgmtResponse= await AsyncRequestClient.ReadResponseAsync(requestId.ToString(), cancellationToken);
+            //var response = new ResponseData().From(asyncMgmtResponse);
+            //return response;
         }
 
         /// <inheritdoc />
