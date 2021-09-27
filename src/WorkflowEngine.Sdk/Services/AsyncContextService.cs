@@ -9,6 +9,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Serialization;
@@ -54,12 +55,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 if (!subRequest.RequestId.HasValue) return;
 
                 var requestIdAsString = subRequest.RequestId.Value.ToString();
-                var response =
-                    await _asyncManagementCapability.Response.GetResponseAsync(requestIdAsString, cancellationToken);
+                var response = await _asyncManagementCapability.RequestResponse.ReadResponseAsync(requestIdAsString, cancellationToken);
 
                 if (response == null) throw new PostponeException();
                 // TODO: Handle response that was an exception
-                subRequest.ResultValueAsJson = response.BodyAsString;
+                subRequest.ResultValueAsJson = response.Content;
                 subRequest.HasCompleted = true;
             }
             #endregion
@@ -114,29 +114,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         private async Task<string> GetStatusAsStringAsync(string title, Guid requestId, string indentation, CancellationToken cancellationToken = default)
         {
-            var execution = await _asyncManagementCapability.Request.GetLatestExecutionAsync(requestId.ToString(), cancellationToken);
-            if (execution == null) return "";
-            var success = ExecutionContexts.TryGetValue(execution.Id, out var context);
-            if (!success) return "";
-            var builder = new StringBuilder($"{title} {context.CurrentRequest}: STATE?"); // TODO: Get state
-                                                                                          // TODO: Transaction
-            foreach (var subRequest in context.SubRequests.Values)
-            {
-                var subTitle = $"\r{indentation}{subRequest.Description}";
-                if (!subRequest.RequestId.HasValue)
-                {
-                    builder.Append(subTitle);
-                }
-                else
-                {
-                    var subStatus = await GetStatusAsStringAsync(subTitle, subRequest.RequestId.Value,
-                        indentation + Indentation);
-                    builder.Append(subStatus);
-                }
-            }
+            throw new FulcrumNotImplementedException(nameof(GetStatusAsStringAsync));
+            //var execution = await _asyncManagementCapability.Request.GetLatestExecutionAsync(requestId.ToString(), cancellationToken);
+            //if (execution == null) return "";
+            //var success = ExecutionContexts.TryGetValue(execution.Id, out var context);
+            //if (!success) return "";
+            //var builder = new StringBuilder($"{title} {context.CurrentRequest}: STATE?"); // TODO: Get state
+            //                                                                              // TODO: Transaction
+            //foreach (var subRequest in context.SubRequests.Values)
+            //{
+            //    var subTitle = $"\r{indentation}{subRequest.Description}";
+            //    if (!subRequest.RequestId.HasValue)
+            //    {
+            //        builder.Append(subTitle);
+            //    }
+            //    else
+            //    {
+            //        var subStatus = await GetStatusAsStringAsync(subTitle, subRequest.RequestId.Value,
+            //            indentation + Indentation);
+            //        builder.Append(subStatus);
+            //    }
+            //}
 
 
-            return builder.ToString();
+            //return builder.ToString();
         }
 
         public Task<JObject> GetStatusAsJsonAsync(string requestId, CancellationToken cancellationToken = default)
@@ -147,39 +148,39 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return InternalGetStatusAsJsonAsync(requestIdGuid, cancellationToken);
         }
 
-        private async Task<JObject> InternalGetStatusAsJsonAsync(Guid requestId,
-            CancellationToken cancellationToken = default)
+        private async Task<JObject> InternalGetStatusAsJsonAsync(Guid requestId, CancellationToken cancellationToken = default)
         {
-            var waitCount = 0;
-            var errorCount = 0;
-            var jObject = new JObject();
-            var execution = await _asyncManagementCapability.Request.GetLatestExecutionAsync(requestId.ToString(), cancellationToken);
-            if (execution == null)
-            {
-                jObject.Add($"Wait {++waitCount}", $"Request {requestId} does not yet have an execution.");
-                return jObject;
-            }
-            var success = ExecutionContexts.TryGetValue(execution.Id, out var context);
-            if (!success)
-            {
-                jObject.Add($"Error {++errorCount}", $"Request {requestId} does not have an execution context.");
-                return jObject;
-            }
-            foreach (var subRequest in context.SubRequests.Values)
-            {
-                var title = subRequest.Description;
-                if (!subRequest.RequestId.HasValue)
-                {
-                    jObject.Add(title, "No request");
-                }
-                else
-                {
-                    var status = subRequest.StateAsString;//await GetStatusAsJsonAsync(subRequest.RequestId.Value);
-                    jObject.Add(title, status);
-                }
-            }
+            throw new FulcrumNotImplementedException(nameof(GetStatusAsStringAsync));
+            //var waitCount = 0;
+            //var errorCount = 0;
+            //var jObject = new JObject();
+            //var execution = await _asyncManagementCapability.Request.GetLatestExecutionAsync(requestId.ToString(), cancellationToken);
+            //if (execution == null)
+            //{
+            //    jObject.Add($"Wait {++waitCount}", $"Request {requestId} does not yet have an execution.");
+            //    return jObject;
+            //}
+            //var success = ExecutionContexts.TryGetValue(execution.Id, out var context);
+            //if (!success)
+            //{
+            //    jObject.Add($"Error {++errorCount}", $"Request {requestId} does not have an execution context.");
+            //    return jObject;
+            //}
+            //foreach (var subRequest in context.SubRequests.Values)
+            //{
+            //    var title = subRequest.Description;
+            //    if (!subRequest.RequestId.HasValue)
+            //    {
+            //        jObject.Add(title, "No request");
+            //    }
+            //    else
+            //    {
+            //        var status = subRequest.StateAsString;//await GetStatusAsJsonAsync(subRequest.RequestId.Value);
+            //        jObject.Add(title, status);
+            //    }
+            //}
 
-            return await Task.FromResult(jObject);
+            //return await Task.FromResult(jObject);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Queue.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
@@ -44,10 +45,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
         /// <remarks>Side effect: Adds a execution id header if missing.</remarks>
         private async Task<Guid?> AddExecutionIdHeader(RequestData requestData, CancellationToken cancellationToken)
         {
-            if (TryGetExecutionId(requestData.Headers, out var executionId)) return null;
-            var execution = await AsyncManager.Request.CreateAsyncExecutionAsync(requestData, cancellationToken);
-            requestData.Headers.Add(Constants.ExecutionIdHeaderName, execution.Id.ToString());
-            return execution.RequestId;
+            throw new FulcrumNotImplementedException(nameof(AddExecutionIdHeader));
+
+            //if (TryGetExecutionId(requestData.Headers, out var executionId)) return null;
+            //var execution = await AsyncManager.Request.CreateAsyncExecutionAsync(requestData, cancellationToken);
+            //requestData.Headers.Add(Constants.ExecutionIdHeaderName, execution.Id.ToString());
+            //return execution.RequestId;
         }
 
         public static bool TryGetExecutionId(Dictionary<string, StringValues> headers, out Guid executionId)

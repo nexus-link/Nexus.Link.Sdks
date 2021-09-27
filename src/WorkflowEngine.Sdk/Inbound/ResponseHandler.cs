@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Serialization;
 using Nexus.Link.WorkflowEngine.Sdk.Inbound.RespondAsync.Logic;
@@ -30,14 +31,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
         /// <inheritdoc />
         public override Task AddResponse(RequestData requestData, ResponseData responseData)
         {
-            if (responseData != null)
-            {
-                var success = RespondAsyncFilterSupport.TryGetExecutionId(requestData.Headers, out var executionId);
-                FulcrumAssert.IsTrue(success, CodeLocation.AsString());
-                // Serialize the response and make it available to the caller
-                AsyncMgmtCapability.Response.CreateResponse(executionId.ToString(), responseData.BodyAsString);
-            }
-            return Task.CompletedTask;
+            throw new FulcrumNotImplementedException(nameof(AddResponse));
+            //if (responseData != null)
+            //{
+            //    var success = RespondAsyncFilterSupport.TryGetExecutionId(requestData.Headers, out var executionId);
+            //    FulcrumAssert.IsTrue(success, CodeLocation.AsString());
+            //    // Serialize the response and make it available to the caller
+            //    AsyncMgmtCapability.Response.CreateResponse(executionId.ToString(), responseData.BodyAsString);
+            //}
+            //return Task.CompletedTask;
         }
     }
 }
