@@ -23,11 +23,9 @@ namespace Nexus.Link.AsyncManager.Sdk
         /// </summary>
         /// <param name="tenant"></param>
         /// <param name="httpSender">The sender that will be used for posting the request to the async request manager.</param>
-        /// <param name="baseUrl">The base URL where requests can be sent.</param>
-        public AsyncRequestClient(Tenant tenant, IHttpSender httpSender, string baseUrl)
+        /// 
+        public AsyncRequestClient(Tenant tenant, IHttpSender httpSender)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(baseUrl, nameof(baseUrl));
-            InternalContract.Require(HttpHelper.IsValidUri(baseUrl), $"The parameter {nameof(baseUrl)} must be a valid URL: {baseUrl}");
             InternalContract.RequireNotNull(httpSender, nameof(httpSender));
 
             _httpSender = httpSender;
