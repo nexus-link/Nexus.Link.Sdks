@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public abstract class WorkflowVersion<TResponse>
     {
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
         public int MajorVersion { get; }
         public int MinorVersion { get; }
         private WorkflowInformation _workflowInformation;

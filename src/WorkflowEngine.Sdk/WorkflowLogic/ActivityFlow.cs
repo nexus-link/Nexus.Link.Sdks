@@ -11,14 +11,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     internal class ActivityFlow : IActivityFlow
     {
         private readonly WorkflowInformation _workflowInformation;
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
         private readonly string _activityFormId;
         private MethodHandler _methodHandler;
         private readonly string _formTitle;
         private Activity _parent;
         private Activity _previous;
 
-        public ActivityFlow(IWorkflowCapabilityForClient workflowCapability, WorkflowInformation workflowInformation, string formTitle, string activityFormId)
+        public ActivityFlow(IWorkflowCapability workflowCapability, WorkflowInformation workflowInformation, string formTitle, string activityFormId)
         {
             _workflowInformation = workflowInformation;
             _workflowCapability = workflowCapability;

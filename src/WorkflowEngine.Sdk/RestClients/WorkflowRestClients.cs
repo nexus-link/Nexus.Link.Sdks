@@ -4,7 +4,7 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
-    public class WorkflowRestClients : IWorkflowCapabilityForClient
+    public class WorkflowRestClients : IWorkflowCapability
     {
         public WorkflowRestClients(IHttpSender httpSender)
         {

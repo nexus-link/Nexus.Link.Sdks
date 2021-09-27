@@ -10,9 +10,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
     public class WorkflowInformation
     {
         public MethodHandler MethodHandler { get; }
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
 
-        public WorkflowInformation(IWorkflowCapabilityForClient workflowCapability, MethodHandler methodHandler)
+        public WorkflowInformation(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
         {
             MethodHandler = methodHandler;
             _workflowCapability = workflowCapability;

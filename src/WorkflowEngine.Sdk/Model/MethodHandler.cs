@@ -96,7 +96,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             _arguments.Add(parameter.Name, argument);
         }
 
-        public async Task PersistWorkflowParametersAsync(IWorkflowCapabilityForClient capability, string workflowFormId, CancellationToken cancellationToken)
+        public async Task PersistWorkflowParametersAsync(IWorkflowCapability capability, string workflowFormId, CancellationToken cancellationToken)
         {
             foreach (var methodParameter in _parameters)
             {
@@ -119,7 +119,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             }
         }
 
-        public async Task PersistActivityParametersAsync(IWorkflowCapabilityForClient capability, string workflowFormId, CancellationToken cancellationToken)
+        public async Task PersistActivityParametersAsync(IWorkflowCapability capability, string workflowFormId, CancellationToken cancellationToken)
         {
             foreach (var methodParameter in _parameters)
             {

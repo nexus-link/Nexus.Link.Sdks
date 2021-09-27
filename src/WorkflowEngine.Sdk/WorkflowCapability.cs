@@ -6,7 +6,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Services;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
-    public class WorkflowCapability : IWorkflowCapabilityForServer
+    public class WorkflowCapability : IWorkflowCapability
     {
         public WorkflowCapability(IAsyncRequestMgmtCapability asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
         {

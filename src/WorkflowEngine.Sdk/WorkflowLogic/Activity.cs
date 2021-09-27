@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public abstract class Activity
     {
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
 
         public ActivityInformation ActivityInformation { get; }
         public Activity ParentActivity { get; protected set; }
@@ -60,7 +60,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public List<int> Iterations { get; } = new List<int>();
 
-        protected Activity(IWorkflowCapabilityForClient workflowCapability,
+        protected Activity(IWorkflowCapability workflowCapability,
             ActivityInformation activityInformation,
             Activity previousActivity,
             Activity parentActivity)

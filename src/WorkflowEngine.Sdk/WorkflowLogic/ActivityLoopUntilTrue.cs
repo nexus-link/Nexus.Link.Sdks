@@ -15,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public readonly Dictionary<int, string> IterationDescriptions = new Dictionary<int, string>();
         public bool? EndLoop { get; set; }
 
-        public ActivityLoopUntilTrue(IWorkflowCapabilityForClient workflowCapability,
+        public ActivityLoopUntilTrue(IWorkflowCapability workflowCapability,
             ActivityInformation activityInformation, 
             Activity previousActivity, Activity parentActivity)
             : base(workflowCapability, activityInformation, previousActivity, parentActivity)

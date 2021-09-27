@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public object Result { get; set; }
 
-        public ActivityForEachParallel(IWorkflowCapabilityForClient workflowCapability,
+        public ActivityForEachParallel(IWorkflowCapability workflowCapability,
             ActivityInformation activityInformation, IEnumerable<TItemType> items,
             Activity previousActivity, Activity parentActivity)
             : base(workflowCapability, activityInformation, previousActivity, parentActivity)

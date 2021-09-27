@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
     public class ActivityInformation
     {
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
         private readonly WorkflowInformation _workflowInformation;
         public MethodHandler MethodHandler { get; }
         public WorkflowActivityTypeEnum ActivityType { get; }
@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public string NestedPosition { get; set; }
         public string NestedPositionAndTitle => $"{NestedPosition} {FormTitle}";
 
-        public ActivityInformation(IWorkflowCapabilityForClient workflowCapability,
+        public ActivityInformation(IWorkflowCapability workflowCapability,
             WorkflowInformation workflowInformation, MethodHandler methodHandler, int position,
             WorkflowActivityTypeEnum activityType,
             ActivityInformation previousActivity, ActivityInformation parentActivity)

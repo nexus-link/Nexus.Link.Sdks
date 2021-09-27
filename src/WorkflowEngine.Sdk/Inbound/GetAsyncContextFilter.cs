@@ -22,9 +22,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {
     public class GetAsyncContextFilter : IAsyncActionFilter
     {
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
 
-        public GetAsyncContextFilter(IWorkflowCapabilityForClient workflowCapability)
+        public GetAsyncContextFilter(IWorkflowCapability workflowCapability)
         {
             _workflowCapability = workflowCapability;
         }
@@ -66,9 +66,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
     /// </summary>
     public class GetAsyncContextFilterConfigureOptions : IConfigureOptions<MvcOptions>
     {
-        private readonly IWorkflowCapabilityForClient _workflowCapability;
+        private readonly IWorkflowCapability _workflowCapability;
 
-        public GetAsyncContextFilterConfigureOptions(IWorkflowCapabilityForClient workflowCapability)
+        public GetAsyncContextFilterConfigureOptions(IWorkflowCapability workflowCapability)
         {
             _workflowCapability = workflowCapability;
         }

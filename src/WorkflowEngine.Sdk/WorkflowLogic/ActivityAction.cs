@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityAction : Activity
     {
-        public ActivityAction(IWorkflowCapabilityForClient workflowCapability, ActivityInformation activityInformation, 
+        public ActivityAction(IWorkflowCapability workflowCapability, ActivityInformation activityInformation, 
             Activity previousActivity, Activity parentActivity)
             :base(workflowCapability, activityInformation, previousActivity, parentActivity)
         {

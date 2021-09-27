@@ -9,14 +9,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class WorkflowVersionCollection : IWorkflowVersionCollection
     {
-        public IWorkflowCapabilityForClient Capability { get; }
+        public IWorkflowCapability Capability { get; }
         private readonly Dictionary<int, object> _versions = new Dictionary<int, object>();
 
         public string WorkflowCapabilityName { get; private set; }
         public string WorkflowFormId { get; set; }
         public string WorkflowFormTitle { get; set; }
 
-        protected WorkflowVersionCollection(IWorkflowCapabilityForClient workflowCapability)
+        protected WorkflowVersionCollection(IWorkflowCapability workflowCapability)
         {
             Capability = workflowCapability;
         }
