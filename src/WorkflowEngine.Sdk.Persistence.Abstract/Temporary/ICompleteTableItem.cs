@@ -1,7 +1,7 @@
 ﻿using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.Libraries.SqlServer.Model;
 
-namespace WorkflowEngine.Persistence.Abstract.Temporary
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary
 {
     /// <summary>
     /// The interfaces we expect from a database table item.

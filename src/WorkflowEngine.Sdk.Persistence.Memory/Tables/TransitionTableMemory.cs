@@ -1,9 +1,9 @@
 ﻿using System;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
-using WorkflowEngine.Persistence.Abstract.Entities;
-using WorkflowEngine.Persistence.Abstract.Tables;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
-namespace WorkflowEngine.Persistence.Memory.Tables
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class TransitionTableMemory : ManyToOneMemory<TransitionRecordCreate, TransitionRecord, Guid>, ITransitionTable
     {

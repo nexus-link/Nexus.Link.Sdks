@@ -1,8 +1,8 @@
-﻿using WorkflowEngine.Persistence.Abstract;
-using WorkflowEngine.Persistence.Abstract.Tables;
-using WorkflowEngine.Persistence.Memory.Tables;
+﻿using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables;
 
-namespace WorkflowEngine.Persistence.Memory
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
 {
     public class RuntimeTablesMemory : IRuntimeTables
     {

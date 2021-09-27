@@ -1,6 +1,6 @@
-﻿using WorkflowEngine.Persistence.Abstract.Tables;
+﻿using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
-namespace WorkflowEngine.Persistence.Abstract
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract
 {
     public interface IRuntimeTables
     {

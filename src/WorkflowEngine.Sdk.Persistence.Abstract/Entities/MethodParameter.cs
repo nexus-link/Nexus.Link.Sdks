@@ -1,9 +1,9 @@
 ﻿using System;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
-using WorkflowEngine.Persistence.Abstract.Temporary;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
-namespace WorkflowEngine.Persistence.Abstract.Entities
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 {
     public class MethodParameterRecord : MethodParameterRecordCreate, ICompleteTableItem
     {

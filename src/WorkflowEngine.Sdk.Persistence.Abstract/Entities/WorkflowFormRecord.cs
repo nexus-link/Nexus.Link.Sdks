@@ -1,8 +1,8 @@
 ﻿using System;
 using Nexus.Link.Libraries.Core.Assert;
-using WorkflowEngine.Persistence.Abstract.Temporary;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
-namespace WorkflowEngine.Persistence.Abstract.Entities
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 {
     public class WorkflowFormRecord : WorkflowFormRecordCreate, ICompleteTableItem
     {

@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 
-namespace WorkflowEngine.Persistence.Abstract.Temporary
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary
 {
     /// <summary>
     /// Helper class for classes that implements <see cref="ICompleteTableItem"/>.
