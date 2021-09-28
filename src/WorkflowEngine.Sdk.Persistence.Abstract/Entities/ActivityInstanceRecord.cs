@@ -20,11 +20,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public DateTimeOffset? FinishedAt { get; set; }
 
-        public string Output { get; set; }
+        public bool HasCompleted { get; set; }
+
+        public string ResultAsJson { get; set; }
 
         public string ExceptionType { get; set; }
 
         public string ExceptionMessage { get; set; }
+
+        public string AsyncRequestId { get; set; }
 
         /// <inheritdoc />
         public override void Validate(string errorLocation, string propertyPath = "")

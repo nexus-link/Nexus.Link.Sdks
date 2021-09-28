@@ -35,22 +35,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         // TODO: Should be nullable instead of relying on value 0
         public int Iteration { get; protected set; }
 
-        public string Identifier
-        {
-            get
-            {
-                if (!Iterations.Any()) return ActivityInformation.FormId;
-                var iterations = string.Join(",", Iterations);
-                return $"{ActivityInformation.FormId}[{iterations}]";
-            }
-        }
+        public string Identifier => ActivityInformation.InstanceId;
 
         public string Title
         {
             get
             {
-                if (!Iterations.Any()) return ActivityInformation.NestedPositionAndTitle;
-                var iterations = string.Join(",", Iterations);
+                if (!NestedIterations.Any()) return ActivityInformation.NestedPositionAndTitle;
+                var iterations = string.Join(",", NestedIterations);
                 return $"{ActivityInformation.NestedPositionAndTitle} [{iterations}]";
             }
         }
@@ -58,13 +50,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         /// <inheritdoc />
         public override string ToString() => Title;
 
-        public List<int> Iterations { get; } = new List<int>();
+        public List<int> NestedIterations { get; } = new();
 
         protected Activity(IWorkflowCapability workflowCapability,
             ActivityInformation activityInformation,
             Activity previousActivity,
             Activity parentActivity)
         {
+            InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
+
             _workflowCapability = workflowCapability;
             ActivityInformation = activityInformation;
             PreviousActivity = previousActivity;
@@ -73,10 +67,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             activityInformation.MethodHandler.InstanceTitle = activityInformation.NestedPositionAndTitle;
             if (ParentActivity != null)
             {
-                Iterations.AddRange(ParentActivity.Iterations);
+                NestedIterations.AddRange(ParentActivity.NestedIterations);
                 if (ParentActivity.Iteration > 0)
                 {
-                    Iterations.Add(ParentActivity.Iteration);
+                    NestedIterations.Add(ParentActivity.Iteration);
                 }
             }
         }
@@ -106,27 +100,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             // TODO: Create/update LatestRequest in DB
             // TODO: Create/update Arguments in DB
-            SubRequest subRequest = null;
-            var context = AsyncWorkflowStatic.Context.AsyncExecutionContext;
+            //SubRequest subRequest = null;
+            //var context = AsyncWorkflowStatic.Context.AsyncExecutionContext;
             try
             {
-                // Already have a result?
-                if (ignoreReturnValue)
-                {
-                    if (TryGetSavedResult(context, out subRequest))
-                    {
-                        return default;
-                    }
-                }
-                else
-                {
-                    if (TryGetSavedResult(context, out subRequest, out TMethodReturnType savedResult))
-                    {
-                        return savedResult;
-                    }
-                }
-
+                // Find existing or create new
                 await ActivityInformation.PersistAsync(cancellationToken);
+
+                // Already have a result?
+                if (ActivityInformation.HasCompleted)
+                {
+                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
+                }
+                if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
+                {
+                    // TODO: Try to read it from AM
+                    throw new PostponeException(ActivityInformation.AsyncRequestId);
+                }
 
                 // Call the activity
                 var result = default(TMethodReturnType);
@@ -178,10 +168,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
         }
 
+        private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult)
+        {
+            if (!string.IsNullOrWhiteSpace(ActivityInformation.Result.ExceptionType))
+            {
+                // TODO: SubRequestException should take something like an ActivityResult
+                throw new SubRequestException(new SubRequest("TODO"));
+            }
+
+            if (ignoreResult) return default;
+
+            return JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
+        }
+
         public virtual string IdentifierIndex => "";
 
-        protected bool TryGetSavedResult<T>(AsyncExecutionContext context,
-            out SubRequest subRequest, out T result)
+
+
+        protected bool TryGetSavedResult<T>(AsyncExecutionContext context, out SubRequest subRequest, out T result)
         {
             result = default;
             if (!TryGetSavedResult(context, out subRequest)) return false;
@@ -189,8 +193,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return true;
         }
 
-        protected bool TryGetSavedResult(AsyncExecutionContext context,
-            out SubRequest subRequest)
+        protected bool TryGetSavedResult(AsyncExecutionContext context, out SubRequest subRequest)
         {
             lock (context.SubRequests)
             {

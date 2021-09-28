@@ -41,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 
             // Send the request to AM
             var requestId = await _asyncRequestClient
-                .CreateRequest(request.Method, request.RequestUri.AbsoluteUri.ToString(), 0.5)
+                .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
                 .AddHeaders(request.Headers)
                 .SendAsync(cancellationToken);
             // TODO: Set callback

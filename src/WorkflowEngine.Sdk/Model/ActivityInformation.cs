@@ -1,9 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Model
@@ -30,6 +32,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public string FormTitle { get; set; }
         public string NestedPosition { get; set; }
         public string NestedPositionAndTitle => $"{NestedPosition} {FormTitle}";
+        public ActivityResult Result { get; set; } = new();
+        public string AsyncRequestId { get; set; }
 
         public ActivityInformation(IWorkflowCapability workflowCapability,
             WorkflowInformation workflowInformation, MethodHandler methodHandler, int position,
@@ -45,6 +49,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             ParentActivity = parentActivity;
             NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
         }
+
+        public bool HasCompleted => Result?.Json != null || Result?.ExceptionType != null;
 
         /// <inheritdoc />
         public override string ToString() => $"{_workflowInformation.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({FormId})";
@@ -82,7 +88,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task<string> PersistActivityInstance(CancellationToken cancellationToken)
         {
-            var workflowInstanceId= _workflowInformation.InstanceId;
             var findUnique = new ActivityInstanceUnique
             {
                 WorkflowInstanceId = _workflowInformation.InstanceId,
@@ -90,8 +95,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 ParentActivityInstanceId = ParentActivity?.InstanceId,
                 Iteration = Iteration
             };
-            var activityInstance =
-                await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
+            var activityInstance = await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {
                 var createItem = new ActivityInstanceCreate()
@@ -109,13 +113,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 catch (FulcrumConflictException)
                 {
                     // This is OK. Another thread has created the same Id after we did the read above.
-                    activityInstance =
-                        await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
+                    activityInstance = await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
                     FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
                     return activityInstance.Id;
                 }
             }
 
+            Result.ExceptionType = activityInstance.ExceptionType;
+            Result.ExceptionMessage = activityInstance.ExceptionMessage;
+            Result.Json = activityInstance.ResultAsJson;
+            AsyncRequestId = activityInstance.AsyncRequestId;
+            
             return activityInstance.Id;
         }
 

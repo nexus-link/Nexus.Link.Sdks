@@ -36,10 +36,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             ((ActivityInstanceRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
-            target.Output = source.Output;
+            target.HasCompleted = source.HasCompleted;
+            target.ResultAsJson = source.ResultAsJson;
             target.ExceptionType = source.ExceptionType;
             target.ExceptionMessage = source.ExceptionMessage;
             target.FinishedAt = source.FinishedAt;
+            target.AsyncRequestId = source.AsyncRequestId;
             return target;
         }
 
@@ -58,10 +60,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Iteration = source.Iteration;
             target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
-            target.Output = source.Output;
+            target.ResultAsJson = source.ResultAsJson;
             target.ExceptionType = source.ExceptionType;
             target.ExceptionMessage = source.ExceptionMessage;
             target.FinishedAt = source.FinishedAt;
+            target.AsyncRequestId = source.AsyncRequestId;
             return target;
         }
         
