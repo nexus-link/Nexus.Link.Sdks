@@ -123,30 +123,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 if (ignoreReturnValue)
                 {
                     await method(this, cancellationToken);
-                    subRequest.ResultValueAsJson = "";
+                    ActivityInformation.Result.Json = "";
                 }
                 else
                 {
                     result = await method(this, cancellationToken);
-                    subRequest.ResultValueAsJson = result.ToJsonString();
+                    ActivityInformation.Result.Json = result.ToJsonString();
                 }
-
-                subRequest.Description = Title;
-                subRequest.HasCompleted = true;
-                // TODO: Save the subRequest
-                // await e.AsyncMgmtCapability.Context.AddSubRequestAsync(context.ExecutionId.ToString(), _workflowActivity.Id, subRequest, cancellationToken);
-                // TODO: Update the DB ActivityInstance with FinishedAt
-                // TODO: Create/update LatestResponse in DB
+                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
             catch (PostponeException e)
             {
                 if (e.RequestId == null) throw;
-                FulcrumAssert.IsNotNull(subRequest, CodeLocation.AsString());
-                subRequest!.RequestId = e.RequestId.Value;
-                FulcrumAssert.IsNotNullOrWhiteSpace(ActivityInformation.FormTitle);
-                subRequest.Description = Title;
-                await _workflowCapability.AsyncContext.AddSubRequestAsync(context.ExecutionId.ToString(), Identifier, subRequest, cancellationToken);
+                ActivityInformation.AsyncRequestId = e.RequestId;
+                await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
                 throw new FulcrumAcceptedException();
             }
             catch (SubRequestException)
@@ -159,12 +150,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (Exception e)
             {
-                // TODO: Smart error handling
-                if (subRequest == null) throw;
-
-                subRequest.ExceptionTypeName = e.GetType().FullName;
-                subRequest.HasCompleted = true;
-                throw new SubRequestException(subRequest);
+                ActivityInformation.Result.ExceptionType = e.GetType().FullName;
+                ActivityInformation.Result.ExceptionMessage = e.Message;
+                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                throw new SubRequestException(new SubRequest("TODO"));
             }
         }
 
@@ -179,43 +168,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             if (ignoreResult) return default;
 
             return JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
-        }
-
-        public virtual string IdentifierIndex => "";
-
-
-
-        protected bool TryGetSavedResult<T>(AsyncExecutionContext context, out SubRequest subRequest, out T result)
-        {
-            result = default;
-            if (!TryGetSavedResult(context, out subRequest)) return false;
-            result = subRequest.ResultValueAsJson == null ? default : JsonConvert.DeserializeObject<T>(subRequest.ResultValueAsJson);
-            return true;
-        }
-
-        protected bool TryGetSavedResult(AsyncExecutionContext context, out SubRequest subRequest)
-        {
-            lock (context.SubRequests)
-            {
-                if (context.SubRequests.ContainsKey(Identifier))
-                {
-                    subRequest = context.SubRequests[Identifier];
-                    if (!subRequest.HasCompleted) throw new PostponeException();
-                    if (subRequest.HasFailed) throw new SubRequestException(subRequest);
-                    return true;
-                }
-
-                subRequest = new SubRequest(Identifier);
-                // TODO Double?
-                //context.SubRequests.Add(identifier, subRequest);
-            }
-
-            return false;
-        }
-
-        public TParameter GetArgument<TParameter>(string parameterName)
-        {
-            return ActivityInformation.MethodHandler.GetArgument<TParameter>(parameterName);
         }
     }
 }

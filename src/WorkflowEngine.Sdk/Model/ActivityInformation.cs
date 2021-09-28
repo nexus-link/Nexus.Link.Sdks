@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
@@ -50,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
         }
 
-        public bool HasCompleted => Result?.Json != null || Result?.ExceptionType != null;
+        public bool HasCompleted;
 
         /// <inheritdoc />
         public override string ToString() => $"{_workflowInformation.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({FormId})";
@@ -122,6 +123,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             Result.ExceptionType = activityInstance.ExceptionType;
             Result.ExceptionMessage = activityInstance.ExceptionMessage;
             Result.Json = activityInstance.ResultAsJson;
+            HasCompleted = activityInstance.HasCompleted;
             AsyncRequestId = activityInstance.AsyncRequestId;
             
             return activityInstance.Id;
@@ -212,6 +214,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     }
                 }
             }
+        }
+
+        public async Task UpdateInstanceWithResultAsync(CancellationToken cancellationToken)
+        {
+            HasCompleted = true;
+            var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+            item.ResultAsJson = Result.Json;
+            item.ExceptionType = Result.ExceptionType;
+            item.ExceptionMessage = Result.ExceptionMessage;
+            item.HasCompleted = HasCompleted;
+            item.FinishedAt = DateTimeOffset.UtcNow;
+            await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+        }
+
+        public async Task UpdateInstanceWithRequestIdAsync(CancellationToken cancellationToken)
+        {
+            var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+            item.AsyncRequestId = AsyncRequestId;
+            await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
         }
     }
 }

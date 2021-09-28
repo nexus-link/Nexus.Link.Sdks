@@ -45,9 +45,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 .AddHeaders(request.Headers)
                 .SendAsync(cancellationToken);
             // TODO: Set callback
-            // TODO: Save the request id so we can get the response later.
-            // TODO: PostponeException should take string
-            throw new PostponeException(MapperHelper.MapToType<Guid, string>(requestId));
+            throw new PostponeException(requestId);
         }
     }
 }
