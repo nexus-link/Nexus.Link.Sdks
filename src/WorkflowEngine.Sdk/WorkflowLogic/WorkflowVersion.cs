@@ -69,6 +69,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
+            AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
             return await ExecuteWorkflowAsync(cancellationToken);
         }
 
