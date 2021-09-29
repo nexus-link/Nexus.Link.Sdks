@@ -1,6 +1,9 @@
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -8,12 +11,10 @@ using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 
-namespace Nexus.Link.AsyncManager.Sdk
+namespace Nexus.Link.AsyncManager.Sdk.RestClients
 {
-    /// <summary>
-    /// A client for using an async request management capability.
-    /// </summary>
-    public class AsyncRequestClient : IAsyncRequestClient
+    /// <inheritdoc />
+    public class RequestRestClient : IRequestService
     {
         private readonly IHttpSender _httpSender;
         private readonly Tenant _tenant;
@@ -21,30 +22,19 @@ namespace Nexus.Link.AsyncManager.Sdk
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="tenant"></param>
-        /// <param name="httpSender">The sender that will be used for posting the request to the async request manager.</param>
-        /// 
-        public AsyncRequestClient(Tenant tenant, IHttpSender httpSender)
+        public RequestRestClient(IHttpSender httpSender)
         {
-            InternalContract.RequireNotNull(httpSender, nameof(httpSender));
-
+            _tenant = FulcrumApplication.Setup.Tenant;
             _httpSender = httpSender;
-            _tenant = tenant;
         }
 
         /// <inheritdoc />
-        public AsyncHttpRequest CreateRequest(HttpMethod method, string url, double priority)
-        {
-            return new AsyncHttpRequest(this, method, url, priority);
-        }
-
-        /// <inheritdoc />
-        public async Task<string> SendRequestAsync(AsyncHttpRequest request, CancellationToken cancellationToken = default)
+        public async Task<string> CreateAsync(HttpRequestCreate request, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(request, nameof(request));
             InternalContract.RequireValidated(request, nameof(request));
 
-            var result = await _httpSender.SendRequestAsync<string, AsyncHttpRequest>(HttpMethod.Post,
+            var result = await _httpSender.SendRequestAsync<string, HttpRequestCreate>(HttpMethod.Post,
                 $"api/v1/Tenant/{_tenant.Organization}/{_tenant.Environment}/Requests", request, null, cancellationToken);
             //Should we really do asserts here? If result.IsSuccessStatusCode is false we'll throw a FulcrumAssertionFailedException with the message 'Expected value to be true'. Feels bad man.
 
@@ -57,18 +47,6 @@ namespace Nexus.Link.AsyncManager.Sdk
             }
 
             return result.Body;
-        }
-
-        /// <summary>
-        /// Get the final response if it exists, otherwise null.
-        /// </summary>
-        public async Task<AsyncHttpResponse> GetFinalResponseAsync(string requestId, CancellationToken cancellationToken = default)
-        {
-            var result = await _httpSender.SendRequestAsync<AsyncHttpResponse, object>(HttpMethod.Get, $"api/v1/Tenant/{_tenant.Organization}/{_tenant.Environment}/Requests/{requestId}/Response", cancellationToken: cancellationToken);
-            var response = result.Body;
-            if (response == null) return null;
-            FulcrumAssert.IsValidated(response, CodeLocation.AsString());
-            return !response.HasCompleted ? null : response;
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Application;
@@ -11,36 +9,18 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 
-namespace Nexus.Link.AsyncManager.Sdk
+namespace Nexus.Link.AsyncManager.Sdk.RestClients
 {
-    /// <inheritdoc />
-    public class AsyncRequestMgmtRestClients : IAsyncRequestMgmtCapability
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public AsyncRequestMgmtRestClients(HttpSender httpSender)
-        {
-            Request = new RequestRestClient(httpSender);
-            RequestResponse = new RequestResponseRestClient(httpSender);
-        }
-        /// <inheritdoc />
-        public IRequestService Request { get; }
-
-        /// <inheritdoc />
-        public IRequestResponseService RequestResponse { get; }
-    }
-
     /// <inheritdoc />
     public class RequestResponseRestClient : IRequestResponseService
     {
-        private readonly HttpSender _httpSender;
+        private readonly IHttpSender _httpSender;
         private readonly Tenant _tenant;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public RequestResponseRestClient(HttpSender httpSender)
+        public RequestResponseRestClient(IHttpSender httpSender)
         {
             _tenant = FulcrumApplication.Setup.Tenant;
             _httpSender = httpSender;
