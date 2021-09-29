@@ -71,6 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var done = false;
             while (!done)
             {
+                Iteration++;
                 done = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
             }
         }
@@ -82,13 +83,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var loop = instance as ActivityLoopUntilTrue;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
             return method(loop, cancellationToken);
-        }
-
-        public Task IterationAsync(string description)
-        {
-            Iteration++;
-            IterationDescriptions[Iteration] = description;
-            return Task.CompletedTask;
         }
 
         private readonly Dictionary<string, object> _loopArguments = new Dictionary<string, object>();

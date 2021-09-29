@@ -26,7 +26,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public WorkflowActivityTypeEnum ActivityType { get; }
         public ActivityInformation PreviousActivity { get; }
         public ActivityInformation ParentActivity { get; }
-        public int? Iteration { get; }
+        public int? Iteration { get; set; }
         public string FormId { get; set; }
         public string VersionId { get; set; }
         public string InstanceId { get; set; }

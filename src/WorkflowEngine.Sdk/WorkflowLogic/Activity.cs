@@ -35,7 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public Activity ParentActivity { get; protected set; }
         public Activity PreviousActivity { get; }
         // TODO: Should be nullable instead of relying on value 0
-        public int Iteration { get; protected set; }
+        public int? Iteration { get; protected set; }
 
         public string Identifier => ActivityInformation.InstanceId;
 
@@ -72,9 +72,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             if (ParentActivity != null)
             {
                 NestedIterations.AddRange(ParentActivity.NestedIterations);
-                if (ParentActivity.Iteration > 0)
+                if (ParentActivity.Iteration is > 0)
                 {
-                    NestedIterations.Add(ParentActivity.Iteration);
+                    NestedIterations.Add(ParentActivity.Iteration.Value);
                 }
             }
         }
@@ -105,6 +105,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             try
             {
                 // Find existing or create new
+                ActivityInformation.Iteration = Iteration;
                 await ActivityInformation.PersistAsync(cancellationToken);
 
                 // Already have a result?

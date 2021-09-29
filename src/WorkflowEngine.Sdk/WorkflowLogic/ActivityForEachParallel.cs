@@ -71,6 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var taskList = new List<Task>();
             foreach (var item in Items)
             {
+                Iteration++;
                 var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
                     cancellationToken);
                 taskList.Add(task);
@@ -87,13 +88,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var loop = instance as ActivityForEachParallel<TItemType>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
             return method(item, loop, cancellationToken);
-        }
-
-        public Task IterationAsync(string description)
-        {
-            Iteration++;
-            IterationDescriptions[Iteration] = description;
-            return Task.CompletedTask;
         }
     }
 }
