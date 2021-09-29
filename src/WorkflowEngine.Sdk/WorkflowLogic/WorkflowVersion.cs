@@ -4,6 +4,8 @@ using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
@@ -61,8 +63,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             _workflowInformation.InstanceTitle = GetInstanceTitle();
             _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
-            var executionIdAsGuid = AsyncWorkflowStatic.Context.AsyncExecutionContext.ExecutionId;
-            _workflowInformation.InstanceId = executionIdAsGuid.ToString();
+            if (string.IsNullOrWhiteSpace(AsyncWorkflowStatic.Context.WorkflowInstanceId))
+            {
+                throw new FulcrumNotImplementedException($"Currently all workflows must be called via AsyncManager, because they are dependent on the request header {Constants.ExecutionIdHeaderName}.");
+            }
+            _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
             return await ExecuteWorkflowAsync(cancellationToken);
         }
