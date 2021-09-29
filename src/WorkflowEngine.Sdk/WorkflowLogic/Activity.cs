@@ -147,10 +147,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
                 throw new FulcrumAcceptedException();
             }
-            catch (SubRequestException e)
+            catch (ActivityException)
             {
-                // TODO: Update ActivityInformation.ExceptionType, etc
-                // TODO: e.ExceptionType, e.ExceptionMessage
                 throw;
             }
             catch (FulcrumAcceptedException)
@@ -162,7 +160,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 ActivityInformation.Result.ExceptionType = e.GetType().FullName;
                 ActivityInformation.Result.ExceptionMessage = e.Message;
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                throw new SubRequestException(new SubRequest("TODO")); // TODO: rename to ActivityException
+                throw new ActivityException(ActivityInformation.Result.ExceptionType,
+                    ActivityInformation.Result.ExceptionMessage);
             }
         }
 
@@ -170,8 +169,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             if (!string.IsNullOrWhiteSpace(ActivityInformation.Result.ExceptionType))
             {
-                // TODO: SubRequestException should take something like an ActivityResult
-                throw new SubRequestException(new SubRequest("TODO"));
+                throw new ActivityException(ActivityInformation.Result.ExceptionType,
+                    ActivityInformation.Result.ExceptionMessage);
             }
 
             if (ignoreResult) return default;
