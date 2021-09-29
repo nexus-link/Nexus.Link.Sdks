@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
@@ -28,6 +29,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public abstract class Activity
     {
         private readonly IWorkflowCapability _workflowCapability;
+        private readonly IAsyncRequestClient _asyncRequestClient;
 
         public ActivityInformation ActivityInformation { get; }
         public Activity ParentActivity { get; protected set; }
@@ -53,6 +55,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public List<int> NestedIterations { get; } = new();
 
         protected Activity(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
             ActivityInformation activityInformation,
             Activity previousActivity,
             Activity parentActivity)
@@ -60,6 +63,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
             _workflowCapability = workflowCapability;
+            _asyncRequestClient = asyncRequestClient;
             ActivityInformation = activityInformation;
             PreviousActivity = previousActivity;
             ParentActivity = parentActivity;
@@ -114,8 +118,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 }
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
-                    // TODO: Try to read it from AM
-                    throw new PostponeException(ActivityInformation.AsyncRequestId);
+                    var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
+                    if (response == null) throw new PostponeException();
+                    ActivityInformation.Result.Json = response.Content;
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
 
                 // Call the activity
@@ -140,8 +147,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
                 throw new FulcrumAcceptedException();
             }
-            catch (SubRequestException)
+            catch (SubRequestException e)
             {
+                // TODO: Update ActivityInformation.ExceptionType, etc
+                // TODO: e.ExceptionType, e.ExceptionMessage
                 throw;
             }
             catch (FulcrumAcceptedException)
@@ -153,7 +162,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 ActivityInformation.Result.ExceptionType = e.GetType().FullName;
                 ActivityInformation.Result.ExceptionMessage = e.Message;
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                throw new SubRequestException(new SubRequest("TODO"));
+                throw new SubRequestException(new SubRequest("TODO")); // TODO: rename to ActivityException
             }
         }
 
