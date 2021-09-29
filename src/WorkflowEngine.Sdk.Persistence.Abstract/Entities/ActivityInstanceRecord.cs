@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public string ResultAsJson { get; set; }
 
-        public string ExceptionType { get; set; }
+        public string ExceptionName { get; set; }
 
         public string ExceptionMessage { get; set; }
 

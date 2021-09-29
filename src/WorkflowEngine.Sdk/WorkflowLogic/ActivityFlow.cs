@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic

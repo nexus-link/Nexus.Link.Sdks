@@ -30,6 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
             
             var recordCreate = new ActivityInstanceRecordCreate().From(item);
+            recordCreate.StartedAt = DateTimeOffset.UtcNow;
             var childIdAsGuid = await _runtimeTables.ActivityInstance.CreateAsync(recordCreate, cancellationToken);
             var childId = MapperHelper.MapToType<string, Guid>(childIdAsGuid);
             return childId;

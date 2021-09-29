@@ -9,9 +9,8 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
 {
     public class MethodHandler
     {

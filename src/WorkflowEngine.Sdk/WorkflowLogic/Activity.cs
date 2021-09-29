@@ -102,10 +102,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             CancellationToken cancellationToken,
             bool ignoreReturnValue)
         {
-            // TODO: Create/update LatestRequest in DB
-            // TODO: Create/update Arguments in DB
-            //SubRequest subRequest = null;
-            //var context = AsyncWorkflowStatic.Context.AsyncExecutionContext;
             try
             {
                 // Find existing or create new
@@ -121,11 +117,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
                     if (response == null) throw new PostponeException();
                     ActivityInformation.Result.Json = response.Content;
+                    ActivityInformation.Result.ExceptionName = response.Exception.Name;
+                    ActivityInformation.Result.ExceptionMessage = response.Exception.Message;
                     await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                     return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
 
-                // Call the activity
+                // Call the activity. The method will only return if this is a
                 var result = default(TMethodReturnType);
                 if (ignoreReturnValue)
                 {
@@ -157,19 +155,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (Exception e)
             {
-                ActivityInformation.Result.ExceptionType = e.GetType().FullName;
+                ActivityInformation.Result.ExceptionName = e.GetType().FullName;
                 ActivityInformation.Result.ExceptionMessage = e.Message;
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                throw new ActivityException(ActivityInformation.Result.ExceptionType,
+                throw new ActivityException(ActivityInformation.Result.ExceptionName,
                     ActivityInformation.Result.ExceptionMessage);
             }
         }
 
         private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult)
         {
-            if (!string.IsNullOrWhiteSpace(ActivityInformation.Result.ExceptionType))
+            if (!string.IsNullOrWhiteSpace(ActivityInformation.Result.ExceptionName))
             {
-                throw new ActivityException(ActivityInformation.Result.ExceptionType,
+                throw new ActivityException(ActivityInformation.Result.ExceptionName,
                     ActivityInformation.Result.ExceptionMessage);
             }
 

@@ -38,8 +38,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Etag = source.Etag;
             target.HasCompleted = source.HasCompleted;
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionType = source.ExceptionType;
+            target.ExceptionName = source.ExceptionType;
             target.ExceptionMessage = source.ExceptionMessage;
+            target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;
             return target;
@@ -61,8 +62,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionType = source.ExceptionType;
+            target.ExceptionType = source.ExceptionName;
             target.ExceptionMessage = source.ExceptionMessage;
+            target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;
             return target;

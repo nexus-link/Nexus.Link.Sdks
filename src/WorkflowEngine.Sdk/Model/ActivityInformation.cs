@@ -8,6 +8,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
@@ -120,7 +121,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 }
             }
 
-            Result.ExceptionType = activityInstance.ExceptionType;
+            Result.ExceptionName = activityInstance.ExceptionType;
             Result.ExceptionMessage = activityInstance.ExceptionMessage;
             Result.Json = activityInstance.ResultAsJson;
             HasCompleted = activityInstance.HasCompleted;
@@ -221,7 +222,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             HasCompleted = true;
             var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
             item.ResultAsJson = Result.Json;
-            item.ExceptionType = Result.ExceptionType;
+            item.ExceptionType = Result.ExceptionName;
             item.ExceptionMessage = Result.ExceptionMessage;
             item.HasCompleted = HasCompleted;
             item.FinishedAt = DateTimeOffset.UtcNow;
