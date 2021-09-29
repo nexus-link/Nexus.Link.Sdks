@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -16,9 +17,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public bool? EndLoop { get; set; }
 
         public ActivityLoopUntilTrue(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
             ActivityInformation activityInformation, 
             Activity previousActivity, Activity parentActivity)
-            : base(workflowCapability, activityInformation, previousActivity, parentActivity)
+            : base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
@@ -87,15 +89,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Iteration++;
             IterationDescriptions[Iteration] = description;
             return Task.CompletedTask;
-        }
-
-        public override string IdentifierIndex
-        {
-            get
-            {
-                if (Iteration == 0) throw new FulcrumContractException($"A loop must have a call to {nameof(IterationAsync)} before any activities are executed.");
-                return $"({Iteration})";
-            }
         }
 
         private readonly Dictionary<string, object> _loopArguments = new Dictionary<string, object>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -10,9 +11,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityAction : Activity
     {
-        public ActivityAction(IWorkflowCapability workflowCapability, ActivityInformation activityInformation, 
+        public ActivityAction(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
+            ActivityInformation activityInformation, 
             Activity previousActivity, Activity parentActivity)
-            :base(workflowCapability, activityInformation, previousActivity, parentActivity)
+            :base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");

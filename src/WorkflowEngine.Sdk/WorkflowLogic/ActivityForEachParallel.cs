@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -18,9 +19,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
             ActivityInformation activityInformation, IEnumerable<TItemType> items,
             Activity previousActivity, Activity parentActivity)
-            : base(workflowCapability, activityInformation, previousActivity, parentActivity)
+            : base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
         {
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
@@ -92,15 +94,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Iteration++;
             IterationDescriptions[Iteration] = description;
             return Task.CompletedTask;
-        }
-
-        public override string IdentifierIndex
-        {
-            get
-            {
-                if (Iteration == 0) throw new FulcrumContractException($"A loop must have a call to {nameof(IterationAsync)} before any activities are executed.");
-                return $"({Iteration})";
-            }
         }
     }
 }

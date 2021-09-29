@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -10,15 +11,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class WorkflowVersionCollection : IWorkflowVersionCollection
     {
         public IWorkflowCapability Capability { get; }
+        public IAsyncRequestClient AsyncRequestClient { get; }
         private readonly Dictionary<int, object> _versions = new Dictionary<int, object>();
 
         public string WorkflowCapabilityName { get; private set; }
         public string WorkflowFormId { get; set; }
         public string WorkflowFormTitle { get; set; }
 
-        protected WorkflowVersionCollection(IWorkflowCapability workflowCapability)
+        protected WorkflowVersionCollection(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient)
         {
             Capability = workflowCapability;
+            AsyncRequestClient = asyncRequestClient;
         }
 
         protected WorkflowVersionCollection DefineWorkflow(string capabilityName, string workflowTitle, string workflowFormId)

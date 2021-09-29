@@ -69,5 +69,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var record = new ActivityInstanceRecord().From(item);
             await _runtimeTables.ActivityInstance.UpdateAsync(idAsGuid, record, cancellationToken);
         }
+
+        /// <inheritdoc />
+        public async Task<ActivityInstance> ReadAsync(string id, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            
+            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
+            if (record == null) return null;
+
+            var result = new ActivityInstance().From(record);
+            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return result;
+        }
     }
 }

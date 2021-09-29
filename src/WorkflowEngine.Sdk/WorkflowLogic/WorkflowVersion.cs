@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
@@ -16,12 +17,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private WorkflowInformation _workflowInformation;
         private readonly WorkflowVersionCollection _workflowVersionCollection;
         private readonly MethodHandler _methodHandler;
+        private readonly IAsyncRequestClient _asyncRequestClient;
 
         protected WorkflowVersion(int majorVersion, int minorVersion,
             WorkflowVersionCollection workflowVersionCollection)
         {
             _workflowVersionCollection = workflowVersionCollection;
             _workflowCapability = workflowVersionCollection.Capability;
+            _asyncRequestClient = workflowVersionCollection.AsyncRequestClient;
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             var methodHandler = new MethodHandler(_workflowVersionCollection.WorkflowFormTitle);
@@ -72,7 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            return new ActivityFlow(_workflowCapability, _workflowInformation, title, id);
+            return new ActivityFlow(_workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
         }
     }
 }

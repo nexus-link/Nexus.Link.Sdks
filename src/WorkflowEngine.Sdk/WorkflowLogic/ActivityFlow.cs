@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
@@ -12,16 +13,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly WorkflowInformation _workflowInformation;
         private readonly IWorkflowCapability _workflowCapability;
+        private readonly IAsyncRequestClient _asyncRequestClient;
         private readonly string _activityFormId;
         private MethodHandler _methodHandler;
         private readonly string _formTitle;
         private Activity _parent;
         private Activity _previous;
 
-        public ActivityFlow(IWorkflowCapability workflowCapability, WorkflowInformation workflowInformation, string formTitle, string activityFormId)
+        public ActivityFlow(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient, 
+            WorkflowInformation workflowInformation, string formTitle, string activityFormId)
         {
             _workflowInformation = workflowInformation;
             _workflowCapability = workflowCapability;
+            _asyncRequestClient = asyncRequestClient;
             _activityFormId = activityFormId;
             _formTitle = formTitle;
             _methodHandler = new MethodHandler(formTitle);
@@ -52,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(_workflowCapability, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
 
@@ -61,7 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(_workflowCapability, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
 
@@ -70,7 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.IfThenElse);
-            var activityInstance = new ActivityIf(_workflowCapability, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityIf(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
             return activityInstance.IfAsync(ifMethodAsync, cancellationToken);
         }
 
@@ -78,7 +83,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
-            var activityInstance = new ActivityLoopUntilTrue(_workflowCapability, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityLoopUntilTrue(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
             return activityInstance.ExecuteAsync<TMethodReturnType>(methodAsync, cancellationToken);
         }
 
@@ -87,7 +92,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItem, ActivityForEachParallel<TItem>, CancellationToken, Task> methodAsync, CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
-            var activityInstance = new ActivityForEachParallel<TItem>(_workflowCapability, activityInformation, items, _previous, _parent);
+            var activityInstance = new ActivityForEachParallel<TItem>(_workflowCapability, _asyncRequestClient, activityInformation, items, _previous, _parent);
             return activityInstance.ExecuteAsync(methodAsync, cancellationToken);
         }
 
