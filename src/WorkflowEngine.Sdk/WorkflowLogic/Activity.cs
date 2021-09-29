@@ -97,6 +97,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }, cancellationToken);
         }
 
+        public TParameter GetArgument<TParameter>(string parameterName)
+        {
+            return ActivityInformation.MethodHandler.GetArgument<TParameter>(parameterName);
+        }
+
         private async Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
             CancellationToken cancellationToken,
