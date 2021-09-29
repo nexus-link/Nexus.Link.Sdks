@@ -22,7 +22,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 
             if (TryGetExecutionId(context.HttpContext.Request, out var executionId))
             {
-                // We will use the executon id as our workflow instance id.
+                // We will use the execution id as our workflow instance id.
                 AsyncWorkflowStatic.Context.WorkflowInstanceId = executionId;
             }
 
