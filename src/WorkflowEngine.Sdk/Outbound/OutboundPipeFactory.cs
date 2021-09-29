@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
@@ -17,9 +19,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         /// <seealso cref="AddCorrelationId"/>
         /// <seealso cref="LogRequestAndResponse"/>
         /// <returns>A list of recommended handlers.</returns>
-        public static DelegatingHandler[] CreateDelegatingHandlers()
+        public static DelegatingHandler[] CreateDelegatingHandlers(IAsyncRequestClient asyncRequestClient)
         {
-            return CreateDelegatingHandlers(true);
+            return CreateDelegatingHandlers(true, asyncRequestClient);
         }
 
         /// <summary>
@@ -28,20 +30,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         /// <seealso cref="ThrowFulcrumExceptionOnFail"/>
         /// <seealso cref="AddCorrelationId"/>
         /// <returns>A list of recommended handlers.</returns>
-        public static DelegatingHandler[] CreateDelegatingHandlersWithoutLogging()
+        public static DelegatingHandler[] CreateDelegatingHandlersWithoutLogging(IAsyncRequestClient asyncRequestClient)
         {
-            return CreateDelegatingHandlers(false);
+            return CreateDelegatingHandlers(false, asyncRequestClient);
         }
 
 
-        private static DelegatingHandler[] CreateDelegatingHandlers(bool withLogging)
+        private static DelegatingHandler[] CreateDelegatingHandlers(bool withLogging, IAsyncRequestClient asyncRequestClient)
         {
             var handlers = new List<DelegatingHandler>
             {
                 new ThrowFulcrumExceptionOnFail(),
                 new AddCorrelationId(),
                 new PropagateNexusTestHeader(),
-                new PreferRespondAsync()
+                new CallAsyncManagerForAsynchronousRequests(asyncRequestClient)
             };
             if (withLogging)
             {
