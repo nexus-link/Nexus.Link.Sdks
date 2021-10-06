@@ -2,7 +2,9 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Web.RestClientHelper;
@@ -58,7 +60,9 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
             var result = await _capability.RequestResponse.ReadResponseAsync(requestId, cancellationToken);
-            return (AsyncHttpResponse)result;
+
+            // TODO: This is a hairy cast from a base class to the super class.
+            return JsonConvert.DeserializeObject<AsyncHttpResponse>(JsonConvert.SerializeObject(result));
         }
     }
 }
