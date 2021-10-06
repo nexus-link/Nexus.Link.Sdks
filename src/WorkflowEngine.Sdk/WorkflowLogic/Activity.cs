@@ -149,13 +149,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 if (e.RequestId == null) throw;
                 ActivityInformation.AsyncRequestId = e.RequestId;
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-                throw new FulcrumAcceptedException();
+                throw new RequestAcceptedException("TODO", e.RequestId);
             }
             catch (ActivityException)
             {
                 throw;
             }
-            catch (FulcrumAcceptedException)
+            catch (RequestAcceptedException)
             {
                 throw;
             }
