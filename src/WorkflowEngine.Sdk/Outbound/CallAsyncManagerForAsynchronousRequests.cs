@@ -1,18 +1,10 @@
-using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Helpers;
-using Nexus.Link.Libraries.Web.Pipe;
-using Nexus.Link.Libraries.Web.Serialization;
-using Nexus.Link.WorkflowEngine.Sdk.Extensions;
+using Nexus.Link.Libraries.Web.Error.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
@@ -44,8 +36,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
                 .AddHeaders(request.Headers)
                 .SendAsync(cancellationToken);
-            // TODO: Set callback
-            throw new PostponeException(requestId);
+            // TODO: Set callback <L
+            throw new RequestAcceptedException(null, requestId);
         }
     }
 }
