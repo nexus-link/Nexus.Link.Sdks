@@ -32,9 +32,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             }
 
             // Send the request to AM
+            string contentAsString = null;
+            if (request.Content != null)
+            {
+                await request.Content.LoadIntoBufferAsync();
+                contentAsString = await request.Content.ReadAsStringAsync();
+            }
+
             var requestId = await _asyncRequestClient
                 .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
                 .AddHeaders(request.Headers)
+                .SetContent(contentAsString, "application/json")
                 .SendAsync(cancellationToken);
             // TODO: Set callback <L
             throw new RequestAcceptedException(null, requestId);
