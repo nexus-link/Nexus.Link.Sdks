@@ -121,7 +121,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
-                    if (response == null) throw new PostponeException();
+                    if (response == null) throw new RequestAcceptedException("TODO", ActivityInformation.AsyncRequestId);
                     ActivityInformation.Result.Json = response.Content;
                     ActivityInformation.Result.ExceptionName = response.Exception.Name;
                     ActivityInformation.Result.ExceptionMessage = response.Exception.Message;
@@ -144,18 +144,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
-            catch (PostponeException e)
+            catch (RequestAcceptedException e)
             {
-                if (e.RequestId == null) throw;
-                ActivityInformation.AsyncRequestId = e.RequestId;
+                if (e.OutstandingRequestIds == null || e.OutstandingRequestIds.Count != 1) throw;
+                ActivityInformation.AsyncRequestId = e.OutstandingRequestIds.First();
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-                throw new RequestAcceptedException("TODO", e.RequestId);
-            }
-            catch (ActivityException)
-            {
                 throw;
             }
-            catch (RequestAcceptedException)
+            catch (ActivityException)
             {
                 throw;
             }

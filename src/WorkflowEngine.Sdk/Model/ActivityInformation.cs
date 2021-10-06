@@ -232,8 +232,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public async Task UpdateInstanceWithRequestIdAsync(CancellationToken cancellationToken)
         {
             var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
-            item.AsyncRequestId = AsyncRequestId;
-            await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+            if (item.AsyncRequestId != AsyncRequestId)
+            {
+                item.AsyncRequestId = AsyncRequestId;
+                await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+            }
         }
     }
 }
