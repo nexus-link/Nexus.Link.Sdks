@@ -2,9 +2,11 @@
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
@@ -70,7 +72,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
             AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
-            return await ExecuteWorkflowAsync(cancellationToken);
+            try
+            {
+                return await ExecuteWorkflowAsync(cancellationToken);
+            }
+            catch (PostponeException e)
+            {
+                // TODO: Is this a relevant exception? Will be sent to AM.
+                throw new FulcrumTryAgainException();
+            }
         }
 
         protected abstract string GetInstanceTitle();
