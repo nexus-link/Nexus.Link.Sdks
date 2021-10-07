@@ -11,12 +11,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// MethodParameterRecordCreate.From(WorkflowParameterCreate)
         /// </summary>
-        public static MethodParameterRecordCreate From(this MethodParameterRecordCreate target, WorkflowParameterCreate source)
+        public static WorkflowVersionParameterRecordCreate From(this WorkflowVersionParameterRecordCreate target, WorkflowParameterCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.XVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
+            target.WorkflowVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
             target.Name = source.Name;
             return target;
         }
@@ -24,13 +24,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// MethodParameterRecord.From(WorkflowParameter)
         /// </summary>
-        public static MethodParameterRecord From(this MethodParameterRecord target, WorkflowParameter source)
+        public static WorkflowVersionParameterRecord From(this WorkflowVersionParameterRecord target, WorkflowParameter source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((MethodParameterRecordCreate) target).From(source);
+            ((WorkflowVersionParameterRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
             return target;
@@ -39,14 +39,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// WorkflowParameter.From(MethodParameterRecord)
         /// </summary>
-        public static WorkflowParameter From(this WorkflowParameter target, MethodParameterRecord source)
+        public static WorkflowParameter From(this WorkflowParameter target, WorkflowVersionParameterRecord source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.XVersionId);
+            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.WorkflowVersionId);
             target.Name = source.Name;
             target.Etag = source.Etag;
             return target;

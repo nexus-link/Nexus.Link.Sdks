@@ -1,11 +1,10 @@
 ﻿using System;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 {
-    public class MethodParameterRecord : MethodParameterRecordCreate, ICompleteTableItem
+    public class WorkflowVersionParameterRecord : WorkflowVersionParameterRecordCreate, ICompleteTableItem
     {
         /// <inheritdoc />
         public Guid Id { get; set; }
@@ -30,19 +29,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         }
     }
 
-    public class MethodParameterRecordCreate : MethodParameterRecordUnique, IValidatable
+    public class WorkflowVersionParameterRecordCreate : WorkflowVersionParameterRecordUnique, IValidatable
     {
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {
-            FulcrumValidate.IsNotDefaultValue(XVersionId, nameof(XVersionId), errorLocation);
+            FulcrumValidate.IsNotDefaultValue(WorkflowVersionId, nameof(WorkflowVersionId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(Name, nameof(Name), errorLocation);
         }
     }
 
-    public class MethodParameterRecordUnique
+    public class WorkflowVersionParameterRecordUnique
     {
-        public Guid XVersionId { get; set; }
+        public Guid WorkflowVersionId { get; set; }
 
         /// <summary>
         /// Name

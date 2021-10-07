@@ -6,7 +6,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract
     {
         IWorkflowFormTable WorkflowForm { get; }
         IWorkflowVersionTable WorkflowVersion { get; }
-        IMethodParameterTable MethodParameter { get; }
+        IWorkflowVersionParameterTable WorkflowVersionParameter { get; }
+        IActivityVersionParameterTable ActivityVersionParameter { get; }
         IActivityFormTable ActivityForm { get; }
         IActivityVersionTable ActivityVersion { get; }
         ITransitionTable Transition { get; }

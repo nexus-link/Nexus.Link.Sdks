@@ -10,7 +10,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         {
             WorkflowForm = new WorkflowFormTableSql(connectionString);
             WorkflowVersion = new WorkflowVersionTableSql(connectionString);
-            MethodParameter= new MethodParameterTableSql(connectionString);
+            WorkflowVersionParameter = new WorkflowVersionParameterTableSql(connectionString);
+            ActivityVersionParameter = new ActivityVersionParameterTableSql(connectionString);
             ActivityForm = new ActivityFormTableSql(connectionString);
             ActivityVersion = new ActivityVersionTableSql(connectionString);
             Transition = new TransitionTableSql(connectionString);
@@ -22,7 +23,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         public IWorkflowVersionTable WorkflowVersion { get; }
 
         /// <inheritdoc />
-        public IMethodParameterTable MethodParameter { get; }
+        public IWorkflowVersionParameterTable WorkflowVersionParameter { get; }
+
+        /// <inheritdoc />
+        public IActivityVersionParameterTable ActivityVersionParameter { get; }
 
         /// <inheritdoc />
         public IActivityFormTable ActivityForm { get; }

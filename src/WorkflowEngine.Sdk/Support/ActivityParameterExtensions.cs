@@ -11,12 +11,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// MethodParameterRecordCreate.From(ActivityParameterCreate)
         /// </summary>
-        public static MethodParameterRecordCreate From(this MethodParameterRecordCreate target, ActivityParameterCreate source)
+        public static ActivityVersionParameterRecordCreate From(this ActivityVersionParameterRecordCreate target, ActivityParameterCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.XVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
+            target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
             target.Name = source.Name;
             return target;
         }
@@ -24,13 +24,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// MethodParameterRecord.From(ActivityParameter)
         /// </summary>
-        public static MethodParameterRecord From(this MethodParameterRecord target, ActivityParameter source)
+        public static ActivityVersionParameterRecord From(this ActivityVersionParameterRecord target, ActivityParameter source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((MethodParameterRecordCreate) target).From(source);
+            ((ActivityVersionParameterRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
             return target;
@@ -39,14 +39,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// ActivityParameter.From(MethodParameterRecord)
         /// </summary>
-        public static ActivityParameter From(this ActivityParameter target, MethodParameterRecord source)
+        public static ActivityParameter From(this ActivityParameter target, ActivityVersionParameterRecord source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.XVersionId);
+            target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
             target.Name = source.Name;
             target.Etag = source.Etag;
             return target;

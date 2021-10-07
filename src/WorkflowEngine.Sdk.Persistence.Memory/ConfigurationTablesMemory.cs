@@ -10,7 +10,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         {
             WorkflowForm = new WorkflowFormTableMemory();
             WorkflowVersion = new WorkflowVersionTableMemory();
-            MethodParameter= new MethodParameterTableMemory();
+            WorkflowVersionParameter = new WorkflowVersionParameterTableMemory();
+            ActivityVersionParameter = new ActivityVersionParameterTableMemory();
             ActivityForm = new ActivityFormTableMemory();
             ActivityVersion = new ActivityVersionTableMemory();
             Transition = new TransitionTableMemory();
@@ -22,7 +23,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         public IWorkflowVersionTable WorkflowVersion { get; }
 
         /// <inheritdoc />
-        public IMethodParameterTable MethodParameter { get; }
+        public IWorkflowVersionParameterTable WorkflowVersionParameter { get; }
+
+        /// <inheritdoc />
+        public IActivityVersionParameterTable ActivityVersionParameter { get; }
 
         /// <inheritdoc />
         public IActivityFormTable ActivityForm { get; }
