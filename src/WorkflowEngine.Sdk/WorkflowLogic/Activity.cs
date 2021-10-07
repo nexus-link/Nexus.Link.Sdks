@@ -123,8 +123,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
                     if (response == null) throw new RequestAcceptedException("TODO", ActivityInformation.AsyncRequestId);
                     ActivityInformation.Result.Json = response.Content;
-                    ActivityInformation.Result.ExceptionName = response.Exception.Name;
-                    ActivityInformation.Result.ExceptionMessage = response.Exception.Message;
+                    ActivityInformation.Result.ExceptionName = response.Exception?.Name;
+                    ActivityInformation.Result.ExceptionMessage = response.Exception?.Message;
                     await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                     return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
