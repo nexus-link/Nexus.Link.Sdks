@@ -31,10 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="sql-scripts\patches\patch01 - initial configuration tables.sql">
+    <None Update="WorkflowEngine\sql-scripts\patches\patch01 - initial configuration tables.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="sql-scripts\patches\patch02 - initial runtime tables.sql">
+    <None Update="WorkflowEngine\sql-scripts\patches\patch02 - initial runtime tables - Copy.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="WorkflowEngine\sql-scripts\patches\patch02_rollback.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
