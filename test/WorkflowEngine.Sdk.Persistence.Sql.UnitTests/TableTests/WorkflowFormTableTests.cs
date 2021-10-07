@@ -21,7 +21,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             };
 
             // Act
-            var record = await CreateWorkflowForm(id, item);
+            var record = await CreateWorkflowFormAsync(id, item);
 
             // Assert
             Assert.NotNull(record);
@@ -41,10 +41,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             var id = Guid.Parse("08A03302-C861-4003-8917-7C495E205562");
 
             // Act
-            await CreateStandardWorkflowForm(id);
+            await CreateStandardWorkflowFormAsync(id);
 
             // Assert
-            await Assert.ThrowsAsync<SqlException>(async () => await CreateStandardWorkflowForm(id));
+            await Assert.ThrowsAsync<SqlException>(async () => await CreateStandardWorkflowFormAsync(id));
         }
 
         [Theory]
@@ -54,7 +54,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         [InlineData("Cap name", null)]
         [InlineData("Cap name", "")]
         [InlineData("Cap name", " ")]
-        public async Task Validation_Prevents_From_Creating_With_Missing_Mandatory_Columns(string capabilityName, string title)
+        public async Task Validation_Prevents_Creating_With_Missing_Mandatory_Columns(string capabilityName, string title)
         {
             // Arrange
             var item = new WorkflowFormRecordCreate
@@ -64,7 +64,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowForm(Guid.NewGuid(), item));
+            await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowFormAsync(Guid.NewGuid(), item));
         }
 
         // TODO: Override IValidated and expect SqlException for missing columns

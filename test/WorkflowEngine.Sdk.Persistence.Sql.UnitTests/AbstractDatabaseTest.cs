@@ -49,19 +49,30 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             masterConnection.Close();
         }
 
-        protected Task<WorkflowFormRecord> CreateWorkflowForm(Guid id, WorkflowFormRecordCreate item, CancellationToken cancellationToken = default)
+        protected Task<WorkflowFormRecord> CreateWorkflowFormAsync(Guid id, WorkflowFormRecordCreate item, CancellationToken cancellationToken = default)
         {
             return ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
-        protected Task<WorkflowFormRecord> CreateStandardWorkflowForm(Guid id, CancellationToken cancellationToken = default)
+        protected Task<WorkflowFormRecord> CreateStandardWorkflowFormAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var item = new WorkflowFormRecordCreate
             {
                 CapabilityName = "SpaceExploration",
                 Title = "Ios"
             };
-            return CreateWorkflowForm(id, item, cancellationToken);
+            return CreateWorkflowFormAsync(id, item, cancellationToken);
+        }
+
+        protected Task<WorkflowFormRecord> CreateStandardWorkflowFormAsync(CancellationToken cancellationToken = default)
+        {
+            return CreateStandardWorkflowFormAsync(Guid.NewGuid(), cancellationToken);
+        }
+
+        protected async Task<WorkflowVersionRecord> CreateWorkflowVersionAsync(WorkflowVersionRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.ReadAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
         }
     }
 }
