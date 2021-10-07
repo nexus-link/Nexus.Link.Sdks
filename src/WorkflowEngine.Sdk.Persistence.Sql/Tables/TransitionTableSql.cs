@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Storage.Model;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -29,9 +30,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         {
         }
 
-        public async Task<PageEnvelope<TransitionRecord>> ReadChildrenWithPagingAsync(Guid parentId, int offset, int? limit = null, CancellationToken token = default)
+        public Task<PageEnvelope<TransitionRecord>> ReadChildrenWithPagingAsync(Guid workflowVersionId, int offset, int? limit = null, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return SearchAsync(new SearchDetails<TransitionRecord>(
+                new
+                {
+                    WorkflowVersionId = workflowVersionId
+                }), offset, limit, cancellationToken);
         }
     }
 }

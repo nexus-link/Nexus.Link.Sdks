@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -29,14 +31,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         {
         }
 
-        public async Task<WorkflowVersionRecord> ReadAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
+        public Task<WorkflowVersionRecord> ReadAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return FindUniqueAsync(
+                new SearchDetails<WorkflowVersionRecord>(
+                    new WorkflowVersionRecordUnique
+                    {
+                        WorkflowFormId = workflowFormId,
+                        MajorVersion = majorVersion
+                    }),
+                cancellationToken);
         }
 
         public async Task UpdateAsync(Guid workflowFormId, int majorVersion, WorkflowVersionRecord record, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var item = await ReadAsync(workflowFormId, majorVersion, cancellationToken);
+            if (item == null)
+            {
+                throw new FulcrumNotFoundException(
+                    $"{nameof(WorkflowVersionRecord)} not found for {nameof(WorkflowVersionRecord.WorkflowFormId)} {workflowFormId}" +
+                    $" and {nameof(WorkflowVersionRecord.MajorVersion)} {majorVersion}.");
+            }
+
+            await UpdateAsync(item.Id, record, cancellationToken);
         }
     }
 }
