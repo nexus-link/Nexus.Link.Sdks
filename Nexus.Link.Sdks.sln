@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nexus.Link.AsyncCaller.Sdk", "src\AsyncCaller.Sdk\Nexus.Link.AsyncCaller.Sdk.csproj", "{AC0B63AD-E18A-4D8E-93CC-D50F9DA4FA5C}"
 EndProject
@@ -69,6 +69,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persistence.Memory", "src\WorkflowEngine.Sdk.Persistence.Memory\WorkflowEngine.Sdk.Persistence.Memory.csproj", "{A29E03A6-83EB-4F8F-89CD-702E3F6E6095}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk", "src\WorkflowEngine.Sdk\WorkflowEngine.Sdk.csproj", "{C030A191-AC21-4E83-9C13-B246DA82BCCF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persistence.Sql", "src\WorkflowEngine.Sdk.Persistence.Sql\WorkflowEngine.Sdk.Persistence.Sql.csproj", "{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -498,6 +500,22 @@ Global
 		{C030A191-AC21-4E83-9C13-B246DA82BCCF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C030A191-AC21-4E83-9C13-B246DA82BCCF}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{C030A191-AC21-4E83-9C13-B246DA82BCCF}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.int|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prdsim|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2479DF-20AD-4DBB-B52F-D9D099D115FD}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
