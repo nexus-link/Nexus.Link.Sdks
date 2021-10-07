@@ -4,9 +4,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
-    public class RuntimeTablesMemory : IRuntimeTables
+    public class RuntimeTablesSql : IRuntimeTables
     {
-        public RuntimeTablesMemory(string connectionString)
+        public RuntimeTablesSql(string connectionString)
         {
             WorkflowInstance = new WorkflowInstanceTableSql(connectionString);
             ActivityInstance = new ActivityInstanceTableSql(connectionString);

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.5.2" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.9.2" />
   </ItemGroup>
 
@@ -27,6 +28,15 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="sql-scripts\patches\patch01 - initial configuration tables.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="sql-scripts\patches\patch02 - initial runtime tables.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <PropertyGroup>
