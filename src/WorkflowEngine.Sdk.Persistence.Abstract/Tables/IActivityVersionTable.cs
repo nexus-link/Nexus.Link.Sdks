@@ -4,7 +4,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
-    public interface IActivityVersionTable: ICreateChild<ActivityVersionRecordCreate, ActivityVersionRecord, Guid>, IUpdate<ActivityVersionRecord, Guid>, ISearch<ActivityVersionRecord, Guid>
+    public interface IActivityVersionTable: ICreate<ActivityVersionRecordCreate, ActivityVersionRecord, Guid>, IUpdate<ActivityVersionRecord, Guid>, ISearch<ActivityVersionRecord, Guid>
     {
     }
 }

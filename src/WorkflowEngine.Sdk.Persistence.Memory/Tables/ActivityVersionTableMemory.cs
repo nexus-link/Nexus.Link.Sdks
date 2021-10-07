@@ -5,11 +5,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
-    public class ActivityVersionTableMemory : ManyToOneMemory<ActivityVersionRecordCreate, ActivityVersionRecord, Guid>, IActivityVersionTable
+    public class ActivityVersionTableMemory : CrudMemory<ActivityVersionRecordCreate, ActivityVersionRecord, Guid>, IActivityVersionTable
     {
-        /// <inheritdoc />
-        public ActivityVersionTableMemory() : base(item => item.WorkflowVersionId)
-        {
-        }
     }
 }

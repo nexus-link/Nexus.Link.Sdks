@@ -16,8 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.MasterId = MapperHelper.MapToType<Guid, string>(source.WorkflowFormId);
-            target.DependentId = source.Name;
+            target.XVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
+            target.Name = source.Name;
             return target;
         }
 
@@ -46,8 +46,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowFormId = MapperHelper.MapToType<string, Guid>(source.MasterId);
-            target.Name = source.DependentId;
+            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.XVersionId);
+            target.Name = source.Name;
             target.Etag = source.Etag;
             return target;
         }

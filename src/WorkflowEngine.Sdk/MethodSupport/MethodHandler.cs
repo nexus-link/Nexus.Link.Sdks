@@ -95,46 +95,46 @@ namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
             _arguments.Add(parameter.Name, argument);
         }
 
-        public async Task PersistWorkflowParametersAsync(IWorkflowCapability capability, string workflowFormId, CancellationToken cancellationToken)
+        public async Task PersistWorkflowParametersAsync(IWorkflowCapability capability, string workflowVersionId, CancellationToken cancellationToken)
         {
             foreach (var methodParameter in _parameters)
             {
                 var parameterName = methodParameter.Value.Name;
                 FulcrumAssert.IsNotNullOrWhiteSpace(parameterName, CodeLocation.AsString());
-                var parameter = await capability.WorkflowParameter.ReadAsync(workflowFormId, parameterName, cancellationToken);
+                var parameter = await capability.WorkflowParameter.ReadAsync(workflowVersionId, parameterName, cancellationToken);
                 if (parameter != null) continue;
                 var parameterCreate = new WorkflowParameterCreate
                 {
-                    WorkflowFormId = workflowFormId,
+                    WorkflowVersionId = workflowVersionId,
                     Name = parameterName
                 };
-                await capability.WorkflowParameter.CreateWithSpecifiedIdAsync(workflowFormId, parameterName, parameterCreate, cancellationToken);
+                await capability.WorkflowParameter.CreateWithSpecifiedIdAsync(workflowVersionId, parameterName, parameterCreate, cancellationToken);
             }
             var parameters = await StorageHelper.ReadPagesAsync(
-                (o, t) => capability.WorkflowParameter.ReadChildrenWithPagingAsync(workflowFormId, o, null, t), Int32.MaxValue, cancellationToken);
+                (o, t) => capability.WorkflowParameter.ReadChildrenWithPagingAsync(workflowVersionId, o, null, t), Int32.MaxValue, cancellationToken);
             if (parameters.Count() > _parameters.Keys.Count)
             {
                 throw new FulcrumNotImplementedException($"Can't currently remove parameters for a version.");
             }
         }
 
-        public async Task PersistActivityParametersAsync(IWorkflowCapability capability, string workflowFormId, CancellationToken cancellationToken)
+        public async Task PersistActivityParametersAsync(IWorkflowCapability capability, string activityVersionId, CancellationToken cancellationToken)
         {
             foreach (var methodParameter in _parameters)
             {
                 var parameterName = methodParameter.Value.Name;
                 FulcrumAssert.IsNotNullOrWhiteSpace(parameterName, CodeLocation.AsString());
-                var parameter = await capability.ActivityParameter.ReadAsync(workflowFormId, parameterName, cancellationToken);
+                var parameter = await capability.ActivityParameter.ReadAsync(activityVersionId, parameterName, cancellationToken);
                 if (parameter != null) continue;
                 var parameterCreate = new ActivityParameterCreate
                 {
-                    ActivityFormId = workflowFormId,
+                    ActivityVersionId = activityVersionId,
                     Name = parameterName
                 };
-                await capability.ActivityParameter.CreateWithSpecifiedIdAsync(workflowFormId, parameterName, parameterCreate, cancellationToken);
+                await capability.ActivityParameter.CreateWithSpecifiedIdAsync(activityVersionId, parameterName, parameterCreate, cancellationToken);
             }
             var parameters = await StorageHelper.ReadPagesAsync(
-                (o, t) => capability.ActivityParameter.ReadChildrenWithPagingAsync(workflowFormId, o, null, t), Int32.MaxValue, cancellationToken);
+                (o, t) => capability.ActivityParameter.ReadChildrenWithPagingAsync(activityVersionId, o, null, t), Int32.MaxValue, cancellationToken);
             if (parameters.Count() > _parameters.Keys.Count)
             {
                 throw new FulcrumNotImplementedException($"Can't currently remove parameters for a version.");

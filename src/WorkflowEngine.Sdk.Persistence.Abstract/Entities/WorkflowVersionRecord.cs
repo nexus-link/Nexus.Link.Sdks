@@ -36,24 +36,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// <summary>
     /// Information about a specific version of a <see cref="WorkflowFormRecord"/>.
     /// </summary>
-    public class WorkflowVersionRecordCreate : IValidatable, IUniquelyIdentifiableDependent<Guid, int>
+    public class WorkflowVersionRecordCreate : WorkflowVersionRecordUnique, IValidatable
     {
-        /// <summary>
-        /// WorkflowFormId
-        /// </summary>
-        public Guid MasterId { get; set; }
-        /// <summary>
-        /// MajorVersion
-        /// </summary>
-        public int DependentId { get; set; }
         public int MinorVersion { get; set; }
         public bool DynamicCreate { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {
-            FulcrumValidate.IsGreaterThanOrEqualTo(0, DependentId, nameof(DependentId), errorLocation);
+            FulcrumValidate.IsGreaterThanOrEqualTo(0, MajorVersion, nameof(MajorVersion), errorLocation);
             FulcrumValidate.IsGreaterThanOrEqualTo(0, MinorVersion, nameof(MinorVersion), errorLocation);
+            FulcrumValidate.IsNotDefaultValue(WorkflowFormId, nameof(WorkflowFormId), errorLocation);
         }
+    }
+
+    public class WorkflowVersionRecordUnique
+    {
+        public Guid WorkflowFormId { get; set; }
+        public int MajorVersion { get; set; }
     }
 }

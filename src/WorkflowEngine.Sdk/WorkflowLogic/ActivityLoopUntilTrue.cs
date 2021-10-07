@@ -41,8 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                result = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct),
-                    cancellationToken);
+                result = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
 

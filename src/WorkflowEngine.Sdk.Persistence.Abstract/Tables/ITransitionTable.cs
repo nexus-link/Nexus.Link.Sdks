@@ -4,7 +4,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
-    public interface ITransitionTable: ICreateChild<TransitionRecordCreate, TransitionRecord, Guid>, IReadChildrenWithPaging<TransitionRecord, Guid>, ISearchChildren<TransitionRecord, Guid>
+    public interface ITransitionTable: ICreate<TransitionRecordCreate, TransitionRecord, Guid>, IReadChildrenWithPaging<TransitionRecord, Guid>, ISearch<TransitionRecord, Guid>
     {
     }
 }

@@ -31,11 +31,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireValidated(item, nameof(item));
             InternalContract.RequireAreEqual( parentId, item.WorkflowFormId, $"{nameof(item)}.{nameof(item.WorkflowFormId)})");
 
-            
-            var parentIdAsGuid = MapperHelper.MapToType<Guid, string>(parentId);
             var childIdAsGuid = MapperHelper.MapToType<Guid, string>(childId);
             var recordCreate = new ActivityFormRecordCreate().From(item);
-            await _configurationTables.ActivityForm.CreateChildWithSpecifiedIdAsync(parentIdAsGuid, childIdAsGuid, recordCreate, cancellationToken);
+            await _configurationTables.ActivityForm.CreateWithSpecifiedIdAsync(childIdAsGuid, recordCreate, cancellationToken);
 
         }
 

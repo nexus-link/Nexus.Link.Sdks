@@ -32,9 +32,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
             var recordCreate = new MethodParameterRecordCreate().From(item);
-            await _configurationTables.MethodParameter.CreateWithSpecifiedIdAsync(idAsGuid, dependentId, recordCreate, cancellationToken);
+            await _configurationTables.MethodParameter.CreateAsync(recordCreate, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -59,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNullOrWhiteSpace(masterId, nameof(masterId));
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
-            var records = await _configurationTables.MethodParameter.ReadChildrenWithPagingAsync(idAsGuid, offset, limit, cancellationToken);
+            var records = await _configurationTables.MethodParameter.ReadAllWithPagingAsync(idAsGuid, offset, limit, cancellationToken);
             if (records == null) return null;
 
             var items = records.Data.Select(r => new WorkflowParameter().From(r)).ToArray();

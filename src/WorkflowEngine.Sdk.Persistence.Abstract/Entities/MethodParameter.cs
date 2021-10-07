@@ -29,20 +29,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             TableItemHelper.Validate(this, false, errorLocation, propertyPath);
         }
     }
-    public class MethodParameterRecordCreate : IValidatable, IUniquelyIdentifiableDependent<Guid, string>
+
+    public class MethodParameterRecordCreate : MethodParameterRecordUnique, IValidatable
     {
         /// <inheritdoc />
-        public Guid MasterId { get; set; }
+        public virtual void Validate(string errorLocation, string propertyPath = "")
+        {
+            FulcrumValidate.IsNotDefaultValue(XVersionId, nameof(XVersionId), errorLocation);
+            FulcrumValidate.IsNotNullOrWhiteSpace(Name, nameof(Name), errorLocation);
+        }
+    }
+
+    public class MethodParameterRecordUnique
+    {
+        public Guid XVersionId { get; set; }
 
         /// <summary>
         /// Name
         /// </summary>
-        public string DependentId { get; set; }
-
-        /// <inheritdoc />
-        public virtual void Validate(string errorLocation, string propertyPath = "")
-        {
-            FulcrumValidate.IsNotNullOrWhiteSpace(DependentId, nameof(DependentId), errorLocation);
-        }
+        public string Name { get; set; }
     }
 }

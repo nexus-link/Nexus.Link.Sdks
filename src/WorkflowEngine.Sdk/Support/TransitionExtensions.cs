@@ -11,7 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// WorkflowRecord.From(Workflow)
         /// </summary>
-        public static TransitionRecordCreate From(this TransitionRecordCreate target, TransitionCreate source)
+        public static TransitionRecordUnique From(this TransitionRecordUnique target, TransitionUnique source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
@@ -20,6 +20,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.WorkflowVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
             target.FromActivityVersionId = MapperHelper.MapToType<Guid?, string>(source.FromActivityVersionId);
             target.ToActivityVersionId = MapperHelper.MapToType<Guid?, string>(source.ToActivityVersionId);
+            return target;
+        }
+
+        /// <summary>
+        /// WorkflowRecord.From(Workflow)
+        /// </summary>
+        public static TransitionRecordCreate From(this TransitionRecordCreate target, TransitionCreate source)
+        {
+            InternalContract.RequireNotNull(target, nameof(target));
+            InternalContract.RequireNotNull(source, nameof(source));
+            InternalContract.RequireValidated(source, nameof(source));
+
+            ((TransitionRecordUnique) target).From(source);
             return target;
         }
 

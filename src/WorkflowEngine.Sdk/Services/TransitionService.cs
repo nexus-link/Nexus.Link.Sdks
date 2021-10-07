@@ -32,26 +32,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            
-            var workflowVersionIdAsGuid = MapperHelper.MapToType<Guid, string>(workflowVersionId);
+
             var recordCreate = new TransitionRecordCreate().From(item);
             await VerifyUnique(recordCreate, cancellationToken);
-            var idAsGuid = await _configurationTables.Transition.CreateChildAsync(workflowVersionIdAsGuid, recordCreate, cancellationToken);
+            var idAsGuid = await _configurationTables.Transition.CreateAsync(recordCreate, cancellationToken);
             var id = MapperHelper.MapToType<string, Guid>(idAsGuid);
             return id;
         }
 
         /// <inheritdoc />
-        public async Task<Transition> FindUniqueAsync(TransitionCreate item, CancellationToken cancellationToken = default)
+        public async Task<Transition> FindUniqueAsync(TransitionUnique item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            
-            var searchRecord = new TransitionRecordCreate().From(item);
-            var record = await _configurationTables.Transition.FindUniqueChildAsync(searchRecord.WorkflowVersionId,
-                new SearchDetails<TransitionRecord>(new {searchRecord.FromActivityVersionId, searchRecord.ToActivityVersionId}),
-                cancellationToken);
-             if (record == null) return null;
+
+            var searchRecord = new TransitionRecordUnique().From(item);
+            var record = await _configurationTables.Transition.FindUniqueAsync(
+                new SearchDetails<TransitionRecord>(searchRecord), cancellationToken);
+            if (record == null) return null;
 
             var result = new Transition().From(record);
             FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
@@ -59,14 +57,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return result;
         }
 
-        private async Task VerifyUnique(TransitionRecordCreate record, CancellationToken cancellationToken)
+        private async Task VerifyUnique(TransitionRecordUnique searchRecord, CancellationToken cancellationToken)
         {
-            var page = await _configurationTables.Transition.SearchChildrenAsync(record.WorkflowVersionId, 
-                new SearchDetails<TransitionRecord>(new {record.FromActivityVersionId, record.ToActivityVersionId}), 0, 1, cancellationToken);
+            var page = await _configurationTables.Transition.SearchAsync(new SearchDetails<TransitionRecord>(searchRecord), 0, 1, cancellationToken);
             if (page.PageInfo.Returned != 0)
             {
                 throw new FulcrumConflictException(
-                    $"A transition already exists from {record.FromActivityVersionId} to {record.ToActivityVersionId} for workflow version {record.WorkflowVersionId}.");
+                    $"A transition already exists from {searchRecord.FromActivityVersionId} to {searchRecord.ToActivityVersionId} for workflow version {searchRecord.WorkflowVersionId}.");
             }
         }
 

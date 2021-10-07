@@ -30,7 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
             var recordCreate = new WorkflowVersionRecordCreate().From(item);
-            await _configurationTables.WorkflowVersion.CreateWithSpecifiedIdAsync(idAsGuid, dependentId, recordCreate, cancellationToken);
+            await _configurationTables.WorkflowVersion.CreateAsync(recordCreate, cancellationToken);
         }
 
         /// <inheritdoc />

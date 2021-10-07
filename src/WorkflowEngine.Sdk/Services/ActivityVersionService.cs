@@ -32,9 +32,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireAreEqual( parentId, item.WorkflowVersionId, $"{nameof(item)}.{nameof(item.WorkflowVersionId)})");
 
             
-            var parentIdAsGuid = MapperHelper.MapToType<Guid, string>(parentId);
             var recordCreate = new ActivityVersionRecordCreate().From(item);
-            var childIdAsGuid = await _configurationTables.ActivityVersion.CreateChildAsync(parentIdAsGuid, recordCreate, cancellationToken);
+            var childIdAsGuid = await _configurationTables.ActivityVersion.CreateAsync(recordCreate, cancellationToken);
             var childId = MapperHelper.MapToType<string, Guid>(childIdAsGuid);
             return childId;
         }
