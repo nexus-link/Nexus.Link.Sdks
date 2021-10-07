@@ -23,10 +23,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             private readonly string _extraPatch2;
             private readonly string _extraPatch2Rollback;
 
-            public DatabaseRollbackTest()
+            public DatabaseRollbackTest() : base()
             {
-                DropDatabase();
-
                 _baseDir = DatabasePatcherHandler.GetBaseDir();
 
                 _patchesDir = new DirectoryInfo($@"{_baseDir.FullName}\patches");

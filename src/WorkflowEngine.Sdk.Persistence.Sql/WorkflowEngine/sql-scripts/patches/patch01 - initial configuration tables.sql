@@ -11,7 +11,7 @@ CREATE TABLE WorkflowForm
     RecordCreatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowForm_RecordCreatedAt DEFAULT (sysdatetimeoffset()),
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowForm_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
-    CapabilityName nvarchar(2024) NOT NULl,
+    CapabilityName nvarchar(2024) NOT NULL,
     Title nvarchar(2024) NOT NULl,
 
 	CONSTRAINT PK_WorkflowForm PRIMARY KEY (Id ASC)
@@ -60,7 +60,7 @@ CREATE TABLE ActivityForm
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_ActivityForm_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     WorkflowFormId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityForm_WorkflowFormId REFERENCES WorkflowForm ON UPDATE CASCADE ON DELETE NO ACTION,
-    Type nvarchar(64) NOT NULl,
+    Type nvarchar(64) NOT NULL,
     Title nvarchar(2048) NOT NULl,
 
 	CONSTRAINT PK_ActivityForm PRIMARY KEY (Id ASC)
@@ -75,7 +75,7 @@ CREATE TABLE ActivityVersion
 
     WorkflowVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersion_WorkflowVersionId REFERENCES WorkflowVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
     ActivityFormId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersion_ActivityFormId REFERENCES ActivityForm ON UPDATE CASCADE ON DELETE NO ACTION,
-    Position int not null,
+    Position int NOT NULL,
     ParentActivityVersionId uniqueidentifier CONSTRAINT FK_ActivityVersion_ParentActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
 
 	CONSTRAINT PK_ActivityVersion PRIMARY KEY (Id ASC)
