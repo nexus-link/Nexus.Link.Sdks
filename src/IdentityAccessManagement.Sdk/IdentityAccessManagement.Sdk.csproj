@@ -30,7 +30,7 @@
 		<PackageReference Include="Nexus.Link.Libraries.Web" Version="2.20.0-beta03" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.6.0" />
+		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.6.1" />
 	</ItemGroup>
 
 	<PropertyGroup>
