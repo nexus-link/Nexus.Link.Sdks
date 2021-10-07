@@ -38,5 +38,6 @@ CREATE TABLE ActivityInstance
     AsyncRequestId nvarchar(256),
 
 	CONSTRAINT PK_ActivityInstance PRIMARY KEY (Id ASC)
+    -- TODO: Unique index on (WorkflowInstanceId, ActivityVersionId, ParentActivityInstanceId, Iteration)?
 )
 

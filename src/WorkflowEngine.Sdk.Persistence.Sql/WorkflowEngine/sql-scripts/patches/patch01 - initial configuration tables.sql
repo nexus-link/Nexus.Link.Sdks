@@ -29,7 +29,8 @@ CREATE TABLE WorkflowVersion
     MinorVersion int NOT NULL CONSTRAINT CK_WorkflowVersion_MinorVersion CHECK(MinorVersion >= 0),
     DynamicCreate bit NOT NULL
 
-	CONSTRAINT PK_WorkflowVersion PRIMARY KEY (Id ASC)
+	CONSTRAINT PK_WorkflowVersion PRIMARY KEY (Id ASC),
+	CONSTRAINT UQ_WorkflowVersion_1 UNIQUE (WorkflowFormId, MajorVersion)
 )
 
 CREATE TABLE WorkflowVersionParameter
@@ -42,7 +43,8 @@ CREATE TABLE WorkflowVersionParameter
     WorkflowVersionId uniqueidentifier NOT NULL CONSTRAINT FK_WorkflowVersionParameter_WorkflowVersionId REFERENCES WorkflowVersion ON UPDATE CASCADE ON DELETE NO ACTION,
     Name nvarchar(2024) NOT NULl,
 
-	CONSTRAINT PK_WorkflowVersionParameter PRIMARY KEY (Id ASC)
+	CONSTRAINT PK_WorkflowVersionParameter PRIMARY KEY (Id ASC),
+	CONSTRAINT UQ_WorkflowVersionParameter_1 UNIQUE (WorkflowVersionId, Name)
 )
 
 
@@ -89,7 +91,8 @@ CREATE TABLE ActivityVersionParameter
     ActivityVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersionParameter_ActivityVersionId REFERENCES ActivityVersion ON UPDATE CASCADE ON DELETE NO ACTION,
     Name nvarchar(2024) NOT NULl,
 
-	CONSTRAINT PK_ActivityVersionParameter PRIMARY KEY (Id ASC)
+	CONSTRAINT PK_ActivityVersionParameter PRIMARY KEY (Id ASC),
+	CONSTRAINT UQ_ActivityVersionParameter_1 UNIQUE (ActivityVersionId, Name)
 )
 
 CREATE TABLE Transition
@@ -103,6 +106,7 @@ CREATE TABLE Transition
     FromActivityVersionId uniqueidentifier CONSTRAINT FK_Transition_FromActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
     ToActivityVersionId uniqueidentifier CONSTRAINT FK_Transition_ToActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
 
-	CONSTRAINT PK_Transition PRIMARY KEY (Id ASC)
+    CONSTRAINT PK_Transition PRIMARY KEY (Id ASC),
+	CONSTRAINT UQ_Transition_1 UNIQUE (WorkflowVersionId, FromActivityVersionId, ToActivityVersionId)
 )
 
