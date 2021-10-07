@@ -29,10 +29,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
             
-            var workflowVersionIdAsGuid = MapperHelper.MapToType<Guid, string>(workflowVersionId);
-            var childIdAsGuid = MapperHelper.MapToType<Guid, string>(childId);
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(childId);
             var recordCreate = new WorkflowInstanceRecordCreate().From(item);
-            await _runtimeTables.WorkflowInstance.CreateChildWithSpecifiedIdAsync(workflowVersionIdAsGuid, childIdAsGuid, recordCreate, cancellationToken);
+            await _runtimeTables.WorkflowInstance.CreateWithSpecifiedIdAsync(idAsGuid, recordCreate, cancellationToken);
         }
 
         /// <inheritdoc />
