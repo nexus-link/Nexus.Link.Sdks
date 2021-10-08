@@ -24,6 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
+            Iteration = 0;
         }
 
         public async Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
