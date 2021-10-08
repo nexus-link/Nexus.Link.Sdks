@@ -11,6 +11,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class TransitionTableMemory : CrudMemory<TransitionRecordCreate, TransitionRecord, Guid>, ITransitionTable
     {
+        public TransitionTableMemory()
+        {
+            UniqueConstraintMethods += item => new { item.WorkflowVersionId, item.FromActivityVersionId, item.ToActivityVersionId };
+        }
         /// <inheritdoc />
         public Task<PageEnvelope<TransitionRecord>> ReadChildrenWithPagingAsync(Guid workflowVersionId, int offset, int? limit = null,
             CancellationToken cancellationToken = default)

@@ -34,7 +34,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireValidated(item, nameof(item));
 
             var recordCreate = new TransitionRecordCreate().From(item);
-            await VerifyUnique(recordCreate, cancellationToken);
             var idAsGuid = await _configurationTables.Transition.CreateAsync(recordCreate, cancellationToken);
             var id = MapperHelper.MapToType<string, Guid>(idAsGuid);
             return id;
@@ -55,16 +54,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
-        }
-
-        private async Task VerifyUnique(TransitionRecordUnique searchRecord, CancellationToken cancellationToken)
-        {
-            var page = await _configurationTables.Transition.SearchAsync(new SearchDetails<TransitionRecord>(searchRecord), 0, 1, cancellationToken);
-            if (page.PageInfo.Returned != 0)
-            {
-                throw new FulcrumConflictException(
-                    $"A transition already exists from {searchRecord.FromActivityVersionId} to {searchRecord.ToActivityVersionId} for workflow version {searchRecord.WorkflowVersionId}.");
-            }
         }
 
         /// <inheritdoc />
