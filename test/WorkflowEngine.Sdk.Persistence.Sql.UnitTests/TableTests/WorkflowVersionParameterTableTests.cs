@@ -35,6 +35,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Name, record.Name);
         }
 
+        // TODO: Test update
+
         [Fact]
         public async Task Cant_Create_Workflow_Version_Parameter_With_Same_Workflow_And_Name()
         {
@@ -78,5 +80,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowVersionParameterAsync(item));
         }
+
+        // TODO: expect SqlException for bad input
     }
 }

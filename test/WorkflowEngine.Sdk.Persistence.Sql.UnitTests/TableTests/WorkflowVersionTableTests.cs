@@ -39,6 +39,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.DynamicCreate, record.DynamicCreate);
         }
 
+        // TODO: Test update
+
         [Fact]
         public async Task Cant_Create_Workflow_Version_With_Same_Major_On_WorkflowForm()
         {
@@ -87,5 +89,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowVersionAsync(item));
         }
+
+        // TODO: expect SqlException for bad input
     }
 }

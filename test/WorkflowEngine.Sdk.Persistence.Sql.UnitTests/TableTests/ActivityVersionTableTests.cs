@@ -38,6 +38,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Position, record.Position);
         }
 
+        // TODO: Test update
+
         [Fact]
         public async Task Cant_Create_Activity_Version_With_Same_Position_On_ActivityForm_And_WorkflowVersion()
         {
@@ -86,5 +88,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateActivityVersionAsync(item));
         }
+
+        // TODO: expect SqlException for bad input
     }
 }

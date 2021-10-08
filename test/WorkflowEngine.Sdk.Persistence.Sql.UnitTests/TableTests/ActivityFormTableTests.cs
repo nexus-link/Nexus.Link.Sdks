@@ -38,6 +38,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Title, record.Title);
         }
 
+        // TODO: Test update
+
         [Fact]
         public async Task Cant_Create_Activity_Form_With_Existing_Id()
         {
@@ -73,6 +75,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateActivityFormAsync(Guid.NewGuid(), item));
         }
 
-        // TODO: Override IValidated and expect SqlException for missing columns
+        // TODO: expect SqlException for bad input
     }
 }
