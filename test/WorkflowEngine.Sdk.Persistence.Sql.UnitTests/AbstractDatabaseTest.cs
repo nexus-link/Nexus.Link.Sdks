@@ -142,5 +142,11 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             await ConfigurationTables.ActivityVersionParameter.CreateAsync(item, cancellationToken);
             return await ConfigurationTables.ActivityVersionParameter.ReadAsync(item.ActivityVersionId, item.Name, cancellationToken);
         }
+
+        protected async Task<TransitionRecord> CreateTransitionAsync(TransitionRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            var id = await ConfigurationTables.Transition.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.Transition.ReadAsync(id, cancellationToken);
+        }
     }
 }
