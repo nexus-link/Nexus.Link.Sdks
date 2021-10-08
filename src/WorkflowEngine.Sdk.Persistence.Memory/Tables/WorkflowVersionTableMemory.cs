@@ -11,6 +11,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class WorkflowVersionTableMemory : CrudMemory<WorkflowVersionRecordCreate, WorkflowVersionRecord, Guid>, IWorkflowVersionTable
     {
+        public WorkflowVersionTableMemory()
+        {
+            UniqueConstraintMethods += item => new { item.WorkflowFormId, item.MajorVersion };
+        }
+
         /// <inheritdoc />
         public Task<WorkflowVersionRecord> ReadAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
         {
