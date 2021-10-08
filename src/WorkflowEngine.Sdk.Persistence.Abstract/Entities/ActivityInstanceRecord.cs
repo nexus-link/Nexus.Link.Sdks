@@ -56,7 +56,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {
+            FulcrumValidate.IsNotDefaultValue(WorkflowInstanceId, nameof(WorkflowInstanceId), errorLocation);
+            FulcrumValidate.IsNotDefaultValue(ActivityVersionId, nameof(ActivityVersionId), errorLocation);
             FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, StartedAt, nameof(StartedAt), errorLocation);
+            if (Iteration.HasValue) FulcrumValidate.IsGreaterThanOrEqualTo(1, Iteration.Value, nameof(Iteration), errorLocation);
         }
     }
 }
