@@ -20,6 +20,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         protected static readonly Tenant Tenant = new Tenant("workflowenginesdk", "integrationtests");
 
         protected IConfigurationTables ConfigurationTables;
+        protected IRuntimeTables RuntimeTables;
 
         static AbstractDatabaseTest()
         {
@@ -32,6 +33,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         protected AbstractDatabaseTest()
         {
             ConfigurationTables = new ConfigurationTablesSql(ConnectionString);
+            RuntimeTables = new RuntimeTablesSql(ConnectionString);
         }
 
         protected static void DropDatabase()
@@ -147,6 +149,11 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         {
             var id = await ConfigurationTables.Transition.CreateAsync(item, cancellationToken);
             return await ConfigurationTables.Transition.ReadAsync(id, cancellationToken);
+        }
+
+        protected async Task<WorkflowInstanceRecord> CreateWorkflowInstanceAsync(Guid id, WorkflowInstanceRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            return await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
     }
 }
