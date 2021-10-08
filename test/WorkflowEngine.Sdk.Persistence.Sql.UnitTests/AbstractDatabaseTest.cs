@@ -74,5 +74,25 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
             return await ConfigurationTables.WorkflowVersion.ReadAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
         }
+
+        protected async Task<WorkflowVersionRecord> CreateStandardWorkflowVersionAsync(CancellationToken cancellationToken = default)
+        {
+            var workflowForm = await CreateStandardWorkflowFormAsync(cancellationToken);
+            var item = new WorkflowVersionRecordCreate
+            {
+                WorkflowFormId = workflowForm.Id,
+                MajorVersion = 1,
+                MinorVersion = 0,
+                DynamicCreate = true
+            };
+            await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.ReadAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
+        }
+
+        protected async Task<WorkflowVersionParameterRecord> CreateWorkflowVersionParameterAsync(WorkflowVersionParameterRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            await ConfigurationTables.WorkflowVersionParameter.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.WorkflowVersionParameter.ReadAsync(item.WorkflowVersionId, item.Name, cancellationToken);
+        }
     }
 }
