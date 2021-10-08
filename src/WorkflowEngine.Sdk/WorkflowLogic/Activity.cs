@@ -144,12 +144,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
+            catch (HandledRequestAcceptedException e)
+            {
+                throw;
+            }
             catch (RequestAcceptedException e)
             {
                 if (e.OutstandingRequestIds == null || e.OutstandingRequestIds.Count != 1) throw;
                 ActivityInformation.AsyncRequestId = e.OutstandingRequestIds.First();
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-                throw;
+                throw new HandledRequestAcceptedException(e);
             }
             catch (ActivityException)
             {
@@ -176,6 +180,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             if (ignoreResult) return default;
 
             return JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
+        }
+    }
+
+    internal class HandledRequestAcceptedException : RequestAcceptedException
+    {
+        public HandledRequestAcceptedException(RequestAcceptedException e)
+        :base(e.UrlWhereResponseWillBeMadeAvailable, e.OutstandingRequestIds)
+        {
         }
     }
 }
