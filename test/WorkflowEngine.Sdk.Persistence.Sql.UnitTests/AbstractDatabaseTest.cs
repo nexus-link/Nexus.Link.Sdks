@@ -124,5 +124,23 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             return await ConfigurationTables.ActivityVersion.ReadAsync(id, cancellationToken);
         }
 
+        protected async Task<ActivityVersionRecord> CreateStandardActivityVersionAsync(CancellationToken cancellationToken = default)
+        {
+            var workflowVersion = await CreateStandardWorkflowVersionAsync(cancellationToken);
+            var activityForm = await CreateStandardActivityFormAsync(cancellationToken);
+            var item = new ActivityVersionRecordCreate
+            {
+                WorkflowVersionId = workflowVersion.Id,
+                ActivityFormId = activityForm.Id,
+                Position = 1
+            };
+            return await CreateActivityVersionAsync(item, cancellationToken);
+        }
+
+        protected async Task<ActivityVersionParameterRecord> CreateActivityVersionParameterAsync(ActivityVersionParameterRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            await ConfigurationTables.ActivityVersionParameter.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.ActivityVersionParameter.ReadAsync(item.ActivityVersionId, item.Name, cancellationToken);
+        }
     }
 }

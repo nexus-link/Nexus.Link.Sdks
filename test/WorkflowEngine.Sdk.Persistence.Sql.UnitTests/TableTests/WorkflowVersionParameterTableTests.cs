@@ -64,10 +64,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         [InlineData(false, null)]
         [InlineData(false, "")]
         [InlineData(false, " ")]
-        public async Task Validation_Prevents_Creating_With_Bad_Input(bool nullFormId, string name)
+        public async Task Validation_Prevents_Creating_With_Bad_Input(bool nullVersionId, string name)
         {
             // Arrange
-            var workflowVersion = nullFormId ? null : await CreateStandardWorkflowVersionAsync();
+            var workflowVersion = nullVersionId ? null : await CreateStandardWorkflowVersionAsync();
 
             var item = new WorkflowVersionParameterRecordCreate
             {
