@@ -155,5 +155,25 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         {
             return await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
+
+        protected async Task<WorkflowInstanceRecord> CreateStandardWorkflowInstanceAsync(CancellationToken cancellationToken = default)
+        {
+            var id = Guid.NewGuid();
+            var workflowVersion = await CreateStandardWorkflowVersionAsync(cancellationToken);
+            var item = new WorkflowInstanceRecordCreate
+            {
+                WorkflowVersionId = workflowVersion.Id,
+                Title = "Flying to Deimos",
+                StartedAt = DateTimeOffset.Now,
+                InitialVersion = "1.0"
+            };
+            return await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
+        }
+
+        protected async Task<ActivityInstanceRecord> CreateAcivityInstanceAsync(ActivityInstanceRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            var id = await RuntimeTables.ActivityInstance.CreateAsync(item, cancellationToken);
+            return await RuntimeTables.ActivityInstance.ReadAsync(id, cancellationToken);
+        }
     }
 }
