@@ -11,8 +11,8 @@ CREATE TABLE WorkflowForm
     RecordCreatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowForm_RecordCreatedAt DEFAULT (sysdatetimeoffset()),
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowForm_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
-    CapabilityName nvarchar(2024) NOT NULL,
-    Title nvarchar(2024) NOT NULl,
+    CapabilityName nvarchar(2024) NOT NULL CONSTRAINT CK_WorkflowForm_CapabilityName_WS CHECK (ltrim(rtrim(CapabilityName)) != ''),
+    Title nvarchar(2024) NOT NULl CONSTRAINT CK_WorkflowForm_Title_WS CHECK (ltrim(rtrim(Title)) != ''),
 
 	CONSTRAINT PK_WorkflowForm PRIMARY KEY (Id ASC)
 )
