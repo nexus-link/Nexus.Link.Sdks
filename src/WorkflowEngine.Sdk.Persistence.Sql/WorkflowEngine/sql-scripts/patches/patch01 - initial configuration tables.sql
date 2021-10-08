@@ -78,7 +78,8 @@ CREATE TABLE ActivityVersion
     Position int NOT NULL,
     ParentActivityVersionId uniqueidentifier CONSTRAINT FK_ActivityVersion_ParentActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
 
-	CONSTRAINT PK_ActivityVersion PRIMARY KEY (Id ASC)
+	CONSTRAINT PK_ActivityVersion PRIMARY KEY (Id ASC),
+	CONSTRAINT UQ_ActivityVersion_1 UNIQUE (WorkflowVersionId, ActivityFormId, Position)
 )
 
 CREATE TABLE ActivityVersionParameter

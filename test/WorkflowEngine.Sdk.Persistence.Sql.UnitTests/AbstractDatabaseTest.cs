@@ -112,5 +112,17 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             };
             return await CreateActivityFormAsync(id, item, cancellationToken);
         }
+
+        protected async Task<ActivityFormRecord> CreateStandardActivityFormAsync(CancellationToken cancellationToken = default)
+        {
+            return await CreateStandardActivityFormAsync(Guid.NewGuid(), cancellationToken);
+        }
+
+        protected async Task<ActivityVersionRecord> CreateActivityVersionAsync(ActivityVersionRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            var id = await ConfigurationTables.ActivityVersion.CreateAsync(item, cancellationToken);
+            return await ConfigurationTables.ActivityVersion.ReadAsync(id, cancellationToken);
+        }
+
     }
 }
