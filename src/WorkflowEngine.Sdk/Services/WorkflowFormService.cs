@@ -39,8 +39,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
-            await VerifyUnique(idAsGuid, item, cancellationToken);
-
             var recordCreate = new WorkflowFormRecordCreate().From(item);
             var record = await _configurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
 
@@ -73,21 +71,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireValidated(item, nameof(item));
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
-            await VerifyUnique(idAsGuid, item, cancellationToken);
-
             var record = new WorkflowFormRecord().From(item);
             await _configurationTables.WorkflowForm.UpdateAsync(idAsGuid, record, cancellationToken);
-        }
-
-        private async Task VerifyUnique(Guid idAsGuid, WorkflowFormCreate item, CancellationToken cancellationToken)
-        {
-            var page = await _configurationTables.WorkflowForm.SearchAsync(
-                new SearchDetails<WorkflowFormRecord>(new {item.CapabilityName, item.Title}), 0, 1, cancellationToken);
-            if (page.PageInfo.Returned != 0 && page.Data.First().Id != idAsGuid)
-            {
-                throw new FulcrumConflictException(
-                    $"A workflow already exists for capability {item.CapabilityName} with title {item.Title}.");
-            }
         }
     }
 }
