@@ -35,7 +35,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {
+            FulcrumValidate.IsNotDefaultValue(WorkflowFormId, nameof(WorkflowFormId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(Title, nameof(Title), errorLocation);
+            FulcrumValidate.IsNotNullOrWhiteSpace(Type, nameof(Type), errorLocation);
         }
     }
 }

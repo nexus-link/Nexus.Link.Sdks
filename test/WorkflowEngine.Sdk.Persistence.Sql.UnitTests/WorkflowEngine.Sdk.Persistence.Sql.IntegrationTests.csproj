@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\WorkflowEngine.Sdk.Persistence.Sql\WorkflowEngine.Sdk.Persistence.Sql.csproj" />
+    <ProjectReference Include="..\..\src\WorkflowEngine.Sdk\WorkflowEngine.Sdk.csproj" />
   </ItemGroup>
 
 </Project>

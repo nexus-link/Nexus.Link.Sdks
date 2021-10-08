@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
@@ -93,6 +94,23 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         {
             await ConfigurationTables.WorkflowVersionParameter.CreateAsync(item, cancellationToken);
             return await ConfigurationTables.WorkflowVersionParameter.ReadAsync(item.WorkflowVersionId, item.Name, cancellationToken);
+        }
+
+        protected Task<ActivityFormRecord> CreateActivityFormAsync(Guid id, ActivityFormRecordCreate item, CancellationToken cancellationToken = default)
+        {
+            return ConfigurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
+        }
+
+        protected async Task<ActivityFormRecord> CreateStandardActivityFormAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var workflowForm = await CreateStandardWorkflowFormAsync(cancellationToken);
+            var item = new ActivityFormRecordCreate
+            {
+                WorkflowFormId = workflowForm.Id,
+                Type = WorkflowActivityTypeEnum.Action.ToString(),
+                Title = "Phobos"
+            };
+            return await CreateActivityFormAsync(id, item, cancellationToken);
         }
     }
 }
