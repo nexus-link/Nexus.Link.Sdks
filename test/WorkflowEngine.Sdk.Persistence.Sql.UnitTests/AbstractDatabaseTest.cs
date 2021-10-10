@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer.Logic;
@@ -28,6 +29,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 
             DropDatabase();
             DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionString, MasterConnectionString);
+
+            using var connection = new SqlConnection(ConnectionString);
+            connection.Execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+
         }
 
         protected AbstractDatabaseTest()
