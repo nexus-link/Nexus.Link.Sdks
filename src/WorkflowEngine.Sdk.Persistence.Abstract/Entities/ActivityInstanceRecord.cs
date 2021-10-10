@@ -43,14 +43,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         }
     }
 
-    public class ActivityInstanceRecordCreate : IValidatable
+    public class ActivityInstanceRecordCreate : ActivityInstanceRecordUnique, IValidatable
     {
-        public Guid WorkflowInstanceId { get; set; }
-        public Guid ActivityVersionId { get; set; }
-        public Guid? ParentActivityInstanceId { get; set; }
-
-        public int? Iteration { get; set; }
-
         public DateTimeOffset StartedAt { get; set; }
 
         /// <inheritdoc />
@@ -61,5 +55,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, StartedAt, nameof(StartedAt), errorLocation);
             if (Iteration.HasValue) FulcrumValidate.IsGreaterThanOrEqualTo(1, Iteration.Value, nameof(Iteration), errorLocation);
         }
+    }
+
+    public class ActivityInstanceRecordUnique
+    {
+        public Guid WorkflowInstanceId { get; set; }
+        public Guid ActivityVersionId { get; set; }
+        public Guid? ParentActivityInstanceId { get; set; }
+
+        public int? Iteration { get; set; }
     }
 }

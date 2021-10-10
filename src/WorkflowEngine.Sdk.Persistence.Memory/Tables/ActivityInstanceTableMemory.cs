@@ -7,5 +7,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class ActivityInstanceTableMemory : CrudMemory<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>, IActivityInstanceTable
     {
+        public ActivityInstanceTableMemory()
+        {
+            UniqueConstraintMethods += item => new ActivityInstanceRecordUnique
+            {
+                WorkflowInstanceId = item.WorkflowInstanceId,
+                ParentActivityInstanceId = item.ParentActivityInstanceId,
+                ActivityVersionId = item.ActivityVersionId,
+                Iteration = item.Iteration
+            };
+        }
     }
 }
