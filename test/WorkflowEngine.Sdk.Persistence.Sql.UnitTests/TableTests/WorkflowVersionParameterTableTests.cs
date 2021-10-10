@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Dapper;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
 {
     public class WorkflowVersionParameterTableTests : AbstractDatabaseTest
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public WorkflowVersionParameterTableTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task Can_Create_Workflow_Version_Parameter()
         {
@@ -34,8 +43,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.WorkflowVersionId, record.WorkflowVersionId);
             Assert.Equal(item.Name, record.Name);
         }
-
-        // TODO: Test update
 
         [Fact]
         public async Task Cant_Create_Workflow_Version_Parameter_With_Same_Workflow_And_Name()
@@ -81,6 +88,43 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowVersionParameterAsync(item));
         }
 
-        // TODO: expect SqlException for bad input
+        [Theory]
+        [InlineData(null, "column does not allow nulls")]
+        [InlineData("", "CK_WorkflowVersionParameter_Name_WS")]
+        [InlineData(" ", "CK_WorkflowVersionParameter_Name_WS")]
+        public async Task Database_Prevents_Creating_With_Bad_Input(string name, string partOfSqlException)
+        {
+            // Arrange
+            await using var connection = new SqlConnection(ConnectionString);
+            var workflowVersion = await CreateStandardWorkflowVersionAsync();
+
+            var item = new WorkflowVersionParameterRecordCreate
+            {
+                WorkflowVersionId = workflowVersion.Id,
+                Name = name
+            };
+
+            // Act & Assert
+            Assert.Throws<SqlException>(() =>
+            {
+                try
+                {
+                    connection.Execute($"INSERT INTO WorkflowVersionParameter (" +
+                                       $" {nameof(WorkflowVersionParameterRecord.WorkflowVersionId)}," +
+                                       $" {nameof(WorkflowVersionParameterRecord.Name)})" +
+                                       $" VALUES (@WorkflowVersionId, @Name)", item);
+                }
+                catch (Exception e)
+                {
+                    _testOutputHelper.WriteLine($"Exception: {e.Message}");
+                    if (!e.Message.Contains(partOfSqlException))
+                    {
+                        _testOutputHelper.WriteLine($"Error: expected '{partOfSqlException}' to be part of the SQL Exception");
+                        return;
+                    }
+                    throw;
+                }
+            });
+        }
     }
 }

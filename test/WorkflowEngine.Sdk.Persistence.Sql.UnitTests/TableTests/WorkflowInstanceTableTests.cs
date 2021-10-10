@@ -1,13 +1,23 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Dapper;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
 {
     public class WorkflowInstanceTableTests : AbstractDatabaseTest
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public WorkflowInstanceTableTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task Can_Create_Workflow_Instance()
         {
@@ -40,8 +50,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.InitialVersion, record.InitialVersion);
         }
 
-        // TODO: Test update
-
         [Theory]
         [InlineData(true, false, "Title", false, "1.0")]
         [InlineData(false, true, "Title", false, "1.0")]
@@ -70,6 +78,48 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateWorkflowInstanceAsync(id, item));
         }
 
-        // TODO: expect SqlException for bad input
+        [Theory]
+        [InlineData(null, "1.0", "column does not allow nulls")]
+        [InlineData("", "1.0", "CK_WorkflowInstance_Title_WS")]
+        [InlineData(" ", "1.0", "CK_WorkflowInstance_Title_WS")]
+        [InlineData("Title", null, "column does not allow nulls")]
+        [InlineData("Title", "", "CK_WorkflowInstanceInitialVersion_WS")]
+        [InlineData("Title", " ", "CK_WorkflowInstanceInitialVersion_WS")]
+        public async Task Database_Prevents_Creating_With_Bad_Input(string title, string initialVersion, string partOfSqlException)
+        {
+            // Arrange
+            await using var connection = new SqlConnection(ConnectionString);
+            var workflowVersion = await CreateStandardWorkflowVersionAsync();
+
+            var item = new WorkflowInstanceRecordCreate
+            {
+                WorkflowVersionId = workflowVersion?.Id ?? Guid.Empty,
+                Title = title,
+                InitialVersion = initialVersion
+            };
+
+            // Act & Assert
+            Assert.Throws<SqlException>(() =>
+            {
+                try
+                {
+                    connection.Execute($"INSERT INTO WorkflowInstance (" +
+                                       $" {nameof(WorkflowInstanceRecord.WorkflowVersionId)}," +
+                                       $" {nameof(WorkflowInstanceRecord.Title)}," +
+                                       $" {nameof(WorkflowInstanceRecord.InitialVersion)})" +
+                                       $" VALUES (@WorkflowVersionId, @Title, @InitialVersion)", item);
+                }
+                catch (Exception e)
+                {
+                    _testOutputHelper.WriteLine($"Exception: {e.Message}");
+                    if (!e.Message.Contains(partOfSqlException))
+                    {
+                        _testOutputHelper.WriteLine($"Error: expected '{partOfSqlException}' to be part of the SQL Exception");
+                        return;
+                    }
+                    throw;
+                }
+            });
+        }
     }
 }

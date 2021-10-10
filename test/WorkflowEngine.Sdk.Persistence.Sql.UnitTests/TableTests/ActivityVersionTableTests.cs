@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Dapper;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
 {
     public class ActivityVersionTableTests : AbstractDatabaseTest
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public ActivityVersionTableTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task Can_Create_Activity_Version()
         {
@@ -38,7 +47,23 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Position, record.Position);
         }
 
-        // TODO: Test update
+        [Fact]
+        public async Task Can_Update_Activity_Version()
+        {
+            // Arrange
+            var createdRecord = await CreateStandardActivityVersionAsync();
+            createdRecord.Position = 2;
+
+            // Act
+            await ConfigurationTables.ActivityVersion.UpdateAsync(createdRecord.Id, createdRecord);
+            var updatedRecord = await ConfigurationTables.ActivityVersion.ReadAsync(createdRecord.Id);
+
+            // Assert
+            Assert.NotNull(updatedRecord);
+            Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
+            Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
+            Assert.Equal(createdRecord.Position, updatedRecord.Position);
+        }
 
         [Fact]
         public async Task Cant_Create_Activity_Version_With_Same_Position_On_ActivityForm_And_WorkflowVersion()
@@ -89,6 +114,47 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateActivityVersionAsync(item));
         }
 
-        // TODO: expect SqlException for bad input
+        [Theory]
+        [InlineData(null, "column does not allow nulls")]
+        [InlineData(0, "CK_ActivityVersion_Position_GT0")]
+        [InlineData(-1, "CK_ActivityVersion_Position_GT0")]
+        public async Task Database_Prevents_Creating_With_Bad_Input(int? position, string partOfSqlException)
+        {
+            // Arrange
+            await using var connection = new SqlConnection(ConnectionString);
+            var workflowVersion = await CreateStandardWorkflowVersionAsync();
+            var activityForm = await CreateStandardActivityFormAsync();
+
+            var item = new ActivityVersionRecordCreate
+            {
+                WorkflowVersionId = workflowVersion?.Id ?? Guid.Empty,
+                ActivityFormId = activityForm?.Id ?? Guid.Empty,
+                Position = position ?? 0
+            };
+
+            // Act & Assert
+            Assert.Throws<SqlException>(() =>
+            {
+                try
+                {
+                    var pos = position.HasValue ? "@Position" : "NULL";
+                    connection.Execute($"INSERT INTO ActivityVersion (" +
+                                       $" {nameof(ActivityVersionRecord.WorkflowVersionId)}," +
+                                       $" {nameof(ActivityVersionRecord.ActivityFormId)}," +
+                                       $" {nameof(ActivityVersionRecord.Position)})" +
+                                       $" VALUES (@WorkflowVersionId, @ActivityFormId, {pos})", item);
+                }
+                catch (Exception e)
+                {
+                    _testOutputHelper.WriteLine($"Exception: {e.Message}");
+                    if (!e.Message.Contains(partOfSqlException))
+                    {
+                        _testOutputHelper.WriteLine($"Error: expected '{partOfSqlException}' to be part of the SQL Exception");
+                        return;
+                    }
+                    throw;
+                }
+            });
+        }
     }
 }

@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Dapper;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
 {
     public class ActivityFormTableTests : AbstractDatabaseTest
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public ActivityFormTableTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task Can_Create_Activity_Form_With_Specified_Id()
         {
@@ -38,7 +47,25 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Title, record.Title);
         }
 
-        // TODO: Test update
+        [Fact]
+        public async Task Can_Update_Activity_Form()
+        {
+            // Arrange
+            var createdRecord = await CreateStandardActivityFormAsync();
+            createdRecord.Type = WorkflowActivityTypeEnum.ForEachParallel.ToString();
+            createdRecord.Title = "Phobos of Mars";
+
+            // Act
+            await ConfigurationTables.ActivityForm.UpdateAsync(createdRecord.Id, createdRecord);
+            var updatedRecord = await ConfigurationTables.ActivityForm.ReadAsync(createdRecord.Id);
+
+            // Assert
+            Assert.NotNull(updatedRecord);
+            Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
+            Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
+            Assert.Equal(createdRecord.Type, updatedRecord.Type);
+            Assert.Equal(createdRecord.Title, updatedRecord.Title);
+        }
 
         [Fact]
         public async Task Cant_Create_Activity_Form_With_Existing_Id()
@@ -71,10 +98,52 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 Type = type,
                 Title = title
             };
+
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateActivityFormAsync(Guid.NewGuid(), item));
         }
 
-        // TODO: expect SqlException for bad input
+        [Theory]
+        [InlineData(null, "Title", "column does not allow nulls")]
+        [InlineData("", "Title", "CK_ActivityForm_Type_WS")]
+        [InlineData(" ", "Title", "CK_ActivityForm_Type_WS")]
+        [InlineData("Type", null, "column does not allow nulls")]
+        [InlineData("Type", "", "CK_ActivityForm_Title_WS")]
+        [InlineData("Type", " ", "CK_ActivityForm_Title_WS")]
+        public async Task Database_Prevents_Creating_With_Bad_Input(string type, string title, string partOfSqlException)
+        {
+            // Arrange
+            await using var connection = new SqlConnection(ConnectionString);
+            var workflowForm = await CreateStandardWorkflowFormAsync();
+            var item = new ActivityFormRecordCreate
+            {
+                WorkflowFormId = workflowForm.Id,
+                Type = type,
+                Title = title
+            };
+
+            // Act & Assert
+            Assert.Throws<SqlException>(() =>
+            {
+                try
+                {
+                    connection.Execute($"INSERT INTO ActivityForm (" +
+                                       $" {nameof(ActivityFormRecord.WorkflowFormId)}," +
+                                       $" {nameof(ActivityFormRecord.Type)}," +
+                                       $" {nameof(ActivityFormRecord.Title)})" +
+                                       $" VALUES (@WorkflowFormId, @Type, @Title)", item);
+                }
+                catch (Exception e)
+                {
+                    _testOutputHelper.WriteLine($"Exception: {e.Message}");
+                    if (!e.Message.Contains(partOfSqlException))
+                    {
+                        _testOutputHelper.WriteLine($"Error: expected '{partOfSqlException}' to be part of the SQL Exception");
+                        return;
+                    }
+                    throw;
+                }
+            });
+        }
     }
 }

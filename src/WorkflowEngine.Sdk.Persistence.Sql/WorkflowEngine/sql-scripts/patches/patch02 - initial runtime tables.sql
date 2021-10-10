@@ -8,8 +8,8 @@ CREATE TABLE WorkflowInstance
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowInstance_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     WorkflowVersionId uniqueidentifier NOT NULL CONSTRAINT FK_WorkflowInstance_WorkflowVersionId REFERENCES WorkflowVersion ON UPDATE CASCADE ON DELETE NO ACTION,
-    Title nvarchar(2048) NOT NULl,
-    InitialVersion nvarchar(64) NOT NULl,
+    Title nvarchar(2048) NOT NULl CONSTRAINT CK_WorkflowInstance_Title_WS CHECK (ltrim(rtrim(Title)) != ''),
+    InitialVersion nvarchar(64) NOT NULl CONSTRAINT CK_WorkflowInstanceInitialVersion_WS CHECK (ltrim(rtrim(InitialVersion)) != ''),
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset CONSTRAINT DF_WorkflowInstance_FinishedAt DEFAULT (sysdatetimeoffset()),
 

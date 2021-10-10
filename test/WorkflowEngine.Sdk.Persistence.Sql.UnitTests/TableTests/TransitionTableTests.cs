@@ -39,8 +39,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.ToActivityVersionId, record.ToActivityVersionId);
         }
 
-        // TODO: Test update
-
         [Theory]
         [InlineData(false, false)]
         [InlineData(true, false)]
@@ -92,7 +90,5 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateTransitionAsync(item));
         }
-
-        // TODO: expect SqlException for bad input
     }
 }

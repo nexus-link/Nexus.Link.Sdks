@@ -25,8 +25,8 @@ CREATE TABLE WorkflowVersion
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowVersion_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     WorkflowFormId uniqueidentifier NOT NULL CONSTRAINT FK_WorkflowVersion_WorkflowFormId REFERENCES WorkflowForm ON UPDATE CASCADE ON DELETE NO ACTION,
-    MajorVersion int NOT NULL CONSTRAINT CK_WorkflowVersion_MajorVersion CHECK(MajorVersion > 0),
-    MinorVersion int NOT NULL CONSTRAINT CK_WorkflowVersion_MinorVersion CHECK(MinorVersion >= 0),
+    MajorVersion int NOT NULL CONSTRAINT CK_WorkflowVersion_MajorVersion CHECK (MajorVersion > 0),
+    MinorVersion int NOT NULL CONSTRAINT CK_WorkflowVersion_MinorVersion CHECK (MinorVersion >= 0),
     DynamicCreate bit NOT NULL
 
 	CONSTRAINT PK_WorkflowVersion PRIMARY KEY (Id ASC),
@@ -41,7 +41,7 @@ CREATE TABLE WorkflowVersionParameter
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowVersionParameter_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     WorkflowVersionId uniqueidentifier NOT NULL CONSTRAINT FK_WorkflowVersionParameter_WorkflowVersionId REFERENCES WorkflowVersion ON UPDATE CASCADE ON DELETE NO ACTION,
-    Name nvarchar(2024) NOT NULl,
+    Name nvarchar(2024) NOT NULl CONSTRAINT CK_WorkflowVersionParameter_Name_WS CHECK (ltrim(rtrim(Name)) != ''),
 
 	CONSTRAINT PK_WorkflowVersionParameter PRIMARY KEY (Id ASC),
 	CONSTRAINT UQ_WorkflowVersionParameter_1 UNIQUE (WorkflowVersionId, Name)
@@ -60,8 +60,8 @@ CREATE TABLE ActivityForm
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_ActivityForm_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     WorkflowFormId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityForm_WorkflowFormId REFERENCES WorkflowForm ON UPDATE CASCADE ON DELETE NO ACTION,
-    Type nvarchar(64) NOT NULL,
-    Title nvarchar(2048) NOT NULl,
+    Type nvarchar(64) NOT NULL CONSTRAINT CK_ActivityForm_Type_WS CHECK (ltrim(rtrim(Type)) != ''),
+    Title nvarchar(2048) NOT NULl CONSTRAINT CK_ActivityForm_Title_WS CHECK (ltrim(rtrim(Title)) != ''),
 
 	CONSTRAINT PK_ActivityForm PRIMARY KEY (Id ASC)
 )
@@ -75,7 +75,7 @@ CREATE TABLE ActivityVersion
 
     WorkflowVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersion_WorkflowVersionId REFERENCES WorkflowVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
     ActivityFormId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersion_ActivityFormId REFERENCES ActivityForm ON UPDATE CASCADE ON DELETE NO ACTION,
-    Position int NOT NULL,
+    Position int NOT NULL CONSTRAINT CK_ActivityVersion_Position_GT0 CHECK (Position >= 1),
     ParentActivityVersionId uniqueidentifier CONSTRAINT FK_ActivityVersion_ParentActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
 
 	CONSTRAINT PK_ActivityVersion PRIMARY KEY (Id ASC),
@@ -90,7 +90,7 @@ CREATE TABLE ActivityVersionParameter
 	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_ActivityVersionParameter_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
 
     ActivityVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersionParameter_ActivityVersionId REFERENCES ActivityVersion ON UPDATE CASCADE ON DELETE NO ACTION,
-    Name nvarchar(2024) NOT NULl,
+    Name nvarchar(2024) NOT NULl CONSTRAINT CK_ActivityVersionParameter_Name_WS CHECK (ltrim(rtrim(Name)) != ''),
 
 	CONSTRAINT PK_ActivityVersionParameter PRIMARY KEY (Id ASC),
 	CONSTRAINT UQ_ActivityVersionParameter_1 UNIQUE (ActivityVersionId, Name)

@@ -39,8 +39,32 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Iteration, record.Iteration);
         }
 
-        // TODO: Test update
+        [Fact]
+        public async Task Can_Update_Activity_Instance()
+        {
+            // Arrange
+            var createdRecord = await CreateStandardActivityInstanceAsync();
+            createdRecord.StartedAt = DateTimeOffset.Now.AddSeconds(-12);
+            createdRecord.Iteration = 2;
+            createdRecord.FinishedAt = DateTimeOffset.Now;
+            createdRecord.ResultAsJson = "{}";
+            createdRecord.HasCompleted = true;
 
+            // Act
+            await RuntimeTables.ActivityInstance.UpdateAsync(createdRecord.Id, createdRecord);
+            var updatedRecord = await RuntimeTables.ActivityInstance.ReadAsync(createdRecord.Id);
+
+            // Assert
+            Assert.NotNull(updatedRecord);
+            Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
+            Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
+            Assert.Equal(createdRecord.StartedAt, updatedRecord.StartedAt);
+            Assert.Equal(createdRecord.Iteration, updatedRecord.Iteration);
+            Assert.Equal(createdRecord.FinishedAt, updatedRecord.FinishedAt);
+            Assert.Equal(createdRecord.ResultAsJson, updatedRecord.ResultAsJson);
+            Assert.Equal(createdRecord.HasCompleted, updatedRecord.HasCompleted);
+        }
+        
         [Theory]
         [InlineData(true, false, false, 1)]
         [InlineData(false, true, false, 1)]
@@ -64,7 +88,5 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Act & Assert
             await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateAcivityInstanceAsync(item));
         }
-
-        // TODO: expect SqlException for bad input
     }
 }

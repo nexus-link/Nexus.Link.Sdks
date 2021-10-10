@@ -175,5 +175,19 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             var id = await RuntimeTables.ActivityInstance.CreateAsync(item, cancellationToken);
             return await RuntimeTables.ActivityInstance.ReadAsync(id, cancellationToken);
         }
+
+        protected async Task<ActivityInstanceRecord> CreateStandardActivityInstanceAsync(CancellationToken cancellationToken = default)
+        {
+            var activityVersion = await CreateStandardActivityVersionAsync(cancellationToken);
+            var workflowInstance = await CreateStandardWorkflowInstanceAsync(cancellationToken);
+            var item = new ActivityInstanceRecordCreate
+            {
+                ActivityVersionId = activityVersion.Id,
+                WorkflowInstanceId = workflowInstance.Id,
+                StartedAt = DateTimeOffset.Now,
+                Iteration = 1
+            };
+            return await CreateAcivityInstanceAsync(item, cancellationToken);
+        }
     }
 }
