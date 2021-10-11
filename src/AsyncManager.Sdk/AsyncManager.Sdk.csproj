@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Configurations>Debug;Release;ci;prdsim;prd</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <AssemblyName>Nexus.Link.AsyncManager.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.AsyncManager.Sdk</RootNamespace>
 
@@ -33,12 +33,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.19.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.20.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0-rc01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,7 +48,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.0.0 First release
+      1.1.0 Refactored AsyncRequestClient. Now accepts RequestPostponedException.
+      1.0.2 First release
     </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

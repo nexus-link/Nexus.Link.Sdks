@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -26,6 +27,13 @@ namespace Nexus.Link.AsyncManager.Sdk
         /// <param name="value">The value for the header.</param>
         /// <remarks>If a header with the same name already exists, the values are appended to the existing header values.</remarks>
         AsyncHttpRequest AddHeader(string name, string value);
+
+        /// <summary>
+        /// Add a number of headers to the <see cref="HttpRequestCreate.Headers"/> property.
+        /// </summary>
+        /// <param name="headers">The headers to add.</param>
+        /// <remarks>If a header with the same name already exists, the values are appended to the existing header values.</remarks>
+        AsyncHttpRequest AddHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers);
 
         /// <summary>
         /// Set the <see cref="HttpRequestCreate.Content"/> property to the data provided in <paramref name="content"/> with

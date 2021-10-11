@@ -27,10 +27,10 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.19" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.6.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="2.18.0" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="2.20.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.5.2" />
+		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.6.1" />
 	</ItemGroup>
 
 	<PropertyGroup>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
@@ -190,6 +191,17 @@ namespace Nexus.Link.AsyncManager.Sdk
         {
             Metadata.Callback ??= new RequestCallback();
             SetCallbackContext(context == null ? null : JsonConvert.SerializeObject(context));
+            return this;
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest AddHeaders(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
+        {
+            foreach (var requestHeader in headers)
+            {
+                AddHeader(requestHeader.Key, requestHeader.Value.ToArray());
+            }
+
             return this;
         }
     }

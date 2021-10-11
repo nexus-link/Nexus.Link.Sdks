@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Nexus.Link.WorkflowEngine.Sdk</AssemblyName>
+    <RootNamespace>Nexus.Link.WorkflowEngine.Sdk</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.3-rc01" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.6.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.20.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AsyncManager.Sdk\AsyncManager.Sdk.csproj" />
+    <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
+    <Version>1.0.4-rc01</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>The Nexus Link WorkflowEngine SDK.</Description>
+    <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      1.0.3 First release
+    </PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>
