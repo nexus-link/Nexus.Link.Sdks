@@ -4,13 +4,14 @@ using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -63,6 +64,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
         {
+            // Make sure we're on correct database version
+            await _workflowVersionCollection.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(FulcrumApplication.Setup.Tenant, DatabasePatchLevel.Version, cancellationToken);
+
             _workflowInformation.InstanceTitle = GetInstanceTitle();
             _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
             if (string.IsNullOrWhiteSpace(AsyncWorkflowStatic.Context.WorkflowInstanceId))
