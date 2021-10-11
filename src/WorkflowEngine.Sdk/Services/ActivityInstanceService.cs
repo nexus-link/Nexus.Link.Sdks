@@ -47,7 +47,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                         WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(findUnique.WorkflowInstanceId),
                         ActivityVersionId = MapperHelper.MapToType<Guid, string>(findUnique.ActivityVersionId),
                         ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(findUnique.ParentActivityInstanceId),
-                        findUnique.Iteration
+                        findUnique.ParentIteration
                     }),
                 cancellationToken);
              if (record == null) return null;

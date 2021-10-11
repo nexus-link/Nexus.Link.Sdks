@@ -18,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireValidated(source, nameof(source));
             
             target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
-            target.Iteration = source.Iteration;
+            target.ParentIteration = source.ParentIteration;
             target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityInstanceId);
             return target;
@@ -58,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
             target.Etag = source.Etag;
             target.WorkflowInstanceId = MapperHelper.MapToType<string, Guid>(source.WorkflowInstanceId);
-            target.Iteration = source.Iteration;
+            target.ParentIteration = source.ParentIteration;
             target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
             target.ResultAsJson = source.ResultAsJson;

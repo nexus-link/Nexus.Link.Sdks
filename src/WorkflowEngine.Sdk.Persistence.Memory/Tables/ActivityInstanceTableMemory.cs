@@ -14,7 +14,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
                 WorkflowInstanceId = item.WorkflowInstanceId,
                 ParentActivityInstanceId = item.ParentActivityInstanceId,
                 ActivityVersionId = item.ActivityVersionId,
-                Iteration = item.Iteration
+                ParentIteration = item.ParentIteration
             };
         }
     }
