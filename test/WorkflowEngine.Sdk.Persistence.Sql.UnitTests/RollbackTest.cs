@@ -183,7 +183,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             private static void ClearCacheAndPatch()
             {
                 //DatabasePatcherHandler.ClearCache();
-                DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionStringForRollback, MasterConnectionString);
+                DatabasePatcherHandler.PatchIfNecessary(ConnectionStringForRollback, MasterConnectionString);
             }
 
             private void WriteExtraPatch1Files(long initialPatchLevel)

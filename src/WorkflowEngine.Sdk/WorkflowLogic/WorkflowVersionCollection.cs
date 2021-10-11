@@ -5,7 +5,6 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -13,7 +12,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         public IWorkflowCapability Capability { get; }
         public IAsyncRequestClient AsyncRequestClient { get; }
-        public IVerifyDatabasePatchLevel DatabasePatchLevelVerifier { get; }
 
         private readonly Dictionary<int, object> _versions = new();
 
@@ -21,12 +19,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public string WorkflowFormId { get; set; }
         public string WorkflowFormTitle { get; set; }
 
-        protected WorkflowVersionCollection(IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient, IVerifyDatabasePatchLevel databasePatchLevelVerifier)
+        protected WorkflowVersionCollection(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient)
         {
             Capability = workflowCapability;
             AsyncRequestClient = asyncRequestClient;
-            DatabasePatchLevelVerifier = databasePatchLevelVerifier;
         }
 
         protected WorkflowVersionCollection DefineWorkflow(string capabilityName, string workflowTitle, string workflowFormId)

@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Text;
 using Nexus.Link.DatabasePatcher;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
     public class DatabasePatcherHandler
     {
-        public static void PatchIfNecessary(Tenant tenant, string connectionString, string masterConnectionString = null)
+        public static void PatchIfNecessary(string connectionString, string masterConnectionString = null)
         {
             var traceLog = new StringBuilder();
             try
@@ -21,7 +20,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
                 using var writer = new StringWriter(traceLog);
                 using var traceListener = new TextWriterTraceListener(writer);
                 var patcher = new Patcher(connection, GetBaseDir())
-                    .WithConfiguration($"{tenant.Organization}_{tenant.Environment}")
                     .WithCreateVersionTablesIfMissing(true)
                     .WithTraceListener(traceListener)
                     .WithHandleRollbacks(2);

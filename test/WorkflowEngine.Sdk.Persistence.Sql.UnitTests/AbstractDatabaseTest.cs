@@ -30,7 +30,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             FulcrumApplicationHelper.UnitTestSetup("Workflow engine database tests");
 
             DropDatabase(ConnectionString);
-            DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionString, MasterConnectionString);
+            DatabasePatcherHandler.PatchIfNecessary(ConnectionString, MasterConnectionString);
 
             using var connection = new SqlConnection(ConnectionString);
             connection.Execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");

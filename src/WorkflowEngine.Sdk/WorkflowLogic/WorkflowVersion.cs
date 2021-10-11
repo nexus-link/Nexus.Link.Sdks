@@ -65,7 +65,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
         {
             // Make sure we're on correct database version
-            await _workflowVersionCollection.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(FulcrumApplication.Setup.Tenant, DatabasePatchLevel.Version, cancellationToken);
+            InternalContract.RequireNotNull(DatabasePatchSettings.DatabasePatchLevelVerifier, "You need to setup DatabasePatchSettings.DatabasePatchLevelVerifier");
+            await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
 
             _workflowInformation.InstanceTitle = GetInstanceTitle();
             _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;

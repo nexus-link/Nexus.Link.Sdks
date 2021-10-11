@@ -22,10 +22,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Temporary
         }
 
         /// <inheritdoc />
-        public async Task VerifyDatabasePatchLevel(Tenant tenant, int sdkPatchLevel, CancellationToken cancellationToken = default)
+        public async Task VerifyDatabasePatchLevel(int sdkPatchLevel, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNull(tenant, nameof(tenant));
-            InternalContract.RequireValidated(tenant, nameof(tenant));
             InternalContract.RequireGreaterThanOrEqualTo(1, sdkPatchLevel, nameof(sdkPatchLevel));
 
             using var connection = new SqlConnection(_connectionString);
@@ -33,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Temporary
             // Always patch (and maybe create database in dev environments)
             try
             {
-                DatabasePatcherHandler.PatchIfNecessary(tenant, _connectionString, _masterConnectionString);
+                DatabasePatcherHandler.PatchIfNecessary(_connectionString, _masterConnectionString);
             }
             catch (Exception e)
             {
