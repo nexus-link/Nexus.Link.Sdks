@@ -8,7 +8,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
     {
         public WorkflowRestClients(IHttpSender httpSender)
         {
-            AsyncContext = new AsyncContextRestClient(httpSender);
             WorkflowForm = new WorkflowFormRestClient(httpSender);
             WorkflowVersion = new WorkflowVersionRestClient(httpSender);
             WorkflowParameter = new WorkflowParameterRestClient(httpSender);
@@ -19,9 +18,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             ActivityParameter = new ActivityParameterRestClient(httpSender);
             WorkflowInstance = new WorkflowInstanceRestClient(httpSender);
         }
-
-        /// <inheritdoc />
-        public IAsyncContextService AsyncContext { get; }
 
         /// <inheritdoc />
         public IWorkflowFormService WorkflowForm { get; }

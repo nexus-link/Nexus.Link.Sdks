@@ -11,7 +11,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
         public WorkflowCapability(IAsyncRequestClient asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
         {
-            AsyncContext = new AsyncContextService(asyncManagementCapability);
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion= new WorkflowVersionService(configurationTables);
             WorkflowParameter= new WorkflowParameterService(configurationTables);
@@ -22,9 +21,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables); 
         }
-
-        /// <inheritdoc />
-        public IAsyncContextService AsyncContext { get; }
 
         /// <inheritdoc />
         public IWorkflowFormService WorkflowForm { get; }
