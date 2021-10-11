@@ -11,6 +11,9 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 {
     public class RollbackTest : AbstractDatabaseTest
     {
+
+        private const string ConnectionStringForRollback = "Server=localhost;Database=workflow-sdk-tests-rollback;Trusted_Connection=True;";
+
         public class DatabaseRollbackTest
         {
             private readonly DirectoryInfo _baseDir;
@@ -23,7 +26,12 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             private readonly string _extraPatch2;
             private readonly string _extraPatch2Rollback;
 
-            public DatabaseRollbackTest() : base()
+            static DatabaseRollbackTest()
+            {
+                DropDatabase(ConnectionStringForRollback);
+            }
+
+            public DatabaseRollbackTest()
             {
                 _baseDir = DatabasePatcherHandler.GetBaseDir();
 
@@ -34,6 +42,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 _extraPatch1Rollback = $@"{_patchesDir.FullName}\extra-patch-1-rollback.sql";
                 _extraPatch2 = $@"{_patchesDir.FullName}\extra-patch-2.sql";
                 _extraPatch2Rollback = $@"{_patchesDir.FullName}\extra-patch-2-rollback.sql";
+
+                // TODO: andra blir påverkade av att det finns nya patch-filer
             }
 
             [Fact]
@@ -45,7 +55,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 var backupDir = new DirectoryInfo(@"backedup-sql-scripts");
                 try
                 {
-                    using var connection = new SqlConnection(ConnectionString);
+                    using var connection = new SqlConnection(ConnectionStringForRollback);
                     connection.VerifyAvailability();
 
                     // Current patch level
@@ -125,39 +135,42 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 
                 try
                 {
-                    using var connection = new SqlConnection(ConnectionString);
-                    connection.VerifyAvailability();
+                    lock (RollbackLock)
+                    {
+                        using var connection = new SqlConnection(ConnectionStringForRollback);
+                        connection.VerifyAvailability();
 
-                    // Current patch level
-                    var patchLevel = connection.QuerySingle<long>("SELECT MAX(Version) FROM DbVersion");
+                        // Current patch level
+                        var patchLevel = connection.QuerySingle<long>("SELECT MAX(Version) FROM DbVersion");
 
-                    // Add unit test patch 1
-                    WriteExtraPatch1Files(patchLevel);
-                    ClearCacheAndPatch();
-                    var name = connection.QuerySingle<string>("SELECT Name From UnitTest_Person WHERE Id = 1");
-                    Assert.Equal("Adam Andersson", name);
+                        // Add unit test patch 1
+                        WriteExtraPatch1Files(patchLevel);
+                        ClearCacheAndPatch();
+                        var name = connection.QuerySingle<string>("SELECT Name From UnitTest_Person WHERE Id = 1");
+                        Assert.Equal("Adam Andersson", name);
 
-                    // Add unit test patch 2
-                    WriteExtraPatch2Files(patchLevel);
-                    ClearCacheAndPatch();
-                    var firstName =
-                        connection.QuerySingle<string>("SELECT FirstName From UnitTest_Person WHERE Id = 1");
-                    Assert.Equal("Adam", firstName);
+                        // Add unit test patch 2
+                        WriteExtraPatch2Files(patchLevel);
+                        ClearCacheAndPatch();
+                        var firstName =
+                            connection.QuerySingle<string>("SELECT FirstName From UnitTest_Person WHERE Id = 1");
+                        Assert.Equal("Adam", firstName);
 
-                    // Rollback unit test patch 2
-                    DeleteExtraPatch2Files();
-                    ClearCacheAndPatch();
-                    name = connection.QuerySingle<string>("SELECT Name From UnitTest_Person WHERE Id = 1");
-                    Assert.Equal("Adam Andersson", name);
+                        // Rollback unit test patch 2
+                        DeleteExtraPatch2Files();
+                        ClearCacheAndPatch();
+                        name = connection.QuerySingle<string>("SELECT Name From UnitTest_Person WHERE Id = 1");
+                        Assert.Equal("Adam Andersson", name);
 
-                    // Rollback unit test patch 1
-                    DeleteExtraPatch1Files();
-                    ClearCacheAndPatch();
-                    var result = connection.Query("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE Table_Name = 'UnitTest_Person'");
-                    Assert.Empty(result);
+                        // Rollback unit test patch 1
+                        DeleteExtraPatch1Files();
+                        ClearCacheAndPatch();
+                        var result = connection.Query("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE Table_Name = 'UnitTest_Person'");
+                        Assert.Empty(result);
 
-                    connection.Close();
-                }
+                        connection.Close();
+
+                    }                }
                 finally
                 {
                     foreach (var file in _patchesDir.EnumerateFiles("extra-patch-*"))
@@ -170,7 +183,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             private static void ClearCacheAndPatch()
             {
                 //DatabasePatcherHandler.ClearCache();
-                DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionString, MasterConnectionString);
+                DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionStringForRollback, MasterConnectionString);
             }
 
             private void WriteExtraPatch1Files(long initialPatchLevel)

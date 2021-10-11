@@ -16,9 +16,11 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
     public abstract class AbstractDatabaseTest
     {
         protected const string MasterConnectionString = "Server=localhost;Database=master;Trusted_Connection=True;";
-        protected const string ConnectionString = "Server=localhost;Database=workflow_engine_sdk_tests;Trusted_Connection=True;";
+        protected const string ConnectionString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
 
         protected static readonly Tenant Tenant = new Tenant("workflowenginesdk", "integrationtests");
+
+        protected static object RollbackLock = new object();
 
         protected IConfigurationTables ConfigurationTables;
         protected IRuntimeTables RuntimeTables;
@@ -27,7 +29,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         {
             FulcrumApplicationHelper.UnitTestSetup("Workflow engine database tests");
 
-            DropDatabase();
+            DropDatabase(ConnectionString);
             DatabasePatcherHandler.PatchIfNecessary(Tenant, ConnectionString, MasterConnectionString);
 
             using var connection = new SqlConnection(ConnectionString);
@@ -41,17 +43,17 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             RuntimeTables = new RuntimeTablesSql(ConnectionString);
         }
 
-        protected static void DropDatabase()
+        protected static void DropDatabase(string connectionString)
         {
-            var connectionStringBuilder = new SqlConnectionStringBuilder(ConnectionString);
+            var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
             using var masterConnection = new SqlConnection(MasterConnectionString);
             masterConnection.VerifyAvailability();
 
             var dropCommand = masterConnection.CreateCommand();
             dropCommand.CommandText = $"IF EXISTS(SELECT 1 from sys.databases WHERE name='{connectionStringBuilder.InitialCatalog}')\n" +
                                       $"BEGIN\n" +
-                                      $"   ALTER DATABASE {connectionStringBuilder.InitialCatalog} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;\n" +
-                                      $"   DROP DATABASE {connectionStringBuilder.InitialCatalog};\n" +
+                                      $"   ALTER DATABASE [{connectionStringBuilder.InitialCatalog}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;\n" +
+                                      $"   DROP DATABASE [{connectionStringBuilder.InitialCatalog}];\n" +
                                       $"END";
             dropCommand.ExecuteNonQuery();
             masterConnection.Close();
