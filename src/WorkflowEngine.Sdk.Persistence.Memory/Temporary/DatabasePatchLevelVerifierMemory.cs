@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Temporary

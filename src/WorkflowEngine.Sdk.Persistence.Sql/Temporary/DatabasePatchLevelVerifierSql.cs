@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Temporary
