@@ -19,7 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.WorkflowInstanceId),
                 nameof(ActivityInstanceRecord.ActivityVersionId),
                 nameof(ActivityInstanceRecord.ParentActivityInstanceId),
-                nameof(ActivityInstanceRecord.Iteration),
+                nameof(ActivityInstanceRecord.ParentIteration),
                 nameof(ActivityInstanceRecord.StartedAt),
                 nameof(ActivityInstanceRecord.FinishedAt),
                 nameof(ActivityInstanceRecord.HasCompleted),

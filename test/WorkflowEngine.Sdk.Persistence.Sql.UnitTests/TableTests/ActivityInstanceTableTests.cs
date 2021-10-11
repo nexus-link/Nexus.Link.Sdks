@@ -20,7 +20,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 ActivityVersionId = activityVersion.Id,
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
-                Iteration = 1
+                ParentIteration = 1
             };
 
             // Act
@@ -36,7 +36,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.ActivityVersionId, record.ActivityVersionId);
             Assert.Equal(item.WorkflowInstanceId, record.WorkflowInstanceId);
             Assert.Equal(item.StartedAt, record.StartedAt);
-            Assert.Equal(item.Iteration, record.Iteration);
+            Assert.Equal(item.ParentIteration, record.ParentIteration);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             // Arrange
             var createdRecord = await CreateStandardActivityInstanceAsync();
             createdRecord.StartedAt = DateTimeOffset.Now.AddSeconds(-12);
-            createdRecord.Iteration = 2;
+            createdRecord.ParentIteration = 2;
             createdRecord.FinishedAt = DateTimeOffset.Now;
             createdRecord.ResultAsJson = "{}";
             createdRecord.HasCompleted = true;
@@ -59,7 +59,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
             Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
             Assert.Equal(createdRecord.StartedAt, updatedRecord.StartedAt);
-            Assert.Equal(createdRecord.Iteration, updatedRecord.Iteration);
+            Assert.Equal(createdRecord.ParentIteration, updatedRecord.ParentIteration);
             Assert.Equal(createdRecord.FinishedAt, updatedRecord.FinishedAt);
             Assert.Equal(createdRecord.ResultAsJson, updatedRecord.ResultAsJson);
             Assert.Equal(createdRecord.HasCompleted, updatedRecord.HasCompleted);
@@ -82,7 +82,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 ActivityVersionId = activityVersion?.Id ?? Guid.Empty,
                 WorkflowInstanceId = workflowInstance?.Id ?? Guid.Empty,
                 StartedAt = futureStartedAt ? DateTimeOffset.Now.AddSeconds(1) : DateTimeOffset.Now.AddSeconds(-1),
-                Iteration = iteration
+                ParentIteration = iteration
             };
 
             // Act & Assert

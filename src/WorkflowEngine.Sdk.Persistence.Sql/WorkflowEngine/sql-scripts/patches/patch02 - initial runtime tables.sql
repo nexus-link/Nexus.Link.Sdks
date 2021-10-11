@@ -27,7 +27,7 @@ CREATE TABLE ActivityInstance
     ActivityVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityInstance_ActivityVersionId REFERENCES ActivityVersion ON UPDATE CASCADE ON DELETE NO ACTION,
     ParentActivityInstanceId uniqueidentifier CONSTRAINT FK_ActivityInstance_ParentActivityInstanceId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
 
-    Iteration int,
+    ParentIteration int,
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DFActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset CONSTRAINT DF_ActivityInstance_FinishedAt DEFAULT (sysdatetimeoffset()),
 	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),

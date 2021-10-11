@@ -14,7 +14,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         Task<bool> IfAsync(Func<Activity, CancellationToken, Task<bool>> ifMethodAsync, CancellationToken cancellationToken);
         Task<TMethodReturnType> LoopUntilTrueAsync<TMethodReturnType>(Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken);
         IActivityFlow SetParameter<T>(string name, T value);
-        IActivityFlow SetParent(Activity parent, bool alsoSetAsPrevious = false);
+        IActivityFlow SetParent(Activity parent);
         IActivityFlow SetPrevious(Activity previous);
     }
 }

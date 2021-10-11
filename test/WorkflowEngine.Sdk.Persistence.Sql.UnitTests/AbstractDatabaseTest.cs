@@ -192,7 +192,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 ActivityVersionId = activityVersion.Id,
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
-                Iteration = 1
+                ParentIteration = 1
             };
             return await CreateAcivityInstanceAsync(item, cancellationToken);
         }

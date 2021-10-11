@@ -40,10 +40,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return this;
         }
 
-        public IActivityFlow SetParent(Activity parent, bool alsoSetAsPrevious = false)
+        public IActivityFlow SetParent(Activity parent)
         {
             _parent = parent;
-            if (alsoSetAsPrevious) SetPrevious(parent);
             return this;
         }
 

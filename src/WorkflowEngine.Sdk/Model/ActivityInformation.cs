@@ -95,17 +95,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 WorkflowInstanceId = _workflowInformation.InstanceId,
                 ActivityVersionId = VersionId,
                 ParentActivityInstanceId = ParentActivity?.InstanceId,
-                Iteration = Iteration
+                ParentIteration = ParentActivity?.Iteration
             };
             var activityInstance = await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {
                 var createItem = new ActivityInstanceCreate()
                 {
-                    WorkflowInstanceId = _workflowInformation.InstanceId,
-                    ActivityVersionId = VersionId,
-                    ParentActivityInstanceId = ParentActivity?.InstanceId,
-                    Iteration = Iteration
+                    WorkflowInstanceId = findUnique.WorkflowInstanceId,
+                    ActivityVersionId = findUnique.ActivityVersionId,
+                    ParentActivityInstanceId = findUnique.ParentActivityInstanceId,
+                    ParentIteration = findUnique.ParentIteration
                 };
                 try
                 {
