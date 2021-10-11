@@ -45,7 +45,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 .SetContent(contentAsString, "application/json")
                 .SendAsync(cancellationToken);
             // TODO: Set callback <L
-            throw new RequestAcceptedException(null, requestId);
+            throw new RequestPostponedException(requestId);
         }
     }
 }

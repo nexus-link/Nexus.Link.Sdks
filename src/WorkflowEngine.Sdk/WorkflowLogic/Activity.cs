@@ -121,7 +121,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
-                    if (response == null) throw new RequestAcceptedException("TODO", ActivityInformation.AsyncRequestId);
+                    if (response == null || !response.HasCompleted) throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
                     ActivityInformation.Result.Json = response.Content;
                     ActivityInformation.Result.ExceptionName = response.Exception?.Name;
                     ActivityInformation.Result.ExceptionMessage = response.Exception?.Message;
@@ -144,16 +144,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
-            catch (HandledRequestAcceptedException e)
+            catch (HandledRequestPostponedException)
             {
                 throw;
             }
-            catch (RequestAcceptedException e)
+            catch (RequestPostponedException e)
             {
-                if (e.OutstandingRequestIds == null || e.OutstandingRequestIds.Count != 1) throw;
-                ActivityInformation.AsyncRequestId = e.OutstandingRequestIds.First();
+                if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
+                ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-                throw new HandledRequestAcceptedException(e);
+                throw new HandledRequestPostponedException(e);
             }
             catch (ActivityException)
             {
@@ -183,10 +183,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
     }
 
-    internal class HandledRequestAcceptedException : RequestAcceptedException
+    internal class HandledRequestPostponedException : RequestPostponedException
     {
-        public HandledRequestAcceptedException(RequestAcceptedException e)
-        :base(e.UrlWhereResponseWillBeMadeAvailable, e.OutstandingRequestIds)
+        public HandledRequestPostponedException(RequestPostponedException e)
+        :base(e.WaitingForRequestIds)
         {
         }
     }
