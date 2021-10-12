@@ -38,13 +38,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 
         public static DirectoryInfo GetBaseDir()
         {
-            const string relativeUrl = @"WorkflowEngine\\sql-scripts";
+            const string relativeUrl = @"sql-scripts";
             try
             {
                 var codeBase = Assembly.GetExecutingAssembly().Location;
                 if (codeBase.ToLower().StartsWith("file:///")) codeBase = codeBase.Substring("file:///".Length);
                 var binDirectory = new FileInfo(codeBase).Directory ?? new DirectoryInfo("");
-                return new DirectoryInfo(Path.Combine(binDirectory.FullName, relativeUrl));
+                var dir = new DirectoryInfo(Path.Combine(binDirectory.FullName, relativeUrl));
+                if (!dir.Exists) return new DirectoryInfo(@$"contentFiles\any\any\{relativeUrl}"); // For unit tests
+                return dir;
             }
             catch
             {

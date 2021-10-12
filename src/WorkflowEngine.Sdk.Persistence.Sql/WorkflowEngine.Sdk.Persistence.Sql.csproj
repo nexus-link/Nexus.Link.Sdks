@@ -31,20 +31,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="WorkflowEngine\sql-scripts\patches\patch01 - initial configuration tables.sql">
+    <None Update="contentFiles\any\any\sql-scripts\patches\patch01 - initial configuration tables.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="WorkflowEngine\sql-scripts\patches\patch02 - initial runtime tables.sql">
+    <None Update="contentFiles\any\any\sql-scripts\patches\patch02 - initial runtime tables.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="WorkflowEngine\sql-scripts\patches\patch02_rollback.sql">
+    <None Update="contentFiles\any\any\sql-scripts\patches\patch02_rollback.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.0.0-rc02</Version>
+    <Version>1.0.0-rc03</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -54,9 +54,23 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.0.0 First release
+	    1.0.0 First release
     </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="contentFiles/**/*.*">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles</PackagePath>
+      <IncludeInPackage>true</IncludeInPackage>
+      <CopyToOutput>true</CopyToOutput>
+	  <PackageCopyToOutput>true</PackageCopyToOutput>
+      <BuildAction>Content</BuildAction>
+      <copyToOutput>true</copyToOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+	</Content>
+  </ItemGroup>
 
 </Project>
