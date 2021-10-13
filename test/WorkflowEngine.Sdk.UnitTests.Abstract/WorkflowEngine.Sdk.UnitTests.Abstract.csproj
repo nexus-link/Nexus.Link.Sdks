@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -17,12 +17,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.3-rc02" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\WorkflowEngine.Sdk.Persistence.Memory\WorkflowEngine.Sdk.Persistence.Memory.csproj" />
-    <ProjectReference Include="..\..\src\WorkflowEngine.Sdk\WorkflowEngine.Sdk.csproj" />
-    <ProjectReference Include="..\WorkflowEngine.Sdk.UnitTests.Abstract\WorkflowEngine.Sdk.UnitTests.Abstract.csproj" />
+        <ProjectReference Include="..\..\src\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
   </ItemGroup>
 
 </Project>
