@@ -11,8 +11,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
     public class DatabasePatcherHandler
     {
+        private static readonly object ClassLock = new();
+        private static bool _isAlreadyRunning;
+
         public static void PatchIfNecessary(string connectionString, string masterConnectionString = null)
         {
+            lock (ClassLock)
+            {
+                if (_isAlreadyRunning) return;
+                _isAlreadyRunning = true;
+            }
             var traceLog = new StringBuilder();
             try
             {
@@ -26,13 +34,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
                 if (!string.IsNullOrWhiteSpace(masterConnectionString))
                 {
                     var masterConnection = new SqlConnection(masterConnectionString);
-                    patcher.WithMasterConnectionToCreateDatabaseIfmissingExperimental(masterConnection, "SQL_Latin1_General_CP1_CI_AS");
+                    patcher.WithMasterConnectionToCreateDatabaseIfmissingExperimental(masterConnection,
+                        "SQL_Latin1_General_CP1_CI_AS");
                 }
+
                 patcher.Execute();
             }
             catch (Exception e)
             {
-                throw new FulcrumAssertionFailedException($"[{nameof(DatabasePatcherHandler)}] Database patching failed: {traceLog}", e);
+                throw new FulcrumAssertionFailedException(
+                    $"[{nameof(DatabasePatcherHandler)}] Database patching failed: {traceLog}", e);
+            }
+            finally
+            {
+                _isAlreadyRunning = false;
             }
         }
 
