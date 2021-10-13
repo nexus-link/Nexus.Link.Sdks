@@ -89,7 +89,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await CreateActivityVersionAsync(item1);
 
             // Assert
-            await Assert.ThrowsAsync<SqlException>(async () => await CreateActivityVersionAsync(item2));
+            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateActivityVersionAsync(item2));
         }
 
         [Theory]
