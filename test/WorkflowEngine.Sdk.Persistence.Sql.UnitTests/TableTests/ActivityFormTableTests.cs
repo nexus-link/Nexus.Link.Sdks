@@ -77,7 +77,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             await CreateStandardActivityFormAsync(id);
 
             // Assert
-            await Assert.ThrowsAsync<SqlException>(async () => await CreateStandardActivityFormAsync(id));
+            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateStandardActivityFormAsync(id));
         }
 
         [Theory]
