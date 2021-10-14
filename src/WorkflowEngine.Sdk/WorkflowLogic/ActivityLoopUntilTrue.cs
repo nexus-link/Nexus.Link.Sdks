@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -16,11 +15,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public readonly Dictionary<int, string> IterationDescriptions = new Dictionary<int, string>();
         public bool? EndLoop { get; set; }
 
-        public ActivityLoopUntilTrue(IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            ActivityInformation activityInformation, 
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, 
             Activity previousActivity, Activity parentActivity)
-            : base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
+            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");

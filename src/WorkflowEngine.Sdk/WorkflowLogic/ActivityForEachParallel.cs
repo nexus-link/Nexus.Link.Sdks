@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -18,11 +17,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public object Result { get; set; }
 
-        public ActivityForEachParallel(IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            ActivityInformation activityInformation, IEnumerable<TItemType> items,
+        public ActivityForEachParallel(ActivityInformation activityInformation,
+            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
             Activity previousActivity, Activity parentActivity)
-            : base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
+            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",

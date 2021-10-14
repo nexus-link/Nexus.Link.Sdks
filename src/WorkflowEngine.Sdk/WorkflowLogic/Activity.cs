@@ -54,15 +54,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public List<int> NestedIterations { get; } = new();
 
-        protected Activity(IWorkflowCapability workflowCapability,
+        protected Activity(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient,
-            ActivityInformation activityInformation,
             Activity previousActivity,
             Activity parentActivity)
         {
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
-            _workflowCapability = workflowCapability;
+            _workflowCapability = activityInformation.WorkflowCapability;
             _asyncRequestClient = asyncRequestClient;
             ActivityInformation = activityInformation;
             PreviousActivity = previousActivity;
