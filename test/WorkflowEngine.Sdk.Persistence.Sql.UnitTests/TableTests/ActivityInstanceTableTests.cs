@@ -40,9 +40,11 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         }
 
         [Fact]
-        public async Task Cant_Create_Activity_Instance_With_Existing_Values()
+        public async Task Cant_Create_Activity_Instance_With_NonUnique_Values()
         {
             // Arrange
+            var activityVersion = await CreateStandardActivityVersionAsync();
+            var workflowInstance = await CreateStandardWorkflowInstanceAsync();
             var id = Guid.Parse("08A03302-C861-4003-8917-7C495E205562");
 
             // Act
@@ -53,10 +55,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 StartedAt = DateTimeOffset.Now,
                 ParentIteration = 1
             };
-            await CreateAcivityInstanceAsync(id);
+            await CreateAcivityInstanceAsync(item);
 
             // Assert
-            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateStandardActivityFormAsync(id));
+            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateAcivityInstanceAsync(item));
         }
 
         [Fact]
