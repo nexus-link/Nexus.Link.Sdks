@@ -68,22 +68,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
         {
-            var createItem = new TransitionCreate
+            var searchItem = new TransitionUnique
             {
                 WorkflowVersionId = _workflowInformation.VersionId,
                 FromActivityVersionId = PreviousActivity?.VersionId,
                 ToActivityVersionId = VersionId
             };
-            var transition = await _workflowCapability.Transition.FindUniqueAsync(createItem, cancellationToken);
+            var transition = await _workflowCapability.Transition.FindUniqueAsync(searchItem, cancellationToken);
             if (transition == null)
             {
+                var createItem = new TransitionCreate
+                {
+                    WorkflowVersionId = _workflowInformation.VersionId,
+                    FromActivityVersionId = PreviousActivity?.VersionId,
+                    ToActivityVersionId = VersionId
+                };
                 try
                 {
                     await _workflowCapability.Transition.CreateChildAsync(_workflowInformation.VersionId, createItem, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {
-                    // This is OK. Another thread has created the same Id after we did the read above.
+                    // This is OK. Most likely another thread has created the same item after we did the uniqueness test above.
                 }
             }
         }
