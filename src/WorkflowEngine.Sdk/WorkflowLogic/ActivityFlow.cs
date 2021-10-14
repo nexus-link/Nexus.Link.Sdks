@@ -146,6 +146,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         #endregion
 
+        #region ForEachSequential
+        public ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityInstance = new ActivityForEachSequential<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
+            return activityInstance;
+        }
+        #endregion
+
         private ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
         {
             var activityInformation = new ActivityInformation(_workflowCapability, _workflowInformation, _methodHandler,

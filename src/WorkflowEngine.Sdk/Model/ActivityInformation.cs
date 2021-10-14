@@ -15,7 +15,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
     public enum WorkflowActivityTypeEnum
     {
         Action, Condition, LoopUntilTrue,
-        ForEachParallel
+        ForEachParallel,
+        ForEachSequential
     }
 
     public class ActivityInformation
