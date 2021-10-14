@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly IWorkflowCapability _workflowCapability;
         private readonly IAsyncRequestClient _asyncRequestClient;
         private readonly string _activityFormId;
-        private MethodHandler _methodHandler;
+        private readonly MethodHandler _methodHandler;
         private readonly string _formTitle;
         private Activity _parent;
         private Activity _previous;
@@ -52,6 +52,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return this;
         }
 
+        #region Action
+        public ActivityAction Action()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
+            var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
+            return activityInstance;
+        }
+
+        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task<TMethodReturnType> ExecuteActionAsync<TMethodReturnType>(
             Func<ActivityAction, CancellationToken, Task<TMethodReturnType>> method,
             CancellationToken cancellationToken)
@@ -61,6 +70,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
 
+        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task ExecuteActionAsync(
             Func<ActivityAction, CancellationToken, Task> method,
             CancellationToken cancellationToken)
@@ -69,6 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
+        #endregion
 
         public Task<bool> IfAsync(
             Func<Activity, CancellationToken, Task<bool>> ifMethodAsync,
