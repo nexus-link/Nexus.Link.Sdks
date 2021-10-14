@@ -25,7 +25,7 @@ CREATE TABLE ActivityInstance
 
     WorkflowInstanceId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityInstance_WorkflowInstanceId REFERENCES WorkflowInstance ON UPDATE NO ACTION ON DELETE NO ACTION,
     ActivityVersionId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityInstance_ActivityVersionId REFERENCES ActivityVersion ON UPDATE CASCADE ON DELETE NO ACTION,
-    ParentActivityInstanceId uniqueidentifier CONSTRAINT FK_ActivityInstance_ParentActivityInstanceId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
+    ParentActivityInstanceId uniqueidentifier CONSTRAINT FK_ActivityInstance_ParentActivityInstanceId REFERENCES ActivityInstance ON UPDATE NO ACTION ON DELETE NO ACTION,
 
     ParentIteration int,
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DFActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
