@@ -81,7 +81,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 return await ExecuteWorkflowAsync(cancellationToken);
             }
-            catch (PostponeException e)
+            catch (PostponeException)
             {
                 // TODO: Is this a relevant exception? Will be sent to AM.
                 throw new FulcrumTryAgainException();

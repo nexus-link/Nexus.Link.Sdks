@@ -14,13 +14,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
     public enum WorkflowActivityTypeEnum
     {
-        Action, IfThenElse, LoopUntilTrue,
+        Action, Condition, LoopUntilTrue,
         ForEachParallel
     }
 
     public class ActivityInformation
     {
-        private readonly IWorkflowCapability _workflowCapability;
+        public IWorkflowCapability WorkflowCapability { get; }
         private readonly WorkflowInformation _workflowInformation;
         public MethodHandler MethodHandler { get; }
         public WorkflowActivityTypeEnum ActivityType { get; }
@@ -42,7 +42,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             WorkflowActivityTypeEnum activityType,
             ActivityInformation previousActivity, ActivityInformation parentActivity)
         {
-            _workflowCapability = workflowCapability;
+            WorkflowCapability = workflowCapability;
             _workflowInformation = workflowInformation;
             MethodHandler = methodHandler;
             ActivityType = activityType;
@@ -63,7 +63,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             VersionId = await PersistActivityVersion(cancellationToken);
             await PersistTransitionAsync(cancellationToken);
             InstanceId = await PersistActivityInstance(cancellationToken);
-            await MethodHandler.PersistActivityParametersAsync(_workflowCapability, VersionId, cancellationToken);
+            await MethodHandler.PersistActivityParametersAsync(WorkflowCapability, VersionId, cancellationToken);
         }
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
@@ -74,7 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 FromActivityVersionId = PreviousActivity?.VersionId,
                 ToActivityVersionId = VersionId
             };
-            var transition = await _workflowCapability.Transition.FindUniqueAsync(searchItem, cancellationToken);
+            var transition = await WorkflowCapability.Transition.FindUniqueAsync(searchItem, cancellationToken);
             if (transition == null)
             {
                 var createItem = new TransitionCreate
@@ -85,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    await _workflowCapability.Transition.CreateChildAsync(_workflowInformation.VersionId, createItem, cancellationToken);
+                    await WorkflowCapability.Transition.CreateChildAsync(_workflowInformation.VersionId, createItem, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {
@@ -103,7 +103,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 ParentActivityInstanceId = ParentActivity?.InstanceId,
                 ParentIteration = ParentActivity?.Iteration
             };
-            var activityInstance = await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
+            var activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {
                 var createItem = new ActivityInstanceCreate()
@@ -115,13 +115,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    var id = await _workflowCapability.ActivityInstance.CreateAsync(createItem, cancellationToken);
+                    var id = await WorkflowCapability.ActivityInstance.CreateAsync(createItem, cancellationToken);
                     return id;
                 }
                 catch (FulcrumConflictException)
                 {
                     // This is OK. Another thread has created the same Id after we did the read above.
-                    activityInstance = await _workflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
+                    activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
                     FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
                     return activityInstance.Id;
                 }
@@ -140,7 +140,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         {
             var workflowVersionId = _workflowInformation.VersionId;
             var activityVersion =
-                await _workflowCapability.ActivityVersion.FindUniqueByWorkflowVersionActivityAsync(workflowVersionId, FormId,
+                await WorkflowCapability.ActivityVersion.FindUniqueByWorkflowVersionActivityAsync(workflowVersionId, FormId,
                     cancellationToken);
             if (activityVersion == null)
             {
@@ -153,14 +153,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    var id = await _workflowCapability.ActivityVersion.CreateChildAsync(workflowVersionId, createItem, cancellationToken);
+                    var id = await WorkflowCapability.ActivityVersion.CreateChildAsync(workflowVersionId, createItem, cancellationToken);
                     return id;
                 }
                 catch (FulcrumConflictException)
                 {
                     // This is OK. Another thread has created the same Id after we did the read above.
                     activityVersion =
-                        await _workflowCapability.ActivityVersion.FindUniqueByWorkflowVersionActivityAsync(workflowVersionId, FormId,
+                        await WorkflowCapability.ActivityVersion.FindUniqueByWorkflowVersionActivityAsync(workflowVersionId, FormId,
                             cancellationToken);
                     return activityVersion.Id;
                 }
@@ -172,7 +172,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 activityVersion.Position = Position;
                 try
                 {
-                    await _workflowCapability.ActivityVersion.UpdateAsync(activityVersion.Id, activityVersion, cancellationToken);
+                    await WorkflowCapability.ActivityVersion.UpdateAsync(activityVersion.Id, activityVersion, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {
@@ -185,7 +185,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistActivityFormAsync(CancellationToken cancellationToken)
         {
-            var activityForm = await _workflowCapability.ActivityForm.ReadAsync(FormId, cancellationToken);
+            var activityForm = await WorkflowCapability.ActivityForm.ReadAsync(FormId, cancellationToken);
             if (activityForm == null)
             {
                 var workflowFormId = _workflowInformation.FormId;
@@ -197,7 +197,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    await _workflowCapability.ActivityForm.CreateChildWithSpecifiedIdAsync(workflowFormId, FormId, createItem,
+                    await WorkflowCapability.ActivityForm.CreateChildWithSpecifiedIdAsync(workflowFormId, FormId, createItem,
                         cancellationToken);
                 }
                 catch (FulcrumConflictException)
@@ -213,7 +213,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     activityForm.Title = FormTitle;
                     try
                     {
-                        await _workflowCapability.ActivityForm.UpdateAsync(FormId, activityForm, cancellationToken);
+                        await WorkflowCapability.ActivityForm.UpdateAsync(FormId, activityForm, cancellationToken);
                     }
                     catch (FulcrumConflictException)
                     {
@@ -228,14 +228,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             while (true)
             {
                 HasCompleted = true;
-                var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+                var item = await WorkflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
                 item.ResultAsJson = Result.Json;
                 item.ExceptionType = Result.ExceptionName;
                 item.ExceptionMessage = Result.ExceptionMessage;
                 item.HasCompleted = HasCompleted;
                 item.FinishedAt = DateTimeOffset.UtcNow; try
                 {
-                    await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+                    await WorkflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
                     return;
                 }
                 catch (FulcrumConflictException)
@@ -249,13 +249,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         {
             while (true)
             {
-                var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+                var item = await WorkflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
                 if (item.AsyncRequestId != AsyncRequestId)
                 {
                     item.AsyncRequestId = AsyncRequestId;
                     try
                     {
-                        await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+                        await WorkflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
                         return;
                     }
                     catch (FulcrumConflictException)

@@ -16,13 +16,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly IWorkflowCapability _workflowCapability;
         private readonly IAsyncRequestClient _asyncRequestClient;
         private readonly string _activityFormId;
-        private MethodHandler _methodHandler;
+        private readonly MethodHandler _methodHandler;
         private readonly string _formTitle;
         private Activity _parent;
         private Activity _previous;
 
         public ActivityFlow(IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient, 
+            IAsyncRequestClient asyncRequestClient,
             WorkflowInformation workflowInformation, string formTitle, string activityFormId)
         {
             _workflowInformation = workflowInformation;
@@ -52,49 +52,99 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return this;
         }
 
+        #region Action
+        /// <inheritdoc/>
+        public ActivityAction Action()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
+            var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
+            return activityInstance;
+        }
+
+        /// <inheritdoc/>
+        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task<TMethodReturnType> ExecuteActionAsync<TMethodReturnType>(
             Func<ActivityAction, CancellationToken, Task<TMethodReturnType>> method,
             CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
 
+        /// <inheritdoc/>
+        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task ExecuteActionAsync(
             Func<ActivityAction, CancellationToken, Task> method,
             CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
             return activityInstance.ExecuteActionAsync(method, cancellationToken);
         }
+        #endregion
 
+        #region If
+        public ActivityCondition<bool> If()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
+            var activityInstance = new ActivityCondition<bool>(activityInformation, _asyncRequestClient, _previous, _parent);
+            return activityInstance;
+        }
+        public ActivityCondition<T> Condition<T>()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
+            var activityInstance = new ActivityCondition<T>(activityInformation, _asyncRequestClient, _previous, _parent);
+            return activityInstance;
+        }
+        
+        [Obsolete("Use If().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task<bool> IfAsync(
             Func<Activity, CancellationToken, Task<bool>> ifMethodAsync,
             CancellationToken cancellationToken)
         {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.IfThenElse);
-            var activityInstance = new ActivityIf(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
+            var activityInstance = new ActivityIf(activityInformation, _asyncRequestClient, _previous, _parent);
             return activityInstance.IfAsync(ifMethodAsync, cancellationToken);
         }
+        #endregion
 
+        #region LoopUntil
+        public ActivityLoopUntilTrue LoopUntil()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
+            var activityInstance = new ActivityLoopUntilTrue(activityInformation, _asyncRequestClient , _previous, _parent);
+            return activityInstance;
+        }
+        
+        [Obsolete("Use LoopUntil().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task<TMethodReturnType> LoopUntilTrueAsync<TMethodReturnType>(
             Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
-            var activityInstance = new ActivityLoopUntilTrue(_workflowCapability, _asyncRequestClient, activityInformation, _previous, _parent);
+            var activityInstance = new ActivityLoopUntilTrue(activityInformation, _asyncRequestClient , _previous, _parent);
             return activityInstance.ExecuteAsync<TMethodReturnType>(methodAsync, cancellationToken);
         }
+        #endregion
 
+        #region ForEachParallel
+        public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
+            return activityInstance;
+        }
+
+        [Obsolete("Use ForEachParallel().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task ForEachParallelAsync<TItem>(
             IEnumerable<TItem> items,
             Func<TItem, ActivityForEachParallel<TItem>, CancellationToken, Task> methodAsync, CancellationToken cancellationToken)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
-            var activityInstance = new ActivityForEachParallel<TItem>(_workflowCapability, _asyncRequestClient, activityInformation, items, _previous, _parent);
+            var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
             return activityInstance.ExecuteAsync(methodAsync, cancellationToken);
         }
+        #endregion
 
         private ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
         {

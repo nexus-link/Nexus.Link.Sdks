@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -14,15 +13,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityForEachParallel<TItemType> : Activity
     {
         public IEnumerable<TItemType> Items { get; }
-        public readonly Dictionary<int, string> IterationDescriptions = new Dictionary<int, string>();
 
         public object Result { get; set; }
 
-        public ActivityForEachParallel(IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            ActivityInformation activityInformation, IEnumerable<TItemType> items,
+        public ActivityForEachParallel(ActivityInformation activityInformation,
+            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
             Activity previousActivity, Activity parentActivity)
-            : base(workflowCapability, asyncRequestClient, activityInformation, previousActivity, parentActivity)
+            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
@@ -49,40 +46,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return taskList;
         }
 
-        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
-            TItemType item,
-            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task<TMethodReturnType>> method,
-            Activity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as ActivityForEachParallel<TItemType>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
-        }
-
         public Task ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken, params object[] arguments)
         {
-            InternalContract.Require(
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.Action ||
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.ForEachParallel,
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't call {nameof(ExecuteAsync)}.");
-
-            var taskList = new List<Task>();
-            foreach (var item in Items)
+            
+            var tasks = ExecuteAsync(async (item, a, ct) =>
             {
-                Iteration++;
-                var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
-                    cancellationToken);
-                taskList.Add(task);
-            }
-
-            return Task.WhenAll(taskList);
+                await method(item, a, ct);
+                return true;
+            }, cancellationToken);
+            
+            return Task.WhenAll(tasks);
         }
 
-        private Task MapMethod(
+        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
             TItemType item,
-            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
+            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task<TMethodReturnType>> method,
             Activity instance, CancellationToken cancellationToken)
         {
             var loop = instance as ActivityForEachParallel<TItemType>;
