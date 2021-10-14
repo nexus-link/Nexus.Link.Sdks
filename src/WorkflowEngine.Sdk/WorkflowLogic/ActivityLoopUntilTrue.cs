@@ -12,10 +12,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityLoopUntilTrue : Activity
     {
-        public readonly Dictionary<int, string> IterationDescriptions = new Dictionary<int, string>();
         public bool? EndLoop { get; set; }
 
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, 
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
             Activity previousActivity, Activity parentActivity)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
@@ -26,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
             Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken)
         {
             InternalContract.Require(
                 ActivityInformation.ActivityType == WorkflowActivityTypeEnum.Action ||
@@ -46,35 +45,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return result;
         }
 
-        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> method,
-            Activity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as ActivityLoopUntilTrue;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(loop, cancellationToken);
-        }
-
-        public async Task ExecuteAsync(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task<bool>> method,
+        public Task ExecuteAsync(
+            Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
             CancellationToken cancellationToken, params object[] arguments)
         {
-            InternalContract.Require(
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.Action ||
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.LoopUntilTrue,
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't call {nameof(ExecuteAsync)}.");
-
-
-            var done = false;
-            while (!done)
+            return ExecuteAsync(async (a, ct) =>
             {
-                Iteration++;
-                done = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
-            }
+                await method(a, ct);
+                return true;
+            }, cancellationToken);
         }
 
-        private Task MapMethod(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
+        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
+            Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> method,
             Activity instance, CancellationToken cancellationToken)
         {
             var loop = instance as ActivityLoopUntilTrue;

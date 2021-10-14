@@ -109,6 +109,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         #endregion
 
+        #region LoopUntil
+        public ActivityLoopUntilTrue LoopUntil()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
+            var activityInstance = new ActivityLoopUntilTrue(activityInformation, _asyncRequestClient , _previous, _parent);
+            return activityInstance;
+        }
+        
+        [Obsolete("Use LoopUntil().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task<TMethodReturnType> LoopUntilTrueAsync<TMethodReturnType>(
             Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken)
         {
@@ -116,7 +125,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var activityInstance = new ActivityLoopUntilTrue(activityInformation, _asyncRequestClient , _previous, _parent);
             return activityInstance.ExecuteAsync<TMethodReturnType>(methodAsync, cancellationToken);
         }
+        #endregion
 
+        #region ForEachParallel
+        public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
+            return activityInstance;
+        }
+
+        [Obsolete("Use ForEachParallel().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         public Task ForEachParallelAsync<TItem>(
             IEnumerable<TItem> items,
             Func<TItem, ActivityForEachParallel<TItem>, CancellationToken, Task> methodAsync, CancellationToken cancellationToken)
@@ -125,6 +144,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
             return activityInstance.ExecuteAsync(methodAsync, cancellationToken);
         }
+        #endregion
 
         private ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
         {

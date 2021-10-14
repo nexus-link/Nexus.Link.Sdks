@@ -13,7 +13,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityForEachParallel<TItemType> : Activity
     {
         public IEnumerable<TItemType> Items { get; }
-        public readonly Dictionary<int, string> IterationDescriptions = new Dictionary<int, string>();
 
         public object Result { get; set; }
 
@@ -47,40 +46,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return taskList;
         }
 
-        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
-            TItemType item,
-            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task<TMethodReturnType>> method,
-            Activity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as ActivityForEachParallel<TItemType>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
-        }
-
         public Task ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken, params object[] arguments)
         {
-            InternalContract.Require(
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.Action ||
-                ActivityInformation.ActivityType == WorkflowActivityTypeEnum.ForEachParallel,
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't call {nameof(ExecuteAsync)}.");
-
-            var taskList = new List<Task>();
-            foreach (var item in Items)
+            
+            var tasks = ExecuteAsync(async (item, a, ct) =>
             {
-                Iteration++;
-                var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
-                    cancellationToken);
-                taskList.Add(task);
-            }
-
-            return Task.WhenAll(taskList);
+                await method(item, a, ct);
+                return true;
+            }, cancellationToken);
+            
+            return Task.WhenAll(tasks);
         }
 
-        private Task MapMethod(
+        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
             TItemType item,
-            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
+            Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task<TMethodReturnType>> method,
             Activity instance, CancellationToken cancellationToken)
         {
             var loop = instance as ActivityForEachParallel<TItemType>;

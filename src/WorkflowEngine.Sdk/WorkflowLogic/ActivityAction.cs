@@ -50,7 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         
         [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task ExecuteActionAsync(
+        internal Task ExecuteActionAsync(
             Func<ActivityAction, CancellationToken, Task> method,
             CancellationToken cancellationToken, params object[] arguments)
         {
