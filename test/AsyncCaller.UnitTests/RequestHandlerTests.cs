@@ -144,7 +144,7 @@ namespace AsyncCaller.Sdk.UnitTests
             await _queue.AddMessageAsync((await requestEnvelope.ToRawAsync()).Serialize());
 
             // Assert
-            Assert.IsTrue(resetEvent.WaitOne(TimeSpan.FromMilliseconds(1000)), "This asynchronous request dodn't finish in time");
+            Assert.IsTrue(resetEvent.WaitOne(TimeSpan.FromMilliseconds(2000)), "This asynchronous request didn't finish in time");
 
             Assert.IsNotNull(callbackResponseString, "We need the response content of the Callback request");
 

@@ -132,7 +132,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             Result.Json = activityInstance.ResultAsJson;
             HasCompleted = activityInstance.HasCompleted;
             AsyncRequestId = activityInstance.AsyncRequestId;
-            
+
             return activityInstance.Id;
         }
 
@@ -225,23 +225,44 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         public async Task UpdateInstanceWithResultAsync(CancellationToken cancellationToken)
         {
-            HasCompleted = true;
-            var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
-            item.ResultAsJson = Result.Json;
-            item.ExceptionType = Result.ExceptionName;
-            item.ExceptionMessage = Result.ExceptionMessage;
-            item.HasCompleted = HasCompleted;
-            item.FinishedAt = DateTimeOffset.UtcNow;
-            await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+            while (true)
+            {
+                HasCompleted = true;
+                var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+                item.ResultAsJson = Result.Json;
+                item.ExceptionType = Result.ExceptionName;
+                item.ExceptionMessage = Result.ExceptionMessage;
+                item.HasCompleted = HasCompleted;
+                item.FinishedAt = DateTimeOffset.UtcNow; try
+                {
+                    await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+                    return;
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. Another thread is competing with us on this resource. We will try again.
+                }
+            }
         }
 
         public async Task UpdateInstanceWithRequestIdAsync(CancellationToken cancellationToken)
         {
-            var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
-            if (item.AsyncRequestId != AsyncRequestId)
+            while (true)
             {
-                item.AsyncRequestId = AsyncRequestId;
-                await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+                var item = await _workflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+                if (item.AsyncRequestId != AsyncRequestId)
+                {
+                    item.AsyncRequestId = AsyncRequestId;
+                    try
+                    {
+                        await _workflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
+                        return;
+                    }
+                    catch (FulcrumConflictException)
+                    {
+                        // This is OK. Another thread is competing with us on this resource. We will try again.
+                    }
+                }
             }
         }
     }
