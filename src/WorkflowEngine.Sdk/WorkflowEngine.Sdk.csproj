@@ -37,7 +37,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.0.5-beta01</Version>
+    <Version>1.0.5-beta02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
