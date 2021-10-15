@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,8 +5,6 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
@@ -15,13 +12,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
     {
         private readonly IWorkflowService _workflowService;
         private readonly IRequestResponseService _requestResponseService;
-        private readonly IRuntimeTables _runtimeTables;
 
-        public WorkflowAdministrationService(IWorkflowService workflowService, IRequestResponseService requestResponseService, IRuntimeTables runtimeTables)
+        public WorkflowAdministrationService(IWorkflowService workflowService, IRequestResponseService requestResponseService)
         {
             _workflowService = workflowService;
             _requestResponseService = requestResponseService;
-            _runtimeTables = runtimeTables;
         }
 
         public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
@@ -39,7 +34,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 Activities = await BuildActivityTreeAsync(null, workflowRecord.Activities)
             };
 
-            // TODO: state
+            // TODO: state på hela workflow
+            // TODO: Annan enum som sätts på WorkflowInstanceRecord när den ändras
 
             return workflow;
         }
@@ -56,11 +52,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                     FinishedAt = activityRecord.Instance.FinishedAt,
                     Title = $"{activityRecord.Form.Title}",
                     Position = $"{(parent != null ? parent.Position + "." : "")}{activityRecord.Version.Position}",
-                    // TODO: State = activityRecord.Instance.State
-                    ErrorMessage = activityRecord.Instance.ExceptionMessage,
+                    State = activityRecord.Instance.State,
+                    FriendlyErrorMessage = activityRecord.Instance.ExceptionFriendlyMessage,
+                    TechnicalErrorMessage = activityRecord.Instance.ExceptionTechnicalMessage,
                     WaitingForWorkflow = await GetWaitingForWorkflowAsync(activityRecord)
                 };
-                activity.Children = await BuildActivityTreeAsync(activity, workflowRecordActivities);
+                activity.Children = await BuildActivityTreeAsync(activity, activityRecord.Children);
                 activities.Add(activity);
             }
             return activities;
