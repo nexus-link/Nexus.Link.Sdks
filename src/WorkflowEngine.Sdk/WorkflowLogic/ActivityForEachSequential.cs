@@ -55,7 +55,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public ActivityForEachSequential(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity)
+            Activity previousActivity, Activity parentActivity, object getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
             Items = items;

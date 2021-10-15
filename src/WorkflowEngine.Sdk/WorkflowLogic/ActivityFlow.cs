@@ -178,7 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityAction<TActivityReturns> Action()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction<TActivityReturns>(activityInformation, AsyncRequestClient, Previous, Parent);
+            var activityInstance = new ActivityAction<TActivityReturns>(activityInformation, AsyncRequestClient, Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
         
@@ -186,7 +186,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityCondition<bool> If()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent);
+            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
         
@@ -194,7 +194,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
-            var activityInstance = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, AsyncRequestClient , Previous, Parent);
+            var activityInstance = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, AsyncRequestClient , Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
         
@@ -202,7 +202,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
-            var activityInstance = new ActivityForEachParallel<TActivityReturns, TItem>(activityInformation, AsyncRequestClient, items, Previous, Parent);
+            var activityInstance = new ActivityForEachParallel<TActivityReturns, TItem>(activityInformation, AsyncRequestClient, items, Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
         
@@ -210,7 +210,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
-            var activityInstance = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, AsyncRequestClient, items, Previous, Parent);
+            var activityInstance = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, AsyncRequestClient, items, Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
     }

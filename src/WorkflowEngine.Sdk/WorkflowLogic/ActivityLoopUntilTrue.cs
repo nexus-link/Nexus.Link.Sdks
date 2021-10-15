@@ -71,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase
     {
         public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity)
+            Activity previousActivity, Activity parentActivity, object getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
         }

@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         public ActivityAction(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity)
+            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
