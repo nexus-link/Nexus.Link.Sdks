@@ -5,7 +5,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Xunit;
 
-namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
+namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
 {
     public abstract class ActivityInstanceServiceTestsBase
     {
@@ -75,8 +75,10 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
-            itemToUpdate.ExceptionType = nameof(FulcrumConflictException);
-            itemToUpdate.ExceptionMessage = Guid.NewGuid().ToString();
+            itemToUpdate.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+            itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToString();
+            itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
             await _service.UpdateAsync(id, itemToUpdate);
             var readItem = await _service.FindUniqueAsync(findUnique);
 
@@ -87,8 +89,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             Assert.Equal(itemToUpdate.ParentActivityInstanceId, readItem.ParentActivityInstanceId);
             Assert.Equal(itemToUpdate.FinishedAt, readItem.FinishedAt);
             Assert.Equal(itemToUpdate.ParentIteration, readItem.ParentIteration);
-            Assert.Equal(itemToUpdate.ExceptionType, readItem.ExceptionType);
-            Assert.Equal(itemToUpdate.ExceptionMessage, readItem.ExceptionMessage);
+            Assert.Equal(itemToUpdate.State, readItem.State);
+            Assert.Equal(itemToUpdate.FailUrgency, readItem.FailUrgency);
+            Assert.Equal(itemToUpdate.ExceptionCategory, readItem.ExceptionCategory);
+            Assert.Equal(itemToUpdate.ExceptionFriendlyMessage, readItem.ExceptionFriendlyMessage);
+            Assert.Equal(itemToUpdate.ExceptionTechnicalMessage, readItem.ExceptionTechnicalMessage);
         }
     }
 }
