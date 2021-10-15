@@ -65,4 +65,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public int? ParentIteration { get; set; }
     }
+
+    public class ActivityInstanceRecordSearch
+    {
+        public Guid WorkflowInstanceId { get; set; }
+    }
 }

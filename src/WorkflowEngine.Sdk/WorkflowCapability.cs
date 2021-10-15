@@ -1,5 +1,4 @@
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -11,6 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
         public WorkflowCapability(IAsyncRequestClient asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
         {
+            AsyncContext = null; // TODO
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion= new WorkflowVersionService(configurationTables);
             WorkflowParameter= new WorkflowParameterService(configurationTables);
@@ -19,8 +19,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             Transition = new TransitionService(configurationTables); 
             ActivityParameter= new ActivityParameterService(configurationTables);
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
-            ActivityInstance = new ActivityInstanceService(runtimeTables); 
+            ActivityInstance = new ActivityInstanceService(runtimeTables);
+            Workflow = new WorkflowService(configurationTables, runtimeTables);
         }
+
+        public IAsyncContextService AsyncContext { get; }
 
         /// <inheritdoc />
         public IWorkflowFormService WorkflowForm { get; }
@@ -48,5 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         /// <inheritdoc />
         public IWorkflowInstanceService WorkflowInstance { get; }
+
+        public IWorkflowService Workflow { get; }
     }
 }
