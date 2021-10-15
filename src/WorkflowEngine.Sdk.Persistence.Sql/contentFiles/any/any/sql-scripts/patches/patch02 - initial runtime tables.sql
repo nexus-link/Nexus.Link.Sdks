@@ -33,9 +33,13 @@ CREATE TABLE ActivityInstance
 	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
 
     ResultAsJson nvarchar(max),
-    ExceptionName nvarchar(2048),
-    ExceptionMessage nvarchar(max),
-    AsyncRequestId nvarchar(256),
+    State nvarchar(16),
+    ExceptionCategory nvarchar(16),
+    FailUrgency nvarchar(16),
+    
+    ExceptionFriendlyMessage nvarchar(max),
+    ExceptionTechnicalMessage nvarchar(max),
+    AsyncRequestId nvarchar(64),
 
 	CONSTRAINT PK_ActivityInstance PRIMARY KEY (Id ASC),
 	CONSTRAINT UQ_ActivityInstance_1 UNIQUE (WorkflowInstanceId, ActivityVersionId, ParentActivityInstanceId, ParentIteration)

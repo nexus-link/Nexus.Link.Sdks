@@ -1,6 +1,8 @@
 ﻿using System;
+using Microsoft.Extensions.WebEncoders.Testing;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
@@ -19,6 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             
             target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
             target.ParentIteration = source.ParentIteration;
+            target.State = source.State.ToString();
             target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityInstanceId);
             return target;
@@ -38,8 +41,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Etag = source.Etag;
             target.HasCompleted = source.HasCompleted;
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionName = source.ExceptionType;
-            target.ExceptionMessage = source.ExceptionMessage;
+            target.State = MapperHelper.MapToType<string, ActivityStateEnum>(source.State);
+            target.FailUrgency = MapperHelper.MapToType<string, ActivityFailUrgencyEnum?>(source.FailUrgency);
+            target.ExceptionCategory = MapperHelper.MapToType<string, ActivityExceptionCategoryEnum?>(source.ExceptionCategory);
+            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
+            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;
@@ -62,8 +68,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionType = source.ExceptionName;
-            target.ExceptionMessage = source.ExceptionMessage;
+            target.State = MapperHelper.MapToStruct<ActivityStateEnum, string>(source.State);
+            target.FailUrgency = null;
+            if (source.FailUrgency != null)
+            {
+                target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
+            } 
+            target.ExceptionCategory = null;
+            if (source.ExceptionCategory != null)
+            {
+                target.ExceptionCategory = MapperHelper.MapToStruct<ActivityExceptionCategoryEnum, string>(source.ExceptionCategory);
+            }
+            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
+            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;

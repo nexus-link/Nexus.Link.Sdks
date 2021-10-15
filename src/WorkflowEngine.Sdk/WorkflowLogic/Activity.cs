@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
@@ -14,6 +15,7 @@ using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
+using ActivityStateEnum = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.ActivityStateEnum;
 using AsyncExecutionContext = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model.AsyncExecutionContext;
 using PostponeException = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions.PostponeException;
 
@@ -115,29 +117,68 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
+
+                // Kolla maxtiden
+
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
                     if (response == null || !response.HasCompleted) throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
                     ActivityInformation.Result.Json = response.Content;
-                    ActivityInformation.Result.ExceptionName = response.Exception?.Name;
-                    ActivityInformation.Result.ExceptionMessage = response.Exception?.Message;
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    if (response.Exception?.Name == null)
+                    {
+                        ActivityInformation.Result.State = ActivityStateEnum.Success;
+                    }
+                    else
+                    {
+                        ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                        ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                        ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                        ActivityInformation.Result.ExceptionTechnicalMessage = $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
+                        ActivityInformation.Result.ExceptionFriendlyMessage = $"A remote method failed with the following message: {response.Exception.Message}";
+                        await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    }
                     return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
 
                 // Call the activity. The method will only return if this is a
-                var result = default(TMethodReturnType);
-                if (ignoreReturnValue)
+                TMethodReturnType result;
+                try
                 {
-                    await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = "";
+                    result = default(TMethodReturnType);
+                    if (ignoreReturnValue)
+                    {
+                        await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = "";
+                    }
+                    else
+                    {
+                        result = await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = result.ToJsonString();
+                    }
                 }
-                else
+                catch (RequestPostponedException e)
                 {
-                    result = await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = result.ToJsonString();
+                    throw;
                 }
+                catch (ActivityException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    // Normal error
+                    // TODO: Handle error: Send event, throw postpone if halt
+                    ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                    ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                    ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                    ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
+                    ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
+                        ActivityInformation.Result.ExceptionTechnicalMessage);
+                }
+
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
@@ -154,24 +195,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (ActivityException)
             {
+                // TODO: Handle error
                 throw;
             }
             catch (Exception e)
             {
-                ActivityInformation.Result.ExceptionName = e.GetType().FullName;
-                ActivityInformation.Result.ExceptionMessage = e.Message;
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                throw new ActivityException(ActivityInformation.Result.ExceptionName,
-                    ActivityInformation.Result.ExceptionMessage);
+                // Unexpected error
+                // TODO: Handle error: Send event, throw postpone if halt (set GiveUpAt if max time)
+                ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                ActivityInformation.Result.ExceptionTechnicalMessage = $"The workflow SDK failed with an exception ({e.GetType().FullName}) with the following message: {e.Message}";
+                ActivityInformation.Result.ExceptionFriendlyMessage = $"The workflow SDK failed with the following message: {e.Message}";
+                if (ActivityInformation.InstanceId != null)
+                {
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                }
+
+                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
+                    ActivityInformation.Result.ExceptionTechnicalMessage);
             }
         }
 
         private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult)
         {
-            if (!string.IsNullOrWhiteSpace(ActivityInformation.Result.ExceptionName))
+            if (ActivityInformation.Result.State == ActivityStateEnum.Failed)
             {
-                throw new ActivityException(ActivityInformation.Result.ExceptionName,
-                    ActivityInformation.Result.ExceptionMessage);
+                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
+                    ActivityInformation.Result.ExceptionTechnicalMessage);
             }
 
             if (ignoreResult) return default;
@@ -183,7 +234,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     internal class HandledRequestPostponedException : RequestPostponedException
     {
         public HandledRequestPostponedException(RequestPostponedException e)
-        :base(e.WaitingForRequestIds)
+        : base(e.WaitingForRequestIds)
         {
         }
     }
