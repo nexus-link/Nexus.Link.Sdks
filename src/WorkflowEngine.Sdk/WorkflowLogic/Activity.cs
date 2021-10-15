@@ -11,8 +11,6 @@ using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
-using ActivityStateEnum = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.ActivityStateEnum;
-using PostponeException = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions.PostponeException;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -216,7 +214,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             switch (ActivityInformation.Result.FailUrgency!.Value)
             {
                 case ActivityFailUrgencyEnum.Stopping:
-                    throw new PostponeException();
+                    throw new RequestPostponedException();
                 default:
                     return default;
             }
