@@ -159,6 +159,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         ActivityInformation.Result.Json = result.ToJsonString();
                     }
                 }
+                catch (RequestPostponedException e)
+                {
+                    throw;
+                }
+                catch (ActivityException)
+                {
+                    throw;
+                }
                 catch (Exception e)
                 {
                     // Normal error
@@ -201,7 +209,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage = $"The workflow SDK failed with an exception ({e.GetType().FullName}) with the following message: {e.Message}";
                 ActivityInformation.Result.ExceptionFriendlyMessage = $"The workflow SDK failed with the following message: {e.Message}";
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                if (ActivityInformation.InstanceId != null)
+                {
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                }
+
                 throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
                     ActivityInformation.Result.ExceptionTechnicalMessage);
             }
