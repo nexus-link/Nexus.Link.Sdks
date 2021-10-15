@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
@@ -11,6 +12,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetParameter<T>(string name, T value);
         IActivityFlow SetParent(Activity parent);
         IActivityFlow SetPrevious(Activity previous);
+
+        IActivityFlow OnException(ActivityFailUrgencyEnum failUrgency);
 
         ActivityAction Action();
         ActivityCondition<bool> If();
@@ -23,6 +26,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value);
         IActivityFlow<TActivityReturns> SetParent(Activity parent);
         IActivityFlow<TActivityReturns> SetPrevious(Activity previous);
+        
+        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, TActivityReturns defaultValue);
+        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<TActivityReturns> getDefaultValueMethod);
+        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<Task<TActivityReturns>> getDefaultValueMethodAsync);
 
         ActivityAction<TActivityReturns> Action();
         ActivityCondition<bool> If();
