@@ -117,6 +117,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
                 }
+
+                // Kolla maxtiden
+
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
@@ -129,17 +132,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 }
 
                 // Call the activity. The method will only return if this is a
-                var result = default(TMethodReturnType);
-                if (ignoreReturnValue)
+                try
                 {
-                    await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = "";
+                    var result = default(TMethodReturnType);
+                    if (ignoreReturnValue)
+                    {
+                        await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = "";
+                    }
+                    else
+                    {
+                        result = await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = result.ToJsonString();
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    result = await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = result.ToJsonString();
+                    // Normal error
+                    ActivityInformation.Result.ExceptionName = e.GetType().FullName;
+                    ActivityInformation.Result.ExceptionMessage = e.Message;
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    // TODO: Handle error: Send event, throw postpone if halt
+                    throw new ActivityException(ActivityInformation.Result.ExceptionName,
+                        ActivityInformation.Result.ExceptionMessage);
                 }
+
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
                 return result;
             }
@@ -156,13 +173,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (ActivityException)
             {
+                // TODO: Handle error
                 throw;
             }
             catch (Exception e)
             {
+                // Unexpected error
                 ActivityInformation.Result.ExceptionName = e.GetType().FullName;
                 ActivityInformation.Result.ExceptionMessage = e.Message;
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                // TODO: Handle error: Send event, throw postpone if halt (set GiveUpAt if max time)
                 throw new ActivityException(ActivityInformation.Result.ExceptionName,
                     ActivityInformation.Result.ExceptionMessage);
             }
