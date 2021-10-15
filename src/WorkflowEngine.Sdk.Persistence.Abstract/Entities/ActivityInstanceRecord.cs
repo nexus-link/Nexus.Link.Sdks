@@ -24,9 +24,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public string ResultAsJson { get; set; }
 
-        public string ExceptionName { get; set; }
+        public string ExceptionCategory { get; set; }
 
-        public string ExceptionMessage { get; set; }
+        public string FailUrgency { get; set; }
+
+        public string ExceptionTechnicalMessage { get; set; }
+
+        public string ExceptionFriendlyMessage { get; set; }
 
         public string AsyncRequestId { get; set; }
 
@@ -46,6 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     public class ActivityInstanceRecordCreate : ActivityInstanceRecordUnique, IValidatable
     {
         public DateTimeOffset StartedAt { get; set; }
+        public string State { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")

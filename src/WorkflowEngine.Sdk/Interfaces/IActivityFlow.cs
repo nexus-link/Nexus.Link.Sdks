@@ -28,8 +28,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         Task<TMethodReturnType> LoopUntilTrueAsync<TMethodReturnType>(Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken);
 
         ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
-
         [Obsolete("Use ForEachParallel().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
         Task ForEachParallelAsync<TItem>(IEnumerable<TItem> items, Func<TItem, ActivityForEachParallel<TItem>, CancellationToken, Task> methodAsync, CancellationToken cancellationToken);
+
+        ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }
 }

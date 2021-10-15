@@ -15,7 +15,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
     public enum WorkflowActivityTypeEnum
     {
         Action, Condition, LoopUntilTrue,
-        ForEachParallel
+        ForEachParallel,
+        ForEachSequential
     }
 
     public class ActivityInformation
@@ -37,6 +38,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public ActivityResult Result { get; set; } = new();
         public string AsyncRequestId { get; set; }
 
+        public bool HasCompleted =>
+            Result.State == ActivityStateEnum.Success || Result.State == ActivityStateEnum.Failed;
+
         public ActivityInformation(IWorkflowCapability workflowCapability,
             WorkflowInformation workflowInformation, MethodHandler methodHandler, int position,
             WorkflowActivityTypeEnum activityType,
@@ -51,8 +55,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             ParentActivity = parentActivity;
             NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
         }
-
-        public bool HasCompleted;
 
         /// <inheritdoc />
         public override string ToString() => $"{_workflowInformation.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({FormId})";
@@ -126,11 +128,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     return activityInstance.Id;
                 }
             }
-
-            Result.ExceptionName = activityInstance.ExceptionType;
-            Result.ExceptionMessage = activityInstance.ExceptionMessage;
+            
+            Result.State = activityInstance.State;
+            Result.FailUrgency = activityInstance.FailUrgency;
+            Result.ExceptionCategory = activityInstance.ExceptionCategory;
+            Result.ExceptionFriendlyMessage = activityInstance.ExceptionFriendlyMessage;
+            Result.ExceptionTechnicalMessage = activityInstance.ExceptionTechnicalMessage;
             Result.Json = activityInstance.ResultAsJson;
-            HasCompleted = activityInstance.HasCompleted;
             AsyncRequestId = activityInstance.AsyncRequestId;
 
             return activityInstance.Id;
@@ -227,12 +231,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         {
             while (true)
             {
-                HasCompleted = true;
                 var item = await WorkflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
+                item.State = Result.State;
                 item.ResultAsJson = Result.Json;
-                item.ExceptionType = Result.ExceptionName;
-                item.ExceptionMessage = Result.ExceptionMessage;
-                item.HasCompleted = HasCompleted;
+                item.FailUrgency = Result.FailUrgency;
+                item.ExceptionCategory = Result.ExceptionCategory;
+                item.ExceptionFriendlyMessage = Result.ExceptionFriendlyMessage;
+                item.ExceptionTechnicalMessage = Result.ExceptionTechnicalMessage;
                 item.FinishedAt = DateTimeOffset.UtcNow; try
                 {
                     await WorkflowCapability.ActivityInstance.UpdateAsync(InstanceId, item, cancellationToken);
