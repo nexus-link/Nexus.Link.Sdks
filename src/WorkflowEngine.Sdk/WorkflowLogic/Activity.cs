@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 using ActivityStateEnum = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.ActivityStateEnum;
-using AsyncExecutionContext = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model.AsyncExecutionContext;
 using PostponeException = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions.PostponeException;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -117,7 +112,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // Already have a result?
                 if (ActivityInformation.HasCompleted)
                 {
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
+                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, false);
                 }
 
                 // Kolla maxtiden
@@ -126,10 +121,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
                     if (response == null || !response.HasCompleted) throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
-                    ActivityInformation.Result.Json = response.Content;
                     if (response.Exception?.Name == null)
                     {
                         ActivityInformation.Result.State = ActivityStateEnum.Success;
+                        ActivityInformation.Result.Json = response.Content;
                     }
                     else
                     {
@@ -138,16 +133,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                         ActivityInformation.Result.ExceptionTechnicalMessage = $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
                         ActivityInformation.Result.ExceptionFriendlyMessage = $"A remote method failed with the following message: {response.Exception.Message}";
-                        await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                        // Publish event
                     }
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, true);
                 }
 
-                // Call the activity. The method will only return if this is a
-                TMethodReturnType result;
+                // Call the activity. The method will only return if this is a method with no external calls.
                 try
                 {
-                    result = default(TMethodReturnType);
                     if (ignoreReturnValue)
                     {
                         await method(this, cancellationToken);
@@ -155,15 +149,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     }
                     else
                     {
-                        result = await method(this, cancellationToken);
+                        var result = await method(this, cancellationToken);
                         ActivityInformation.Result.Json = result.ToJsonString();
                     }
                 }
-                catch (RequestPostponedException e)
-                {
-                    throw;
-                }
-                catch (ActivityException)
+                catch (RequestPostponedException)
                 {
                     throw;
                 }
@@ -177,12 +167,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
                     ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
                     await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                    throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                        ActivityInformation.Result.ExceptionTechnicalMessage);
                 }
-
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                return result;
             }
             catch (HandledRequestPostponedException)
             {
@@ -195,11 +180,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
                 throw new HandledRequestPostponedException(e);
             }
-            catch (ActivityException)
-            {
-                // TODO: Handle error
-                throw;
-            }
             catch (Exception e)
             {
                 // Unexpected error
@@ -209,27 +189,37 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage = $"The workflow SDK failed with an exception ({e.GetType().FullName}) with the following message: {e.Message}";
                 ActivityInformation.Result.ExceptionFriendlyMessage = $"The workflow SDK failed with the following message: {e.Message}";
-                if (ActivityInformation.InstanceId != null)
-                {
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                }
-
-                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                    ActivityInformation.Result.ExceptionTechnicalMessage);
+                // Publish event
             }
+            if (ActivityInformation.InstanceId != null)
+            {
+                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+            }
+            return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, false);
         }
 
-        private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult)
+        private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult, bool publishEvent)
         {
-            if (ActivityInformation.Result.State == ActivityStateEnum.Failed)
+            if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
             {
-                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                    ActivityInformation.Result.ExceptionTechnicalMessage);
+                return ignoreResult
+                    ? default
+                    : JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
             }
 
-            if (ignoreResult) return default;
+            if (publishEvent)
+            {
+                // Publish message about exception
+            }
 
-            return JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
+            FulcrumAssert.IsNotNull(ActivityInformation.Result.FailUrgency, CodeLocation.AsString());
+            switch (ActivityInformation.Result.FailUrgency!.Value)
+            {
+                case ActivityFailUrgencyEnum.Stopping:
+                    throw new PostponeException();
+                default:
+                    return default;
+            }
         }
     }
 

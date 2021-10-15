@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using Microsoft.AspNetCore.Authentication;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 

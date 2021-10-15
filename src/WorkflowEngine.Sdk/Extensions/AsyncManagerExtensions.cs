@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Serialization;
