@@ -81,6 +81,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected abstract Task<TResponse> ExecuteWorkflowAsync(CancellationToken cancellationToken);
 
+        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(string title, string id)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            return new ActivityFlow<TActivityReturns>(_workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+        }
+
         protected IActivityFlow CreateActivity(string title, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));

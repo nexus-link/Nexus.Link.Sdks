@@ -10,18 +10,18 @@ using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    internal class ActivityFlow : IActivityFlow
+    internal abstract class ActivityFlowBase
     {
-        private readonly WorkflowInformation _workflowInformation;
-        private readonly IWorkflowCapability _workflowCapability;
-        private readonly IAsyncRequestClient _asyncRequestClient;
-        private readonly string _activityFormId;
-        private readonly MethodHandler _methodHandler;
-        private readonly string _formTitle;
-        private Activity _parent;
-        private Activity _previous;
+        protected readonly WorkflowInformation _workflowInformation;
+        protected readonly IWorkflowCapability _workflowCapability;
+        protected readonly IAsyncRequestClient _asyncRequestClient;
+        protected readonly string _activityFormId;
+        protected readonly MethodHandler _methodHandler;
+        protected readonly string _formTitle;
+        protected Activity _parent;
+        protected Activity _previous;
 
-        public ActivityFlow(IWorkflowCapability workflowCapability,
+        protected ActivityFlowBase(IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
             WorkflowInformation workflowInformation, string formTitle, string activityFormId)
         {
@@ -31,6 +31,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _activityFormId = activityFormId;
             _formTitle = formTitle;
             _methodHandler = new MethodHandler(formTitle);
+        }
+
+        protected ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
+        {
+            var activityInformation = new ActivityInformation(_workflowCapability, _workflowInformation, _methodHandler,
+                1, activityType, _previous?.ActivityInformation, _parent?.ActivityInformation)
+            {
+                FormId = _activityFormId,
+                FormTitle = _formTitle
+            };
+            return activityInformation;
+        }
+    }
+
+    internal class ActivityFlow : ActivityFlowBase, IActivityFlow
+    {
+
+        public ActivityFlow(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
+            WorkflowInformation workflowInformation, string formTitle, string activityFormId) 
+        :base(workflowCapability, asyncRequestClient,workflowInformation, formTitle, activityFormId)
+        {
         }
 
         public IActivityFlow SetParameter<T>(string name, T value)
@@ -51,8 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _previous = previous;
             return this;
         }
-
-        #region Action
+        
         /// <inheritdoc/>
         public ActivityAction Action()
         {
@@ -60,56 +81,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
             return activityInstance;
         }
-
+        
         /// <inheritdoc/>
-        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task<TMethodReturnType> ExecuteActionAsync<TMethodReturnType>(
-            Func<ActivityAction, CancellationToken, Task<TMethodReturnType>> method,
-            CancellationToken cancellationToken)
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
-            return activityInstance.ExecuteActionAsync(method, cancellationToken);
-        }
-
-        /// <inheritdoc/>
-        [Obsolete("Use Action().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task ExecuteActionAsync(
-            Func<ActivityAction, CancellationToken, Task> method,
-            CancellationToken cancellationToken)
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
-            var activityInstance = new ActivityAction(activityInformation, _asyncRequestClient, _previous, _parent);
-            return activityInstance.ExecuteActionAsync(method, cancellationToken);
-        }
-        #endregion
-
-        #region If
         public ActivityCondition<bool> If()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
             var activityInstance = new ActivityCondition<bool>(activityInformation, _asyncRequestClient, _previous, _parent);
             return activityInstance;
         }
-        public ActivityCondition<T> Condition<T>()
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityCondition<T>(activityInformation, _asyncRequestClient, _previous, _parent);
-            return activityInstance;
-        }
         
-        [Obsolete("Use If().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task<bool> IfAsync(
-            Func<Activity, CancellationToken, Task<bool>> ifMethodAsync,
-            CancellationToken cancellationToken)
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityIf(activityInformation, _asyncRequestClient, _previous, _parent);
-            return activityInstance.IfAsync(ifMethodAsync, cancellationToken);
-        }
-        #endregion
-
-        #region LoopUntil
+        /// <inheritdoc/>
         public ActivityLoopUntilTrue LoopUntil()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
@@ -117,53 +98,90 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return activityInstance;
         }
         
-        [Obsolete("Use LoopUntil().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task<TMethodReturnType> LoopUntilTrueAsync<TMethodReturnType>(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> methodAsync, CancellationToken cancellationToken)
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
-            var activityInstance = new ActivityLoopUntilTrue(activityInformation, _asyncRequestClient , _previous, _parent);
-            return activityInstance.ExecuteAsync<TMethodReturnType>(methodAsync, cancellationToken);
-        }
-        #endregion
-
-        #region ForEachParallel
+        /// <inheritdoc/>
         public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
             return activityInstance;
         }
-
-        [Obsolete("Use ForEachParallel().ExecuteAsync() instead. Obsolete since 2021-10-14.")]
-        public Task ForEachParallelAsync<TItem>(
-            IEnumerable<TItem> items,
-            Func<TItem, ActivityForEachParallel<TItem>, CancellationToken, Task> methodAsync, CancellationToken cancellationToken)
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
-            var activityInstance = new ActivityForEachParallel<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
-            return activityInstance.ExecuteAsync(methodAsync, cancellationToken);
-        }
-        #endregion
-
-        #region ForEachSequential
+        
+        /// <inheritdoc/>
         public ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityInstance = new ActivityForEachSequential<TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
             return activityInstance;
         }
-        #endregion
+    }
 
-        private ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
+    internal class ActivityFlow<TActivityReturns> : ActivityFlowBase, IActivityFlow<TActivityReturns>
+    {
+
+        public ActivityFlow(IWorkflowCapability workflowCapability,
+            IAsyncRequestClient asyncRequestClient,
+            WorkflowInformation workflowInformation, string formTitle, string activityFormId) 
+        :base(workflowCapability, asyncRequestClient,workflowInformation, formTitle, activityFormId)
         {
-            var activityInformation = new ActivityInformation(_workflowCapability, _workflowInformation, _methodHandler,
-                1, activityType, _previous?.ActivityInformation, _parent?.ActivityInformation)
-            {
-                FormId = _activityFormId,
-                FormTitle = _formTitle
-            };
-            return activityInformation;
+        }
+
+        public IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value)
+        {
+            _methodHandler.DefineParameter<T>(name);
+            _methodHandler.SetParameter(name, value);
+            return this;
+        }
+
+        public IActivityFlow<TActivityReturns> SetParent(Activity parent)
+        {
+            _parent = parent;
+            return this;
+        }
+
+        public IActivityFlow<TActivityReturns> SetPrevious(Activity previous)
+        {
+            _previous = previous;
+            return this;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityAction<TActivityReturns> Action()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
+            var activityInstance = new ActivityAction<TActivityReturns>(activityInformation, _asyncRequestClient, _previous, _parent);
+            return activityInstance;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityCondition<bool> If()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
+            var activityInstance = new ActivityCondition<bool>(activityInformation, _asyncRequestClient, _previous, _parent);
+            return activityInstance;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityLoopUntilTrue<TActivityReturns> LoopUntil()
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
+            var activityInstance = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, _asyncRequestClient , _previous, _parent);
+            return activityInstance;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityInstance = new ActivityForEachParallel<TActivityReturns, TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
+            return activityInstance;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityInstance = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, _asyncRequestClient, items, _previous, _parent);
+            return activityInstance;
         }
     }
 }
