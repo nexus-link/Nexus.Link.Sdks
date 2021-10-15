@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
@@ -44,8 +45,14 @@ public class WorkflowService : IWorkflowService
 
         var (activityForms, activityVersions, activityInstances) = await ReadAllActivities(form.Id, version.Id, instance.Id, cancellationToken);
         workflow.Activities = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
+        workflow.Activities.Sort(PositionSort);
 
         return workflow;
+    }
+
+    private static int PositionSort(Activity x, Activity y)
+    {
+        return x.Version.Position.CompareTo(y.Version.Position);
     }
 
     private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityFormRecord> activityForms, Dictionary<string, ActivityVersionRecord> activityVersions, Dictionary<string, ActivityInstanceRecord> activityInstances)

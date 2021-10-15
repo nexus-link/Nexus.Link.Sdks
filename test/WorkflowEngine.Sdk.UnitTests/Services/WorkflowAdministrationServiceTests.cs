@@ -36,12 +36,12 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             workflow.Title.ShouldContain($"{WorkflowVersionRecord.MajorVersion}.{WorkflowVersionRecord.MinorVersion}");
             workflow.Title.ShouldContain(WorkflowInstanceRecord.Title);
 
-            workflow.Activities.Count.ShouldBe(ActivityInstances.Count);
-            foreach (var activity in workflow.Activities)
-            {
-                activity.Children.Count.ShouldBe(1);
-                // TODO: position
-            }
+            workflow.Activities.Count.ShouldBe(2);
+            workflow.Activities[0].Position.ShouldBe("1");
+            workflow.Activities[0].Children.Count.ShouldBe(1);
+            workflow.Activities[0].Children[0].Position.ShouldBe("1.1");
+            workflow.Activities[0].Children[0].Children.Count.ShouldBe(1);
+            workflow.Activities[0].Children[0].Children[0].Position.ShouldBe("1.1.1");
         }
     }
 }
