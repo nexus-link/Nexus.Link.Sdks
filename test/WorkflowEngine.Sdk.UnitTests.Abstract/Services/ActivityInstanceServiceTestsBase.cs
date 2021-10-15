@@ -75,6 +75,7 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
 
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
+            itemToUpdate.State = ActivityStateEnum.Failed;
             itemToUpdate.FailUrgency = ActivityFailUrgencyEnum.Stopping;
             itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
             itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToString();

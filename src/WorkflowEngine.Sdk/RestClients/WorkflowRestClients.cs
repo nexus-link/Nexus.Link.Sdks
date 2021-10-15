@@ -45,8 +45,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 
         /// <inheritdoc />
         public IWorkflowInstanceService WorkflowInstance { get; }
-
-        /// <inheritdoc />
-        public IWorkflowService Workflow { get; }
     }
 }

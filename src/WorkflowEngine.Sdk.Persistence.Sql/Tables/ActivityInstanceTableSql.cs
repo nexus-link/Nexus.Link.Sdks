@@ -24,8 +24,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.FinishedAt),
                 nameof(ActivityInstanceRecord.HasCompleted),
                 nameof(ActivityInstanceRecord.ResultAsJson),
-                nameof(ActivityInstanceRecord.ExceptionName),
-                nameof(ActivityInstanceRecord.ExceptionMessage),
+                nameof(ActivityInstanceRecord.State),
+                nameof(ActivityInstanceRecord.FailUrgency),
+                nameof(ActivityInstanceRecord.ExceptionCategory),
+                nameof(ActivityInstanceRecord.ExceptionFriendlyMessage),
+                nameof(ActivityInstanceRecord.ExceptionTechnicalMessage),
                 nameof(ActivityInstanceRecord.AsyncRequestId),
             },
             OrderBy = new List<string> { nameof(ActivityInstanceRecord.RecordCreatedAt) }
