@@ -20,9 +20,16 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         /// <summary>
         /// Constructor
         /// </summary>
-        public RequestResponseRestClient(IHttpSender httpSender)
+        public RequestResponseRestClient(IHttpSender httpSender) : this(FulcrumApplication.Setup.Tenant, httpSender)
         {
-            _tenant = FulcrumApplication.Setup.Tenant;
+        }
+
+        /// <summary>
+        /// Constructor with tenant
+        /// </summary>
+        public RequestResponseRestClient(Tenant tenant, IHttpSender httpSender)
+        {
+            _tenant = tenant;
             _httpSender = httpSender;
         }
 
