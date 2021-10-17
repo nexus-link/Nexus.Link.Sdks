@@ -24,6 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             var workflowRecord = await _workflowService.ReadAsync(id, cancellationToken);
+            if (workflowRecord == null) return null;
 
             var workflow = new Workflow
             {

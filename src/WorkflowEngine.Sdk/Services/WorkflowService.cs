@@ -33,6 +33,7 @@ public class WorkflowService : IWorkflowService
 
         var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
         var instance = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid, cancellationToken);
+        if (instance == null) return null;
         var version = await _configurationTables.WorkflowVersion.ReadAsync(instance.WorkflowVersionId, cancellationToken);
         var form = await _configurationTables.WorkflowForm.ReadAsync(version.WorkflowFormId, cancellationToken);
 
