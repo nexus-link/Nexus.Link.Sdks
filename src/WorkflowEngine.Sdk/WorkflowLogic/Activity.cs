@@ -103,7 +103,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            await SafeSaveActivityInformationAsync(cancellationToken);
+            await SafeSaveActivityInformationAsync();
 
             // Already have a result?
             if (ActivityInformation.HasCompleted)
@@ -116,7 +116,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 return await SafeGetResponseOrThrowAsync(cancellationToken);
             }
 
-            SafeVerifyMaxTimeAsync(cancellationToken);
+            SafeVerifyMaxTimeAsync();
 
             // Call the activity. The method will only return if this is a method with no external calls.
             try
@@ -140,7 +140,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
                 ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
-                await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
+                await SafeUpdateInstanceWithRequestIdAsync();
                 throw new HandledRequestPostponedException(e);
             }
             catch (Exception e)
@@ -152,23 +152,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
                 ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
             if (ActivityInformation.InstanceId != null)
             {
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                await SafeUpdateInstanceWithResultAsync();
             }
             return await SafeGetResultOrThrowAsync(false);
 
             #region Local methods
 
-            async Task SafeSaveActivityInformationAsync(CancellationToken cancellationToken1)
+            async Task SafeSaveActivityInformationAsync()
             {
                 try
                 {
                     // Find existing or create new
                     ActivityInformation.Iteration = Iteration;
-                    await ActivityInformation.PersistAsync(cancellationToken1);
+                    await ActivityInformation.PersistAsync(cancellationToken);
                 }
                 catch (Exception)
                 {
@@ -214,19 +213,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         $"A remote method failed with the following message: {response.Exception.Message}";
                 }
 
-                try
-                {
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken2);
-                }
-                catch (Exception)
-                {
-                    // TODO: Log
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
-                }
+                await SafeUpdateInstanceWithResultAsync();
                 return await SafeGetResultOrThrowAsync(true);
             }
 
-            void SafeVerifyMaxTimeAsync(CancellationToken cancellationToken)
+            void SafeVerifyMaxTimeAsync()
             {
                 throw new NotImplementedException();
             }
@@ -263,6 +254,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                             // TODO: Log
                             throw new RequestPostponedException();
                         }
+                }
+            }
+
+            async Task SafeUpdateInstanceWithResultAsync()
+            {
+                CancellationToken cancellationToken2;
+                try
+                {
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken2);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+            }
+
+            async Task SafeUpdateInstanceWithRequestIdAsync()
+            {
+                try
+                {
+                    await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    // TODO: Is this correct?
+                    throw new Exceptions.HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
             #endregion
