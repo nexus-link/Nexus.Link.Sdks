@@ -118,45 +118,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             SafeVerifyMaxTimeAsync();
 
-            // Call the activity. The method will only return if this is a method with no external calls.
-            try
-            {
-                if (ignoreReturnValue)
-                {
-                    await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = "";
-                }
-                else
-                {
-                    var result = await method(this, cancellationToken);
-                    ActivityInformation.Result.Json = result.ToJsonString();
-                }
-            }
-            catch (HandledRequestPostponedException)
-            {
-                throw;
-            }
-            catch (RequestPostponedException e)
-            {
-                if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
-                ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
-                await SafeUpdateInstanceWithRequestIdAsync();
-                throw new HandledRequestPostponedException(e);
-            }
-            catch (Exception e)
-            {
-                // Normal error
-                // TODO: Handle error: Send event, throw postpone if halt
-                ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-                ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
-                ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
-            }
-            if (ActivityInformation.InstanceId != null)
-            {
-                await SafeUpdateInstanceWithResultAsync();
-            }
+            await SafeCallMethodAndUpdateActivityInformationAsync();
+
             return await SafeGetResultOrThrowAsync(false);
 
             #region Local methods
@@ -220,6 +183,52 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             void SafeVerifyMaxTimeAsync()
             {
                 throw new NotImplementedException();
+            }
+
+            async Task SafeCallMethodAndUpdateActivityInformationAsync()
+            {
+                // Call the activity. The method will only return if this is a method with no external calls.
+                try
+                {
+                    if (ignoreReturnValue)
+                    {
+                        await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = "";
+                    }
+                    else
+                    {
+                        var result = await method(this, cancellationToken);
+                        ActivityInformation.Result.Json = result.ToJsonString();
+                    }
+                }
+                catch (HandledRequestPostponedException)
+                {
+                    throw;
+                }
+                catch (RequestPostponedException e)
+                {
+                    if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
+                    ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
+                    await SafeUpdateInstanceWithRequestIdAsync();
+                    throw new HandledRequestPostponedException(e);
+                }
+                catch (Exception e)
+                {
+                    // Normal error
+                    // TODO: Handle error: Send event, throw postpone if halt
+                    ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                    ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                    ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                    ActivityInformation.Result.ExceptionTechnicalMessage =
+                        $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
+                    ActivityInformation.Result.ExceptionFriendlyMessage =
+                        $"A local method failed with the following message: {e.Message}";
+                }
+
+                if (ActivityInformation.InstanceId != null)
+                {
+                    await SafeUpdateInstanceWithResultAsync();
+                }
             }
 
             async Task<TMethodReturnType> SafeGetResultOrThrowAsync(bool publishEvent)
