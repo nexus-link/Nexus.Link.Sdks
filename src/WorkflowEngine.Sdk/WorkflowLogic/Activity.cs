@@ -30,7 +30,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public abstract class Activity
     {
-        private readonly IWorkflowCapability _workflowCapability;
         private readonly IAsyncRequestClient _asyncRequestClient;
 
         public ActivityInformation ActivityInformation { get; }
@@ -63,7 +62,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
-            _workflowCapability = activityInformation.WorkflowCapability;
             _asyncRequestClient = asyncRequestClient;
             ActivityInformation = activityInformation;
             PreviousActivity = previousActivity;
