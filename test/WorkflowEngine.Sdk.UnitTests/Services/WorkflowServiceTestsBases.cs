@@ -12,7 +12,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
     public abstract class WorkflowServiceTestsBases
     {
         // System under test
-        protected readonly IWorkflowService WorkflowService;
+        protected static readonly IWorkflowService WorkflowService;
 
         protected static WorkflowFormRecord WorkflowFormRecord;
         protected static WorkflowVersionRecord WorkflowVersionRecord;
@@ -20,19 +20,22 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
         protected static ActivityInstanceRecord GrandChildActivity;
         
         protected readonly ITestOutputHelper TestOutputHelper;
-        protected readonly IConfigurationTables ConfigurationTables = new ConfigurationTablesMemory();
-        protected readonly IRuntimeTables RuntimeTables = new RuntimeTablesMemory();
+        protected static readonly IConfigurationTables ConfigurationTables = new ConfigurationTablesMemory();
+        protected static readonly IRuntimeTables RuntimeTables = new RuntimeTablesMemory();
 
-        protected WorkflowServiceTestsBases(ITestOutputHelper testOutputHelper)
+        static WorkflowServiceTestsBases()
         {
-            TestOutputHelper = testOutputHelper;
-
             WorkflowService = new WorkflowService(ConfigurationTables, RuntimeTables);
 
             SetupWorkflowMockStructure().Wait();
         }
 
-        private async Task SetupWorkflowMockStructure()
+        protected WorkflowServiceTestsBases(ITestOutputHelper testOutputHelper)
+        {
+            TestOutputHelper = testOutputHelper;
+        }
+
+        private static async Task SetupWorkflowMockStructure()
         {
             WorkflowFormRecord = await ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), new WorkflowFormRecordCreate
             {
@@ -63,7 +66,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             var (formIdBc, versionIdBc, instanceIdBc) = await CreateActivityTrio("B child", 1, versionIdB, instanceIdB);
         }
 
-        private async Task<(Guid formId, Guid versionId, Guid instanceId)> CreateActivityTrio(string title, int position, Guid? parentActivityVersionId = null, Guid? parentActivityInstanceId = null)
+        private static async Task<(Guid formId, Guid versionId, Guid instanceId)> CreateActivityTrio(string title, int position, Guid? parentActivityVersionId = null, Guid? parentActivityInstanceId = null)
         {
             var activityForm = await ConfigurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), new ActivityFormRecordCreate
             {
