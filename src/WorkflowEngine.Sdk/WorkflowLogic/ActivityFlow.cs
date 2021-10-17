@@ -95,7 +95,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityCondition<bool> If()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent);
+            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent, null);
             return activityInstance;
         }
         
