@@ -75,9 +75,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
+            Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            return InternalExecuteAsync<TMethodReturnType>(method, cancellationToken, false);
+            return InternalExecuteAsync<TMethodReturnType>(method, false, getDefaultValueMethodAsync, cancellationToken);
         }
 
         protected async Task InternalExecuteAsync(
@@ -88,7 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 await method(instance, ct);
                 return Task.FromResult(false);
-            }, cancellationToken);
+            }, true, null, cancellationToken);
         }
 
         public TParameter GetArgument<TParameter>(string parameterName)
@@ -98,8 +99,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         private async Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
-            CancellationToken cancellationToken,
-            bool ignoreReturnValue)
+            bool ignoreReturnValue,
+            Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -110,10 +112,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // Already have a result?
                 if (ActivityInformation.HasCompleted)
                 {
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, false);
+                    return await GetResultOrThrowAsync(false);
                 }
 
-                // Kolla maxtiden
+                // TODO: Kolla maxtiden
 
                 if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
                 {
@@ -134,7 +136,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         // Publish event
                     }
                     await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, true);
+                    return await GetResultOrThrowAsync(true);
                 }
 
                 // Call the activity. The method will only return if this is a method with no external calls.
@@ -193,31 +195,45 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
-            return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue, false);
-        }
+            return await GetResultOrThrowAsync(false);
 
-        private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult, bool publishEvent)
-        {
-            if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
-            {
-                return ignoreResult
-                    ? default
-                    : JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
-            }
+            #region Local methods
 
-            if (publishEvent)
+            async Task<TMethodReturnType> GetResultOrThrowAsync(bool publishEvent)
             {
-                // Publish message about exception
-            }
+                if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
+                {
+                    return ignoreReturnValue
+                        ? default
+                        : JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
+                }
 
-            FulcrumAssert.IsNotNull(ActivityInformation.Result.FailUrgency, CodeLocation.AsString());
-            switch (ActivityInformation.Result.FailUrgency!.Value)
-            {
-                case ActivityFailUrgencyEnum.Stopping:
-                    throw new RequestPostponedException();
-                default:
-                    return default;
+                if (publishEvent)
+                {
+                    // Publish message about exception
+                }
+
+                FulcrumAssert.IsNotNull(ActivityInformation.Result.FailUrgency, CodeLocation.AsString());
+                switch (ActivityInformation.Result.FailUrgency!.Value)
+                {
+                    case ActivityFailUrgencyEnum.Stopping:
+                        throw new RequestPostponedException();
+                    default:
+                        if (getDefaultValueMethodAsync == null) return default;
+                        try
+                        {
+                            return await getDefaultValueMethodAsync();
+                        }
+                        catch (Exception)
+                        {
+                            // Errors in the default method overrides stopping.
+                            // TODO: How do we convey information about this to the person who has to deal with this stopping activity?
+                            // TODO: Log
+                            throw new RequestPostponedException();
+                        }
+                }
             }
+            #endregion
         }
     }
 

@@ -8,28 +8,31 @@ using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public class ActivityCondition<TMethodReturnType> : Activity
+    public class ActivityCondition<TActivityReturns> : Activity
     {
+        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
+
         public ActivityCondition(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity, object getDefaultValueMethodAsync)
+            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
+            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Condition, ActivityInformation.ActivityType, "Ignore",
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityCondition<TMethodReturnType>)}.");
+                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityCondition<TActivityReturns>)}.");
         }
 
-        public Task<TMethodReturnType> ExecuteAsync(
-            Func<Activity, CancellationToken, Task<TMethodReturnType>> conditionMethodAsync,
+        public Task<TActivityReturns> ExecuteAsync(
+            Func<Activity, CancellationToken, Task<TActivityReturns>> conditionMethodAsync,
             CancellationToken cancellationToken)
         {
-            return InternalExecuteAsync((instance, ct) => MapMethod(conditionMethodAsync, instance, ct), cancellationToken);
+            return InternalExecuteAsync((instance, ct) => MapMethod(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private static Task<TMethodReturnType> MapMethod(
-            Func<ActivityCondition<TMethodReturnType>, CancellationToken, Task<TMethodReturnType>> method, 
+        private static Task<TActivityReturns> MapMethod(
+            Func<ActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             Activity instance, CancellationToken cancellationToken)
         {
-            var condition = instance as ActivityCondition<TMethodReturnType>;
+            var condition = instance as ActivityCondition<TActivityReturns>;
             FulcrumAssert.IsNotNull(condition, CodeLocation.AsString());
             return method(condition, cancellationToken);
         }

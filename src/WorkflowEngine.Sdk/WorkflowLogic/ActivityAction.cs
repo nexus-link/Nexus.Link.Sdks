@@ -38,11 +38,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public class ActivityAction<TActivityReturns> : Activity
     {
+        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
+
         public ActivityAction(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient,
             Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
+            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
@@ -50,7 +53,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityAction, CancellationToken, Task<TActivityReturns>> method, 
             CancellationToken cancellationToken)
         {
-            return InternalExecuteAsync((instance, t) => MapMethod(method, instance, t), cancellationToken);
+            return InternalExecuteAsync((instance, t) => MapMethod(method, instance, t), _getDefaultValueMethodAsync, cancellationToken);
         }
 
         private Task<TMethodReturnType> MapMethod<TMethodReturnType>(

@@ -53,15 +53,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public class ActivityForEachParallel<TActivityReturns, TItemType> : Activity
     {
+        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
         public IEnumerable<TItemType> Items { get; }
 
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity, object getDefaultValueMethodAsync)
+            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
+            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
@@ -75,7 +77,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             foreach (var item in Items)
             {
                 var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
-                    cancellationToken);
+                    _getDefaultValueMethodAsync, cancellationToken);
                 taskList.Add(task);
             }
 

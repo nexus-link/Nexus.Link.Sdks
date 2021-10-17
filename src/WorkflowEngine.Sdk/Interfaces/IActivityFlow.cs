@@ -16,7 +16,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow OnException(ActivityFailUrgencyEnum failUrgency);
 
         ActivityAction Action();
-        ActivityCondition<bool> If();
         ActivityLoopUntilTrue LoopUntil();
         ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
         ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
@@ -32,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<Task<TActivityReturns>> getDefaultValueMethodAsync);
 
         ActivityAction<TActivityReturns> Action();
-        ActivityCondition<bool> If();
+        ActivityIf<TActivityReturns> If();
         ActivityLoopUntilTrue<TActivityReturns> LoopUntil();
         ActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
         ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
