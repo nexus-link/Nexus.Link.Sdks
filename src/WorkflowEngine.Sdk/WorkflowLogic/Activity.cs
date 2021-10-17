@@ -103,70 +103,33 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
+            await SafeSaveActivityInformationAsync(cancellationToken);
+
+            // Already have a result?
+            if (ActivityInformation.HasCompleted)
+            {
+                return await SafeGetResultOrThrowAsync(false);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
+            {
+                return await SafeGetResponseOrThrowAsync(cancellationToken);
+            }
+
+            SafeVerifyMaxTimeAsync(cancellationToken);
+
+            // Call the activity. The method will only return if this is a method with no external calls.
             try
             {
-                // Find existing or create new
-                ActivityInformation.Iteration = Iteration;
-                await ActivityInformation.PersistAsync(cancellationToken);
-
-                // Already have a result?
-                if (ActivityInformation.HasCompleted)
+                if (ignoreReturnValue)
                 {
-                    return await GetResultOrThrowAsync(false);
+                    await method(this, cancellationToken);
+                    ActivityInformation.Result.Json = "";
                 }
-
-                // TODO: Kolla maxtiden
-
-                if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
+                else
                 {
-                    var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
-                    if (response == null || !response.HasCompleted) throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
-                    if (response.Exception?.Name == null)
-                    {
-                        ActivityInformation.Result.State = ActivityStateEnum.Success;
-                        ActivityInformation.Result.Json = response.Content;
-                    }
-                    else
-                    {
-                        ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                        ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-                        ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                        ActivityInformation.Result.ExceptionTechnicalMessage = $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
-                        ActivityInformation.Result.ExceptionFriendlyMessage = $"A remote method failed with the following message: {response.Exception.Message}";
-                        // Publish event
-                    }
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                    return await GetResultOrThrowAsync(true);
-                }
-
-                // Call the activity. The method will only return if this is a method with no external calls.
-                try
-                {
-                    if (ignoreReturnValue)
-                    {
-                        await method(this, cancellationToken);
-                        ActivityInformation.Result.Json = "";
-                    }
-                    else
-                    {
-                        var result = await method(this, cancellationToken);
-                        ActivityInformation.Result.Json = result.ToJsonString();
-                    }
-                }
-                catch (RequestPostponedException)
-                {
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    // Normal error
-                    // TODO: Handle error: Send event, throw postpone if halt
-                    ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                    ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-                    ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                    ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
-                    ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    var result = await method(this, cancellationToken);
+                    ActivityInformation.Result.Json = result.ToJsonString();
                 }
             }
             catch (HandledRequestPostponedException)
@@ -182,24 +145,93 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (Exception e)
             {
-                // Unexpected error
-                // TODO: Handle error: Send event, throw postpone if halt (set GiveUpAt if max time)
+                // Normal error
+                // TODO: Handle error: Send event, throw postpone if halt
                 ActivityInformation.Result.State = ActivityStateEnum.Failed;
                 ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                ActivityInformation.Result.ExceptionTechnicalMessage = $"The workflow SDK failed with an exception ({e.GetType().FullName}) with the following message: {e.Message}";
-                ActivityInformation.Result.ExceptionFriendlyMessage = $"The workflow SDK failed with the following message: {e.Message}";
-                // Publish event
+                ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
+                ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
+                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
             if (ActivityInformation.InstanceId != null)
             {
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
-            return await GetResultOrThrowAsync(false);
+            return await SafeGetResultOrThrowAsync(false);
 
             #region Local methods
 
-            async Task<TMethodReturnType> GetResultOrThrowAsync(bool publishEvent)
+            async Task SafeSaveActivityInformationAsync(CancellationToken cancellationToken1)
+            {
+                try
+                {
+                    // Find existing or create new
+                    ActivityInformation.Iteration = Iteration;
+                    await ActivityInformation.PersistAsync(cancellationToken1);
+                }
+                catch (Exception)
+                {
+                    // Save failed
+                    // TODO: Log
+                    throw new Exceptions.HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+            }
+
+            async Task<TMethodReturnType> SafeGetResponseOrThrowAsync(CancellationToken cancellationToken2)
+            {
+                AsyncHttpResponse response;
+                try
+                {
+                    response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId,
+                        cancellationToken2);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+
+                if (response == null || !response.HasCompleted)
+                {
+                    // No response yet
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+
+                if (response.Exception?.Name == null)
+                {
+                    ActivityInformation.Result.State = ActivityStateEnum.Success;
+                    ActivityInformation.Result.Json = response.Content;
+                }
+                else
+                {
+                    ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                    ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                    ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                    ActivityInformation.Result.ExceptionTechnicalMessage =
+                        $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
+                    ActivityInformation.Result.ExceptionFriendlyMessage =
+                        $"A remote method failed with the following message: {response.Exception.Message}";
+                }
+
+                try
+                {
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken2);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+                return await SafeGetResultOrThrowAsync(true);
+            }
+
+            void SafeVerifyMaxTimeAsync(CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            async Task<TMethodReturnType> SafeGetResultOrThrowAsync(bool publishEvent)
             {
                 if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
                 {
