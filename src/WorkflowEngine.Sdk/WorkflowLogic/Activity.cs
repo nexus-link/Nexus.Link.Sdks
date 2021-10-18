@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -136,7 +137,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     // Save failed
                     // TODO: Log
-                    throw new Exceptions.HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
 
@@ -201,16 +202,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         ActivityInformation.Result.Json = result.ToJsonString();
                     }
                 }
-                catch (HandledRequestPostponedException)
+                catch (RequestPostponedException)
                 {
                     throw;
                 }
-                catch (RequestPostponedException e)
+                catch (AsyncRequestException e)
                 {
-                    if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
-                    ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
+                    ActivityInformation.AsyncRequestId = e.RequestId;
                     await SafeUpdateInstanceWithRequestIdAsync();
-                    throw new HandledRequestPostponedException(e);
+                    throw new RequestPostponedException(e.RequestId);
                 }
                 catch (Exception e)
                 {
@@ -289,8 +289,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 catch (Exception)
                 {
                     // TODO: Log
-                    // TODO: Is this correct?
-                    throw new Exceptions.HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                    // TODO: Is this correct? Isn't it very bad that we didn't save the request id? The next time around we will send a new request. Could be handled with idempotency, if we send ActivityInstanceId in the request.
+                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
             #endregion
