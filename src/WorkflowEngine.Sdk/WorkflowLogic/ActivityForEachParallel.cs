@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
@@ -39,22 +38,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 taskList.Add(task);
             }
             
+            await AggregatePostponeExceptions(taskList);
+        }
+
+        private static async Task AggregatePostponeExceptions(IList<Task> taskList)
+        {
             HandledRequestPostponedException outException = null;
-            while (taskList.Count > 0)
+            var current = 0;
+            while (taskList.Count > current)
             {
                 try
                 {
-                    await taskList[0];
+                    await taskList[current];
+                    current++;
                 }
                 catch (HandledRequestPostponedException e)
                 {
                     outException ??= new HandledRequestPostponedException();
                     outException.AddWaitingForIds(e.WaitingForRequestIds);
+                    taskList.RemoveAt(current);
                 }
-                taskList.RemoveAt(0);
+                catch (Exception)
+                {
+                    current++;
+                }
             }
 
             if (outException != null) throw outException;
+            await Task.WhenAll(taskList);
         }
 
         private Task MapMethod(
@@ -86,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
         }
 
-        public List<Task<TActivityReturns>> ExecuteAsync(
+        public async Task<List<Task<TActivityReturns>>> ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken, params object[] arguments)
         {
@@ -97,7 +108,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     _getDefaultValueMethodAsync, cancellationToken);
                 taskList.Add(task);
             }
+            return await AggregatePostponeExceptions(taskList);
+        }
 
+        private static async Task<List<Task<TActivityReturns>>> AggregatePostponeExceptions(List<Task<TActivityReturns>> taskList)
+        {
+            HandledRequestPostponedException outException = null;
+            var current = 0;
+            while (taskList.Count > current)
+            {
+                try
+                {
+                    await taskList[current];
+                    current++;
+                }
+                catch (HandledRequestPostponedException e)
+                {
+                    outException ??= new HandledRequestPostponedException();
+                    outException.AddWaitingForIds(e.WaitingForRequestIds);
+                    taskList.RemoveAt(current);
+                }
+                catch (Exception)
+                {
+                    current++;
+                }
+            }
+
+            if (outException != null) throw outException;
+            await Task.WhenAll(taskList);
             return taskList;
         }
 
