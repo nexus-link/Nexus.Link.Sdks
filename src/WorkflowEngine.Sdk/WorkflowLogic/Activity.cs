@@ -27,13 +27,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly IWorkflowCapability _workflowCapability;
         private readonly IAsyncRequestClient _asyncRequestClient;
 
-        public ActivityInformation ActivityInformation { get; }
-        public Activity ParentActivity { get; protected set; }
-        public Activity PreviousActivity { get; }
+        protected internal ActivityInformation ActivityInformation { get; }
+        protected Activity ParentActivity { get; }
+        protected Activity PreviousActivity { get; }
         // TODO: Should be nullable instead of relying on value 0
         public int? Iteration { get; protected set; }
-
-        public string Identifier => ActivityInformation.InstanceId;
 
         public string Title
         {
