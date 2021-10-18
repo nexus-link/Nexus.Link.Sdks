@@ -13,8 +13,9 @@ CREATE TABLE WorkflowInstance
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset CONSTRAINT DF_WorkflowInstance_FinishedAt DEFAULT (sysdatetimeoffset()),
 
-	CONSTRAINT PK_WorkflowInstance PRIMARY KEY (Id ASC)
+	CONSTRAINT PK_WorkflowInstance PRIMARY KEY NONCLUSTERED (Id ASC)
 )
+CREATE CLUSTERED INDEX IX_WorkflowInstance_RecordCreatedAt ON WorkflowInstance (RecordCreatedAt)
 
 CREATE TABLE ActivityInstance
 (
@@ -41,7 +42,8 @@ CREATE TABLE ActivityInstance
     ExceptionTechnicalMessage nvarchar(max),
     AsyncRequestId nvarchar(64),
 
-	CONSTRAINT PK_ActivityInstance PRIMARY KEY (Id ASC),
+	CONSTRAINT PK_ActivityInstance PRIMARY KEY NONCLUSTERED (Id ASC),
 	CONSTRAINT UQ_ActivityInstance_1 UNIQUE (WorkflowInstanceId, ActivityVersionId, ParentActivityInstanceId, ParentIteration)
 )
+CREATE CLUSTERED INDEX IX_ActivityInstance_RecordCreatedAt ON ActivityInstance (RecordCreatedAt)
 
