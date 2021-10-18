@@ -113,7 +113,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 return await SafeGetResponseOrThrowAsync(cancellationToken);
             }
 
-            SafeVerifyMaxTimeAsync();
+            await SafeVerifyMaxTimeAsync();
 
             await SafeCallMethodAndUpdateActivityInformationAsync();
 
@@ -177,9 +177,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 return await SafeGetResultOrThrowAsync(true);
             }
 
-            void SafeVerifyMaxTimeAsync()
+            Task SafeVerifyMaxTimeAsync()
             {
-                throw new NotImplementedException();
+                return Task.CompletedTask;
             }
 
             async Task SafeCallMethodAndUpdateActivityInformationAsync()

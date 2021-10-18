@@ -50,17 +50,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
         public Task<TActivityReturns> ExecuteAsync(
-            Func<ActivityAction, CancellationToken, Task<TActivityReturns>> method, 
+            Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             CancellationToken cancellationToken)
         {
             return InternalExecuteAsync((instance, t) => MapMethod(method, instance, t), _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
-            Func<ActivityAction, CancellationToken, Task<TMethodReturnType>> method, 
+        private Task<TActivityReturns> MapMethod(
+            Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             Activity instance, CancellationToken cancellationToken)
         {
-            var action = instance as ActivityAction;
+            var action = instance as ActivityAction<TActivityReturns>;
             FulcrumAssert.IsNotNull(action, CodeLocation.AsString());
             return method(action, cancellationToken);
         }

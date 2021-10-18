@@ -80,7 +80,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
 
         public async Task<TActivityReturns> ExecuteAsync(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task<TActivityReturns>> method,
+            Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken)
         {
             EndLoop = null;
@@ -97,11 +97,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return result;
         }
 
-        private Task<TMethodReturnType> MapMethod<TMethodReturnType>(
-            Func<ActivityLoopUntilTrue, CancellationToken, Task<TMethodReturnType>> method,
+        private Task<TActivityReturns> MapMethod(
+            Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             Activity instance, CancellationToken cancellationToken)
         {
-            var loop = instance as ActivityLoopUntilTrue;
+            var loop = instance as ActivityLoopUntilTrue<TActivityReturns>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
             return method(loop, cancellationToken);
         }
