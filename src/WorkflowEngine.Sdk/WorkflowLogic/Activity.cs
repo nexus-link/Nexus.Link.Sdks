@@ -133,7 +133,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     // Save failed
                     // TODO: Log
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
 
@@ -148,13 +148,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 catch (Exception)
                 {
                     // TODO: Log
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
 
                 if (response == null || !response.HasCompleted)
                 {
                     // No response yet
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
 
                 if (response.Exception?.Name == null)
@@ -198,15 +198,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         ActivityInformation.Result.Json = result.ToJsonString();
                     }
                 }
-                catch (RequestPostponedException)
+                catch (ActivityPostponedException)
+                {
+                    throw new HandledRequestPostponedException();
+                }
+                catch (HandledRequestPostponedException)
                 {
                     throw;
                 }
-                catch (AsyncRequestException e)
+                catch (RequestPostponedException e)
                 {
-                    ActivityInformation.AsyncRequestId = e.RequestId;
+                    if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
+                    ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
                     await SafeUpdateInstanceWithRequestIdAsync();
-                    throw new RequestPostponedException(e.RequestId);
+                    throw new HandledRequestPostponedException(e);
                 }
                 catch (Exception e)
                 {
@@ -245,7 +250,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 switch (ActivityInformation.Result.FailUrgency!.Value)
                 {
                     case ActivityFailUrgencyEnum.Stopping:
-                        throw new RequestPostponedException();
+                        throw new HandledRequestPostponedException();
                     default:
                         if (getDefaultValueMethodAsync == null) return default;
                         try
@@ -257,7 +262,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                             // Errors in the default method overrides stopping.
                             // TODO: How do we convey information about this to the person who has to deal with this stopping activity?
                             // TODO: Log
-                            throw new RequestPostponedException();
+                            throw new HandledRequestPostponedException();
                         }
                 }
             }
@@ -272,7 +277,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 catch (Exception)
                 {
                     // TODO: Log
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
 
@@ -286,18 +291,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     // TODO: Log
                     // TODO: Is this correct? Isn't it very bad that we didn't save the request id? The next time around we will send a new request. Could be handled with idempotency, if we send ActivityInstanceId in the request.
-                    throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
                 }
             }
             #endregion
-        }
-    }
-
-    internal class HandledRequestPostponedException : RequestPostponedException
-    {
-        public HandledRequestPostponedException(RequestPostponedException e)
-        : base(e.WaitingForRequestIds)
-        {
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         /// </summary>
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
-        /// <exception cref="AsyncRequestException"></exception>
+        /// <exception cref="RequestPostponedException"></exception>
         /// <returns></returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -44,8 +44,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 .AddHeaders(request.Headers)
                 .SetContent(contentAsString, "application/json")
                 .SendAsync(cancellationToken);
-            // TODO: Set callback <L
-            throw new AsyncRequestException(requestId);
+            throw new RequestPostponedException(requestId);
         }
     }
 }
