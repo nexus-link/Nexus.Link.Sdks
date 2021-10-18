@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         {
         }
 
-        public Task<WorkflowVersionRecord> ReadAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
+        public Task<WorkflowVersionRecord> ReadByFormAndMajorAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
         {
             return FindUniqueAsync(
                 new SearchDetails<WorkflowVersionRecord>(
@@ -43,9 +43,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 cancellationToken);
         }
 
-        public async Task UpdateAsync(Guid workflowFormId, int majorVersion, WorkflowVersionRecord record, CancellationToken cancellationToken = default)
+        public async Task UpdateByFormAndMajorAsync(Guid workflowFormId, int majorVersion, WorkflowVersionRecord record, CancellationToken cancellationToken = default)
         {
-            var item = await ReadAsync(workflowFormId, majorVersion, cancellationToken);
+            var item = await ReadByFormAndMajorAsync(workflowFormId, majorVersion, cancellationToken);
             if (item == null)
             {
                 throw new FulcrumNotFoundException(

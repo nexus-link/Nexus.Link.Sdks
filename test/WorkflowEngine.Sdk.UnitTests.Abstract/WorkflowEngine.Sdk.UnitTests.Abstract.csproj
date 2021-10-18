@@ -17,7 +17,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.5-alfa02" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.6-alfa02" />
   </ItemGroup>
 
   <ItemGroup>
