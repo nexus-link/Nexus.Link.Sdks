@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -36,8 +38,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     cancellationToken);
                 taskList.Add(task);
             }
+            
+            HandledRequestPostponedException outException = null;
+            while (taskList.Count > 0)
+            {
+                try
+                {
+                    await taskList[0];
+                }
+                catch (HandledRequestPostponedException e)
+                {
+                    outException ??= new HandledRequestPostponedException();
+                    outException.AddWaitingForIds(e.WaitingForRequestIds);
+                }
+                taskList.RemoveAt(0);
+            }
 
-            await Task.WhenAll(taskList);
+            if (outException != null) throw outException;
         }
 
         private Task MapMethod(
