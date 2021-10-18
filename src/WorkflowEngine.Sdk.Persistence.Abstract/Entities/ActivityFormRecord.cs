@@ -40,4 +40,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotNullOrWhiteSpace(Type, nameof(Type), errorLocation);
         }
     }
+
+    public class ActivityFormRecordSearch
+    {
+        public Guid WorkflowFormId { get; set; }
+    }
 }

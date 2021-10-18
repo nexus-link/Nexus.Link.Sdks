@@ -82,7 +82,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         protected async Task<WorkflowVersionRecord> CreateWorkflowVersionAsync(WorkflowVersionRecordCreate item, CancellationToken cancellationToken = default)
         {
             await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
-            return await ConfigurationTables.WorkflowVersion.ReadAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.ReadByFormAndMajorAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
         }
 
         protected async Task<WorkflowVersionRecord> CreateStandardWorkflowVersionAsync(CancellationToken cancellationToken = default)
@@ -96,7 +96,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 DynamicCreate = true
             };
             await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
-            return await ConfigurationTables.WorkflowVersion.ReadAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.ReadByFormAndMajorAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
         }
 
         protected async Task<WorkflowVersionParameterRecord> CreateWorkflowVersionParameterAsync(WorkflowVersionParameterRecordCreate item, CancellationToken cancellationToken = default)

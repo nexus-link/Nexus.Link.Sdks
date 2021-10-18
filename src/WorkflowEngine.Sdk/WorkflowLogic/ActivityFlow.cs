@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
@@ -92,14 +93,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         
         /// <inheritdoc/>
-        public ActivityCondition<bool> If()
-        {
-            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent, null);
-            return activityInstance;
-        }
-        
-        /// <inheritdoc/>
         public ActivityLoopUntilTrue LoopUntil()
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
@@ -183,10 +176,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         
         /// <inheritdoc/>
-        public ActivityCondition<bool> If()
+        public ActivityIf<TActivityReturns> If()
         {
+            InternalContract.Require(typeof(TActivityReturns) == typeof(bool), $"You can only use {nameof(If)}() with type {nameof(Boolean)}, not with type {nameof(TActivityReturns)}." );
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Condition);
-            var activityInstance = new ActivityCondition<bool>(activityInformation, AsyncRequestClient, Previous, Parent, GetDefaultValueMethodAsync);
+            var activityInstance = new ActivityIf<TActivityReturns>(activityInformation, AsyncRequestClient, Previous, Parent, GetDefaultValueMethodAsync);
             return activityInstance;
         }
         

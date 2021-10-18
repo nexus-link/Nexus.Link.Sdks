@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>1.1.0-rc01</Version>
+    <Version>1.1.1-rc01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,7 +48,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.1.0 Refactored AsyncRequestClient. Now accepts RequestPostponedException.
+      1.1.1 Support for setting up rest clients with your own tenant
+	  1.1.0 Refactored AsyncRequestClient. Now accepts RequestPostponedException.
       1.0.2 First release
     </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>

@@ -1,6 +1,7 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.WorkflowEngine.Sdk.Services;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
@@ -17,6 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             Transition= new TransitionRestClient(httpSender);
             ActivityParameter = new ActivityParameterRestClient(httpSender);
             WorkflowInstance = new WorkflowInstanceRestClient(httpSender);
+            Workflow = null; // TODO
         }
 
         /// <inheritdoc />
@@ -45,5 +47,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 
         /// <inheritdoc />
         public IWorkflowInstanceService WorkflowInstance { get; }
+
+        public IWorkflowService Workflow { get; }
     }
 }

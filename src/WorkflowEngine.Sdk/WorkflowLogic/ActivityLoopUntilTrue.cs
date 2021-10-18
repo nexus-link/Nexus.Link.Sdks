@@ -70,10 +70,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     }
     public class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase
     {
+        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
+
         public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity, object getDefaultValueMethodAsync)
+            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
         {
+            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
 
         public async Task<TActivityReturns> ExecuteAsync(
@@ -86,7 +89,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                result = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
+                result = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct),
+                    _getDefaultValueMethodAsync, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
 

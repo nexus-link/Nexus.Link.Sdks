@@ -39,7 +39,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             InternalContract.RequireNotNullOrWhiteSpace(masterId, nameof(masterId));
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
-            var record = await _configurationTables.WorkflowVersion.ReadAsync(idAsGuid, dependentId, cancellationToken);
+            var record = await _configurationTables.WorkflowVersion.ReadByFormAndMajorAsync(idAsGuid, dependentId, cancellationToken);
             if (record == null) return null;
 
             var result = new WorkflowVersion().From(record);
@@ -57,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             
             var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
             var record = new WorkflowVersionRecord().From(item);
-            await _configurationTables.WorkflowVersion.UpdateAsync(idAsGuid, dependentId, record, cancellationToken);
+            await _configurationTables.WorkflowVersion.UpdateByFormAndMajorAsync(idAsGuid, dependentId, record, cancellationToken);
         }
     }
 }

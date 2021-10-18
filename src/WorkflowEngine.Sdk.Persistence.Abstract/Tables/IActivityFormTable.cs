@@ -4,7 +4,11 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
-    public interface IActivityFormTable: ICreateWithSpecifiedId<ActivityFormRecordCreate, ActivityFormRecord, Guid>, IRead<ActivityFormRecord, Guid>, IUpdate<ActivityFormRecord, Guid>
+    public interface IActivityFormTable:
+        ICreateWithSpecifiedId<ActivityFormRecordCreate, ActivityFormRecord, Guid>,
+        IRead<ActivityFormRecord, Guid>,
+        IUpdate<ActivityFormRecord, Guid>,
+        ISearch<ActivityFormRecord, Guid>
     {
     }
 }

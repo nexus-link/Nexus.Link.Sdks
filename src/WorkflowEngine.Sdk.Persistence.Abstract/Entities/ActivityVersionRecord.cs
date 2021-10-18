@@ -41,4 +41,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotDefaultValue(ActivityFormId, nameof(ActivityFormId), errorLocation);
         }
     }
+
+    public class ActivityVersionRecordSearch
+    {
+        public Guid WorkflowVersionId { get; set; }
+    }
 }

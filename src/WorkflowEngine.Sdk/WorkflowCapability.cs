@@ -18,7 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             Transition = new TransitionService(configurationTables); 
             ActivityParameter= new ActivityParameterService(configurationTables);
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
-            ActivityInstance = new ActivityInstanceService(runtimeTables); 
+            ActivityInstance = new ActivityInstanceService(runtimeTables);
+            Workflow = new WorkflowService(configurationTables, runtimeTables);
         }
 
         /// <inheritdoc />
@@ -47,5 +48,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         /// <inheritdoc />
         public IWorkflowInstanceService WorkflowInstance { get; }
+
+        public IWorkflowService Workflow { get; }
     }
 }
