@@ -28,7 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<TActivityReturns> getDefaultValueMethod);
-        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<Task<TActivityReturns>> getDefaultValueMethodAsync);
+        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
 
         ActivityAction<TActivityReturns> Action();
         ActivityIf<TActivityReturns> If();

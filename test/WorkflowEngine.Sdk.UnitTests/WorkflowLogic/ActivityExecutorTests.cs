@@ -12,12 +12,12 @@ using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
-    public class ActivityActionTests
+    public class ActivityExecutorTests
     {
         private readonly WorkflowInformation _workflowInformation;
         private readonly Mock<IAsyncRequestClient> _asyncRequestClientMock;
 
-        public ActivityActionTests()
+        public ActivityExecutorTests()
         {
             var configurationTables = new ConfigurationTablesMemory();
             var runtimeTables = new RuntimeTablesMemory();
@@ -32,11 +32,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var activityInformation = new ActivityInformation(_workflowInformation, new MethodHandler("Activity"), 1,
                 WorkflowActivityTypeEnum.Action, null, null);
-            var activity = new ActivityAction<int>(activityInformation, _asyncRequestClientMock.Object, null, () => Task.FromResult(1));
+            var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
+            var activity = new Mock<ActivityAction<int>>();
+            executor.Activity = activityMock.Object;
             const int expectedValue = 10;
 
             // Act
-            var result = await activity.ExecuteAsync((action, t) => Task.FromResult(expectedValue));
+            var result = await executor.ExecuteAsync((action, t) => Task.FromResult(expectedValue), ct => Task.FromResult(expectedValue+1));
 
             // Assert
             Assert.Equal(expectedValue, result);
