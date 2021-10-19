@@ -25,6 +25,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         public byte[] RecordVersion { get; set; }
 
         public DateTimeOffset? FinishedAt { get; set; }
+        
+        public DateTimeOffset? CancelledAt { get; set; }
 
         /// <inheritdoc />
         public override void Validate(string errorLocation, string propertyPath = "")

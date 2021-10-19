@@ -34,7 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.0.3 Moved FailUrgency to Create.
+      1.0.4 Moved FailUrgency to Create.
       1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
       1.0.0 First release
     </PackageReleaseNotes>

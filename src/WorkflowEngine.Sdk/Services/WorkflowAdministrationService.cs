@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,20 +6,24 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     public class WorkflowAdministrationService : IWorkflowAdministrationService
     {
         private readonly IWorkflowService _workflowService;
+        private readonly IWorkflowInstanceService _workflowInstanceService;
         private readonly IRequestResponseService _requestResponseService;
 
-        public WorkflowAdministrationService(IWorkflowService workflowService, IRequestResponseService requestResponseService)
+        public WorkflowAdministrationService(IWorkflowService workflowService, IWorkflowInstanceService workflowInstanceService, IRequestResponseService requestResponseService)
         {
             _workflowService = workflowService;
             _requestResponseService = requestResponseService;
+            _workflowInstanceService = workflowInstanceService;
         }
 
+        /// <inheritdoc />
         public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
@@ -31,6 +36,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 Id = id,
                 StartedAt = workflowRecord.Instance.StartedAt,
                 FinishedAt = workflowRecord.Instance.FinishedAt,
+                CancelledAt = workflowRecord.Instance.CancelledAt,
                 Title = $"{workflowRecord.Form.Title} {workflowRecord.Version.MajorVersion}.{workflowRecord.Version.MinorVersion}: {workflowRecord.Instance.Title}",
                 Activities = await BuildActivityTreeAsync(null, workflowRecord.Activities)
             };
@@ -39,6 +45,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             // TODO: Annan enum som sätts på WorkflowInstanceRecord när den ändras
 
             return workflow;
+        }
+
+        /// <inheritdoc />
+        public async Task CancelWorkflowAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+
+            var item = await _workflowInstanceService.ReadAsync(workflowInstanceId, cancellationToken);
+            if (item == null) throw new FulcrumNotFoundException(workflowInstanceId);
+
+            item.CancelledAt = DateTimeOffset.Now;
+
+            await _workflowInstanceService.UpdateAsync(workflowInstanceId, item, cancellationToken);
         }
 
         private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, List<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)

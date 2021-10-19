@@ -36,6 +36,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
             target.FinishedAt = source.FinishedAt;
+            target.CancelledAt = source.CancelledAt;
             return target;
         }
 
@@ -55,6 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
+            target.CancelledAt = source.CancelledAt;
             return target;
         }
         

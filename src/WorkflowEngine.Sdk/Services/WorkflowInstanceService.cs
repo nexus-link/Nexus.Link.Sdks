@@ -57,5 +57,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
+
+        public async Task UpdateAsync(string id, WorkflowInstance item, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNull(item, nameof(item));
+            InternalContract.RequireValidated(item, nameof(item));
+
+            var record = new WorkflowInstanceRecord().From(item);
+            await _runtimeTables.WorkflowInstance.UpdateAsync(record.Id, record, cancellationToken);
+        }
     }
 }

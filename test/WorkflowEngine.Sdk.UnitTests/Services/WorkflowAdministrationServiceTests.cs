@@ -16,7 +16,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
 
         public WorkflowAdministrationServiceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            _service = new WorkflowAdministrationService(WorkflowService, Mock.Of<IRequestResponseService>());
+            var workflowInstanceService = new WorkflowInstanceService(RuntimeTables);
+            _service = new WorkflowAdministrationService(WorkflowService, workflowInstanceService, Mock.Of<IRequestResponseService>());
         }
 
 
@@ -42,6 +43,20 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             workflow.Activities[0].Children[0].Position.ShouldBe("1.1");
             workflow.Activities[0].Children[0].Children.Count.ShouldBe(1);
             workflow.Activities[0].Children[0].Children[0].Position.ShouldBe("1.1.1");
+        }
+
+        [Fact]
+        public async Task Cancelling_A_Workflow_Sets_CancelledAt()
+        {
+            // Arrange
+            var id = WorkflowInstanceRecord.Id.ToString();
+
+            // Act
+            await _service.CancelWorkflowAsync(id);
+
+            // Assert
+            var workflow = await _service.ReadAsync(id);
+            workflow.CancelledAt.ShouldNotBeNull();
         }
     }
 }
