@@ -7,7 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class WorkflowParameterRestClient : CrudDependentToMasterRestClient<WorkflowParameterCreate, WorkflowParameter, string, string>, IWorkflowParameterService
     {
-        public WorkflowParameterRestClient(IHttpSender httpSender) : base("workflows", "parameters", httpSender)
+        public WorkflowParameterRestClient(IHttpSender httpSender) : base("WorkflowVersions", "Parameters", httpSender)
         {
         }
     }

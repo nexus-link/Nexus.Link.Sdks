@@ -7,7 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class ActivityParameterRestClient : CrudDependentToMasterRestClient<ActivityParameterCreate, ActivityParameter, string, string>, IActivityParameterService
     {
-        public ActivityParameterRestClient(IHttpSender httpSender) : base("activities", "parameters", httpSender)
+        public ActivityParameterRestClient(IHttpSender httpSender) : base("ActivityVersions", "Parameters", httpSender)
         {
         }
     }
