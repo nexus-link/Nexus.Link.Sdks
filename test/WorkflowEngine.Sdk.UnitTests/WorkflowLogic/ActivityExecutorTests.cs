@@ -74,7 +74,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
             _activityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-            const int expectedValue = 10;
 
             // Act & Assert
             RequestPostponedException postponed = null;
