@@ -83,7 +83,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return activities;
         }
 
-        private async Task<AnnotatedWorkflowId> GetWaitingForWorkflowAsync(Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity activityRecord)
+        private Task<AnnotatedWorkflowId> GetWaitingForWorkflowAsync(Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity activityRecord)
         {
             AnnotatedWorkflowId waitingForWorkflow = null;
             // TODO: Enable when AM capability has support
@@ -105,7 +105,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             //    }
             //}
 
-            return waitingForWorkflow;
+            return Task.FromResult(waitingForWorkflow);
         }
     }
 }

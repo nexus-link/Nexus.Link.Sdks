@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -17,9 +17,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Activity parentActivity)
+            : base(activityInformation, activityExecutor, parentActivity)
         {
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
@@ -28,12 +27,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken = default)
         {
             var taskList = new List<Task>();
             foreach (var item in Items)
             {
-                var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
+                var task = ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
                     cancellationToken);
                 taskList.Add(task);
             }
@@ -81,15 +80,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public class ActivityForEachParallel<TActivityReturns, TItemType> : Activity
     {
-        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
+        private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
         public IEnumerable<TItemType> Items { get; }
 
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, activityExecutor, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
@@ -99,12 +97,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<List<Task<TActivityReturns>>> ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken = default)
         {
             var taskList = new List<Task<TActivityReturns>>();
             foreach (var item in Items)
             {
-                var task = InternalExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
+                var task = ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
                     _getDefaultValueMethodAsync, cancellationToken);
                 taskList.Add(task);
             }

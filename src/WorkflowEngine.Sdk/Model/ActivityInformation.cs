@@ -35,23 +35,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public string NestedPositionAndTitle => $"{NestedPosition} {FormTitle}";
         public ActivityResult Result { get; set; } = new();
         public string AsyncRequestId { get; set; }
+        public ActivityStateEnum State { get; set; }
+        public ActivityFailUrgencyEnum FailUrgency { get; set; }
 
         public bool HasCompleted =>
-            Result.State == ActivityStateEnum.Success || Result.State == ActivityStateEnum.Failed;
+            State == ActivityStateEnum.Success || State == ActivityStateEnum.Failed;
 
-        public ActivityInformation(IWorkflowCapability workflowCapability,
-            WorkflowInformation workflowInformation, MethodHandler methodHandler, int position,
-            WorkflowActivityTypeEnum activityType,
-            ActivityInformation previousActivity, ActivityInformation parentActivity)
+        public ActivityInformation(WorkflowInformation workflowInformation,
+            MethodHandler methodHandler, int position, WorkflowActivityTypeEnum activityType,
+            ActivityInformation previousActivity,
+            ActivityInformation parentActivity)
         {
-            WorkflowCapability = workflowCapability;
             _workflowInformation = workflowInformation;
+            WorkflowCapability = workflowInformation.WorkflowCapability;
             MethodHandler = methodHandler;
             ActivityType = activityType;
             PreviousActivity = previousActivity;
             Position = position;
             ParentActivity = parentActivity;
             NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
+            State = ActivityStateEnum.Started;
+            FailUrgency = ActivityFailUrgencyEnum.Stopping;
         }
 
         /// <inheritdoc />
@@ -108,6 +112,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             {
                 var createItem = new ActivityInstanceCreate()
                 {
+                    State = State,
+                    FailUrgency = FailUrgency,
                     WorkflowInstanceId = findUnique.WorkflowInstanceId,
                     ActivityVersionId = findUnique.ActivityVersionId,
                     ParentActivityInstanceId = findUnique.ParentActivityInstanceId,
@@ -127,8 +133,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 }
             }
             
-            Result.State = activityInstance.State;
-            Result.FailUrgency = activityInstance.FailUrgency;
+            State = activityInstance.State;
+            FailUrgency = activityInstance.FailUrgency;
             Result.ExceptionCategory = activityInstance.ExceptionCategory;
             Result.ExceptionFriendlyMessage = activityInstance.ExceptionFriendlyMessage;
             Result.ExceptionTechnicalMessage = activityInstance.ExceptionTechnicalMessage;
@@ -226,9 +232,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             while (true)
             {
                 var item = await WorkflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
-                item.State = Result.State;
+                item.State = State;
+                item.FailUrgency = FailUrgency;
+                item.AsyncRequestId = AsyncRequestId;
                 item.ResultAsJson = Result.Json;
-                item.FailUrgency = Result.FailUrgency;
                 item.ExceptionCategory = Result.ExceptionCategory;
                 item.ExceptionFriendlyMessage = Result.ExceptionFriendlyMessage;
                 item.ExceptionTechnicalMessage = Result.ExceptionTechnicalMessage;
