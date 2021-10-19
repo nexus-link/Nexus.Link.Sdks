@@ -7,7 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class WorkflowFormRestClient : CrudRestClient<WorkflowFormCreate, WorkflowForm, string>, IWorkflowFormService
     {
-        public WorkflowFormRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("workflows"))
+        public WorkflowFormRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("WorkflowForms"))
         {
         }
     }

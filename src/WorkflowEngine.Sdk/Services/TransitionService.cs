@@ -25,8 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateChildAsync(string workflowVersionId, TransitionCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task<string> CreateChildAsync(string workflowVersionId, TransitionCreate item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -39,14 +38,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<Transition> FindUniqueAsync(TransitionUnique item, CancellationToken cancellationToken = default)
+        public async Task<Transition> FindUniqueAsync(string workflowVersionId, TransitionUnique item, CancellationToken cancellationToken = default)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
             var searchRecord = new TransitionRecordUnique().From(item);
-            var record = await _configurationTables.Transition.FindUniqueAsync(
-                new SearchDetails<TransitionRecord>(searchRecord), cancellationToken);
+            var record = await _configurationTables.Transition.FindUniqueAsync(new SearchDetails<TransitionRecord>(searchRecord), cancellationToken);
             if (record == null) return null;
 
             var result = new Transition().From(record);
@@ -56,8 +55,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<PageEnvelope<Transition>> ReadChildrenWithPagingAsync(string workflowVersionId, int offset, int? limit = null,
-            CancellationToken token = new CancellationToken())
+        public async Task<PageEnvelope<Transition>> ReadChildrenWithPagingAsync(string workflowVersionId, int offset, int? limit = null, CancellationToken token = default)
         {
             var parentIdAsGuid = MapperHelper.MapToType<Guid, string>(workflowVersionId);
             var page = await _configurationTables.Transition.ReadChildrenWithPagingAsync(parentIdAsGuid, offset, limit,
