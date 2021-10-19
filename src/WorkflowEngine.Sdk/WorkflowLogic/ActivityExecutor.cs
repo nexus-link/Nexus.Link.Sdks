@@ -158,6 +158,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     var result = await method(Activity, cancellationToken);
                     ActivityInformation.Result.Json = result.ToJsonString();
+                    ActivityInformation.Result.State = ActivityStateEnum.Success;
                 }
             }
             catch (ActivityPostponedException)
