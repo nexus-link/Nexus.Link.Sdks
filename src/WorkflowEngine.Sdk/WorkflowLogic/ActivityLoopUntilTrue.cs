@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -16,8 +15,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public bool? EndLoop { get; set; }
 
-        protected ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, parentActivity)
+        protected ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity)
+            : base(activityInformation, activityExecutor, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
@@ -38,8 +37,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     
     public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase
     {
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity)
+            : base(activityInformation, activityExecutor, parentActivity)
         {
         }
 
@@ -52,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
+                await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
         }
@@ -68,10 +67,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     }
     public class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase
     {
-        private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
+        private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, activityExecutor, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
@@ -86,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                result = await InternalExecuteAsync((instance, ct) => MapMethod(method, instance, ct),
+                result = await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(method, instance, ct),
                     _getDefaultValueMethodAsync, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
