@@ -22,7 +22,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public Task<TActivityReturns> ExecuteAsync(
             Func<Activity, CancellationToken, Task<TActivityReturns>> conditionMethodAsync,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             return InternalExecuteAsync((instance, ct) => MapMethod(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
         }

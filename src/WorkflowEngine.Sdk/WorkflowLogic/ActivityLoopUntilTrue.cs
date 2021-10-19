@@ -45,7 +45,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task ExecuteAsync(
             Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken = default)
         {
             EndLoop = null;
             do
@@ -78,7 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<TActivityReturns> ExecuteAsync(
             Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             EndLoop = null;
             TActivityReturns result;

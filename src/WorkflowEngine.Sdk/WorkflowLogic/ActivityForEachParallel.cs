@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken = default)
         {
             var taskList = new List<Task>();
             foreach (var item in Items)
@@ -97,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<List<Task<TActivityReturns>>> ExecuteAsync(
             Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
-            CancellationToken cancellationToken, params object[] arguments)
+            CancellationToken cancellationToken = default)
         {
             var taskList = new List<Task<TActivityReturns>>();
             foreach (var item in Items)
