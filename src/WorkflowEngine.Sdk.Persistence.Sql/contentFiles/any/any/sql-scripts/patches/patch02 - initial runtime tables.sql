@@ -33,7 +33,7 @@ CREATE TABLE ActivityInstance
 	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
 
     ResultAsJson nvarchar(max),
-    State nvarchar(16),
+    State nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_State DEFAULT ('Started'),
     ExceptionCategory nvarchar(16),
     FailUrgency nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_FailUrgency DEFAULT ('Stopping'),
     ExceptionFriendlyMessage nvarchar(max),

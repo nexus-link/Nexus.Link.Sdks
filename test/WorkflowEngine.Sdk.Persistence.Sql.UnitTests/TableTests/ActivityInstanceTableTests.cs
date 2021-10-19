@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
@@ -20,6 +21,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 ActivityVersionId = activityVersion.Id,
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
+                State = ActivityStateEnum.Waiting.ToString(),
+                FailUrgency = ActivityFailUrgencyEnum.HandleLater.ToString(),
                 ParentIteration = 1
             };
 
@@ -33,6 +36,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.NotNull(record.RecordVersion);
             Assert.NotNull(record.Etag);
             Assert.NotEqual(default, record.Id);
+            Assert.Equal(item.State, record.State);
+            Assert.Equal(item.FailUrgency, record.FailUrgency);
             Assert.Equal(item.ActivityVersionId, record.ActivityVersionId);
             Assert.Equal(item.WorkflowInstanceId, record.WorkflowInstanceId);
             Assert.Equal(item.StartedAt, record.StartedAt);
@@ -53,6 +58,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 ActivityVersionId = activityVersion.Id,
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
+                State = ActivityStateEnum.Waiting.ToString(),
+                FailUrgency = ActivityFailUrgencyEnum.HandleLater.ToString(),
                 ParentIteration = 1
             };
             await CreateAcivityInstanceAsync(item);
@@ -70,6 +77,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             createdRecord.ParentIteration = 2;
             createdRecord.FinishedAt = DateTimeOffset.Now;
             createdRecord.ResultAsJson = "{}";
+            createdRecord.State = ActivityStateEnum.Success.ToString();
+            createdRecord.FailUrgency = ActivityFailUrgencyEnum.Ignore.ToString();
             createdRecord.HasCompleted = true;
 
             // Act
@@ -81,6 +90,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
             Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
             Assert.Equal(createdRecord.StartedAt, updatedRecord.StartedAt);
+            Assert.Equal(createdRecord.State, updatedRecord.State);
+            Assert.Equal(createdRecord.FailUrgency, updatedRecord.FailUrgency);
             Assert.Equal(createdRecord.ParentIteration, updatedRecord.ParentIteration);
             Assert.Equal(createdRecord.FinishedAt, updatedRecord.FinishedAt);
             Assert.Equal(createdRecord.ResultAsJson, updatedRecord.ResultAsJson);

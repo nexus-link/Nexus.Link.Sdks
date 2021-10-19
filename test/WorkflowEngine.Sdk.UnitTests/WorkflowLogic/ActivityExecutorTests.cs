@@ -1,9 +1,12 @@
 using System;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 using Moq;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.Error.Logic;
@@ -133,12 +136,22 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
 
         [Fact]
-        public async Task Execute_Given_HasRequestIdButNotReady_Gives_Postpone()
+        public async Task Execute_Given_HasRequestIdButNoResponse_Gives_Postpone()
         {
             // Arrange
+            var expectedRequestId = Guid.NewGuid().ToString();
+            _asyncRequestClientMock.Setup(c =>
+                    c.SendRequestAsync(It.IsAny<AsyncHttpRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedRequestId);
+            _asyncRequestClientMock.Setup(c =>
+                    c.GetFinalResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((AsyncHttpResponse) null);
+            _asyncRequestClientMock.Setup(c =>
+                    c.CreateRequest(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<double>()))
+                .Returns(new AsyncHttpRequest_ForTest(_asyncRequestClientMock.Object, HttpMethod.Post, "http://example.com",
+                    1.0));
             var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
-            var expectedRequestId = Guid.NewGuid().ToString();
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
@@ -164,6 +177,22 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
+        }
+    }
+    /// <summary>
+    /// Class to access protected parts of the <see cref="AsyncHttpRequest"/> class.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
+    public class AsyncHttpRequest_ForTest : AsyncHttpRequest
+    {
+        /// <inheritdoc />
+        public AsyncHttpRequest_ForTest(IAsyncRequestClient asyncRequestClient, HttpMethod method, string url, double priority) : base(asyncRequestClient, method, url, priority)
+        {
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest_ForTest(HttpMethod method, string url, double priority) : base(new Mock<IAsyncRequestClient>().Object, method, url, priority)
+        {
         }
     }
 }

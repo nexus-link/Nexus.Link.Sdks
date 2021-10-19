@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer.Logic;
@@ -192,6 +193,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 ActivityVersionId = activityVersion.Id,
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
+                State = ActivityStateEnum.Waiting.ToString(),
+                FailUrgency = ActivityFailUrgencyEnum.HandleLater.ToString(),
                 ParentIteration = 1
             };
             return await CreateAcivityInstanceAsync(item, cancellationToken);
