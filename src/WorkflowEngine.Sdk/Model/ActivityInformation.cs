@@ -112,6 +112,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             {
                 var createItem = new ActivityInstanceCreate()
                 {
+                    State = State,
+                    FailUrgency = FailUrgency,
                     WorkflowInstanceId = findUnique.WorkflowInstanceId,
                     ActivityVersionId = findUnique.ActivityVersionId,
                     ParentActivityInstanceId = findUnique.ParentActivityInstanceId,

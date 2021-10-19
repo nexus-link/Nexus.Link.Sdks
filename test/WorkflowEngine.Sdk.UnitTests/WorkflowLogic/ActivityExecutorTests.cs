@@ -131,5 +131,40 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
         }
+
+        [Fact]
+        public async Task Execute_Given_HasRequestIdButNotReady_Gives_Postpone()
+        {
+            // Arrange
+            var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
+            executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
+            var expectedRequestId = Guid.NewGuid().ToString();
+            _activityInformation.AsyncRequestId = expectedRequestId;
+            await Assert.ThrowsAnyAsync<RequestPostponedException>(
+                () => executor.ExecuteAsync<int>(
+                    (a, t) => throw new RequestPostponedException(expectedRequestId), null));
+            executor = new ActivityExecutor(_asyncRequestClientMock.Object);
+            executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
+
+            // Act & Assert
+            RequestPostponedException postponed = null;
+            try
+            {
+                await executor.ExecuteAsync<int>(
+                    (a, t) => Task.FromResult(10), null);
+            }
+            catch (Exception e)
+            {
+                e.ShouldBeAssignableTo<RequestPostponedException>();
+                postponed = e as RequestPostponedException;
+            }
+            postponed.ShouldNotBeNull();
+            postponed.WaitingForRequestIds.ShouldContain(expectedRequestId);
+            _activityInformation.InstanceId.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityInformation.InstanceId));
+            instance.ShouldNotBeNull();
+            instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
+            instance.AsyncRequestId.ShouldBe(expectedRequestId);
+        }
     }
 }

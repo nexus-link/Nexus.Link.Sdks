@@ -26,8 +26,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public string ExceptionCategory { get; set; }
 
-        public string FailUrgency { get; set; }
-
         public string ExceptionTechnicalMessage { get; set; }
 
         public string ExceptionFriendlyMessage { get; set; }
@@ -51,6 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     {
         public DateTimeOffset StartedAt { get; set; }
         public string State { get; set; }
+        public string FailUrgency { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
