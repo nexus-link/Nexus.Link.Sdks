@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            
+
             target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
             target.ParentIteration = source.ParentIteration;
             target.State = source.State.ToString();
@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((ActivityInstanceRecordCreate) target).From(source);
+            ((ActivityInstanceRecordCreate)target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
             target.HasCompleted = source.HasCompleted;
@@ -58,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            
+
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
             target.Etag = source.Etag;
             target.WorkflowInstanceId = MapperHelper.MapToType<string, Guid>(source.WorkflowInstanceId);
@@ -67,11 +67,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
             target.ResultAsJson = source.ResultAsJson;
             target.State = MapperHelper.MapToStruct<ActivityStateEnum, string>(source.State);
-            target.FailUrgency = null;
-            if (source.FailUrgency != null)
-            {
-                target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
-            } 
+            target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
             target.ExceptionCategory = null;
             if (source.ExceptionCategory != null)
             {
@@ -84,6 +80,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.AsyncRequestId = source.AsyncRequestId;
             return target;
         }
-        
+
     }
 }

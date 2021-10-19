@@ -42,11 +42,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 FormId = "0D759290-9F93-4B3A-8333-76019DE227CF",
                 FormTitle = "Form title",
             };
-            _activityInformation.Result.State = ActivityStateEnum.Started;
+            _activityInformation.State = ActivityStateEnum.Started;
         }
 
         [Fact]
-        public async Task Execute_Given_SimpleInternalMethod_Gives_Success()
+        public async Task Execute_Given_MethodReturns_Gives_Success()
         {
             // Arrange
             var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
@@ -65,11 +65,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
 
         [Fact]
-        public async Task Execute_Given_ThrownException_Gives_Failed()
+        public async Task Execute_Given_MethodThrowsAndStopping_Gives_Failed()
         {
             // Arrange
             var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
+            _activityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
             const int expectedValue = 10;
 
             // Act & Assert
@@ -85,7 +86,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 postponed = e as RequestPostponedException;
             }
             postponed.ShouldNotBeNull();
-            _activityInformation.Result.State.ShouldBe(ActivityStateEnum.Failed);
+            _activityInformation.State.ShouldBe(ActivityStateEnum.Failed);
         }
     }
 }

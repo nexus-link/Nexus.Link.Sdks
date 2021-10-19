@@ -27,15 +27,14 @@ CREATE TABLE ActivityInstance
     ParentActivityInstanceId uniqueidentifier CONSTRAINT FK_ActivityInstance_ParentActivityInstanceId REFERENCES ActivityInstance ON UPDATE NO ACTION ON DELETE NO ACTION,
 
     ParentIteration int,
-	StartedAt datetimeoffset NOT NULL CONSTRAINT DFActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
+	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_ActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset CONSTRAINT DF_ActivityInstance_FinishedAt DEFAULT (sysdatetimeoffset()),
 	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
 
     ResultAsJson nvarchar(max),
     State nvarchar(16),
     ExceptionCategory nvarchar(16),
-    FailUrgency nvarchar(16),
-    
+    FailUrgency nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_FailUrgency DEFAULT ('Stopping'),
     ExceptionFriendlyMessage nvarchar(max),
     ExceptionTechnicalMessage nvarchar(max),
     AsyncRequestId nvarchar(64),

@@ -111,7 +111,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             bool ignoreReturnValue, Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
+            if (ActivityInformation.State != ActivityStateEnum.Failed)
             {
                 return ignoreReturnValue
                     ? default
@@ -122,9 +122,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 // Publish message about exception
             }
-
-            FulcrumAssert.IsNotNull(ActivityInformation.Result.FailUrgency, CodeLocation.AsString());
-            switch (ActivityInformation.Result.FailUrgency!.Value)
+            
+            switch (ActivityInformation.FailUrgency)
             {
                 case ActivityFailUrgencyEnum.Stopping:
                     throw new HandledRequestPostponedException();
@@ -158,7 +157,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     var result = await method(Activity, cancellationToken);
                     ActivityInformation.Result.Json = result.ToJsonString();
-                    ActivityInformation.Result.State = ActivityStateEnum.Success;
+                    ActivityInformation.State = ActivityStateEnum.Success;
                 }
             }
             catch (ActivityPostponedException)
@@ -180,8 +179,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 // Normal error
                 // TODO: Handle error: Send event, throw postpone if halt
-                ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                ActivityInformation.State = ActivityStateEnum.Failed;
+                ActivityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage =
                     $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
@@ -222,13 +221,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             if (response.Exception?.Name == null)
             {
-                ActivityInformation.Result.State = ActivityStateEnum.Success;
+                ActivityInformation.State = ActivityStateEnum.Success;
                 ActivityInformation.Result.Json = response.Content;
             }
             else
             {
-                ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                ActivityInformation.State = ActivityStateEnum.Failed;
+                ActivityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage =
                     $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";

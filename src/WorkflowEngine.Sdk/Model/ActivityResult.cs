@@ -8,11 +8,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         public ActivityExceptionCategoryEnum? ExceptionCategory { get; set; }
 
-        public ActivityFailUrgencyEnum? FailUrgency { get; set; }
-
         public string ExceptionTechnicalMessage { get; set; }
 
         public string ExceptionFriendlyMessage { get; set; }
-        public ActivityStateEnum State { get; set; }
     }
 }
