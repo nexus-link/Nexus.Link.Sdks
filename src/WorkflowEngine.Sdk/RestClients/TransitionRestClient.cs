@@ -14,7 +14,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         }
 
         /// <inheritdoc />
-        public Task<Transition> FindUniqueAsync(TransitionUnique transition, CancellationToken cancellationToken = default)
+        public Task<Transition> FindUniqueAsync(string workflowVersionId, TransitionUnique transition, CancellationToken cancellationToken = default)
         {
             return PostAsync<Transition, TransitionUnique>($"transitions/find-unique", transition, cancellationToken: cancellationToken);
         }

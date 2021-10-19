@@ -22,23 +22,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task CreateChildWithSpecifiedIdAsync(string workflowVersionId, string childId, WorkflowInstanceCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task CreateWithSpecifiedIdAsync(string id, WorkflowInstanceCreate item, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
+            await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
+        }
+
+        public async Task<WorkflowInstance> CreateWithSpecifiedIdAndReturnAsync(string id, WorkflowInstanceCreate item, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(childId);
+
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
             var recordCreate = new WorkflowInstanceRecordCreate().From(item);
-            await _runtimeTables.WorkflowInstance.CreateWithSpecifiedIdAsync(idAsGuid, recordCreate, cancellationToken);
+            var record = await _runtimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
+
+            var result = new WorkflowInstance().From(record);
+            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task<WorkflowInstance> ReadAsync(string id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<WorkflowInstance> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-            
+
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
             var record = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return null;

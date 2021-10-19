@@ -23,14 +23,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateChildAsync(string parentId, ActivityVersionCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task<string> CreateAsync(ActivityVersionCreate item, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(parentId, nameof(parentId));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            InternalContract.RequireAreEqual( parentId, item.WorkflowVersionId, $"{nameof(item)}.{nameof(item.WorkflowVersionId)})");
-
             
             var recordCreate = new ActivityVersionRecordCreate().From(item);
             var childIdAsGuid = await _configurationTables.ActivityVersion.CreateAsync(recordCreate, cancellationToken);
@@ -39,7 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<ActivityVersion> FindUniqueByWorkflowVersionActivityAsync(string workflowVersionId, string activityId, CancellationToken cancellationToken = default)
+        public async Task<ActivityVersion> FindUniqueAsync(string workflowVersionId, string activityId, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNullOrWhiteSpace(activityId, nameof(activityId));

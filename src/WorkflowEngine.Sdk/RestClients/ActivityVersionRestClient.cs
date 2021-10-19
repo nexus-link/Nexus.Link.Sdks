@@ -15,8 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         }
 
         /// <inheritdoc />
-        public Task<ActivityVersion> FindUniqueByWorkflowVersionActivityAsync(string workflowVersionId, string activityId,
-            CancellationToken cancellationToken = default)
+        public Task<ActivityVersion> FindUniqueAsync(string workflowVersionId, string activityId, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNullOrWhiteSpace(activityId, nameof(activityId));
