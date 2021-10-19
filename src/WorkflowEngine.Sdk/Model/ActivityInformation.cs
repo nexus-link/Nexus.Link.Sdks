@@ -231,8 +231,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             {
                 var item = await WorkflowCapability.ActivityInstance.ReadAsync(InstanceId, cancellationToken);
                 item.State = State;
-                item.ResultAsJson = Result.Json;
                 item.FailUrgency = FailUrgency;
+                item.AsyncRequestId = AsyncRequestId;
+                item.ResultAsJson = Result.Json;
                 item.ExceptionCategory = Result.ExceptionCategory;
                 item.ExceptionFriendlyMessage = Result.ExceptionFriendlyMessage;
                 item.ExceptionTechnicalMessage = Result.ExceptionTechnicalMessage;

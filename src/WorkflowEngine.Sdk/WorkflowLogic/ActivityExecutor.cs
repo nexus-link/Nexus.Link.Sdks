@@ -80,20 +80,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return await SafeGetResultOrThrowAsync(false, ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task SafeUpdateInstanceWithRequestIdAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                // TODO: Log
-                // TODO: Is this correct? Isn't it very bad that we didn't save the request id? The next time around we will send a new request. Could be handled with idempotency, if we send ActivityInstanceId in the request.
-                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
-            }
-        }
-
         private async Task SafeUpdateInstanceWithResultAsync(CancellationToken cancellationToken)
         {
             try
@@ -172,7 +158,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
                 ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
-                await SafeUpdateInstanceWithRequestIdAsync(cancellationToken);
+                ActivityInformation.State = ActivityStateEnum.Waiting;
+                await SafeUpdateInstanceWithResultAsync(cancellationToken);
                 throw new HandledRequestPostponedException(e);
             }
             catch (Exception e)
@@ -180,7 +167,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // Normal error
                 // TODO: Handle error: Send event, throw postpone if halt
                 ActivityInformation.State = ActivityStateEnum.Failed;
-                ActivityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
                 ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
                 ActivityInformation.Result.ExceptionTechnicalMessage =
                     $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
