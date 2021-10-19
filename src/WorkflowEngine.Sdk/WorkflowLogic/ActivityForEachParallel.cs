@@ -17,9 +17,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items, Activity parentActivity)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
@@ -87,9 +86,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items,
-            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IAsyncRequestClient asyncRequestClient, IEnumerable<TItemType> items, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;

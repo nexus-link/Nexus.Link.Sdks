@@ -39,13 +39,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public bool HasCompleted =>
             Result.State == ActivityStateEnum.Success || Result.State == ActivityStateEnum.Failed;
 
-        public ActivityInformation(IWorkflowCapability workflowCapability,
-            WorkflowInformation workflowInformation, MethodHandler methodHandler, int position,
-            WorkflowActivityTypeEnum activityType,
-            ActivityInformation previousActivity, ActivityInformation parentActivity)
+        public ActivityInformation(WorkflowInformation workflowInformation,
+            MethodHandler methodHandler, int position, WorkflowActivityTypeEnum activityType,
+            ActivityInformation previousActivity,
+            ActivityInformation parentActivity)
         {
-            WorkflowCapability = workflowCapability;
             _workflowInformation = workflowInformation;
+            WorkflowCapability = workflowInformation.WorkflowCapability;
             MethodHandler = methodHandler;
             ActivityType = activityType;
             PreviousActivity = previousActivity;

@@ -12,9 +12,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityCondition(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+        public ActivityCondition(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Condition, ActivityInformation.ActivityType, "Ignore",

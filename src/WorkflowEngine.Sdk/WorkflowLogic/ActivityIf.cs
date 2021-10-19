@@ -12,8 +12,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityIf<TActivityReturns> : ActivityCondition<TActivityReturns>
     {
         /// <inheritdoc />
-        public ActivityIf(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity, getDefaultValueMethodAsync)
+        public ActivityIf(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, asyncRequestClient, parentActivity, getDefaultValueMethodAsync)
         {
             InternalContract.Require(typeof(TActivityReturns) == typeof(bool), $"You can only use {nameof(IActivityFlow<TActivityReturns>.If)}() with type {nameof(Boolean)}, not with type {nameof(TActivityReturns)}." );
         }

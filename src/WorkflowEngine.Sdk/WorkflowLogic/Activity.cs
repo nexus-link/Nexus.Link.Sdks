@@ -28,7 +28,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected internal ActivityInformation ActivityInformation { get; }
         protected Activity ParentActivity { get; }
-        protected Activity PreviousActivity { get; }
         // TODO: Should be nullable instead of relying on value 0
         public int? Iteration { get; protected set; }
 
@@ -49,14 +48,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected Activity(ActivityInformation activityInformation,
             IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity,
             Activity parentActivity)
         {
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
             _asyncRequestClient = asyncRequestClient;
             ActivityInformation = activityInformation;
-            PreviousActivity = previousActivity;
             ParentActivity = parentActivity;
 
             activityInformation.MethodHandler.InstanceTitle = activityInformation.NestedPositionAndTitle;

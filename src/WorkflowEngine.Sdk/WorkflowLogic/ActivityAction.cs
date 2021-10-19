@@ -11,9 +11,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityAction : Activity
     {
         public ActivityAction(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IAsyncRequestClient asyncRequestClient, Activity parentActivity)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
@@ -41,9 +40,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
         public ActivityAction(ActivityInformation activityInformation,
-            IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+            IAsyncRequestClient asyncRequestClient, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",

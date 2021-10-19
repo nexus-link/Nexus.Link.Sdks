@@ -11,12 +11,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
     public class WorkflowInformation
     {
         public MethodHandler MethodHandler { get; }
-        private readonly IWorkflowCapability _workflowCapability;
+        public IWorkflowCapability WorkflowCapability { get; }
 
         public WorkflowInformation(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
         {
             MethodHandler = methodHandler;
-            _workflowCapability = workflowCapability;
+            WorkflowCapability = workflowCapability;
         }
 
         // Form
@@ -41,12 +41,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             await PersistFormAsync(cancellationToken);
             VersionId = await PersistVersionAsync(cancellationToken);
             await PersistInstanceAsync(cancellationToken);
-            await MethodHandler.PersistWorkflowParametersAsync(_workflowCapability, VersionId, cancellationToken);
+            await MethodHandler.PersistWorkflowParametersAsync(WorkflowCapability, VersionId, cancellationToken);
         }
 
         private async Task PersistFormAsync(CancellationToken cancellationToken)
         {
-            var workflowForm = await _workflowCapability.WorkflowForm.ReadAsync(FormId, cancellationToken);
+            var workflowForm = await WorkflowCapability.WorkflowForm.ReadAsync(FormId, cancellationToken);
             if (workflowForm == null)
             {
                 var workflowCreate = new WorkflowFormCreate
@@ -54,20 +54,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     CapabilityName = CapabilityName,
                     Title = FormTitle
                 };
-                await _workflowCapability.WorkflowForm.CreateWithSpecifiedIdAsync(FormId, workflowCreate, cancellationToken);
+                await WorkflowCapability.WorkflowForm.CreateWithSpecifiedIdAsync(FormId, workflowCreate, cancellationToken);
             }
             else if (workflowForm.Title != FormTitle || workflowForm.CapabilityName != CapabilityName)
             {
                 workflowForm.CapabilityName = CapabilityName;
                 workflowForm.Title = FormTitle;
-                await _workflowCapability.WorkflowForm.UpdateAsync(FormId, workflowForm, cancellationToken);
+                await WorkflowCapability.WorkflowForm.UpdateAsync(FormId, workflowForm, cancellationToken);
             }
         }
 
         public async Task<string> PersistVersionAsync(CancellationToken cancellationToken)
         {
             var workflowVersion =
-                await _workflowCapability.WorkflowVersion.ReadAsync(FormId, MajorVersion,
+                await WorkflowCapability.WorkflowVersion.ReadAsync(FormId, MajorVersion,
                     cancellationToken);
             if (workflowVersion == null)
             {
@@ -78,17 +78,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     MinorVersion = MinorVersion,
                     DynamicCreate = true
                 };
-                await _workflowCapability.WorkflowVersion.CreateWithSpecifiedIdAsync(
+                await WorkflowCapability.WorkflowVersion.CreateWithSpecifiedIdAsync(
                     FormId, MajorVersion, workflowVersionCreate, cancellationToken); 
                 
-                workflowVersion = await _workflowCapability.WorkflowVersion.ReadAsync(
+                workflowVersion = await WorkflowCapability.WorkflowVersion.ReadAsync(
                     FormId,
                     MajorVersion, cancellationToken);
             }
             else if (workflowVersion.MinorVersion != MinorVersion)
             {
                 workflowVersion.MinorVersion = MinorVersion;
-                await _workflowCapability.WorkflowVersion.UpdateAsync(FormId,
+                await WorkflowCapability.WorkflowVersion.UpdateAsync(FormId,
                     MajorVersion, workflowVersion, cancellationToken);
             }
 
@@ -97,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistInstanceAsync(CancellationToken cancellationToken)
         {
-            var workflowInstance = await _workflowCapability.WorkflowInstance.ReadAsync(InstanceId, cancellationToken);
+            var workflowInstance = await WorkflowCapability.WorkflowInstance.ReadAsync(InstanceId, cancellationToken);
             if (workflowInstance == null)
             {
                 var workflowCreate = new WorkflowInstanceCreate
@@ -109,7 +109,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    await _workflowCapability.WorkflowInstance.CreateChildWithSpecifiedIdAsync(VersionId, InstanceId, workflowCreate, cancellationToken);
+                    await WorkflowCapability.WorkflowInstance.CreateChildWithSpecifiedIdAsync(VersionId, InstanceId, workflowCreate, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {

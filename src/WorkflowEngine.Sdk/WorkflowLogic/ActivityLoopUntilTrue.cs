@@ -16,9 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public bool? EndLoop { get; set; }
 
-        public ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+        protected ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
@@ -39,9 +38,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     
     public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase
     {
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
         }
 
@@ -72,9 +70,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient,
-            Activity previousActivity, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, asyncRequestClient, previousActivity, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IAsyncRequestClient asyncRequestClient, Activity parentActivity, Func<Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, asyncRequestClient, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }

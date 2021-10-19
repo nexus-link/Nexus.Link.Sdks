@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 {
     public class WorkflowCapability : IWorkflowCapability
     {
-        public WorkflowCapability(IAsyncRequestClient asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
+        public WorkflowCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
         {
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion= new WorkflowVersionService(configurationTables);
