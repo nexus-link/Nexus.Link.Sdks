@@ -30,7 +30,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             };
 
             // Act
-            await _service.CreateChildWithSpecifiedIdAsync(parentId, childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
             var readItem = await _service.ReadAsync(childId);
 
             // Assert
@@ -53,7 +53,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 Type = "Action",
                 Title = Guid.NewGuid().ToString()
             };
-            await _service.CreateChildWithSpecifiedIdAsync(parentId, childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
             var itemToUpdate = await _service.ReadAsync(childId);
 
             // Act
@@ -78,7 +78,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 Type = "Action",
                 Title = Guid.NewGuid().ToString()
             };
-            await _service.CreateChildWithSpecifiedIdAsync(parentId, childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
             var itemToUpdate = await _service.ReadAsync(childId);
 
             // Act & Assert

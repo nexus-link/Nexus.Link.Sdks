@@ -31,8 +31,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             };
 
             // Act
-            var childId = await _service.CreateChildAsync(parentId, itemToCreate);
-            var readItem = await _service.FindUniqueByWorkflowVersionActivityAsync(parentId, activityFormId);
+            var childId = await _service.CreateAsync(itemToCreate);
+            var readItem = await _service.FindUniqueAsync(parentId, activityFormId);
 
             // Assert
             Assert.NotNull(readItem);
@@ -56,13 +56,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ActivityFormId = activityFormId,
                 ParentActivityVersionId = Guid.NewGuid().ToString()
             };
-            var childId = await _service.CreateChildAsync(parentId, itemToCreate);
-            var itemToUpdate = await _service.FindUniqueByWorkflowVersionActivityAsync(parentId, activityFormId);
+            var childId = await _service.CreateAsync(itemToCreate);
+            var itemToUpdate = await _service.FindUniqueAsync(parentId, activityFormId);
 
             // Act
             itemToUpdate.Position = 2;
             await _service.UpdateAsync(childId, itemToUpdate);
-            var readItem = await _service.FindUniqueByWorkflowVersionActivityAsync(parentId, activityFormId);
+            var readItem = await _service.FindUniqueAsync(parentId, activityFormId);
 
             // Assert
             Assert.Equal(childId, readItem.Id);
@@ -82,8 +82,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ActivityFormId = activityFormId,
                 ParentActivityVersionId = Guid.NewGuid().ToString()
             };
-            var childId = await _service.CreateChildAsync(parentId, itemToCreate);
-            var itemToUpdate = await _service.FindUniqueByWorkflowVersionActivityAsync(parentId, activityFormId);
+            var childId = await _service.CreateAsync(itemToCreate);
+            var itemToUpdate = await _service.FindUniqueAsync(parentId, activityFormId);
 
             // Act & Assert
             itemToUpdate.Position = 2;

@@ -109,7 +109,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 };
                 try
                 {
-                    await WorkflowCapability.WorkflowInstance.CreateChildWithSpecifiedIdAsync(VersionId, InstanceId, workflowCreate, cancellationToken);
+                    await WorkflowCapability.WorkflowInstance.CreateWithSpecifiedIdAsync(InstanceId, workflowCreate, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {

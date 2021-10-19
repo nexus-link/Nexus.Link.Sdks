@@ -5,9 +5,9 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
-    public class ActivityFormRestClient : CrudManyToOneRestClient2<ActivityFormCreate, ActivityForm, string>, IActivityFormService
+    public class ActivityFormRestClient : CrudRestClient<ActivityFormCreate, ActivityForm, string>, IActivityFormService
     {
-        public ActivityFormRestClient(IHttpSender httpSender) : base(httpSender, "workflows", "activities")
+        public ActivityFormRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("ActivityForms"))
         {
         }
     }

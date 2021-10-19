@@ -22,23 +22,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task CreateChildWithSpecifiedIdAsync(string parentId, string childId, ActivityFormCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task CreateWithSpecifiedIdAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(parentId, nameof(parentId));
-            InternalContract.RequireNotNullOrWhiteSpace(childId, nameof(childId));
+            await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
+        }
+
+        public async Task<ActivityForm> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            InternalContract.RequireAreEqual( parentId, item.WorkflowFormId, $"{nameof(item)}.{nameof(item.WorkflowFormId)})");
 
-            var childIdAsGuid = MapperHelper.MapToType<Guid, string>(childId);
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
             var recordCreate = new ActivityFormRecordCreate().From(item);
-            await _configurationTables.ActivityForm.CreateWithSpecifiedIdAsync(childIdAsGuid, recordCreate, cancellationToken);
+            var record  = await _configurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
 
+            var result = new ActivityForm().From(record);
+            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task<ActivityForm> ReadAsync(string id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityForm> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             
@@ -53,7 +59,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(string id, ActivityForm item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task UpdateAsync(string id, ActivityForm item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));

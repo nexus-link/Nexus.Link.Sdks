@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class ActivityInstanceRestClient : CrudRestClient<ActivityInstanceCreate, ActivityInstance, string>, IActivityInstanceService
     {
-        public ActivityInstanceRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("activity-instances"))
+        public ActivityInstanceRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("ActivityInstances"))
         {
         }
 
@@ -18,7 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         public Task<ActivityInstance> FindUniqueAsync(ActivityInstanceUnique findUnique, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(findUnique, nameof(findUnique));
-            return PostAsync<ActivityInstance, ActivityInstanceUnique>($"find-unique", findUnique, cancellationToken: cancellationToken);
+
+            return PostAsync<ActivityInstance, ActivityInstanceUnique>("ActivityInstances/FindUnique", findUnique, cancellationToken: cancellationToken);
         }
     }
 }

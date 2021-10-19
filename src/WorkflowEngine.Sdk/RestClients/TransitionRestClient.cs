@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
@@ -9,14 +10,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
     public class TransitionRestClient : CrudManyToOneRestClient2<TransitionCreate, Transition, string>, ITransitionService
     {
-        public TransitionRestClient(IHttpSender httpSender) : base(httpSender, "workflow-versions", "transitions")
+        public TransitionRestClient(IHttpSender httpSender) : base(httpSender, "WorkflowVersions", "Transitions")
         {
         }
 
         /// <inheritdoc />
-        public Task<Transition> FindUniqueAsync(TransitionUnique transition, CancellationToken cancellationToken = default)
+        public Task<Transition> FindUniqueAsync(string workflowVersionId, TransitionUnique transition, CancellationToken cancellationToken = default)
         {
-            return PostAsync<Transition, TransitionUnique>($"transitions/find-unique", transition, cancellationToken: cancellationToken);
+            var relativeUrl = $"WorkflowVersions/{WebUtility.UrlEncode(workflowVersionId)}/Transitions";
+            return PostAsync<Transition, TransitionUnique>(relativeUrl, transition, cancellationToken: cancellationToken);
         }
     }
 }

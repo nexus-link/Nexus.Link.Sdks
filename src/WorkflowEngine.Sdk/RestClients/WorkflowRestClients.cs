@@ -8,16 +8,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
     {
         public WorkflowRestClients(IHttpSender httpSender)
         {
-            WorkflowForm = new WorkflowFormRestClient(httpSender);
-            WorkflowVersion = new WorkflowVersionRestClient(httpSender);
-            WorkflowParameter = new WorkflowParameterRestClient(httpSender);
-            ActivityForm= new ActivityFormRestClient(httpSender);
-            ActivityVersion= new ActivityVersionRestClient(httpSender);
-            ActivityInstance= new ActivityInstanceRestClient(httpSender);
-            Transition= new TransitionRestClient(httpSender);
-            ActivityParameter = new ActivityParameterRestClient(httpSender);
-            WorkflowInstance = new WorkflowInstanceRestClient(httpSender);
-            Workflow = null; // TODO
+            WorkflowForm = new WorkflowFormRestClient(httpSender.CreateHttpSender("Configuration"));
+            WorkflowVersion = new WorkflowVersionRestClient(httpSender.CreateHttpSender("Configuration"));
+            WorkflowParameter = new WorkflowParameterRestClient(httpSender.CreateHttpSender("Configuration"));
+            ActivityForm= new ActivityFormRestClient(httpSender.CreateHttpSender("Configuration"));
+            ActivityVersion= new ActivityVersionRestClient(httpSender.CreateHttpSender("Configuration"));
+            ActivityInstance= new ActivityInstanceRestClient(httpSender.CreateHttpSender("Runtime"));
+            Transition= new TransitionRestClient(httpSender.CreateHttpSender("Configuration"));
+            ActivityParameter = new ActivityParameterRestClient(httpSender.CreateHttpSender("Configuration"));
+            WorkflowInstance = new WorkflowInstanceRestClient(httpSender.CreateHttpSender("Runtime"));
+            Workflow = new WorkflowRestClient(httpSender.CreateHttpSender("Runtime"));
+            WorkflowAdministrationService = new WorkflowAdministrationRestClient(httpSender.CreateHttpSender("Administration"));
         }
 
         /// <inheritdoc />
@@ -47,6 +48,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         /// <inheritdoc />
         public IWorkflowInstanceService WorkflowInstance { get; }
 
+        /// <inheritdoc />
         public IWorkflowService Workflow { get; }
+
+        /// <inheritdoc />
+        public IWorkflowAdministrationService WorkflowAdministrationService { get; }
     }
 }

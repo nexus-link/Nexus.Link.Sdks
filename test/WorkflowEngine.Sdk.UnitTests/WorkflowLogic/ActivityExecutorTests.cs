@@ -28,7 +28,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             var configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
-            var workflowCapability = new WorkflowCapability(configurationTables, _runtimeTables);
+            var workflowCapability = new WorkflowCapability(configurationTables, _runtimeTables, null);
             var workflowInformation = new WorkflowInformation(workflowCapability, new MethodHandler("Workflow"))
             {
                 FormId = "CD72BDE7-4D6A-42A6-B683-28CFB2AFD122",
