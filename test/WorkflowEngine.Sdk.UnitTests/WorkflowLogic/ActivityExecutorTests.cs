@@ -139,7 +139,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
             var expectedRequestId = Guid.NewGuid().ToString();
-            _activityInformation.AsyncRequestId = expectedRequestId;
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
