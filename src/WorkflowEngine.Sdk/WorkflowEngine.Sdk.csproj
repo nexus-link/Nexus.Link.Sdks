@@ -20,11 +20,11 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.9-rc01" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.5.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.21.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.21.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.3" />
   </ItemGroup>
 
   <ItemGroup>
