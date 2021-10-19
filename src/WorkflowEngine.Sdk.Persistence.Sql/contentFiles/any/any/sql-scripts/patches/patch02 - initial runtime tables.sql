@@ -11,7 +11,8 @@ CREATE TABLE WorkflowInstance
     Title nvarchar(2048) NOT NULl CONSTRAINT CK_WorkflowInstance_Title_WS CHECK (ltrim(rtrim(Title)) != ''),
     InitialVersion nvarchar(64) NOT NULl CONSTRAINT CK_WorkflowInstanceInitialVersion_WS CHECK (ltrim(rtrim(InitialVersion)) != ''),
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowInstance_StartedAt DEFAULT (sysdatetimeoffset()),
-	FinishedAt datetimeoffset CONSTRAINT DF_WorkflowInstance_FinishedAt DEFAULT (sysdatetimeoffset())
+	FinishedAt datetimeoffset,
+	CancelledAt datetimeoffset,
 )
 CREATE CLUSTERED INDEX IX_WorkflowInstance_RecordCreatedAt ON WorkflowInstance (RecordCreatedAt)
 
@@ -28,7 +29,7 @@ CREATE TABLE ActivityInstance
 
     ParentIteration int,
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DFActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
-	FinishedAt datetimeoffset CONSTRAINT DF_ActivityInstance_FinishedAt DEFAULT (sysdatetimeoffset()),
+	FinishedAt datetimeoffset,
 	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
 
     ResultAsJson nvarchar(max),

@@ -12,16 +12,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public WorkflowCapability(IAsyncRequestClient asyncManagementCapability, IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IRequestResponseService requestResponseService)
         {
             WorkflowForm = new WorkflowFormService(configurationTables);
-            WorkflowVersion= new WorkflowVersionService(configurationTables);
-            WorkflowParameter= new WorkflowParameterService(configurationTables);
-            ActivityForm = new ActivityFormService(configurationTables); 
+            WorkflowVersion = new WorkflowVersionService(configurationTables);
+            WorkflowParameter = new WorkflowParameterService(configurationTables);
+            ActivityForm = new ActivityFormService(configurationTables);
             ActivityVersion = new ActivityVersionService(configurationTables);
-            Transition = new TransitionService(configurationTables); 
-            ActivityParameter= new ActivityParameterService(configurationTables);
+            Transition = new TransitionService(configurationTables);
+            ActivityParameter = new ActivityParameterService(configurationTables);
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables);
             Workflow = new WorkflowService(configurationTables, runtimeTables);
-            WorkflowAdministrationService = new WorkflowAdministrationService(Workflow, requestResponseService);
+            WorkflowAdministrationService = new WorkflowAdministrationService(Workflow, WorkflowInstance, requestResponseService);
         }
 
         /// <inheritdoc />
@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public IWorkflowParameterService WorkflowParameter { get; }
 
         /// <inheritdoc />
-        public IActivityFormService ActivityForm{ get; }
+        public IActivityFormService ActivityForm { get; }
 
         /// <inheritdoc />
         public IActivityVersionService ActivityVersion { get; }

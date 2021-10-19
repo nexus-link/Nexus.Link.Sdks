@@ -24,7 +24,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>1.0.3-rc01</Version>
+    <Version>1.0.4-rc01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,9 +34,10 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
-      1.0.0 First release
-    </PackageReleaseNotes>
+		1.0.4 Support for Cancel workflow
+		1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
+		1.0.0 First release
+	</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
