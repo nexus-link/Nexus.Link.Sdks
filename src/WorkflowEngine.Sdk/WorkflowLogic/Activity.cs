@@ -3,21 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
-using ActivityStateEnum = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.ActivityStateEnum;
-using AsyncExecutionContext = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Model.AsyncExecutionContext;
-using PostponeException = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Exceptions.PostponeException;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -32,13 +26,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly IAsyncRequestClient _asyncRequestClient;
 
-        public ActivityInformation ActivityInformation { get; }
-        public Activity ParentActivity { get; protected set; }
-        public Activity PreviousActivity { get; }
+        protected internal ActivityInformation ActivityInformation { get; }
+        protected Activity ParentActivity { get; }
+        protected Activity PreviousActivity { get; }
         // TODO: Should be nullable instead of relying on value 0
         public int? Iteration { get; protected set; }
-
-        public string Identifier => ActivityInformation.InstanceId;
 
         public string Title
         {
@@ -80,9 +72,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
+            Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            return InternalExecuteAsync<TMethodReturnType>(method, cancellationToken, false);
+            return InternalExecuteAsync<TMethodReturnType>(method, false, getDefaultValueMethodAsync, cancellationToken);
         }
 
         protected async Task InternalExecuteAsync(
@@ -93,7 +86,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 await method(instance, ct);
                 return Task.FromResult(false);
-            }, cancellationToken);
+            }, true, null, cancellationToken);
         }
 
         public TParameter GetArgument<TParameter>(string parameterName)
@@ -103,49 +96,97 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         private async Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
-            CancellationToken cancellationToken,
-            bool ignoreReturnValue)
+            bool ignoreReturnValue,
+            Func<Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken)
         {
-            try
+            await SafeSaveActivityInformationAsync();
+
+            // Already have a result?
+            if (ActivityInformation.HasCompleted)
             {
-                // Find existing or create new
-                ActivityInformation.Iteration = Iteration;
-                await ActivityInformation.PersistAsync(cancellationToken);
+                return await SafeGetResultOrThrowAsync(false);
+            }
 
-                // Already have a result?
-                if (ActivityInformation.HasCompleted)
-                {
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
-                }
+            if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
+            {
+                return await SafeGetResponseOrThrowAsync(cancellationToken);
+            }
 
-                // Kolla maxtiden
+            await SafeVerifyMaxTimeAsync();
 
-                if (!string.IsNullOrWhiteSpace(ActivityInformation.AsyncRequestId))
-                {
-                    var response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId, cancellationToken);
-                    if (response == null || !response.HasCompleted) throw new RequestPostponedException(ActivityInformation.AsyncRequestId);
-                    ActivityInformation.Result.Json = response.Content;
-                    if (response.Exception?.Name == null)
-                    {
-                        ActivityInformation.Result.State = ActivityStateEnum.Success;
-                    }
-                    else
-                    {
-                        ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                        ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-                        ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                        ActivityInformation.Result.ExceptionTechnicalMessage = $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
-                        ActivityInformation.Result.ExceptionFriendlyMessage = $"A remote method failed with the following message: {response.Exception.Message}";
-                        await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                    }
-                    return GetResultOrThrow<TMethodReturnType>(ignoreReturnValue);
-                }
+            await SafeCallMethodAndUpdateActivityInformationAsync();
 
-                // Call the activity. The method will only return if this is a
-                TMethodReturnType result;
+            return await SafeGetResultOrThrowAsync(false);
+
+            #region Local methods
+
+            async Task SafeSaveActivityInformationAsync()
+            {
                 try
                 {
-                    result = default(TMethodReturnType);
+                    // Find existing or create new
+                    ActivityInformation.Iteration = Iteration;
+                    await ActivityInformation.PersistAsync(cancellationToken);
+                }
+                catch (Exception)
+                {
+                    // Save failed
+                    // TODO: Log
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+            }
+
+            async Task<TMethodReturnType> SafeGetResponseOrThrowAsync(CancellationToken cancellationToken2)
+            {
+                AsyncHttpResponse response;
+                try
+                {
+                    response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId,
+                        cancellationToken2);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+
+                if (response == null || !response.HasCompleted)
+                {
+                    // No response yet
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+
+                if (response.Exception?.Name == null)
+                {
+                    ActivityInformation.Result.State = ActivityStateEnum.Success;
+                    ActivityInformation.Result.Json = response.Content;
+                }
+                else
+                {
+                    ActivityInformation.Result.State = ActivityStateEnum.Failed;
+                    ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+                    ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                    ActivityInformation.Result.ExceptionTechnicalMessage =
+                        $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
+                    ActivityInformation.Result.ExceptionFriendlyMessage =
+                        $"A remote method failed with the following message: {response.Exception.Message}";
+                }
+
+                await SafeUpdateInstanceWithResultAsync();
+                return await SafeGetResultOrThrowAsync(true);
+            }
+
+            Task SafeVerifyMaxTimeAsync()
+            {
+                return Task.CompletedTask;
+            }
+
+            async Task SafeCallMethodAndUpdateActivityInformationAsync()
+            {
+                // Call the activity. The method will only return if this is a method with no external calls.
+                try
+                {
                     if (ignoreReturnValue)
                     {
                         await method(this, cancellationToken);
@@ -153,17 +194,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     }
                     else
                     {
-                        result = await method(this, cancellationToken);
+                        var result = await method(this, cancellationToken);
                         ActivityInformation.Result.Json = result.ToJsonString();
                     }
                 }
-                catch (RequestPostponedException e)
+                catch (ActivityPostponedException)
+                {
+                    throw new HandledRequestPostponedException();
+                }
+                catch (HandledRequestPostponedException)
                 {
                     throw;
                 }
-                catch (ActivityException)
+                catch (RequestPostponedException e)
                 {
-                    throw;
+                    if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
+                    ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
+                    await SafeUpdateInstanceWithRequestIdAsync();
+                    throw new HandledRequestPostponedException(e);
                 }
                 catch (Exception e)
                 {
@@ -172,70 +220,81 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     ActivityInformation.Result.State = ActivityStateEnum.Failed;
                     ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
                     ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                    ActivityInformation.Result.ExceptionTechnicalMessage = $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
-                    ActivityInformation.Result.ExceptionFriendlyMessage = $"A local method failed with the following message: {e.Message}";
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                    throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                        ActivityInformation.Result.ExceptionTechnicalMessage);
+                    ActivityInformation.Result.ExceptionTechnicalMessage =
+                        $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
+                    ActivityInformation.Result.ExceptionFriendlyMessage =
+                        $"A local method failed with the following message: {e.Message}";
                 }
 
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
-                return result;
-            }
-            catch (HandledRequestPostponedException)
-            {
-                throw;
-            }
-            catch (RequestPostponedException e)
-            {
-                if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
-                ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.First();
-                await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
-                throw new HandledRequestPostponedException(e);
-            }
-            catch (ActivityException)
-            {
-                // TODO: Handle error
-                throw;
-            }
-            catch (Exception e)
-            {
-                // Unexpected error
-                // TODO: Handle error: Send event, throw postpone if halt (set GiveUpAt if max time)
-                ActivityInformation.Result.State = ActivityStateEnum.Failed;
-                ActivityInformation.Result.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-                ActivityInformation.Result.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
-                ActivityInformation.Result.ExceptionTechnicalMessage = $"The workflow SDK failed with an exception ({e.GetType().FullName}) with the following message: {e.Message}";
-                ActivityInformation.Result.ExceptionFriendlyMessage = $"The workflow SDK failed with the following message: {e.Message}";
                 if (ActivityInformation.InstanceId != null)
                 {
-                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                    await SafeUpdateInstanceWithResultAsync();
+                }
+            }
+
+            async Task<TMethodReturnType> SafeGetResultOrThrowAsync(bool publishEvent)
+            {
+                if (ActivityInformation.Result.State != ActivityStateEnum.Failed)
+                {
+                    return ignoreReturnValue
+                        ? default
+                        : JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
                 }
 
-                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                    ActivityInformation.Result.ExceptionTechnicalMessage);
-            }
-        }
+                if (publishEvent)
+                {
+                    // Publish message about exception
+                }
 
-        private TMethodReturnType GetResultOrThrow<TMethodReturnType>(bool ignoreResult)
-        {
-            if (ActivityInformation.Result.State == ActivityStateEnum.Failed)
+                FulcrumAssert.IsNotNull(ActivityInformation.Result.FailUrgency, CodeLocation.AsString());
+                switch (ActivityInformation.Result.FailUrgency!.Value)
+                {
+                    case ActivityFailUrgencyEnum.Stopping:
+                        throw new HandledRequestPostponedException();
+                    default:
+                        if (getDefaultValueMethodAsync == null) return default;
+                        try
+                        {
+                            return await getDefaultValueMethodAsync();
+                        }
+                        catch (Exception)
+                        {
+                            // Errors in the default method overrides stopping.
+                            // TODO: How do we convey information about this to the person who has to deal with this stopping activity?
+                            // TODO: Log
+                            throw new HandledRequestPostponedException();
+                        }
+                }
+            }
+
+            async Task SafeUpdateInstanceWithResultAsync()
             {
-                throw new ActivityException(ActivityInformation.Result.ExceptionCategory.ToString(),
-                    ActivityInformation.Result.ExceptionTechnicalMessage);
+                CancellationToken cancellationToken2;
+                try
+                {
+                    await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken2);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
             }
 
-            if (ignoreResult) return default;
-
-            return JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityInformation.Result.Json);
-        }
-    }
-
-    internal class HandledRequestPostponedException : RequestPostponedException
-    {
-        public HandledRequestPostponedException(RequestPostponedException e)
-        : base(e.WaitingForRequestIds)
-        {
+            async Task SafeUpdateInstanceWithRequestIdAsync()
+            {
+                try
+                {
+                    await ActivityInformation.UpdateInstanceWithRequestIdAsync(cancellationToken);
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                    // TODO: Is this correct? Isn't it very bad that we didn't save the request id? The next time around we will send a new request. Could be handled with idempotency, if we send ActivityInstanceId in the request.
+                    throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                }
+            }
+            #endregion
         }
     }
 }
