@@ -108,7 +108,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _activityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Assert.ThrowsAsync<RequestPostponedException>( () => executor.ExecuteAsync<int>(
+            await Assert.ThrowsAnyAsync<RequestPostponedException>( () => executor.ExecuteAsync<int>(
                     (a, t) => throw new Exception("Fail"), null));
             alertHandler.AlertResult.ShouldBe(true);
             _activityInformation.InstanceId.ShouldNotBeNull();
@@ -265,7 +265,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public int MinorVersion { get; }
 
         /// <inheritdoc />
-        public async Task<bool> HandleActivityExceptionAlert(ActivityExceptionAlert alert, CancellationToken cancellationToken = default)
+        public async Task<bool> HandleActivityExceptionAlertAsync(ActivityExceptionAlert alert, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -83,10 +83,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return await SafeGetResultOrThrowAsync(false, ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task SafeUpdateInstanceWithResultAsync(CancellationToken cancellationToken)
+        private async Task SafeUpdateInstanceWithResultAndAlertExceptionsAsync(CancellationToken cancellationToken)
         {
             try
             {
+                if (!ActivityInformation.Result.ExceptionAlertHandled.HasValue || !ActivityInformation.Result.ExceptionAlertHandled.Value)
+                {
+                    if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
+                    {
+                        FulcrumAssert.IsNotNull(ActivityInformation.Result.ExceptionCategory, CodeLocation.AsString());
+                        var alert = new ActivityExceptionAlert
+                        {
+                            WorkflowInstanceId = ActivityInformation.WorkflowInformation.InstanceId,
+                            ActivityInstanceId = ActivityInformation.InstanceId,
+                            ExceptionCategory = ActivityInformation.Result.ExceptionCategory!.Value,
+                            ExceptionFriendlyMessage = ActivityInformation.Result.ExceptionFriendlyMessage,
+                            ExceptionTechnicalMessage = ActivityInformation.Result.ExceptionTechnicalMessage
+                        };
+                        try
+                        {
+                            var handled = await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
+                            ActivityInformation.Result.ExceptionAlertHandled = handled;
+                        }
+                        catch (Exception)
+                        {
+                            // We will try again next reentry.
+                        }
+                    }
+                }
                 await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
             catch (Exception)
@@ -114,7 +138,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 // Publish message about exception
             }
-            
+
             switch (ActivityInformation.FailUrgency)
             {
                 case ActivityFailUrgencyEnum.Stopping:
@@ -158,7 +182,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             catch (FulcrumTryAgainException)
             {
                 ActivityInformation.State = ActivityStateEnum.Waiting;
-                await SafeUpdateInstanceWithResultAsync(cancellationToken);
+                await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
                 throw new HandledRequestPostponedException
                 {
                     TryAgain = true
@@ -177,7 +201,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
                 ActivityInformation.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
                 ActivityInformation.State = ActivityStateEnum.Waiting;
-                await SafeUpdateInstanceWithResultAsync(cancellationToken);
+                await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
                 throw new HandledRequestPostponedException(e);
             }
             catch (Exception e)
@@ -194,7 +218,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             if (ActivityInformation.InstanceId != null)
             {
-                await SafeUpdateInstanceWithResultAsync(cancellationToken);
+                await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
             }
         }
 
@@ -242,7 +266,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     $"A remote method failed with the following message: {response.Exception.Message}";
             }
 
-            await SafeUpdateInstanceWithResultAsync(cancellationToken);
+            await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
             return await SafeGetResultOrThrowAsync(true, ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
         }
 

@@ -11,5 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public string ExceptionTechnicalMessage { get; set; }
 
         public string ExceptionFriendlyMessage { get; set; }
+
+        public bool? ExceptionAlertHandled { get; set; }
     }
 }
