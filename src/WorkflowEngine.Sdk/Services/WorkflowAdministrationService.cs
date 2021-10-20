@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
@@ -12,15 +14,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     public class WorkflowAdministrationService : IWorkflowAdministrationService
     {
-        private readonly IWorkflowService _workflowService;
-        private readonly IWorkflowInstanceService _workflowInstanceService;
-        private readonly IRequestResponseService _requestResponseService;
+        private readonly IWorkflowCapability _workflowCapability;
+        private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowAdministrationService(IWorkflowService workflowService, IWorkflowInstanceService workflowInstanceService, IRequestResponseService requestResponseService)
+        public WorkflowAdministrationService(IWorkflowCapability workflowCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
-            _workflowService = workflowService;
-            _requestResponseService = requestResponseService;
-            _workflowInstanceService = workflowInstanceService;
+            _workflowCapability = workflowCapability;
+            _requestMgmtCapability = requestMgmtCapability;
         }
 
         /// <inheritdoc />
@@ -28,7 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var workflowRecord = await _workflowService.ReadAsync(id, cancellationToken);
+            var workflowRecord = await _workflowCapability.Workflow.ReadAsync(id, cancellationToken);
             if (workflowRecord == null) return null;
 
             var workflow = new Workflow
@@ -52,12 +52,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
-            var item = await _workflowInstanceService.ReadAsync(workflowInstanceId, cancellationToken);
+            var item = await _workflowCapability.WorkflowInstance.ReadAsync(workflowInstanceId, cancellationToken);
             if (item == null) throw new FulcrumNotFoundException(workflowInstanceId);
 
             item.CancelledAt = DateTimeOffset.Now;
 
-            await _workflowInstanceService.UpdateAsync(workflowInstanceId, item, cancellationToken);
+            await _workflowCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(workflowInstanceId, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task RetryActivityAsync(string activityInstanceId, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
+
+            var item = await _workflowCapability.ActivityInstance.ReadAsync(activityInstanceId, cancellationToken);
+            if (item == null) throw new FulcrumNotFoundException(activityInstanceId);
+
+            item.State = ActivityStateEnum.Waiting;
+            item.ResultAsJson = null;
+            item.ExceptionCategory = null;
+            item.ExceptionTechnicalMessage = null;
+            item.ExceptionFriendlyMessage = null;
+            item.AsyncRequestId = null;
+            // TODO: item.ExceptionAlertHandled = null
+
+            await _workflowCapability.ActivityInstance.UpdateAsync(activityInstanceId, item, cancellationToken);
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(item.WorkflowInstanceId, cancellationToken);
+
+            // TODO: Audit log
         }
 
         private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, List<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)

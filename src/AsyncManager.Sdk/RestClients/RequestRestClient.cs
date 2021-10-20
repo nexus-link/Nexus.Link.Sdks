@@ -17,21 +17,12 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
     public class RequestRestClient : IRequestService
     {
         private readonly IHttpSender _httpSender;
-        private readonly Tenant _tenant;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public RequestRestClient(IHttpSender httpSender) : this(FulcrumApplication.Setup.Tenant, httpSender)
+        public RequestRestClient(IHttpSender httpSender)
         {
-        }
-
-        /// <summary>
-        /// Constructor with tenant
-        /// </summary>
-        public RequestRestClient(Tenant tenant, IHttpSender httpSender)
-        {
-            _tenant = tenant;
             _httpSender = httpSender;
         }
 
@@ -41,8 +32,8 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             InternalContract.RequireNotNull(request, nameof(request));
             InternalContract.RequireValidated(request, nameof(request));
 
-            var result = await _httpSender.SendRequestAsync<string, HttpRequestCreate>(HttpMethod.Post,
-                $"api/v1/Tenant/{_tenant.Organization}/{_tenant.Environment}/Requests", request, null, cancellationToken);
+            const string relativeUrl = "Requests";
+            var result = await _httpSender.SendRequestAsync<string, HttpRequestCreate>(HttpMethod.Post, relativeUrl, request, null, cancellationToken);
             //Should we really do asserts here? If result.IsSuccessStatusCode is false we'll throw a FulcrumAssertionFailedException with the message 'Expected value to be true'. Feels bad man.
 
             FulcrumAssert.IsNotNull(result, CodeLocation.AsString());

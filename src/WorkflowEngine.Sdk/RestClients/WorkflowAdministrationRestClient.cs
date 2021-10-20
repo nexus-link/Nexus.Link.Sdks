@@ -24,5 +24,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             var relativeUrl = $"Workflows/{WebUtility.UrlEncode(workflowInstanceId)}/Cancel";
             await PostNoResponseContentAsync(relativeUrl, cancellationToken: cancellationToken);
         }
+
+        public async Task RetryActivityAsync(string activityInstanceId, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(activityInstanceId, nameof(activityInstanceId));
+
+            var relativeUrl = $"Activities/{WebUtility.UrlEncode(activityInstanceId)}/Retry";
+            await PostNoResponseContentAsync(relativeUrl, cancellationToken: cancellationToken);
+        }
     }
 }

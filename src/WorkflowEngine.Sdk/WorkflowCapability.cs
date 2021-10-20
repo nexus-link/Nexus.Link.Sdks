@@ -1,3 +1,4 @@
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
@@ -8,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 {
     public class WorkflowCapability : IWorkflowCapability
     {
-        public WorkflowCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IRequestResponseService requestResponseService)
+        public WorkflowCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion = new WorkflowVersionService(configurationTables);
@@ -20,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables);
             Workflow = new WorkflowService(configurationTables, runtimeTables);
-            WorkflowAdministrationService = new WorkflowAdministrationService(Workflow, WorkflowInstance, requestResponseService);
+            WorkflowAdministrationService = new WorkflowAdministrationService(this, requestMgmtCapability);
         }
 
         /// <inheritdoc />
