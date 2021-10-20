@@ -32,6 +32,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public string AsyncRequestId { get; set; }
 
+        public bool? ExceptionAlertHandled { get; set; }
+
         /// <inheritdoc />
         public override void Validate(string errorLocation, string propertyPath = "")
         {

@@ -2,16 +2,15 @@
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
-    public class ActivityResult
+    public class ActivityExceptionAlert
     {
-        public string Json { get; set; }
+        public string WorkflowInstanceId { get; set; }
+        public string ActivityInstanceId { get; set; }
 
-        public ActivityExceptionCategoryEnum? ExceptionCategory { get; set; }
+        public ActivityExceptionCategoryEnum ExceptionCategory { get; set; }
 
         public string ExceptionTechnicalMessage { get; set; }
 
         public string ExceptionFriendlyMessage { get; set; }
-
-        public bool? ExceptionAlertHandled { get; set; }
     }
 }
