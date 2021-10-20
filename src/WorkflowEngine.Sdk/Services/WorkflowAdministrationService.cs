@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
@@ -14,12 +14,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
     {
         private readonly IWorkflowService _workflowService;
         private readonly IWorkflowInstanceService _workflowInstanceService;
-        private readonly IRequestResponseService _requestResponseService;
+        private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowAdministrationService(IWorkflowService workflowService, IWorkflowInstanceService workflowInstanceService, IRequestResponseService requestResponseService)
+        public WorkflowAdministrationService(IWorkflowService workflowService, IWorkflowInstanceService workflowInstanceService, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             _workflowService = workflowService;
-            _requestResponseService = requestResponseService;
+            _requestMgmtCapability = requestMgmtCapability;
             _workflowInstanceService = workflowInstanceService;
         }
 
@@ -58,6 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             item.CancelledAt = DateTimeOffset.Now;
 
             await _workflowInstanceService.UpdateAsync(workflowInstanceId, item, cancellationToken);
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(workflowInstanceId, cancellationToken);
         }
 
         private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, List<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)
