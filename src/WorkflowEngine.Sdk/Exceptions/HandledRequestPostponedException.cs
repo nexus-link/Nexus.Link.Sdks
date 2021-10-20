@@ -7,6 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
         public HandledRequestPostponedException(RequestPostponedException e)
         {
             AddWaitingForIds(e.WaitingForRequestIds);
+            TryAgain = e.TryAgain;
         }
         public HandledRequestPostponedException(params string[] waitingForRequestIds)
         {

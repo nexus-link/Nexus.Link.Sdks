@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.21.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.0-alfa01" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.1" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>

@@ -8,6 +8,7 @@ using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
@@ -176,6 +177,34 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
+        }
+
+        [Fact]
+        public async Task Execute_Given_FuclrumTryAgainException_Gives_PostponeTryAgain()
+        {
+            // Arrange
+            var executor = new ActivityExecutor(_asyncRequestClientMock.Object);
+            executor.Activity = new ActivityAction<int>(_activityInformation, executor, null, null);
+            _activityInformation.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+
+            // Act & Assert
+            RequestPostponedException postponed = null;
+            try
+            {
+                await executor.ExecuteAsync<int>(
+                    (a, t) => throw new FulcrumTryAgainException("Fail"), null);
+            }
+            catch (Exception e)
+            {
+                e.ShouldBeAssignableTo<RequestPostponedException>();
+                postponed = e as RequestPostponedException;
+            }
+            postponed.ShouldNotBeNull();
+            postponed.TryAgain.ShouldBe(true);
+            _activityInformation.InstanceId.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityInformation.InstanceId));
+            instance.ShouldNotBeNull();
+            instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
         }
     }
     /// <summary>

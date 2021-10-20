@@ -55,6 +55,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     outException ??= new HandledRequestPostponedException();
                     outException.AddWaitingForIds(e.WaitingForRequestIds);
+                    if (!outException.TryAgain) outException.TryAgain = e.TryAgain;
                     taskList.RemoveAt(current);
                 }
                 catch (Exception)
@@ -124,6 +125,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     outException ??= new HandledRequestPostponedException();
                     outException.AddWaitingForIds(e.WaitingForRequestIds);
+                    if (!outException.TryAgain) outException.TryAgain = e.TryAgain;
                     taskList.RemoveAt(current);
                 }
                 catch (Exception)

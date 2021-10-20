@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
@@ -89,7 +90,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             catch (Exception)
             {
                 // TODO: Log
-                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId)
+                {
+                    TryAgain = true
+                };
             }
         }
 
@@ -124,7 +128,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         // Errors in the default method overrides stopping.
                         // TODO: How do we convey information about this to the person who has to deal with this stopping activity?
                         // TODO: Log
-                        throw new HandledRequestPostponedException();
+                        throw new HandledRequestPostponedException
+                        {
+                            TryAgain = true
+                        };
                     }
             }
         }
@@ -145,6 +152,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                     ActivityInformation.Result.Json = result.ToJsonString();
                     ActivityInformation.State = ActivityStateEnum.Success;
                 }
+            }
+            catch (FulcrumTryAgainException)
+            {
+                ActivityInformation.State = ActivityStateEnum.Waiting;
+                await SafeUpdateInstanceWithResultAsync(cancellationToken);
+                throw new HandledRequestPostponedException
+                {
+                    TryAgain = true
+                };
             }
             catch (ActivityPostponedException)
             {
@@ -196,7 +212,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             catch (Exception)
             {
                 // TODO: Log
-                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId)
+                {
+                    TryAgain = true
+                };
             }
 
             if (response == null || !response.HasCompleted)
@@ -235,7 +254,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 // Save failed
                 // TODO: Log
-                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId);
+                throw new HandledRequestPostponedException(ActivityInformation.AsyncRequestId)
+                {
+                    TryAgain = true
+                };
             }
         }
     }
