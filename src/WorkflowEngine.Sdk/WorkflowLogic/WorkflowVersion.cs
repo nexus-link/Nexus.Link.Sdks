@@ -13,7 +13,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public abstract class WorkflowVersion<TResponse>
+    public abstract class WorkflowVersionBase : IWorkflowVersionBase
     {
         private readonly IWorkflowCapability _workflowCapability;
         public int MajorVersion { get; }
@@ -21,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly WorkflowInformation _workflowInformation;
         private readonly IAsyncRequestClient _asyncRequestClient;
 
-        protected WorkflowVersion(int majorVersion, int minorVersion,
+        protected WorkflowVersionBase(int majorVersion, int minorVersion,
             WorkflowVersionCollection workflowVersionCollection)
         {
             var workflowVersionCollection1 = workflowVersionCollection;
@@ -40,17 +40,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             };
         }
 
-        public abstract WorkflowVersion<TResponse> CreateWorkflowInstance();
-
         protected void DefineParameter<T>(string name)
         {
             _workflowInformation.MethodHandler.DefineParameter<T>(name);
-        }
-
-        public WorkflowVersion<TResponse> SetParameter<TParameter>(string name, TParameter value)
-        {
-            _workflowInformation.MethodHandler.SetParameter(name, value);
-            return this;
         }
 
         protected TParameter GetArgument<TParameter>(string name)
@@ -58,7 +50,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return _workflowInformation.MethodHandler.GetArgument<TParameter>(name);
         }
 
-        public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
+        protected void InternalSetParameter<TParameter>(string name, TParameter value)
+        {
+            _workflowInformation.MethodHandler.SetParameter(name, value);
+        }
+
+        protected abstract string GetInstanceTitle();
+
+        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(string title, string id)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+        }
+
+        protected IActivityFlow CreateActivity(string title, string id)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+        }
+
+        protected async Task InternalExecuteAsync(CancellationToken cancellationToken)
         {
             // Make sure we're on correct database version
             InternalContract.RequireNotNull(DatabasePatchSettings.DatabasePatchLevelVerifier, "You need to setup DatabasePatchSettings.DatabasePatchLevelVerifier");
@@ -73,27 +88,57 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
             AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
+        }
+    }
+
+    public abstract class WorkflowVersion<TResponse> : WorkflowVersionBase
+    {
+        protected WorkflowVersion(int majorVersion, int minorVersion,
+            WorkflowVersionCollection workflowVersionCollection)
+        :base(majorVersion, minorVersion, workflowVersionCollection)
+        {
+        }
+
+        public abstract WorkflowVersion<TResponse> CreateWorkflowInstance();
+
+        public WorkflowVersion<TResponse> SetParameter<TParameter>(string name, TParameter value)
+        {
+            InternalSetParameter(name, value);
+            return this;
+        }
+
+        public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
+        {
+            await InternalExecuteAsync(cancellationToken);
             return await ExecuteWorkflowAsync(cancellationToken);
         }
 
-        protected abstract string GetInstanceTitle();
-
         protected abstract Task<TResponse> ExecuteWorkflowAsync(CancellationToken cancellationToken);
+    }
 
-        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(string title, string id)
+    public abstract class WorkflowVersion : WorkflowVersionBase
+    {
+        protected WorkflowVersion(int majorVersion, int minorVersion,
+            WorkflowVersionCollection workflowVersionCollection)
+        :base(majorVersion, minorVersion, workflowVersionCollection)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-
-            return new ActivityFlow<TActivityReturns>(_workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
         }
 
-        protected IActivityFlow CreateActivity(string title, string id)
-        {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+        public abstract WorkflowVersion CreateWorkflowInstance();
+        
 
-            return new ActivityFlow(_workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+        public WorkflowVersion SetParameter<TParameter>(string name, TParameter value)
+        {
+            InternalSetParameter(name, value);
+            return this;
         }
+
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            await InternalExecuteAsync(cancellationToken);
+            await ExecuteWorkflowAsync(cancellationToken);
+        }
+
+        protected abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken);
     }
 }

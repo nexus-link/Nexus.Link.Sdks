@@ -46,6 +46,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;
+            target.ExceptionAlertHandled = source.ExceptionAlertHandled;
             return target;
         }
 
@@ -77,6 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
             target.AsyncRequestId = source.AsyncRequestId;
+            target.ExceptionAlertHandled = source.ExceptionAlertHandled;
             return target;
         }
 

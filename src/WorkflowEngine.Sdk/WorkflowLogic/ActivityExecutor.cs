@@ -17,12 +17,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityExecutor : IActivityExecutor
     {
+        public IWorkflowVersionBase WorkflowVersion { get; }
         public Activity Activity { get; set; }
-        private readonly IAsyncRequestClient _asyncRequestClient;
+        public IAsyncRequestClient AsyncRequestClient { get; }
 
-        public ActivityExecutor(IAsyncRequestClient asyncRequestClient)
+        public ActivityExecutor(IWorkflowVersionBase workflowVersion, IAsyncRequestClient asyncRequestClient)
         {
-            _asyncRequestClient = asyncRequestClient;
+            WorkflowVersion = workflowVersion;
+            AsyncRequestClient = asyncRequestClient;
         }
 
         private ActivityInformation ActivityInformation => Activity.ActivityInformation;
@@ -206,7 +208,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             AsyncHttpResponse response;
             try
             {
-                response = await _asyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId,
+                response = await AsyncRequestClient.GetFinalResponseAsync(ActivityInformation.AsyncRequestId,
                     cancellationToken);
             }
             catch (Exception)

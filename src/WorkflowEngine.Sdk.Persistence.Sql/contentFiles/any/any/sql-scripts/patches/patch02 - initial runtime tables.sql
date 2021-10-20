@@ -30,7 +30,8 @@ CREATE TABLE ActivityInstance
     ParentIteration int,
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_ActivityInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset,
-	HasCompleted bit CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
+	HasCompleted bit NOT NULL CONSTRAINT DF_ActivityInstance_HasCompleted DEFAULT (0),
+	ExceptionAlertHandled bit NULL,
 
     ResultAsJson nvarchar(max),
     State nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_State DEFAULT ('Started'),

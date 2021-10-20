@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.9-rc01" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.11-alfa01" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.1" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
@@ -48,7 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.7.0 Added RequestPostponedException.TryAgain
+      1.7.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
       1.6.0 Support for Cancel workflow
       1.5.0 Service contract changes, mostly removing child things
       1.4.0 Added error handling
