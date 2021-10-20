@@ -1,4 +1,5 @@
-﻿using Nexus.Link.Libraries.Web.Error.Logic;
+﻿using System.Linq;
+using Nexus.Link.Libraries.Web.Error.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {
@@ -11,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
         }
         public HandledRequestPostponedException(params string[] waitingForRequestIds)
         {
-            AddWaitingForIds(waitingForRequestIds);
+            AddWaitingForIds(waitingForRequestIds.Where(ri => ri != null));
         }
     }
 }
