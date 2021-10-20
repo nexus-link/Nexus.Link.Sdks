@@ -7,6 +7,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IActivityExecutor
     {
+        Activity Activity { get; set; }
+
         Task ExecuteAsync(
             ActivityMethod method, 
             CancellationToken cancellationToken);

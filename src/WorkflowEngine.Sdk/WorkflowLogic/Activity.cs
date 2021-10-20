@@ -46,6 +46,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
             ActivityExecutor = activityExecutor;
+            ActivityExecutor.Activity = this;
             
             ActivityInformation = activityInformation;
             ParentActivity = parentActivity;
