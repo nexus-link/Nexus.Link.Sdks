@@ -33,7 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.0-alfa01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.0" />
   </ItemGroup>
 
   <PropertyGroup>
