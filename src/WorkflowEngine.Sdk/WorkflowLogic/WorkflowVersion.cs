@@ -64,12 +64,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNull(DatabasePatchSettings.DatabasePatchLevelVerifier, "You need to setup DatabasePatchSettings.DatabasePatchLevelVerifier");
             await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
 
-            _workflowInformation.InstanceTitle = GetInstanceTitle();
-            _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
             if (string.IsNullOrWhiteSpace(AsyncWorkflowStatic.Context.WorkflowInstanceId))
             {
                 throw new FulcrumNotImplementedException($"Currently all workflows must be called via AsyncManager, because they are dependent on the request header {Constants.ExecutionIdHeaderName}.");
             }
+
+            // TODO: Unit test for cancelled
+            var instance = await _workflowCapability.WorkflowInstance.ReadAsync(AsyncWorkflowStatic.Context.WorkflowInstanceId, cancellationToken);
+            if (instance?.CancelledAt != null)
+            {
+                throw new FulcrumCancelledException($"Workflow ({instance.Id}) was cancelled at {instance.CancelledAt}");
+            }
+
+            _workflowInformation.InstanceTitle = GetInstanceTitle();
+            _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
             _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
             AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
