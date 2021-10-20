@@ -60,5 +60,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 }
             }
         }
+
+        public TParameter GetArgument<TParameter>(string parameterName)
+        {
+            return ActivityInformation.MethodHandler.GetArgument<TParameter>(parameterName);
+        }
     }
 }
