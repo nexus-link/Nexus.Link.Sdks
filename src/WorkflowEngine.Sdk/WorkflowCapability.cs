@@ -21,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables);
             Workflow = new WorkflowService(configurationTables, runtimeTables);
-            WorkflowAdministrationService = new WorkflowAdministrationService(Workflow, WorkflowInstance, requestMgmtCapability);
+            WorkflowAdministrationService = new WorkflowAdministrationService(this, requestMgmtCapability);
         }
 
         /// <inheritdoc />

@@ -2,6 +2,7 @@
 using Moq;
 using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.WorkflowEngine.Sdk.Services;
@@ -19,7 +20,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
         {
             var workflowInstanceService = new WorkflowInstanceService(RuntimeTables);
             var asyncCap = new AsyncRequestMgmtRestClients(Mock.Of<IHttpSender>());
-            _service = new WorkflowAdministrationService(WorkflowService, workflowInstanceService, asyncCap);
+            var workflowCap = new Mock<IWorkflowCapability>();
+            workflowCap.Setup(x => x.Workflow).Returns(WorkflowService);
+            workflowCap.Setup(x => x.WorkflowInstance).Returns(workflowInstanceService);
+            
+            _service = new WorkflowAdministrationService(workflowCap.Object, asyncCap);
         }
 
 
