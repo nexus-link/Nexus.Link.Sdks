@@ -18,13 +18,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.5.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.5.1" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.9.4" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>1.0.4-rc02</Version>
+    <Version>1.0.4-rc03</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

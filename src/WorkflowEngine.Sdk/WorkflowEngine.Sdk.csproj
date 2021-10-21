@@ -22,7 +22,7 @@
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.5.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.5.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.5" />
   </ItemGroup>
@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.8.0-rc06</Version>
+    <Version>1.8.0-rc07</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

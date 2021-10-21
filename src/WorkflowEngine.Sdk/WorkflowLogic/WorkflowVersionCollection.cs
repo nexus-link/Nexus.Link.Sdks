@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public IWorkflowCapability Capability { get; }
         public IAsyncRequestClient AsyncRequestClient { get; }
 
-        private readonly Dictionary<int, object> _versions = new();
+        private readonly Dictionary<int, IWorkflowVersionBase> _versions = new();
 
         public string WorkflowCapabilityName { get; private set; }
         public string WorkflowFormId { get; set; }
@@ -50,7 +50,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return null;
         }
 
-        public WorkflowVersionCollection AddWorkflowVersion<TResponse>(WorkflowVersion<TResponse> workflowVersion)
+        /// <inheritdoc />
+        public WorkflowVersion SelectWorkflowVersion(int minVersion, int maxVersion)
+        {
+            foreach (var version in _versions.Where(pair => pair.Key >= minVersion && pair.Key <= maxVersion))
+            {
+                var implementation = version.Value as WorkflowVersion;
+                FulcrumAssert.IsNotNull(implementation, CodeLocation.AsString());
+                var instance = implementation!.CreateWorkflowInstance();
+                return instance;
+            }
+
+            return null;
+        }
+
+        public WorkflowVersionCollection AddWorkflowVersion(IWorkflowVersionBase workflowVersion)
         {
             _versions.Add(workflowVersion.MajorVersion, workflowVersion);
             return this;

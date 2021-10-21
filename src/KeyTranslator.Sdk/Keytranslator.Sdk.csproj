@@ -37,7 +37,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <Version>4.0.2</Version>
+    <Version>4.0.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -47,6 +47,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      4.0.3 Bump
       4.0.2 Symbols
       4.0.1 Added CancellationToken where missing for async methods.
       3.1.3 Bump

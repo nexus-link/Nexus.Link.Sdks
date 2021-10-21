@@ -38,7 +38,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.2.4</Version>
+      <Version>2.2.5</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
       <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.2.5 Bump
         2.2.4 Symbols
         2.2.3 Bump
         2.2.0 Added Tenant to ILeverConfiguration.
