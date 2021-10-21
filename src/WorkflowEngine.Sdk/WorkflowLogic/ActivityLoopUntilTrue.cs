@@ -46,17 +46,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
+            await ActivityExecutor.ExecuteAsync(
+                (a, ct) => LoopUntilMethod(method, a, ct), cancellationToken);
+        }
+
+        private async Task LoopUntilMethod(Func<ActivityLoopUntilTrue, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
+        {
             EndLoop = null;
             do
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(method, instance, ct), cancellationToken);
+                 await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
         }
 
-        private Task MapMethod(
+        private Task MapMethodAsync(
             Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
             Activity instance, CancellationToken cancellationToken)
         {
@@ -79,21 +85,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
+            return await ActivityExecutor.ExecuteAsync(
+                (a, ct) => LoopUntilMethod(method, a, ct),
+                _getDefaultValueMethodAsync, cancellationToken);
+        }
+
+        private async Task<TActivityReturns> LoopUntilMethod(Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
+        {
             EndLoop = null;
             TActivityReturns result;
             do
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                result = await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(method, instance, ct),
-                    _getDefaultValueMethodAsync, cancellationToken);
+                result = await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
             } while (EndLoop != true);
 
             return result;
         }
 
-        private Task<TActivityReturns> MapMethod(
+        private Task<TActivityReturns> MapMethodAsync(
             Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             Activity instance, CancellationToken cancellationToken)
         {

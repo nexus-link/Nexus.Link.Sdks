@@ -31,12 +31,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             foreach (var item in Items)
             {
-                await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
+                await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
                     cancellationToken);
             }
         }
 
-        private Task MapMethod(
+        private Task MapMethodAsync(
             TItemType item,
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             Activity instance, CancellationToken cancellationToken)
@@ -71,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var resultList = new List<TActivityReturns>();
             foreach (var item in Items)
             {
-                var result = await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(item, method, instance, ct),
+                var result = await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
                                     _getDefaultValueMethodAsync, cancellationToken);
                 resultList.Add(result);
             }
@@ -79,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return resultList;
         }
 
-        private Task<TActivityReturns> MapMethod(
+        private Task<TActivityReturns> MapMethodAsync(
             TItemType item,
             Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             Activity instance, CancellationToken cancellationToken)

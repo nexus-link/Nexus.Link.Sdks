@@ -24,10 +24,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<Activity, CancellationToken, Task<TActivityReturns>> conditionMethodAsync,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync((instance, ct) => MapMethod(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
+            return ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private static Task<TActivityReturns> MapMethod(
+        private static Task<TActivityReturns> MapMethodAsync(
             Func<ActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             Activity instance, CancellationToken cancellationToken)
         {
