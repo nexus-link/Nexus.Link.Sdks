@@ -20,9 +20,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Activity previousActivity, Activity parentActivity)
             : base(activityInformation, activityExecutor, parentActivity)
         {
-            Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachSequential, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            Items = items;
+            Iteration = 0;
         }
 
         public async Task ExecuteAsync(
@@ -31,6 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             foreach (var item in Items)
             {
+                Iteration++;
                 await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
                     cancellationToken);
             }
@@ -58,10 +60,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, activityExecutor, parentActivity)
         {
-            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            Items = items;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachSequential, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
+            Items = items;
+            Iteration = 0;
         }
 
         public async Task<List<TActivityReturns>> ExecuteAsync(
@@ -71,6 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             var resultList = new List<TActivityReturns>();
             foreach (var item in Items)
             {
+                Iteration++;
                 var result = await ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
                                     _getDefaultValueMethodAsync, cancellationToken);
                 resultList.Add(result);

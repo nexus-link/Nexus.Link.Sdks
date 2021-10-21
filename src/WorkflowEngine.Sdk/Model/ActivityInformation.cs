@@ -107,6 +107,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 ParentActivityInstanceId = ParentActivity?.InstanceId,
                 ParentIteration = ParentActivity?.Iteration
             };
+            if (ParentActivity != null)
+            {
+                switch (ParentActivity.ActivityType)
+                {
+                    case WorkflowActivityTypeEnum.Action:
+                    case WorkflowActivityTypeEnum.Condition:
+                        break;
+                    case WorkflowActivityTypeEnum.LoopUntilTrue:
+                    case WorkflowActivityTypeEnum.ForEachParallel:
+                    case WorkflowActivityTypeEnum.ForEachSequential:
+                        FulcrumAssert.IsNotNull(ParentActivity.Iteration, CodeLocation.AsString());
+                        break;
+                    default:
+                        FulcrumAssert.Fail(CodeLocation.AsString(), $"Unknown activity type: {ParentActivity.ActivityType}.");
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
             var activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {
