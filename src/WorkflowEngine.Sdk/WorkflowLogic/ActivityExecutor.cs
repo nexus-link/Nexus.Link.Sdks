@@ -87,6 +87,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             try
             {
+                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
+                if (ActivityInformation.State != ActivityStateEnum.Failed) return;
+
                 if (!ActivityInformation.Result.ExceptionAlertHandled.HasValue || !ActivityInformation.Result.ExceptionAlertHandled.Value)
                 {
                     if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
@@ -111,7 +114,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                         }
                     }
                 }
-                await ActivityInformation.UpdateInstanceWithResultAsync(cancellationToken);
             }
             catch (Exception)
             {
