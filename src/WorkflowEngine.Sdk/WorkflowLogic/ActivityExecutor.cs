@@ -87,27 +87,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             try
             {
-                if (!ActivityInformation.Result.ExceptionAlertHandled.HasValue || !ActivityInformation.Result.ExceptionAlertHandled.Value)
+                if (ActivityInformation.State == ActivityStateEnum.Failed)
                 {
-                    if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
+
+
+                    if (!ActivityInformation.Result.ExceptionAlertHandled.HasValue ||
+                        !ActivityInformation.Result.ExceptionAlertHandled.Value)
                     {
-                        FulcrumAssert.IsNotNull(ActivityInformation.Result.ExceptionCategory, CodeLocation.AsString());
-                        var alert = new ActivityExceptionAlert
+                        if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
                         {
-                            WorkflowInstanceId = ActivityInformation.WorkflowInformation.InstanceId,
-                            ActivityInstanceId = ActivityInformation.InstanceId,
-                            ExceptionCategory = ActivityInformation.Result.ExceptionCategory!.Value,
-                            ExceptionFriendlyMessage = ActivityInformation.Result.ExceptionFriendlyMessage,
-                            ExceptionTechnicalMessage = ActivityInformation.Result.ExceptionTechnicalMessage
-                        };
-                        try
-                        {
-                            var handled = await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
-                            ActivityInformation.Result.ExceptionAlertHandled = handled;
-                        }
-                        catch (Exception)
-                        {
-                            // We will try again next reentry.
+                            FulcrumAssert.IsNotNull(ActivityInformation.Result.ExceptionCategory,
+                                CodeLocation.AsString());
+                            var alert = new ActivityExceptionAlert
+                            {
+                                WorkflowInstanceId = ActivityInformation.WorkflowInformation.InstanceId,
+                                ActivityInstanceId = ActivityInformation.InstanceId,
+                                ExceptionCategory = ActivityInformation.Result.ExceptionCategory!.Value,
+                                ExceptionFriendlyMessage = ActivityInformation.Result.ExceptionFriendlyMessage,
+                                ExceptionTechnicalMessage = ActivityInformation.Result.ExceptionTechnicalMessage
+                            };
+                            try
+                            {
+                                var handled =
+                                    await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
+                                ActivityInformation.Result.ExceptionAlertHandled = handled;
+                            }
+                            catch (Exception)
+                            {
+                                // We will try again next reentry.
+                            }
                         }
                     }
                 }

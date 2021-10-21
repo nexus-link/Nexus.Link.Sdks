@@ -95,7 +95,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
             _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
             await _workflowInformation.PersistAsync(cancellationToken);
-            AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
         }
     }
 
@@ -118,6 +117,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
         {
             await InternalExecuteAsync(cancellationToken);
+            AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
             return await ExecuteWorkflowAsync(cancellationToken);
         }
 
@@ -144,6 +144,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             await InternalExecuteAsync(cancellationToken);
+            AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
             await ExecuteWorkflowAsync(cancellationToken);
         }
 
