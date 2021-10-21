@@ -22,10 +22,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityAction, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync((instance, t) => MapMethod(method, instance, t), cancellationToken);
+            return ActivityExecutor.ExecuteAsync((instance, t) => MapMethodAsync(method, instance, t), cancellationToken);
         }
 
-        private Task MapMethod(
+        private Task MapMethodAsync(
             Func<ActivityAction, CancellationToken, Task> method, 
             Activity instance, CancellationToken cancellationToken)
         {
@@ -51,10 +51,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync((instance, t) => MapMethod(method, instance, t), _getDefaultValueMethodAsync, cancellationToken);
+            return ActivityExecutor.ExecuteAsync((instance, t) => MapMethodAsync(method, instance, t), _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private Task<TActivityReturns> MapMethod(
+        private Task<TActivityReturns> MapMethodAsync(
             Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             Activity instance, CancellationToken cancellationToken)
         {

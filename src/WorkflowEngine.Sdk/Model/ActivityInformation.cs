@@ -25,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public WorkflowActivityTypeEnum ActivityType { get; }
         public ActivityInformation PreviousActivity { get; }
         public ActivityInformation ParentActivity { get; }
-        public int? Iteration { get; set; }
+        public int? ParentIteration { get; set; }
         public string FormId { get; set; }
         public string VersionId { get; set; }
         public string InstanceId { get; set; }
@@ -44,7 +44,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public ActivityInformation(WorkflowInformation workflowInformation,
             MethodHandler methodHandler, int position, WorkflowActivityTypeEnum activityType,
             ActivityInformation previousActivity,
-            ActivityInformation parentActivity)
+            ActivityInformation parentActivity, int? parentIteration)
         {
             WorkflowInformation = workflowInformation;
             WorkflowCapability = workflowInformation.WorkflowCapability;
@@ -53,6 +53,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             PreviousActivity = previousActivity;
             Position = position;
             ParentActivity = parentActivity;
+            ParentIteration = parentIteration;
             NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
             State = ActivityStateEnum.Started;
             FailUrgency = ActivityFailUrgencyEnum.Stopping;
@@ -105,8 +106,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 WorkflowInstanceId = WorkflowInformation.InstanceId,
                 ActivityVersionId = VersionId,
                 ParentActivityInstanceId = ParentActivity?.InstanceId,
-                ParentIteration = ParentActivity?.Iteration
+                ParentIteration = ParentIteration
             };
+            if (ParentActivity != null)
+            {
+                switch (ParentActivity.ActivityType)
+                {
+                    case WorkflowActivityTypeEnum.Action:
+                    case WorkflowActivityTypeEnum.Condition:
+                        break;
+                    case WorkflowActivityTypeEnum.LoopUntilTrue:
+                    case WorkflowActivityTypeEnum.ForEachParallel:
+                    case WorkflowActivityTypeEnum.ForEachSequential:
+                        FulcrumAssert.IsNotNull(ParentIteration, CodeLocation.AsString());
+                        break;
+                    default:
+                        FulcrumAssert.Fail(CodeLocation.AsString(), $"Unknown activity type: {ParentActivity.ActivityType}.");
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
             var activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {

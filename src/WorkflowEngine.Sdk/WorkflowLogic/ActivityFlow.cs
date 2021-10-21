@@ -41,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         protected ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
         {
             var activityInformation = new ActivityInformation(WorkflowInformation, MethodHandler, 1,
-                activityType, Previous?.ActivityInformation, Parent?.ActivityInformation)
+                activityType, Previous?.ActivityInformation, Parent?.ActivityInformation, Parent?.Iteration)
             {
                 FormId = ActivityFormId,
                 FormTitle = FormTitle
