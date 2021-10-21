@@ -44,7 +44,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _workflowVersionMock = new Mock<IWorkflowVersionBase>();
             _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
             _activityInformation = new ActivityInformation(workflowInformation, new MethodHandler("Activity"), 1,
-                WorkflowActivityTypeEnum.Action, null, null)
+                WorkflowActivityTypeEnum.Action, null, null, null)
             {
                 FormId = "0D759290-9F93-4B3A-8333-76019DE227CF",
                 FormTitle = "Form title",
