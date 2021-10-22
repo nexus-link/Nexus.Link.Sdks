@@ -68,7 +68,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
 
         public async Task<List<TActivityReturns>> ExecuteAsync(
-            Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
+            Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
             var resultList = new List<TActivityReturns>();
@@ -85,10 +85,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         private Task<TActivityReturns> MapMethodAsync(
             TItemType item,
-            Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
+            Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             Activity instance, CancellationToken cancellationToken)
         {
-            var loop = instance as ActivityForEachParallel<TActivityReturns, TItemType>;
+            var loop = instance as ActivityForEachSequential<TActivityReturns, TItemType>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
             return method(item, loop, cancellationToken);
         }

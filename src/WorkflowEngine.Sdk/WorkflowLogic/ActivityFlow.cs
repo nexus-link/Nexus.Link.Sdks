@@ -202,11 +202,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
         
         /// <inheritdoc/>
-        public ActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        public ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
+            return activity;
+        }
+        
+        /// <inheritdoc/>
+        public ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        {
+            var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
+            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
             return activity;
         }
         

@@ -30,12 +30,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
+            await ActivityExecutor.ExecuteAsync(
+                (a, ct) => LoopUntilMethod(method, a, ct),
+                cancellationToken);
+        }
+
+        private async Task LoopUntilMethod(Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
+        {
             var taskList = new List<Task>();
             foreach (var item in Items)
             {
                 Iteration++;
-                var task = ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
-                    cancellationToken);
+                var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskList.Add(task);
             }
             
@@ -81,76 +87,106 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         }
     }
 
-    public class ActivityForEachParallel<TActivityReturns, TItemType> : Activity
+    public class ActivityForEachParallel<TActivityReturns, TItem, TKey> : Activity
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
-        public IEnumerable<TItemType> Items { get; }
+        public IEnumerable<TItem> Items { get; }
+
+        public Func<TItem, TKey> GetKeyMethod;
 
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityInformation activityInformation,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            IActivityExecutor activityExecutor, IEnumerable<TItem> items, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation, activityExecutor, parentActivity)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.ForEachParallel, ActivityInformation.ActivityType, "Ignore",
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItem>)}.");
+            if (typeof(TKey).IsAssignableFrom(typeof(TItem)))
+            {
+                GetKeyMethod = item => (TKey) (object) item;
+            }
         }
 
-        public async Task<List<Task<TActivityReturns>>> ExecuteAsync(
-            Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
+        public ActivityForEachParallel<TActivityReturns, TItem, TKey> SetGetKeyMethod(Func<TItem, TKey> method)
+        {
+            GetKeyMethod = method;
+            return this;
+        }
+
+        public Task<IDictionary<TKey, TActivityReturns>> ExecuteAsync(
+            Func<TItem, ActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            var taskList = new List<Task<TActivityReturns>>();
+            return ActivityExecutor.ExecuteAsync(
+                (a, ct) => LoopUntilMethod(method, a, ct),
+                (ct) =>  null, cancellationToken);
+        }
+
+        private Task<IDictionary<TKey, TActivityReturns>> LoopUntilMethod(Func<TItem,
+                ActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method, 
+            Activity activity, CancellationToken cancellationToken)
+        {
+            InternalContract.Require(GetKeyMethod != null, $"You must call {nameof(SetGetKeyMethod)} before you call the {nameof(ExecuteAsync)} method.");
+            var taskDictionary = new Dictionary<TKey, Task<TActivityReturns>>();
             foreach (var item in Items)
             {
                 Iteration++;
-                var task = ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(item, method, instance, ct),
-                    _getDefaultValueMethodAsync, cancellationToken);
-                taskList.Add(task);
-            }
-            return await AggregatePostponeExceptions(taskList);
-        }
-
-        private static async Task<List<Task<TActivityReturns>>> AggregatePostponeExceptions(List<Task<TActivityReturns>> taskList)
-        {
-            HandledRequestPostponedException outException = null;
-            var current = 0;
-            while (taskList.Count > current)
-            {
+                TKey key = default;
                 try
                 {
-                    await taskList[current];
-                    current++;
+                    key = GetKeyMethod!(item);
+                }
+                catch (Exception e)
+                {
+                    InternalContract.Require(false, $"The {nameof(GetKeyMethod)} method failed. You must make it safe, so that it never fails.");
+                }
+                InternalContract.Require(key != null, $"The {nameof(GetKeyMethod)} method must not return null.");
+                var task = MapMethodAsync(item, method, activity, cancellationToken);
+                taskDictionary.Add(key!, task);
+            }
+            return AggregatePostponeExceptions(taskDictionary);
+        }
+
+        private Task<TActivityReturns> MapMethodAsync(
+            TItem item,
+            Func<TItem, ActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
+            Activity instance, CancellationToken cancellationToken)
+        {
+            var loop = instance as ActivityForEachParallel<TActivityReturns, TItem, TKey>;
+            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
+            return method(item, loop, cancellationToken);
+        }
+
+        private static async Task<IDictionary<TKey, TActivityReturns>> AggregatePostponeExceptions(IDictionary<TKey, Task<TActivityReturns>> taskDictionary)
+        {
+            HandledRequestPostponedException outException = null;
+            var resultDictionary = new Dictionary<TKey, TActivityReturns>();
+            foreach (var (key, task) in taskDictionary)
+            {
+                
+                try
+                {
+                    var result = await task;
+                    resultDictionary.Add(key, result);
                 }
                 catch (HandledRequestPostponedException e)
                 {
                     outException ??= new HandledRequestPostponedException();
                     outException.AddWaitingForIds(e.WaitingForRequestIds);
                     if (!outException.TryAgain) outException.TryAgain = e.TryAgain;
-                    taskList.RemoveAt(current);
                 }
                 catch (Exception)
                 {
-                    current++;
+                    // TODO: Do we need to handle this in some way?
                 }
             }
 
             if (outException != null) throw outException;
-            await Task.WhenAll(taskList);
-            return taskList;
-        }
-
-        private Task<TActivityReturns> MapMethodAsync(
-            TItemType item,
-            Func<TItemType, ActivityForEachParallel<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
-            Activity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as ActivityForEachParallel<TActivityReturns, TItemType>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
+            return resultDictionary;
         }
     }
 }
