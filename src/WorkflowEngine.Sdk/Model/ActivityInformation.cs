@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -23,8 +24,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public WorkflowInformation WorkflowInformation { get; }
         public MethodHandler MethodHandler { get; }
         public WorkflowActivityTypeEnum ActivityType { get; }
-        public ActivityInformation PreviousActivity { get; }
-        public ActivityInformation ParentActivity { get; }
+        public string PreviousActivityId { get; }
+        public string ParentActivityId { get; }
         public int? ParentIteration { get; set; }
         public string FormId { get; set; }
         public string VersionId { get; set; }
@@ -42,19 +43,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             State == ActivityStateEnum.Success || State == ActivityStateEnum.Failed;
 
         public ActivityInformation(WorkflowInformation workflowInformation,
-            MethodHandler methodHandler, int position, WorkflowActivityTypeEnum activityType,
-            ActivityInformation previousActivity,
-            ActivityInformation parentActivity, int? parentIteration)
+            MethodHandler methodHandler, int position, WorkflowActivityTypeEnum activityType)
         {
             WorkflowInformation = workflowInformation;
             WorkflowCapability = workflowInformation.WorkflowCapability;
             MethodHandler = methodHandler;
             ActivityType = activityType;
-            PreviousActivity = previousActivity;
             Position = position;
-            ParentActivity = parentActivity;
-            ParentIteration = parentIteration;
-            NestedPosition = parentActivity == null ? Position.ToString() : $"{parentActivity.NestedPosition}.{Position}";
+            PreviousActivityId = AsyncWorkflowStatic.Context.LatestActivityInstanceId;
+            ParentActivityId = AsyncWorkflowStatic.Context.ParentActivityInstanceId;
+            ActivityInformation parentActivityInformation = null;
+            if (ParentActivityId != null)
+            {
+                var parentActivity = WorkflowInformation.GetActivity(ParentActivityId);
+                parentActivityInformation = WorkflowInformation.GetActivityInformation(ParentActivityId);
+                FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
+                ParentIteration = parentActivity?.Iteration;
+            }
+            
+            NestedPosition = parentActivityInformation == null ? Position.ToString() : $"{parentActivityInformation.NestedPosition}.{Position}";
             State = ActivityStateEnum.Started;
             FailUrgency = ActivityFailUrgencyEnum.Stopping;
         }
@@ -68,15 +75,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             VersionId = await PersistActivityVersion(cancellationToken);
             await PersistTransitionAsync(cancellationToken);
             InstanceId = await PersistActivityInstance(cancellationToken);
+            WorkflowInformation.LatestActivityInstanceId = InstanceId;
             await MethodHandler.PersistActivityParametersAsync(WorkflowCapability, VersionId, cancellationToken);
         }
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
         {
+            var previousActivityInformation = WorkflowInformation.GetActivityInformation(PreviousActivityId);
             var searchItem = new TransitionUnique
             {
                 WorkflowVersionId = WorkflowInformation.VersionId,
-                FromActivityVersionId = PreviousActivity?.VersionId,
+                FromActivityVersionId = previousActivityInformation?.VersionId,
                 ToActivityVersionId = VersionId
             };
             var transition = await WorkflowCapability.Transition.FindUniqueAsync(WorkflowInformation.VersionId, searchItem, cancellationToken);
@@ -85,7 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 var createItem = new TransitionCreate
                 {
                     WorkflowVersionId = WorkflowInformation.VersionId,
-                    FromActivityVersionId = PreviousActivity?.VersionId,
+                    FromActivityVersionId = previousActivityInformation?.VersionId,
                     ToActivityVersionId = VersionId
                 };
                 try
@@ -101,16 +110,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task<string> PersistActivityInstance(CancellationToken cancellationToken)
         {
-            var findUnique = new ActivityInstanceUnique
+            var parentActivityInformation = WorkflowInformation.GetActivityInformation(ParentActivityId);
+            if (parentActivityInformation != null)
             {
-                WorkflowInstanceId = WorkflowInformation.InstanceId,
-                ActivityVersionId = VersionId,
-                ParentActivityInstanceId = ParentActivity?.InstanceId,
-                ParentIteration = ParentIteration
-            };
-            if (ParentActivity != null)
-            {
-                switch (ParentActivity.ActivityType)
+                switch (parentActivityInformation.ActivityType)
                 {
                     case WorkflowActivityTypeEnum.Action:
                     case WorkflowActivityTypeEnum.Condition:
@@ -121,11 +124,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                         FulcrumAssert.IsNotNull(ParentIteration, CodeLocation.AsString());
                         break;
                     default:
-                        FulcrumAssert.Fail(CodeLocation.AsString(), $"Unknown activity type: {ParentActivity.ActivityType}.");
+                        FulcrumAssert.Fail(CodeLocation.AsString(), $"Unknown activity type: {parentActivityInformation.ActivityType}.");
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
+            var findUnique = new ActivityInstanceUnique
+            {
+                WorkflowInstanceId = WorkflowInformation.InstanceId,
+                ActivityVersionId = VersionId,
+                ParentActivityInstanceId = parentActivityInformation?.InstanceId,
+                ParentIteration = ParentIteration
+            };
             var activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
             if (activityInstance == null)
             {
@@ -167,6 +177,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task<string> PersistActivityVersion(CancellationToken cancellationToken)
         {
+            var parentActivityInformation = WorkflowInformation.GetActivityInformation(ParentActivityId);
             var workflowVersionId = WorkflowInformation.VersionId;
             var activityVersion =
                 await WorkflowCapability.ActivityVersion.FindUniqueAsync(workflowVersionId, FormId, cancellationToken);
@@ -176,7 +187,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 {
                     WorkflowVersionId = workflowVersionId,
                     ActivityFormId = FormId,
-                    ParentActivityVersionId = ParentActivity?.VersionId,
+                    ParentActivityVersionId = parentActivityInformation?.VersionId,
                     Position = Position
                 };
                 try

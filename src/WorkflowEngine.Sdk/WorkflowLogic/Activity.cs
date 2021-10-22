@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
@@ -20,8 +21,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public IActivityExecutor ActivityExecutor { get; }
 
         protected internal ActivityInformation ActivityInformation { get; }
-        protected Activity ParentActivity { get; }
-        // TODO: Should be nullable instead of relying on value 0
         public int? Iteration { get; protected set; }
 
         public string Title
@@ -40,8 +39,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public List<int> NestedIterations { get; } = new();
 
         protected Activity(ActivityInformation activityInformation,
-            IActivityExecutor activityExecutor,
-            Activity parentActivity)
+            IActivityExecutor activityExecutor)
         {
             InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
 
@@ -49,15 +47,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             ActivityExecutor.Activity = this;
             
             ActivityInformation = activityInformation;
-            ParentActivity = parentActivity;
 
             activityInformation.MethodHandler.InstanceTitle = activityInformation.NestedPositionAndTitle;
-            if (ParentActivity != null)
+            if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
             {
-                NestedIterations.AddRange(ParentActivity.NestedIterations);
-                if (ParentActivity.Iteration is > 0)
+                var parentActivity =
+                    ActivityInformation.WorkflowInformation.GetActivity(AsyncWorkflowStatic.Context
+                        .ParentActivityInstanceId);
+                NestedIterations.AddRange(parentActivity.NestedIterations);
+                if (parentActivity.Iteration is > 0)
                 {
-                    NestedIterations.Add(ParentActivity.Iteration.Value);
+                    NestedIterations.Add(parentActivity.Iteration.Value);
                 }
             }
         }

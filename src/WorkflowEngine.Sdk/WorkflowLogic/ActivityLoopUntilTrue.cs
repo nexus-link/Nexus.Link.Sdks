@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -11,12 +12,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public abstract class ActivityLoopUntilTrueBase : Activity
     {
-        private readonly Dictionary<string, object> _loopArguments = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _loopArguments = new();
 
         public bool? EndLoop { get; set; }
 
-        protected ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity)
-            : base(activityInformation, activityExecutor, parentActivity)
+        protected ActivityLoopUntilTrueBase(ActivityInformation activityInformation, IActivityExecutor activityExecutor)
+            : base(activityInformation, activityExecutor)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.LoopUntilTrue, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
@@ -37,8 +38,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     
     public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase
     {
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity)
-            : base(activityInformation, activityExecutor, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor)
+            : base(activityInformation, activityExecutor)
         {
         }
 
@@ -52,6 +53,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         private async Task LoopUntilMethod(Func<ActivityLoopUntilTrue, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
         {
+            FulcrumAssert.IsNotNull(ActivityInformation.InstanceId, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityInformation.InstanceId;
             EndLoop = null;
             do
             {
@@ -59,6 +62,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // TODO: Verify that we don't use the same values each iteration
                  await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
+                FulcrumAssert.IsNotNull(ActivityInformation.InstanceId, CodeLocation.AsString());
+                ActivityInformation.WorkflowInformation.LatestActivityInstanceId = ActivityInformation.InstanceId;
             } while (EndLoop != true);
         }
 
@@ -75,8 +80,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, activityExecutor, parentActivity)
+        public ActivityLoopUntilTrue(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, activityExecutor)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
@@ -92,6 +97,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         private async Task<TActivityReturns> LoopUntilMethod(Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
         {
+            FulcrumAssert.IsNotNull(ActivityInformation.InstanceId, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityInformation.InstanceId;
             EndLoop = null;
             TActivityReturns result;
             do
@@ -100,6 +107,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // TODO: Verify that we don't use the same values each iteration
                 result = await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
+                FulcrumAssert.IsNotNull(ActivityInformation.InstanceId, CodeLocation.AsString());
+                ActivityInformation.WorkflowInformation.LatestActivityInstanceId = ActivityInformation.InstanceId;
             } while (EndLoop != true);
 
             return result;

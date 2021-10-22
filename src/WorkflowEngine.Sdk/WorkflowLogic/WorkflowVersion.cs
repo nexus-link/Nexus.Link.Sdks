@@ -62,6 +62,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowInformation.LatestActivityInstanceId;
+
             return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
         }
 
@@ -69,6 +71,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowInformation.LatestActivityInstanceId;
 
             return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
         }

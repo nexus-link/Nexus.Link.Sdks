@@ -11,8 +11,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     public class ActivityAction : Activity
     {
         public ActivityAction(ActivityInformation activityInformation,
-            IActivityExecutor activityExecutor, Activity parentActivity)
-            : base(activityInformation, activityExecutor, parentActivity)
+            IActivityExecutor activityExecutor)
+            : base(activityInformation, activityExecutor)
         {
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
@@ -40,8 +40,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
         public ActivityAction(ActivityInformation activityInformation,
-            IActivityExecutor activityExecutor, Activity parentActivity, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, activityExecutor, parentActivity)
+            IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation, activityExecutor)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",

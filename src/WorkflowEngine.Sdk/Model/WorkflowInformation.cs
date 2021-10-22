@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
@@ -32,9 +36,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         // Instance
         public string InstanceId { get; set; }
         public string InstanceTitle { get; set; }
+        
+        private readonly Dictionary<string, Activity> _activities = new Dictionary<string, Activity>();
 
         public string VersionTitle => $"{FormTitle} {MajorVersion}.{MinorVersion}";
+        public string LatestActivityInstanceId { get; set; }
 
+        public void AddActivity(string activityId, Activity activity)
+        {
+            var success = _activities.TryAdd(activityId, activity);
+            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
+        }
+
+        public Activity GetActivity(string activityId)
+        {
+            if (activityId == null) return null;
+            var success = _activities.TryGetValue(activityId, out var activity);
+            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
+            return activity;
+        }
+
+        public ActivityInformation GetActivityInformation(string activityId)
+        {
+            var activity = GetActivity(activityId);
+            return activity?.ActivityInformation;
+        }
 
         public async Task PersistAsync(CancellationToken cancellationToken)
         {

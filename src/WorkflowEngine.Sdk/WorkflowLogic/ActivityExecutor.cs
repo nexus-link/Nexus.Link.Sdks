@@ -283,6 +283,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             try
             {
                 await ActivityInformation.PersistAsync(cancellationToken);
+                FulcrumAssert.IsNotNull(ActivityInformation.InstanceId, CodeLocation.AsString());
+                ActivityInformation.WorkflowInformation.AddActivity(ActivityInformation.InstanceId, Activity);
             }
             catch (Exception)
             {

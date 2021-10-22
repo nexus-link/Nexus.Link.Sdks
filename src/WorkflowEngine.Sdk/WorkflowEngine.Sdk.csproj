@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.0.11-rc01" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="1.1.0-alfa02" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.7.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.8.0" />
@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.8.3-rc01</Version>
+    <Version>1.9.0-alfa05</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.9.0 Made SetParent and SetPrevious obsolete
       1.8.3 Refactored ActivityForEachParallel
       1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
       1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.

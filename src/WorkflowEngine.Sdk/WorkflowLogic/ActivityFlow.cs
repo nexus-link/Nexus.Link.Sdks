@@ -21,7 +21,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         protected readonly string ActivityFormId;
         protected readonly MethodHandler MethodHandler;
         protected readonly string FormTitle;
+        [Obsolete("No need anymore")]
         protected Activity Parent;
+        [Obsolete("No need anymore")]
         protected Activity Previous;
         protected ActivityFailUrgencyEnum FailUrgency;
 
@@ -41,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         protected ActivityInformation CreateActivityInformation(WorkflowActivityTypeEnum activityType)
         {
             var activityInformation = new ActivityInformation(WorkflowInformation, MethodHandler, 1,
-                activityType, Previous?.ActivityInformation, Parent?.ActivityInformation, Parent?.Iteration)
+                activityType)
             {
                 FormId = ActivityFormId,
                 FormTitle = FormTitle
@@ -66,6 +68,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             MethodHandler.SetParameter(name, value);
             return this;
         }
+        [Obsolete("No need anymore")]
 
         public IActivityFlow SetParent(Activity parent)
         {
@@ -73,6 +76,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return this;
         }
 
+        [Obsolete("No need anymore")]
         public IActivityFlow SetPrevious(Activity previous)
         {
             Previous = previous;
@@ -91,7 +95,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityAction( activityInformation, activityExecutor, Parent);
+            var activity = new ActivityAction( activityInformation, activityExecutor);
             return activity;
         }
         
@@ -100,7 +104,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityLoopUntilTrue(activityInformation, activityExecutor, Parent);
+            var activity = new ActivityLoopUntilTrue(activityInformation, activityExecutor);
             return activity;
         }
         
@@ -109,7 +113,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TItem>(activityInformation, activityExecutor, items, Parent);
+            var activity = new ActivityForEachParallel<TItem>(activityInformation, activityExecutor, items);
             return activity;
         }
         
@@ -118,7 +122,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachSequential<TItem>(activityInformation, activityExecutor, items, Previous, Parent);
+            var activity = new ActivityForEachSequential<TItem>(activityInformation, activityExecutor, items);
             return activity;
         }
     }
@@ -178,7 +182,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.Action);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityAction<TActivityReturns>(activityInformation, activityExecutor, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityAction<TActivityReturns>(activityInformation, activityExecutor, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -197,7 +201,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.LoopUntilTrue);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, activityExecutor, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, activityExecutor, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -206,7 +210,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -215,7 +219,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -224,7 +228,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             var activityInformation = CreateActivityInformation(WorkflowActivityTypeEnum.ForEachParallel);
             var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, activityExecutor, items, Parent, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
             return activity;
         }
     }
