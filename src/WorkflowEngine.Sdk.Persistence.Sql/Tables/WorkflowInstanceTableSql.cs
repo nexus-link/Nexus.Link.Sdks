@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, WorkflowInstanceRecord>, IWorkflowInstanceTable
     {
-        public WorkflowInstanceTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public WorkflowInstanceTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "WorkflowInstance",
             CreatedAtColumnName = nameof(WorkflowInstanceRecord.RecordCreatedAt),

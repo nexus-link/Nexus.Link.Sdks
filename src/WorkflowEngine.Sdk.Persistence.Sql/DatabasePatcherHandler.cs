@@ -16,28 +16,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             var traceLog = new StringBuilder();
             try
             {
-                using (var connection = new SqlConnection(connectionString))
-                using (var writer = new StringWriter(traceLog))
-                using (var traceListener = new TextWriterTraceListener(writer))
+                using var connection = new SqlConnection(connectionString);
+                using var writer = new StringWriter(traceLog);
+                using var traceListener = new TextWriterTraceListener(writer);
+                var patcher = new Patcher(connection, GetBaseDir())
+                    .WithCreateVersionTablesIfMissing(true)
+                    .WithTraceListener(traceListener)
+                    .WithHandleRollbacks(sincePatchNumber: 2);
+                if (!string.IsNullOrWhiteSpace(masterConnectionString))
                 {
-                    var patcher = new Patcher(connection, GetBaseDir())
-                        .WithCreateVersionTablesIfMissing(true)
-                        .WithTraceListener(traceListener)
-                        .WithHandleRollbacks(2);
-                    if (!string.IsNullOrWhiteSpace(masterConnectionString))
-                    {
-                        var masterConnection = new SqlConnection(masterConnectionString);
-                        patcher.WithMasterConnectionToCreateDatabaseIfmissingExperimental(masterConnection,
-                            "SQL_Latin1_General_CP1_CI_AS");
-                    }
-
-                    patcher.Execute();
+                    var masterConnection = new SqlConnection(masterConnectionString);
+                    patcher.WithMasterConnectionToCreateDatabaseIfmissingExperimental(masterConnection, "SQL_Latin1_General_CP1_CI_AS");
                 }
+
+                patcher.Execute();
             }
             catch (Exception e)
             {
-                throw new FulcrumAssertionFailedException(
-                    $"[{nameof(DatabasePatcherHandler)}] Database patching failed: {traceLog}", e);
+                throw new FulcrumAssertionFailedException($"[{nameof(DatabasePatcherHandler)}] Database patching failed: {traceLog}", e);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+﻿using Nexus.Link.Libraries.SqlServer;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
 
@@ -6,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
     public class RuntimeTablesSql : IRuntimeTables
     {
-        public RuntimeTablesSql(string connectionString)
+        public RuntimeTablesSql(IDatabaseOptions options)
         {
-            WorkflowInstance = new WorkflowInstanceTableSql(connectionString);
-            ActivityInstance = new ActivityInstanceTableSql(connectionString);
+            WorkflowInstance = new WorkflowInstanceTableSql(options);
+            ActivityInstance = new ActivityInstanceTableSql(options);
         }
 
         /// <inheritdoc />

@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class ActivityVersionParameterTableSql : CrudSql<ActivityVersionParameterRecordCreate, ActivityVersionParameterRecord>, IActivityVersionParameterTable
     {
-        public ActivityVersionParameterTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public ActivityVersionParameterTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "ActivityVersionParameter",
             CreatedAtColumnName = nameof(ActivityVersionParameterRecord.RecordCreatedAt),

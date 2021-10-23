@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class ActivityFormTableSql : CrudSql<ActivityFormRecordCreate, ActivityFormRecord>, IActivityFormTable
     {
-        public ActivityFormTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public ActivityFormTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "ActivityForm",
             CreatedAtColumnName = nameof(ActivityFormRecord.RecordCreatedAt),

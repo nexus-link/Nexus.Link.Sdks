@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class ActivityInstanceTableSql : CrudSql<ActivityInstanceRecordCreate, ActivityInstanceRecord>, IActivityInstanceTable
     {
-        public ActivityInstanceTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public ActivityInstanceTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "ActivityInstance",
             CreatedAtColumnName = nameof(ActivityInstanceRecord.RecordCreatedAt),

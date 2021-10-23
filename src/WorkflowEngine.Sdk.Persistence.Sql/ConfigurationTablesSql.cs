@@ -1,4 +1,5 @@
-﻿using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+﻿using Nexus.Link.Libraries.SqlServer;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
 
@@ -6,15 +7,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
     public class ConfigurationTablesSql : IConfigurationTables
     {
-        public ConfigurationTablesSql(string connectionString)
+        public ConfigurationTablesSql(IDatabaseOptions options)
         {
-            WorkflowForm = new WorkflowFormTableSql(connectionString);
-            WorkflowVersion = new WorkflowVersionTableSql(connectionString);
-            WorkflowVersionParameter = new WorkflowVersionParameterTableSql(connectionString);
-            ActivityVersionParameter = new ActivityVersionParameterTableSql(connectionString);
-            ActivityForm = new ActivityFormTableSql(connectionString);
-            ActivityVersion = new ActivityVersionTableSql(connectionString);
-            Transition = new TransitionTableSql(connectionString);
+            WorkflowForm = new WorkflowFormTableSql(options);
+            WorkflowVersion = new WorkflowVersionTableSql(options);
+            WorkflowVersionParameter = new WorkflowVersionParameterTableSql(options);
+            ActivityVersionParameter = new ActivityVersionParameterTableSql(options);
+            ActivityForm = new ActivityFormTableSql(options);
+            ActivityVersion = new ActivityVersionTableSql(options);
+            Transition = new TransitionTableSql(options);
         }
         /// <inheritdoc />
         public IWorkflowFormTable WorkflowForm { get; }

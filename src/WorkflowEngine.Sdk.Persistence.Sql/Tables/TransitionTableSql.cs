@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class TransitionTableSql : CrudSql<TransitionRecordCreate, TransitionRecord>, ITransitionTable
     {
-        public TransitionTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public TransitionTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "Transition",
             CreatedAtColumnName = nameof(TransitionRecord.RecordCreatedAt),

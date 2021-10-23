@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
-using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
@@ -87,7 +87,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
                 ActivityVersionId = activityVersionId,
                 StartedAt = DateTimeOffset.Now,
                 WorkflowInstanceId = WorkflowInstanceRecord.Id,
-                ParentActivityInstanceId = parentActivityInstanceId
+                ParentActivityInstanceId = parentActivityInstanceId,
+                State = ActivityStateEnum.Started.ToString(),
+                FailUrgency = ActivityFailUrgencyEnum.Ignore.ToString()
             });
             return (activityForm.Id, activityVersionId, activityInstanceId);
         }

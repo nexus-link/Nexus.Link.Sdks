@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class WorkflowVersionTableSql : CrudSql<WorkflowVersionRecordCreate, WorkflowVersionRecord>, IWorkflowVersionTable
     {
-        public WorkflowVersionTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public WorkflowVersionTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "WorkflowVersion",
             CreatedAtColumnName = nameof(WorkflowVersionRecord.RecordCreatedAt),

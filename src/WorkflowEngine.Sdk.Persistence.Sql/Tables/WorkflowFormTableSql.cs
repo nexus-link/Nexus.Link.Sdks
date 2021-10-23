@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
     public class WorkflowFormTableSql : CrudSql<WorkflowFormRecordCreate, WorkflowFormRecord>, IWorkflowFormTable
     {
-        public WorkflowFormTableSql(string connectionString) : base(connectionString, new SqlTableMetadata
+        public WorkflowFormTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
             TableName = "WorkflowForm",
             CreatedAtColumnName = nameof(WorkflowFormRecord.RecordCreatedAt),

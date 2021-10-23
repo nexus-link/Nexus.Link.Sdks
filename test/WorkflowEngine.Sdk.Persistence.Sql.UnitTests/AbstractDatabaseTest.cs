@@ -6,6 +6,7 @@ using Dapper;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -14,10 +15,10 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 {
-    public abstract class AbstractDatabaseTest
+    public abstract class AbstractDatabaseTest : IDatabaseOptions
     {
         protected const string MasterConnectionString = "Server=localhost;Database=master;Trusted_Connection=True;";
-        protected const string ConnectionString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
+        private const string ConnString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
 
         protected static readonly Tenant Tenant = new Tenant("workflowenginesdk", "integrationtests");
 
@@ -26,22 +27,24 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         protected IConfigurationTables ConfigurationTables;
         protected IRuntimeTables RuntimeTables;
 
+        public string ConnectionString => ConnString;
+        public OnBeforeNewSqlConnectionAsync OnBeforeNewSqlConnectionAsync { get; } = null;
+
         static AbstractDatabaseTest()
         {
             FulcrumApplicationHelper.UnitTestSetup("Workflow engine database tests");
 
-            DropDatabase(ConnectionString);
-            DatabasePatcherHandler.PatchIfNecessary(ConnectionString, MasterConnectionString);
+            DropDatabase(ConnString);
+            DatabasePatcherHandler.PatchIfNecessary(ConnString, MasterConnectionString);
 
-            using var connection = new SqlConnection(ConnectionString);
+            using var connection = new SqlConnection(ConnString);
             connection.Execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
-
         }
 
         protected AbstractDatabaseTest()
         {
-            ConfigurationTables = new ConfigurationTablesSql(ConnectionString);
-            RuntimeTables = new RuntimeTablesSql(ConnectionString);
+            ConfigurationTables = new ConfigurationTablesSql(this);
+            RuntimeTables = new RuntimeTablesSql(this);
         }
 
         protected static void DropDatabase(string connectionString)
