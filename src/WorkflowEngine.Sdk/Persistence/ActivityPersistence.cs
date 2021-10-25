@@ -13,12 +13,12 @@ using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 {
-    public class ActivityInformation
+    public class ActivityPersistence
     {
         public IWorkflowCapability WorkflowCapability { get; }
-        public WorkflowInformation WorkflowInformation { get; }
+        public WorkflowPersistence WorkflowPersistence { get; }
 
         public Activity Activity { get; }
         private readonly Activity _storedActivity;
@@ -33,52 +33,52 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         public bool HasCompleted =>
             Activity?.Instance?.State == ActivityStateEnum.Success || Activity?.Instance?.State == ActivityStateEnum.Failed;
 
-        public ActivityInformation(WorkflowInformation workflowInformation,
+        public ActivityPersistence(WorkflowPersistence workflowPersistence,
             MethodHandler methodHandler, string formTitle, int position, string activityFormId,
             ActivityTypeEnum activityType)
         {
-            InternalContract.RequireNotNull(workflowInformation, nameof(workflowInformation));
+            InternalContract.RequireNotNull(workflowPersistence, nameof(workflowPersistence));
             InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
 
-            WorkflowInformation = workflowInformation!;
-            WorkflowCapability = workflowInformation.WorkflowCapability;
+            WorkflowPersistence = workflowPersistence!;
+            WorkflowCapability = workflowPersistence.WorkflowCapability;
             MethodHandler = methodHandler;
 
             PreviousActivityId = AsyncWorkflowStatic.Context.LatestActivityInstanceId;
 
             var parentActivityInstanceId = AsyncWorkflowStatic.Context.ParentActivityInstanceId;
             int? parentIteration = null;
-            ActivityInformation parentActivityInformation = null;
+            ActivityPersistence parentActivityPersistence = null;
             if (parentActivityInstanceId != null)
             {
-                var parentActivity = WorkflowInformation.GetActivity(parentActivityInstanceId);
-                parentActivityInformation = WorkflowInformation?.GetActivityInformation(parentActivityInstanceId);
+                var parentActivity = WorkflowPersistence.GetActivity(parentActivityInstanceId);
+                parentActivityPersistence = WorkflowPersistence?.GetActivityInformation(parentActivityInstanceId);
                 FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
                 parentIteration = parentActivity?.Iteration;
             }
 
             var activity =
-                WorkflowInformation.StoredWorkflow?.WorkflowHierarchy?.Activities?.FirstOrDefault(a =>
+                WorkflowPersistence.StoredWorkflow?.WorkflowHierarchy?.Activities?.FirstOrDefault(a =>
                     a.Form.Id == activityFormId);
             activity ??= new Activity();
             activity.Form ??= new ActivityForm
             {
                 Id = activityFormId,
-                WorkflowFormId = WorkflowInformation.FormId,
+                WorkflowFormId = WorkflowPersistence.FormId,
                 Title = formTitle,
                 Type = activityType
             };
             activity.Version ??= new ActivityVersion
             {
-                WorkflowVersionId = WorkflowInformation.VersionId,
+                WorkflowVersionId = WorkflowPersistence.VersionId,
                 ActivityFormId = activityFormId,
-                ParentActivityVersionId = parentActivityInformation?.Activity?.Version.Id,
+                ParentActivityVersionId = parentActivityPersistence?.Activity?.Version.Id,
                 FailUrgency = ActivityFailUrgencyEnum.Stopping,
                 Position = position
             };
             activity.Instance ??= new ActivityInstance
             {
-                WorkflowInstanceId = WorkflowInformation.InstanceId,
+                WorkflowInstanceId = WorkflowPersistence.InstanceId,
                 ParentActivityInstanceId = parentActivityInstanceId,
                 ActivityVersionId = null,
                 ParentIteration = parentIteration,
@@ -96,7 +96,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{WorkflowInformation.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({Activity?.Form?.Id})";
+        public override string ToString() => $"{WorkflowPersistence.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({Activity?.Form?.Id})";
 
         protected internal async Task PersistAsync(CancellationToken cancellationToken)
         {
@@ -104,7 +104,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             await PersistActivityVersion(cancellationToken);
             await PersistActivityInstance(cancellationToken);
             await PersistTransitionAsync(cancellationToken);
-            WorkflowInformation.LatestActivityInstanceId = Activity.Instance.Id;
+            WorkflowPersistence.LatestActivityInstanceId = Activity.Instance.Id;
             await MethodHandler.PersistActivityParametersAsync(WorkflowCapability, Activity.Version.Id, cancellationToken);
         }
 
@@ -172,7 +172,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     }
                 }
             }
-            var version = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowInformation.VersionId, Activity.Form.Id, cancellationToken);
+            var version = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowPersistence.VersionId, Activity.Form.Id, cancellationToken);
             FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
             Activity.Version = version;
             Activity.Instance.ActivityVersionId = version.Id;
@@ -211,7 +211,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             }
             var findUnique = new ActivityInstanceUnique
             {
-                WorkflowInstanceId = WorkflowInformation.InstanceId,
+                WorkflowInstanceId = WorkflowPersistence.InstanceId,
                 ActivityVersionId = Activity.Instance.ActivityVersionId,
                 ParentActivityInstanceId = Activity.Instance.ParentActivityInstanceId,
                 ParentIteration = Activity.Instance.ParentIteration
@@ -225,25 +225,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
         {
-            var previousActivityInformation = WorkflowInformation.GetActivityInformation(PreviousActivityId);
+            var previousActivityInformation = WorkflowPersistence.GetActivityInformation(PreviousActivityId);
             var searchItem = new TransitionUnique
             {
-                WorkflowVersionId = WorkflowInformation.VersionId,
+                WorkflowVersionId = WorkflowPersistence.VersionId,
                 FromActivityVersionId = previousActivityInformation?.Activity.Version.Id,
                 ToActivityVersionId = Activity.Version.Id
             };
-            var transition = await WorkflowCapability.Transition.FindUniqueAsync(WorkflowInformation.VersionId, searchItem, cancellationToken);
+            var transition = await WorkflowCapability.Transition.FindUniqueAsync(WorkflowPersistence.VersionId, searchItem, cancellationToken);
             if (transition == null)
             {
                 var createItem = new TransitionCreate
                 {
-                    WorkflowVersionId = WorkflowInformation.VersionId,
+                    WorkflowVersionId = WorkflowPersistence.VersionId,
                     FromActivityVersionId = previousActivityInformation?.Activity.Version.Id,
                     ToActivityVersionId = Activity.Version.Id
                 };
                 try
                 {
-                    await WorkflowCapability.Transition.CreateChildAsync(WorkflowInformation.VersionId, createItem, cancellationToken);
+                    await WorkflowCapability.Transition.CreateChildAsync(WorkflowPersistence.VersionId, createItem, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {

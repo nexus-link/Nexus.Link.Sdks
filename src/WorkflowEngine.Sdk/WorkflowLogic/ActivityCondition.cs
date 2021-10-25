@@ -5,7 +5,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -13,12 +13,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityCondition(ActivityInformation activityInformation, IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, activityExecutor)
+        public ActivityCondition(ActivityPersistence activityPersistence, IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityPersistence, activityExecutor)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Condition, ActivityInformation.ActivityType, "Ignore",
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityCondition<TActivityReturns>)}.");
+            InternalContract.RequireAreEqual(ActivityTypeEnum.Condition, ActivityPersistence.ActivityType, "Ignore",
+                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityCondition<TActivityReturns>)}.");
         }
 
         public Task<TActivityReturns> ExecuteAsync(

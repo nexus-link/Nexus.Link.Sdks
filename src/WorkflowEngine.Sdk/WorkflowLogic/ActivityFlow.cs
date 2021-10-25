@@ -11,14 +11,14 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     internal abstract class ActivityFlowBase
     {
         protected IWorkflowVersionBase WorkflowVersion { get; }
-        protected readonly WorkflowInformation WorkflowInformation;
+        protected readonly WorkflowPersistence WorkflowPersistence;
         protected readonly IWorkflowCapability WorkflowCapability;
         protected readonly IAsyncRequestClient AsyncRequestClient;
         protected readonly string ActivityFormId;
@@ -32,10 +32,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected ActivityFlowBase(IWorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
-            WorkflowInformation workflowInformation, string formTitle, string activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId)
         {
             WorkflowVersion = workflowVersion;
-            WorkflowInformation = workflowInformation;
+            WorkflowPersistence = workflowPersistence;
             WorkflowCapability = workflowCapability;
             AsyncRequestClient = asyncRequestClient;
             ActivityFormId = activityFormId;
@@ -43,9 +43,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             MethodHandler = new MethodHandler(formTitle);
         }
 
-        protected ActivityInformation CreateActivityInformation(ActivityTypeEnum activityType)
+        protected ActivityPersistence CreateActivityInformation(ActivityTypeEnum activityType)
         {
-            var activityInformation = new ActivityInformation(WorkflowInformation, MethodHandler,
+            var activityInformation = new ActivityPersistence(WorkflowPersistence, MethodHandler,
                 FormTitle, 1, ActivityFormId, activityType);
             return activityInformation;
         }
@@ -56,8 +56,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public ActivityFlow(WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
-            WorkflowInformation workflowInformation, string formTitle, string activityFormId) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowInformation, formTitle, activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId) 
+        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId)
         {
         }
 
@@ -132,8 +132,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public ActivityFlow(WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
-            WorkflowInformation workflowInformation, string formTitle, string activityFormId) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowInformation, formTitle, activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId) 
+        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId)
         {
         }
 

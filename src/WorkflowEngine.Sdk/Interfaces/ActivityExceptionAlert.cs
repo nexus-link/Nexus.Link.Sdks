@@ -1,6 +1,6 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public class ActivityExceptionAlert
     {

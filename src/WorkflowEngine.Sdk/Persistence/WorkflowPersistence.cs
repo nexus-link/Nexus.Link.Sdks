@@ -11,9 +11,9 @@ using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 using Activity = Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activity;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 {
-    public class WorkflowInformation
+    public class WorkflowPersistence
     {
         public MethodHandler MethodHandler { get; }
 
@@ -21,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         public WorkflowCache StoredWorkflow { get; private set; }
 
-        public WorkflowInformation(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
+        public WorkflowPersistence(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
         {
             MethodHandler = methodHandler;
             WorkflowCapability = workflowCapability;
@@ -61,10 +61,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
             return activity;
         }
 
-        public ActivityInformation GetActivityInformation(string activityId)
+        public ActivityPersistence GetActivityInformation(string activityId)
         {
             var activity = GetActivity(activityId);
-            return activity?.ActivityInformation;
+            return activity?.ActivityPersistence;
         }
 
         public async Task PersistAsync(CancellationToken cancellationToken)

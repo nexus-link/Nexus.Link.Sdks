@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -20,16 +20,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         public IActivityExecutor ActivityExecutor { get; }
 
-        protected internal ActivityInformation ActivityInformation { get; }
+        protected internal ActivityPersistence ActivityPersistence { get; }
         public int? Iteration { get; protected set; }
 
         public string Title
         {
             get
             {
-                if (!NestedIterations.Any()) return ActivityInformation.NestedPositionAndTitle;
+                if (!NestedIterations.Any()) return ActivityPersistence.NestedPositionAndTitle;
                 var iterations = string.Join(",", NestedIterations);
-                return $"{ActivityInformation.NestedPositionAndTitle} [{iterations}]";
+                return $"{ActivityPersistence.NestedPositionAndTitle} [{iterations}]";
             }
         }
 
@@ -38,21 +38,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public List<int> NestedIterations { get; } = new();
 
-        protected Activity(ActivityInformation activityInformation,
+        protected Activity(ActivityPersistence activityPersistence,
             IActivityExecutor activityExecutor)
         {
-            InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
+            InternalContract.RequireNotNull(activityPersistence, nameof(activityPersistence));
 
             ActivityExecutor = activityExecutor;
             ActivityExecutor.Activity = this;
             
-            ActivityInformation = activityInformation;
+            ActivityPersistence = activityPersistence;
 
-            activityInformation.MethodHandler.InstanceTitle = activityInformation.NestedPositionAndTitle;
+            activityPersistence.MethodHandler.InstanceTitle = activityPersistence.NestedPositionAndTitle;
             if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
             {
                 var parentActivity =
-                    ActivityInformation.WorkflowInformation.GetActivity(AsyncWorkflowStatic.Context
+                    ActivityPersistence.WorkflowPersistence.GetActivity(AsyncWorkflowStatic.Context
                         .ParentActivityInstanceId);
                 NestedIterations.AddRange(parentActivity.NestedIterations);
                 if (parentActivity.Iteration is > 0)
@@ -64,7 +64,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public TParameter GetArgument<TParameter>(string parameterName)
         {
-            return ActivityInformation.MethodHandler.GetArgument<TParameter>(parameterName);
+            return ActivityPersistence.MethodHandler.GetArgument<TParameter>(parameterName);
         }
     }
 }

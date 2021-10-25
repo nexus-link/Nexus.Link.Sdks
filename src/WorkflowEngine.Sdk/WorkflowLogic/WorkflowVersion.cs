@@ -9,7 +9,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
@@ -19,7 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly IWorkflowCapability _workflowCapability;
         public int MajorVersion { get; }
         public int MinorVersion { get; }
-        private readonly WorkflowInformation _workflowInformation;
+        private readonly WorkflowPersistence _workflowPersistence;
         private readonly IAsyncRequestClient _asyncRequestClient;
 
         protected WorkflowVersionBase(int majorVersion, int minorVersion,
@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             var methodHandler = new MethodHandler(workflowVersionCollection1.WorkflowFormTitle);
-            _workflowInformation = new WorkflowInformation(workflowVersionCollection1.Capability, methodHandler)
+            _workflowPersistence = new WorkflowPersistence(workflowVersionCollection1.Capability, methodHandler)
             {
                 CapabilityName = workflowVersionCollection1.WorkflowCapabilityName,
                 FormId = workflowVersionCollection1.WorkflowFormId,
@@ -43,17 +43,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected void DefineParameter<T>(string name)
         {
-            _workflowInformation.MethodHandler.DefineParameter<T>(name);
+            _workflowPersistence.MethodHandler.DefineParameter<T>(name);
         }
 
         protected TParameter GetArgument<TParameter>(string name)
         {
-            return _workflowInformation.MethodHandler.GetArgument<TParameter>(name);
+            return _workflowPersistence.MethodHandler.GetArgument<TParameter>(name);
         }
 
         protected void InternalSetParameter<TParameter>(string name, TParameter value)
         {
-            _workflowInformation.MethodHandler.SetParameter(name, value);
+            _workflowPersistence.MethodHandler.SetParameter(name, value);
         }
 
         protected abstract string GetInstanceTitle();
@@ -63,9 +63,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowInformation.LatestActivityInstanceId;
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
         }
 
         protected IActivityFlow CreateActivity(string title, string id)
@@ -73,9 +73,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowInformation.LatestActivityInstanceId;
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowInformation, title, id);
+            return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
         }
 
         protected async Task InternalExecuteAsync(CancellationToken cancellationToken)
@@ -90,16 +90,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
 
             // TODO: Unit test for cancelled
-            if (_workflowInformation.CancelledAt != null)
+            if (_workflowPersistence.CancelledAt != null)
             {
                 throw new FulcrumCancelledException(
-                    $"This workflow was manually marked for cancelling at {_workflowInformation.CancelledAt.Value.ToLogString()}.");
+                    $"This workflow was manually marked for cancelling at {_workflowPersistence.CancelledAt.Value.ToLogString()}.");
             }
 
-            _workflowInformation.InstanceTitle = GetInstanceTitle();
-            _workflowInformation.MethodHandler.InstanceTitle = _workflowInformation.InstanceTitle;
-            _workflowInformation.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
-            await _workflowInformation.PersistAsync(cancellationToken);
+            _workflowPersistence.InstanceTitle = GetInstanceTitle();
+            _workflowPersistence.MethodHandler.InstanceTitle = _workflowPersistence.InstanceTitle;
+            _workflowPersistence.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
+            await _workflowPersistence.PersistAsync(cancellationToken);
         }
     }
 

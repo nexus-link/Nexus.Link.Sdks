@@ -5,18 +5,18 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public class ActivityAction : Activity
     {
-        public ActivityAction(ActivityInformation activityInformation,
+        public ActivityAction(ActivityPersistence activityPersistence,
             IActivityExecutor activityExecutor)
-            : base(activityInformation, activityExecutor)
+            : base(activityPersistence, activityExecutor)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
+            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityPersistence.ActivityType, "Ignore",
+                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
         
         public Task ExecuteAsync(
@@ -40,13 +40,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityAction(ActivityInformation activityInformation,
+        public ActivityAction(ActivityPersistence activityPersistence,
             IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityInformation, activityExecutor)
+            : base(activityPersistence, activityExecutor)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityInformation.ActivityType, "Ignore",
-                $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityAction)}.");
+            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityPersistence.ActivityType, "Ignore",
+                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
         public Task<TActivityReturns> ExecuteAsync(
             Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 

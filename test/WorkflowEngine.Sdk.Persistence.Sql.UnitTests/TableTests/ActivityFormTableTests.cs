@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
 using Xunit.Abstractions;

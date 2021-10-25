@@ -8,7 +8,6 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
