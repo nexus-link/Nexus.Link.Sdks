@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.11.1-rc01</Version>
+    <Version>1.11.2-alfa02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.11.2 Case confusion
       1.11.1 Renamed some classes
       1.11.0 Moved FailUrgency to ActivityVersion
       1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data

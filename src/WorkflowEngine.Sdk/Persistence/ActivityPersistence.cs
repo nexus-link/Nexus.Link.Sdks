@@ -59,7 +59,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
             var activity =
                 WorkflowPersistence.StoredWorkflow?.WorkflowHierarchy?.Activities?.FirstOrDefault(a =>
-                    a.Form.Id == activityFormId);
+                    a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant());
             activity ??= new Activity();
             activity.Form ??= new ActivityForm
             {

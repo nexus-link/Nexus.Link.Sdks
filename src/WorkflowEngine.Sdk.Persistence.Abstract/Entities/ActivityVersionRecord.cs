@@ -26,10 +26,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         }
     }
 
-    public class ActivityVersionRecordCreate : IValidatable
+    public class ActivityVersionRecordCreate : ActivityVersionRecordUnique, IValidatable
     {
-        public Guid WorkflowVersionId { get; set; }
-        public Guid ActivityFormId { get; set; }
         public int Position { get; set; }
         public Guid? ParentActivityVersionId { get; set; }
         public string FailUrgency { get; set; }
@@ -42,6 +40,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotDefaultValue(ActivityFormId, nameof(ActivityFormId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(FailUrgency, nameof(FailUrgency), errorLocation);
         }
+    }
+
+    public class ActivityVersionRecordUnique
+    {
+        public Guid WorkflowVersionId { get; set; }
+        public Guid ActivityFormId { get; set; }
     }
 
     public class ActivityVersionRecordSearch
