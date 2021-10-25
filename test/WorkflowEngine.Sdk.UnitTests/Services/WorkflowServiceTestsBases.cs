@@ -83,6 +83,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
                 ActivityFormId = activityForm.Id,
                 WorkflowVersionId = WorkflowVersionRecord.Id,
                 Position = position,
+                FailUrgency = ActivityFailUrgencyEnum.Stopping.ToString(),
                 ParentActivityVersionId = parentActivityVersionId
             });
             var activityInstanceId = await RuntimeTables.ActivityInstance.CreateAsync(new ActivityInstanceRecordCreate
@@ -91,8 +92,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
                 StartedAt = DateTimeOffset.Now,
                 WorkflowInstanceId = WorkflowInstanceRecord.Id,
                 ParentActivityInstanceId = parentActivityInstanceId,
-                State = ActivityStateEnum.Started.ToString(),
-                FailUrgency = ActivityFailUrgencyEnum.Ignore.ToString()
+                State = ActivityStateEnum.Started.ToString()
             });
             return (activityForm.Id, activityVersionId, activityInstanceId);
         }

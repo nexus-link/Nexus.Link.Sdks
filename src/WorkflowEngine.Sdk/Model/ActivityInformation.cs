@@ -73,6 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 WorkflowVersionId = WorkflowInformation.VersionId,
                 ActivityFormId = activityFormId,
                 ParentActivityVersionId = parentActivityInformation?.Activity?.Version.Id,
+                FailUrgency = ActivityFailUrgencyEnum.Stopping,
                 Position = position
             };
             activity.Instance ??= new ActivityInstance
@@ -81,7 +82,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                 ParentActivityInstanceId = parentActivityInstanceId,
                 ActivityVersionId = null,
                 ParentIteration = parentIteration,
-                FailUrgency = ActivityFailUrgencyEnum.Stopping,
                 State = ActivityStateEnum.Started,
                 StartedAt = DateTimeOffset.UtcNow
             };

@@ -75,6 +75,7 @@ CREATE TABLE ActivityVersion
     ActivityFormId uniqueidentifier NOT NULL CONSTRAINT FK_ActivityVersion_ActivityFormId REFERENCES ActivityForm ON UPDATE CASCADE ON DELETE NO ACTION,
     Position int NOT NULL CONSTRAINT CK_ActivityVersion_Position_GT0 CHECK (Position >= 1),
     ParentActivityVersionId uniqueidentifier CONSTRAINT FK_ActivityVersion_ParentActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
+    FailUrgency nvarchar(16) NOT NULL CONSTRAINT DF_ActivityVersion_FailUrgency DEFAULT ('Stopping'),
 
 	CONSTRAINT UQ_ActivityVersion_1 UNIQUE (WorkflowVersionId, ActivityFormId, Position)
 )

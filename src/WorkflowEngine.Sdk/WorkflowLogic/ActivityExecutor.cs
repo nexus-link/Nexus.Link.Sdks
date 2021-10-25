@@ -147,7 +147,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // Publish message about exception
             }
 
-            switch (ActivityInformation.Activity.Instance.FailUrgency)
+            switch (ActivityInformation.Activity.Version.FailUrgency)
             {
                 case ActivityFailUrgencyEnum.CancelWorkflow:
                     throw new FulcrumCancelledException($"Activity {Activity} failed with the following message: {ActivityInformation.Activity.Instance.ExceptionTechnicalMessage}");
@@ -223,7 +223,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 // Normal error
                 // TODO: Handle error: Send event, throw postpone if halt
                 ActivityInformation.Activity.Instance.State = ActivityStateEnum.Failed;
-                ActivityInformation.Activity.Instance.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+                ActivityInformation.Activity.Instance.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
                 ActivityInformation.Activity.Instance.ExceptionTechnicalMessage =
                     $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
                 ActivityInformation.Activity.Instance.ExceptionFriendlyMessage =

@@ -20,6 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityVersionRecord.ActivityFormId),
                 nameof(ActivityVersionRecord.Position),
                 nameof(ActivityVersionRecord.ParentActivityVersionId),
+                nameof(ActivityVersionRecord.FailUrgency),
             },
             OrderBy = new List<string> { nameof(ActivityVersionRecord.RecordCreatedAt) }
         })

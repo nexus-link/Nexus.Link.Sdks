@@ -32,6 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         public Guid ActivityFormId { get; set; }
         public int Position { get; set; }
         public Guid? ParentActivityVersionId { get; set; }
+        public string FailUrgency { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
@@ -39,6 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsGreaterThanOrEqualTo(1, Position, nameof(Position), errorLocation);
             FulcrumValidate.IsNotDefaultValue(WorkflowVersionId, nameof(WorkflowVersionId), errorLocation);
             FulcrumValidate.IsNotDefaultValue(ActivityFormId, nameof(ActivityFormId), errorLocation);
+            FulcrumValidate.IsNotNullOrWhiteSpace(FailUrgency, nameof(FailUrgency), errorLocation);
         }
     }
 

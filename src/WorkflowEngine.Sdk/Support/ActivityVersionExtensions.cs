@@ -21,6 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Position = source.Position;
             target.ActivityFormId = MapperHelper.MapToType<Guid, string>(source.ActivityFormId);
             target.ParentActivityVersionId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityVersionId);
+            target.FailUrgency = MapperHelper.MapToType<string, ActivityFailUrgencyEnum?>(source.FailUrgency);
             return target;
         }
 
@@ -53,6 +54,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.Position = source.Position;
             target.ActivityFormId = MapperHelper.MapToType<string, Guid>(source.ActivityFormId);
             target.ParentActivityVersionId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityVersionId);
+            target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
             target.Etag = source.Etag;
             return target;
         }

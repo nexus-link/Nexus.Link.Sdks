@@ -36,7 +36,6 @@ CREATE TABLE ActivityInstance
     ResultAsJson nvarchar(max),
     State nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_State DEFAULT ('Started'),
     ExceptionCategory nvarchar(16),
-    FailUrgency nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_FailUrgency DEFAULT ('Stopping'),
     ExceptionFriendlyMessage nvarchar(max),
     ExceptionTechnicalMessage nvarchar(max),
     AsyncRequestId nvarchar(64),

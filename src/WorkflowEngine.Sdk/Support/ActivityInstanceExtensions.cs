@@ -20,7 +20,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
             target.ParentIteration = source.ParentIteration;
             target.State = MapperHelper.MapToType<string, ActivityStateEnum>(source.State);
-            target.FailUrgency = MapperHelper.MapToType<string, ActivityFailUrgencyEnum?>(source.FailUrgency);
             target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityInstanceId);
             return target;
@@ -67,7 +66,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
             target.ResultAsJson = source.ResultAsJson;
             target.State = MapperHelper.MapToStruct<ActivityStateEnum, string>(source.State);
-            target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
             target.ExceptionCategory = null;
             if (source.ExceptionCategory != null)
             {

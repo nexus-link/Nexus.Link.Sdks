@@ -74,7 +74,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null);
-            _activityInformation.Activity.Instance.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            _activityInformation.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -102,7 +102,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var alertHandler = new WorkflowVersionWithAlertHandler((a, ct) => Task.FromResult(true));
             var executor = new ActivityExecutor(alertHandler, _asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null);
-            _activityInformation.Activity.Instance.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            _activityInformation.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             await Assert.ThrowsAnyAsync<RequestPostponedException>( () => executor.ExecuteAsync<int>(
@@ -123,7 +123,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null);
-            _activityInformation.Activity.Instance.FailUrgency = failUrgency;
+            _activityInformation.Activity.Version.FailUrgency = failUrgency;
             const int expectedValue = 10;
 
             // Act
@@ -200,7 +200,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityInformation, executor, null);
-            _activityInformation.Activity.Instance.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            _activityInformation.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;

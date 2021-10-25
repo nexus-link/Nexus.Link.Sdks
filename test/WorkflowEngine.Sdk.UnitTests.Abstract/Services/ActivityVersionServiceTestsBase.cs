@@ -61,12 +61,14 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 
             // Act
             itemToUpdate.Position = 2;
+            itemToUpdate.FailUrgency = ActivityFailUrgencyEnum.Ignore;
             await _service.UpdateAsync(childId, itemToUpdate);
             var readItem = await _service.FindUniqueAsync(parentId, activityFormId);
 
             // Assert
             Assert.Equal(childId, readItem.Id);
             Assert.Equal(itemToUpdate.Position, readItem.Position);
+            Assert.Equal(itemToUpdate.FailUrgency, readItem.FailUrgency);
         }
 
         [Fact]

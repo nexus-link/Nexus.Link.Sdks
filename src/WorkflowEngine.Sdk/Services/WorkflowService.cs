@@ -147,7 +147,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 else
                 {
                     activityInstanceRecord.State = ActivityStateEnum.Failed.ToString();
-                    activityInstanceRecord.ExceptionCategory = ActivityExceptionCategoryEnum.Other.ToString();
+                    activityInstanceRecord.ExceptionCategory = ActivityExceptionCategoryEnum.Technical.ToString();
                     activityInstanceRecord.ExceptionTechnicalMessage =
                         $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
                     activityInstanceRecord.ExceptionFriendlyMessage =

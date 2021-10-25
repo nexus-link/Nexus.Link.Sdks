@@ -24,7 +24,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>1.0.5-rc01</Version>
+    <Version>1.1.0-rc01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.1.0 Moved FailUrgency to ActivityVersion
       1.0.5 Use IDatabaseOptions
       1.0.4 Moved FailUrgency to Create.
       1.0.2 Refactored ActivityInstance with respect to fields for failed activities.

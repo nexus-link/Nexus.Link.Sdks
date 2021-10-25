@@ -145,7 +145,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             {
                 WorkflowVersionId = workflowVersion.Id,
                 ActivityFormId = activityForm.Id,
-                Position = 1
+                Position = 1,
+                FailUrgency = ActivityFailUrgencyEnum.Stopping.ToString()
             };
             return await CreateActivityVersionAsync(item, cancellationToken);
         }
@@ -197,7 +198,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 WorkflowInstanceId = workflowInstance.Id,
                 StartedAt = DateTimeOffset.Now,
                 State = ActivityStateEnum.Waiting.ToString(),
-                FailUrgency = ActivityFailUrgencyEnum.HandleLater.ToString(),
                 ParentIteration = 1
             };
             return await CreateAcivityInstanceAsync(item, cancellationToken);

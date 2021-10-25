@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
@@ -29,6 +30,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             {
                 WorkflowVersionId = workflowVersion.Id,
                 ActivityFormId = activityForm.Id,
+                FailUrgency = ActivityFailUrgencyEnum.HandleLater.ToString(),
                 Position = 1
             };
 
@@ -45,24 +47,27 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.WorkflowVersionId, record.WorkflowVersionId);
             Assert.Equal(item.ActivityFormId, record.ActivityFormId);
             Assert.Equal(item.Position, record.Position);
+            Assert.Equal(item.FailUrgency, record.FailUrgency);
         }
 
         [Fact]
         public async Task Can_Update_Activity_Version()
         {
             // Arrange
-            var createdRecord = await CreateStandardActivityVersionAsync();
-            createdRecord.Position = 2;
+            var recordToUpdate = await CreateStandardActivityVersionAsync();
+            recordToUpdate.Position = 2;
+            recordToUpdate.FailUrgency = ActivityFailUrgencyEnum.Ignore.ToString();
 
             // Act
-            await ConfigurationTables.ActivityVersion.UpdateAsync(createdRecord.Id, createdRecord);
-            var updatedRecord = await ConfigurationTables.ActivityVersion.ReadAsync(createdRecord.Id);
+            await ConfigurationTables.ActivityVersion.UpdateAsync(recordToUpdate.Id, recordToUpdate);
+            var updatedRecord = await ConfigurationTables.ActivityVersion.ReadAsync(recordToUpdate.Id);
 
             // Assert
             Assert.NotNull(updatedRecord);
-            Assert.NotEqual(createdRecord.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
-            Assert.NotEqual(createdRecord.Etag, updatedRecord.Etag);
-            Assert.Equal(createdRecord.Position, updatedRecord.Position);
+            Assert.NotEqual(recordToUpdate.RecordCreatedAt, updatedRecord.RecordUpdatedAt);
+            Assert.NotEqual(recordToUpdate.Etag, updatedRecord.Etag);
+            Assert.Equal(recordToUpdate.Position, updatedRecord.Position);
+            Assert.Equal(recordToUpdate.FailUrgency, updatedRecord.FailUrgency);
         }
 
         [Fact]
@@ -76,13 +81,15 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             {
                 WorkflowVersionId = workflowVersion.Id,
                 ActivityFormId = activityForm.Id,
-                Position = 1
+                Position = 1,
+                FailUrgency = ActivityFailUrgencyEnum.Stopping.ToString()
             };
             var item2 = new ActivityVersionRecordCreate
             {
                 WorkflowVersionId = workflowVersion.Id,
                 ActivityFormId = activityForm.Id,
-                Position = 1
+                Position = 1,
+                FailUrgency = ActivityFailUrgencyEnum.Stopping.ToString()
             };
 
             // Act

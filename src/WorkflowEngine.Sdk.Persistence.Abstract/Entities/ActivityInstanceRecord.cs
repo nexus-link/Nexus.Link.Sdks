@@ -51,7 +51,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     {
         public DateTimeOffset StartedAt { get; set; }
         public string State { get; set; }
-        public string FailUrgency { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")

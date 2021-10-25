@@ -76,8 +76,7 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
             itemToUpdate.State = ActivityStateEnum.Failed;
-            itemToUpdate.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-            itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Other;
+            itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
             itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToString();
             itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
             await _service.UpdateAsync(id, itemToUpdate);
@@ -91,7 +90,6 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
             Assert.Equal(itemToUpdate.FinishedAt, readItem.FinishedAt);
             Assert.Equal(itemToUpdate.ParentIteration, readItem.ParentIteration);
             Assert.Equal(itemToUpdate.State, readItem.State);
-            Assert.Equal(itemToUpdate.FailUrgency, readItem.FailUrgency);
             Assert.Equal(itemToUpdate.ExceptionCategory, readItem.ExceptionCategory);
             Assert.Equal(itemToUpdate.ExceptionFriendlyMessage, readItem.ExceptionFriendlyMessage);
             Assert.Equal(itemToUpdate.ExceptionTechnicalMessage, readItem.ExceptionTechnicalMessage);
