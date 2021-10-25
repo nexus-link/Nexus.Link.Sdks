@@ -98,12 +98,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
                 new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId }), 0,
                 int.MaxValue, cancellationToken);
-            var activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityForm().From(x));
+            var activityForms = activityFormsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityForm().From(x));
 
             var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
                 new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
                 { WorkflowVersionId = versionId }), 0, int.MaxValue, cancellationToken);
-            var activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityVersion().From(x));
+            var activityVersions = activityVersionsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityVersion().From(x));
 
             var activityInstancesList = await _runtimeTables.ActivityInstance.SearchAsync(
                 new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
@@ -125,7 +125,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             }
 
             var activityInstances = activityInstancesRecords
-                .ToDictionary(x => x.Id.ToString(), x => new ActivityInstance().From(x));
+                .ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityInstance().From(x));
 
             return (activityForms, activityVersions, activityInstances);
         }
