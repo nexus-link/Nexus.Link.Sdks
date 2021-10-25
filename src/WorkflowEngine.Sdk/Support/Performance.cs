@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 using Activity = System.Diagnostics.Activity;
+// ReSharper disable ExplicitCallerInfoArgument
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
@@ -38,12 +39,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             return await DoAndLogAsync(func, lineNumber);
         }
 
+        public async Task MeasureMethodAsync(Func<Task> func,
+            [CallerMemberName] string memberName = "",
+            [CallerFilePath] string filePath = "",
+            [CallerLineNumber] int lineNumber = 0)
+        {
+            await MeasureMethodAsync(async () =>
+            {
+                await func();
+                return Task.FromResult(true);
+            }, memberName,filePath, lineNumber);
+        }
+
         private async Task<T> DoAndLogAsync<T>(Func<Task<T>> func, int lineNumber)
         {
             var stopWatch = new Stopwatch();
             try
             {
                 Log.LogVerbose($"{_description} ({lineNumber}):  {Math.Round(_stopwatch.Elapsed.TotalSeconds * 10) / 10.0} s. Start");
+                stopWatch.Start();
                 return await func();
             }
             finally

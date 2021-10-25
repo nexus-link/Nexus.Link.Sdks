@@ -11,6 +11,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
@@ -57,6 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 await ReadAllActivitiesAndUpdateResponsesAsync(form.Id, version.Id, instance.Id, cancellationToken);
             workflow.Activities = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
             workflow.Activities.Sort(PositionSort);
+            workflow.NotReferredActivities = BuildNotReferred(activityForms, activityVersions, activityInstances);
 
             return workflow;
         }
@@ -64,6 +66,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         private static int PositionSort(Activity x, Activity y)
         {
             return x.Version.Position.CompareTo(y.Version.Position);
+        }
+
+        private List<Activity> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
+            Dictionary<string, ActivityVersion> activityVersions,
+            Dictionary<string, ActivityInstance> activityInstances)
+        {
+            var activities = new List<Activity>();
+            foreach (var (key, form) in activityForms)
+            {
+                var version = activityVersions.Values.FirstOrDefault(v => v.ActivityFormId == form.Id);
+                FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
+                var activity = new Activity
+                {
+                    Instance = null,
+                    Version = version,
+                    Form = form
+                };
+                activities.Add(activity);
+            }
+            return activities;
         }
 
         private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityForm> activityForms,
