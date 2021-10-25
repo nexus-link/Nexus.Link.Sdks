@@ -18,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             InternalContract.RequireValidated(source, nameof(source));
             
             target.WorkflowFormId = MapperHelper.MapToType<Guid, string>(source.WorkflowFormId);
-            target.Type = source.Type;
+            target.Type = source.Type.ToString();
             target.Title = source.Title;
             return target;
         }
@@ -49,7 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
             target.WorkflowFormId = MapperHelper.MapToType<string, Guid>(source.WorkflowFormId);
-            target.Type = source.Type;
+            target.Type = source.Type.ToEnum<ActivityTypeEnum>();
             target.Title = source.Title;
             target.Etag = source.Etag;
             return target;

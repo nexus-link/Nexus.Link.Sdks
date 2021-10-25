@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -28,7 +29,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             var item = new ActivityFormRecordCreate
             {
                 WorkflowFormId = workflowForm.Id,
-                Type = WorkflowActivityTypeEnum.Action.ToString(),
+                Type = ActivityTypeEnum.Action.ToString(),
                 Title = "Phobos"
             };
 
@@ -52,7 +53,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         {
             // Arrange
             var createdRecord = await CreateStandardActivityFormAsync();
-            createdRecord.Type = WorkflowActivityTypeEnum.ForEachParallel.ToString();
+            createdRecord.Type = ActivityTypeEnum.ForEachParallel.ToString();
             createdRecord.Title = "Phobos of Mars";
 
             // Act

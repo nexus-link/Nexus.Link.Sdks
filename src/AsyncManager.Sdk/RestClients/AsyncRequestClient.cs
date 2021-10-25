@@ -23,8 +23,8 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         /// </summary> 
         public AsyncRequestClient(IAsyncRequestMgmtCapability capability)
         {
-            _capability = capability;
             InternalContract.RequireNotNull(capability, nameof(capability));
+            _capability = capability;
         }
 
         /// <summary>

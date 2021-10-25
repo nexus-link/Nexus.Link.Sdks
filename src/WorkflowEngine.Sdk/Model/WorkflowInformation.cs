@@ -9,13 +9,17 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Model
 {
     public class WorkflowInformation
     {
         public MethodHandler MethodHandler { get; }
+
         public IWorkflowCapability WorkflowCapability { get; }
+
+        public WorkflowCache StoredWorkflow { get; private set; }
 
         public WorkflowInformation(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
         {
@@ -36,7 +40,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
         // Instance
         public string InstanceId { get; set; }
         public string InstanceTitle { get; set; }
-        
+        public DateTimeOffset? CancelledAt { get; set; }
+
         private readonly Dictionary<string, Activity> _activities = new Dictionary<string, Activity>();
 
         public string VersionTitle => $"{FormTitle} {MajorVersion}.{MinorVersion}";
@@ -64,6 +69,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         public async Task PersistAsync(CancellationToken cancellationToken)
         {
+            StoredWorkflow = new WorkflowCache(WorkflowCapability, InstanceId);
+            await StoredWorkflow.LoadDataAsync();
             await PersistFormAsync(cancellationToken);
             VersionId = await PersistVersionAsync(cancellationToken);
             await PersistInstanceAsync(cancellationToken);
@@ -72,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistFormAsync(CancellationToken cancellationToken)
         {
-            var workflowForm = await WorkflowCapability.WorkflowForm.ReadAsync(FormId, cancellationToken);
+            var workflowForm = StoredWorkflow.WorkflowHierarchy?.Form;
             if (workflowForm == null)
             {
                 var workflowCreate = new WorkflowFormCreate
@@ -80,21 +87,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     CapabilityName = CapabilityName,
                     Title = FormTitle
                 };
-                await WorkflowCapability.WorkflowForm.CreateWithSpecifiedIdAsync(FormId, workflowCreate, cancellationToken);
+                try
+                {
+                    await WorkflowCapability.WorkflowForm.CreateWithSpecifiedIdAsync(FormId, workflowCreate, cancellationToken);
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. The workflow form already existed.
+                }
             }
             else if (workflowForm.Title != FormTitle || workflowForm.CapabilityName != CapabilityName)
             {
+                workflowForm =
+                    await WorkflowCapability.WorkflowForm.ReadAsync(FormId, cancellationToken);
                 workflowForm.CapabilityName = CapabilityName;
                 workflowForm.Title = FormTitle;
-                await WorkflowCapability.WorkflowForm.UpdateAsync(FormId, workflowForm, cancellationToken);
+                try
+                {
+                    await WorkflowCapability.WorkflowForm.UpdateAsync(FormId, workflowForm, cancellationToken);
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. Another thread has updated the same Id after we did the read above.
+                }
             }
         }
 
         public async Task<string> PersistVersionAsync(CancellationToken cancellationToken)
         {
-            var workflowVersion =
-                await WorkflowCapability.WorkflowVersion.ReadAsync(FormId, MajorVersion,
-                    cancellationToken);
+            var workflowVersion = StoredWorkflow.WorkflowHierarchy?.Version;
             if (workflowVersion == null)
             {
                 var workflowVersionCreate = new WorkflowVersionCreate
@@ -104,18 +125,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     MinorVersion = MinorVersion,
                     DynamicCreate = true
                 };
-                await WorkflowCapability.WorkflowVersion.CreateWithSpecifiedIdAsync(
-                    FormId, MajorVersion, workflowVersionCreate, cancellationToken); 
-                
+                try
+                {
+                    await WorkflowCapability.WorkflowVersion.CreateWithSpecifiedIdAsync(
+                        FormId, MajorVersion, workflowVersionCreate, cancellationToken);
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. The workflow version already existed.
+                }
+
                 workflowVersion = await WorkflowCapability.WorkflowVersion.ReadAsync(
                     FormId,
                     MajorVersion, cancellationToken);
             }
             else if (workflowVersion.MinorVersion != MinorVersion)
             {
+                workflowVersion =
+                    await WorkflowCapability.WorkflowVersion.ReadAsync(FormId, MajorVersion, cancellationToken);
                 workflowVersion.MinorVersion = MinorVersion;
-                await WorkflowCapability.WorkflowVersion.UpdateAsync(FormId,
-                    MajorVersion, workflowVersion, cancellationToken);
+                try
+                {
+                    await WorkflowCapability.WorkflowVersion.UpdateAsync(FormId,
+                        MajorVersion, workflowVersion, cancellationToken);
+
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. Another thread has updated the same Id after we did the read above.
+                }
             }
 
             return workflowVersion.Id;
@@ -123,7 +161,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
 
         private async Task PersistInstanceAsync(CancellationToken cancellationToken)
         {
-            var workflowInstance = await WorkflowCapability.WorkflowInstance.ReadAsync(InstanceId, cancellationToken);
+            var workflowInstance = StoredWorkflow.WorkflowHierarchy?.Instance;
             if (workflowInstance == null)
             {
                 var workflowCreate = new WorkflowInstanceCreate
@@ -142,6 +180,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Model
                     // This is OK. Another thread has created the same Id after we did the read above.
                 }
             }
+            else
+            {
+                CancelledAt = workflowInstance.CancelledAt;
+            }
+
+            await StoredWorkflow.LoadDataAsync();
         }
     }
 }

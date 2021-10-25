@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Moq;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -26,9 +28,10 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
 
         static WorkflowServiceTestsBases()
         {
-            WorkflowService = new WorkflowService(ConfigurationTables, RuntimeTables);
+            var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
+            WorkflowService = new WorkflowService(ConfigurationTables, RuntimeTables, asyncRequestMgmtCapabilityMock.Object);
 
-            SetupWorkflowMockStructure().Wait();
+            SetupWorkflowMockStructureAsync().Wait();
         }
 
         protected WorkflowServiceTestsBases(ITestOutputHelper testOutputHelper)
@@ -36,7 +39,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             TestOutputHelper = testOutputHelper;
         }
 
-        private static async Task SetupWorkflowMockStructure()
+        private static async Task SetupWorkflowMockStructureAsync()
         {
             WorkflowFormRecord = await ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), new WorkflowFormRecordCreate
             {
@@ -73,7 +76,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             {
                 Title = title,
                 WorkflowFormId = WorkflowFormRecord.Id,
-                Type = "x"
+                Type = ActivityTypeEnum.Action.ToString()
             });
             var activityVersionId = await ConfigurationTables.ActivityVersion.CreateAsync(new ActivityVersionRecordCreate
             {

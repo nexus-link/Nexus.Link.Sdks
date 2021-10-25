@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.AsyncManager.Sdk.RestClients;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -20,11 +25,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
     {
         private readonly IConfigurationTables _configurationTables;
         private readonly IRuntimeTables _runtimeTables;
+        private readonly AsyncRequestClient _asyncRequestClient;
 
-        public WorkflowService(IConfigurationTables configurationTables, IRuntimeTables runtimeTables)
+        public WorkflowService(IConfigurationTables configurationTables, IRuntimeTables runtimeTables,
+            IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
             _configurationTables = configurationTables;
             _runtimeTables = runtimeTables;
+            _asyncRequestClient = new AsyncRequestClient(asyncRequestMgmtCapability);
         }
 
         public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
@@ -46,7 +54,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             };
 
             var (activityForms, activityVersions, activityInstances) =
-                await ReadAllActivities(form.Id, version.Id, instance.Id, cancellationToken);
+                await ReadAllActivitiesAndUpdateResponsesAsync(form.Id, version.Id, instance.Id, cancellationToken);
             workflow.Activities = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
             workflow.Activities.Sort(PositionSort);
 
@@ -58,21 +66,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return x.Version.Position.CompareTo(y.Version.Position);
         }
 
-        private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityFormRecord> activityForms,
-            Dictionary<string, ActivityVersionRecord> activityVersions,
-            Dictionary<string, ActivityInstanceRecord> activityInstances)
+        private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityForm> activityForms,
+            Dictionary<string, ActivityVersion> activityVersions,
+            Dictionary<string, ActivityInstance> activityInstances)
         {
             var activities = new List<Activity>();
             foreach (var entry in activityInstances.Where(x =>
                 x.Value.ParentActivityInstanceId?.ToString() == parent?.Instance.Id))
             {
-                var version = activityVersions[entry.Value.ActivityVersionId.ToString()];
-                var form = activityForms[version.ActivityFormId.ToString()];
+                var instance = entry.Value;
+                var version = activityVersions[instance.ActivityVersionId];
+                var form = activityForms[version.ActivityFormId];
                 var activity = new Activity
                 {
-                    Instance = new ActivityInstance().From(entry.Value),
-                    Version = new ActivityVersion().From(version),
-                    Form = new ActivityForm().From(form)
+                    Instance = instance,
+                    Version = version,
+                    Form = form
                 };
                 activity.Children = BuildActivityTree(activity, activityForms, activityVersions, activityInstances);
                 activities.Add(activity);
@@ -81,27 +90,84 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return activities;
         }
 
-        private async Task<(Dictionary<string, ActivityFormRecord> activityForms,
-                Dictionary<string, ActivityVersionRecord> activityVersions, Dictionary<string, ActivityInstanceRecord>
+        private async Task<(Dictionary<string, ActivityForm> activityForms,
+                Dictionary<string, ActivityVersion> activityVersions, Dictionary<string, ActivityInstance>
                 activityInstances)>
-            ReadAllActivities(Guid formId, Guid versionId, Guid instanceId, CancellationToken cancellationToken)
+            ReadAllActivitiesAndUpdateResponsesAsync(Guid formId, Guid versionId, Guid instanceId, CancellationToken cancellationToken)
         {
             var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
                 new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId }), 0,
                 int.MaxValue, cancellationToken);
-            var activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToString(), x => x);
+            var activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityForm().From(x));
 
             var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
                 new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
-                    { WorkflowVersionId = versionId }), 0, int.MaxValue, cancellationToken);
-            var activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToString(), x => x);
+                { WorkflowVersionId = versionId }), 0, int.MaxValue, cancellationToken);
+            var activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityVersion().From(x));
 
             var activityInstancesList = await _runtimeTables.ActivityInstance.SearchAsync(
                 new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
-                    { WorkflowInstanceId = instanceId }), 0, int.MaxValue, cancellationToken);
-            var activityInstances = activityInstancesList.Data.ToDictionary(x => x.Id.ToString(), x => x);
+                { WorkflowInstanceId = instanceId }), 0, int.MaxValue, cancellationToken);
+            
+            var tasks = new List<Task<ActivityInstanceRecord>>();
+            foreach (var activityInstanceRecord in activityInstancesList.Data)
+            {
+                var task = string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
+                    ? Task.FromResult(activityInstanceRecord)
+                    : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
+                tasks.Add(task);
+            }
+            var activityInstancesRecords = new List<ActivityInstanceRecord>();
+            foreach (var task in tasks)
+            {
+                var activityInstanceRecord = await task;
+                activityInstancesRecords.Add(activityInstanceRecord);
+            }
+
+            var activityInstances = activityInstancesRecords
+                .ToDictionary(x => x.Id.ToString(), x => new ActivityInstance().From(x));
 
             return (activityForms, activityVersions, activityInstances);
+        }
+
+        private async Task<ActivityInstanceRecord> TryGetResponseAsync(ActivityInstanceRecord activityInstanceRecord, CancellationToken cancellationToken)
+        {
+            var retries = 0;
+            while (true)
+            {
+                var response = await _asyncRequestClient.GetFinalResponseAsync(activityInstanceRecord.AsyncRequestId,
+                    cancellationToken);
+                if (response == null || !response.HasCompleted) return activityInstanceRecord;
+
+                if (response.Exception?.Name == null)
+                {
+                    activityInstanceRecord.State = ActivityStateEnum.Success.ToString();
+                    activityInstanceRecord.ResultAsJson = response.Content;
+                }
+                else
+                {
+                    activityInstanceRecord.State = ActivityStateEnum.Failed.ToString();
+                    activityInstanceRecord.ExceptionCategory = ActivityExceptionCategoryEnum.Other.ToString();
+                    activityInstanceRecord.ExceptionTechnicalMessage =
+                        $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
+                    activityInstanceRecord.ExceptionFriendlyMessage =
+                        $"A remote method failed with the following message: {response.Exception.Message}";
+                }
+
+                try
+                {
+                    await _runtimeTables.ActivityInstance.UpdateAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
+                    return activityInstanceRecord;
+                }
+                catch (FulcrumConflictException)
+                {
+                    // Concurrency problem, try again after short pause.
+                    retries++;
+                    if (retries > 5) throw;
+                    await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
+                    activityInstanceRecord = await _runtimeTables.ActivityInstance.ReadAsync(activityInstanceRecord.Id, cancellationToken);
+                }
+            }
         }
     }
 }

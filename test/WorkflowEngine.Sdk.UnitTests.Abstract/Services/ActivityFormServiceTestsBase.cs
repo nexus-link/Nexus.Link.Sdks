@@ -25,7 +25,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
-                Type = "Action",
+                Type = ActivityTypeEnum.Action,
                 Title = Guid.NewGuid().ToString()
             };
 
@@ -50,7 +50,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
-                Type = "Action",
+                Type = ActivityTypeEnum.Action,
                 Title = Guid.NewGuid().ToString()
             };
             await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
@@ -75,7 +75,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
-                Type = "Action",
+                Type = ActivityTypeEnum.Action,
                 Title = Guid.NewGuid().ToString()
             };
             await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);

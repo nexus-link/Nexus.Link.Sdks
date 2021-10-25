@@ -5,6 +5,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
@@ -89,10 +90,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
 
             // TODO: Unit test for cancelled
-            var instance = await _workflowCapability.WorkflowInstance.ReadAsync(AsyncWorkflowStatic.Context.WorkflowInstanceId, cancellationToken);
-            if (instance?.CancelledAt != null)
+            if (_workflowInformation.CancelledAt != null)
             {
-                throw new FulcrumCancelledException($"Workflow ({instance.Id}) was cancelled at {instance.CancelledAt}");
+                throw new FulcrumCancelledException(
+                    $"This workflow was manually marked for cancelling at {_workflowInformation.CancelledAt.Value.ToLogString()}.");
             }
 
             _workflowInformation.InstanceTitle = GetInstanceTitle();

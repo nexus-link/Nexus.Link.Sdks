@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -16,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             : base(activityInformation, activityExecutor)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            InternalContract.RequireAreEqual(WorkflowActivityTypeEnum.Condition, ActivityInformation.ActivityType, "Ignore",
+            InternalContract.RequireAreEqual(ActivityTypeEnum.Condition, ActivityInformation.ActivityType, "Ignore",
                 $"The activity {ActivityInformation} was declared as {ActivityInformation.ActivityType}, so you can't use {nameof(ActivityCondition<TActivityReturns>)}.");
         }
 

@@ -120,7 +120,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             var item = new ActivityFormRecordCreate
             {
                 WorkflowFormId = workflowForm.Id,
-                Type = WorkflowActivityTypeEnum.Action.ToString(),
+                Type = ActivityTypeEnum.Action.ToString(),
                 Title = "Phobos"
             };
             return await CreateActivityFormAsync(id, item, cancellationToken);

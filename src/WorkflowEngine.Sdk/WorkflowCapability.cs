@@ -20,7 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             ActivityParameter = new ActivityParameterService(configurationTables);
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables);
-            Workflow = new WorkflowService(configurationTables, runtimeTables);
+            Workflow = new WorkflowService(configurationTables, runtimeTables, requestMgmtCapability);
             WorkflowAdministrationService = new WorkflowAdministrationService(this, requestMgmtCapability);
         }
 
