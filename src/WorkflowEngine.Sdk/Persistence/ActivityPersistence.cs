@@ -63,9 +63,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant()
                     && a.Instance.ParentActivityInstanceId == parentActivityInstanceId
                     && a.Instance.ParentIteration == parentIteration);
-            activity ??= 
+            activity ??=
                 WorkflowPersistence.StoredWorkflow?.WorkflowHierarchy?.NotReferredActivities?.FirstOrDefault(a =>
-                    a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant());
+                    a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant())
+                    .AsCopy(); // We need a copy, because this activity can be used for several different instances, e.g. in a loop
             activity ??= new Activity();
             activity.Form ??= new ActivityForm
             {
@@ -121,16 +122,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         private async Task PersistActivityFormAsync(CancellationToken cancellationToken)
         {
-            var p = new Performance(this.GetType().Name, $"{Activity.Form.Title}");
+            var form = Activity.Form;
+            var p = new Performance(this.GetType().Name, $"{form.Title}");
             await p.MeasureMethodAsync(async () =>
             {
-                if (Activity.Form.Etag == null)
+                if (form.Etag == null)
                 {
                     try
                     {
-                        Activity.Form.Etag = "ignore";
-                        await p.MeasureAsync(() => WorkflowCapability.ActivityForm.CreateWithSpecifiedIdAsync(Activity.Form.Id,
-                            Activity.Form, cancellationToken));
+                        form.Etag = "ignore";
+                        await p.MeasureAsync(() => WorkflowCapability.ActivityForm.CreateWithSpecifiedIdAsync(form.Id,
+                            form, cancellationToken));
                     }
                     catch (FulcrumConflictException)
                     {
@@ -139,11 +141,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 }
                 else
                 {
-                    if (SameSerialization(_storedActivity.Form, Activity.Form)) return;
+                    if (SameSerialization(_storedActivity.Form, form)) return;
                     // TODO: Error if tried to change ActivityType?
                     try
                     {
-                        await p.MeasureAsync(() =>  WorkflowCapability.ActivityForm.UpdateAsync(Activity.Form.Id, Activity.Form,
+                        await p.MeasureAsync(() => WorkflowCapability.ActivityForm.UpdateAsync(form.Id, form,
                             cancellationToken));
                     }
                     catch (FulcrumConflictException)
@@ -152,22 +154,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     }
                 }
 
-                var form = await p.MeasureAsync(() =>  WorkflowCapability.ActivityForm.ReadAsync(Activity.Form.Id, cancellationToken));
-                FulcrumAssert.IsNotNull(form, CodeLocation.AsString());
-                Activity.Form = form;
-                _storedActivity.Form = Activity.Form.AsCopy();
+                var latestForm = await p.MeasureAsync(() => WorkflowCapability.ActivityForm.ReadAsync(form.Id, cancellationToken));
+                FulcrumAssert.IsNotNull(latestForm, CodeLocation.AsString());
+                Activity.Form = latestForm;
+                _storedActivity.Form = latestForm.AsCopy();
             });
         }
 
         private async Task PersistActivityVersion(CancellationToken cancellationToken)
         {
-            if (Activity.Version.Etag == null)
+            var version = Activity.Version;
+            if (version.Etag == null)
             {
                 try
                 {
-                    Activity.Version.Id = "ignore";
-                    Activity.Version.Etag = "ignore";
-                    await WorkflowCapability.ActivityVersion.CreateAsync(Activity.Version, cancellationToken);
+                    version.Id = "ignore";
+                    version.Etag = "ignore";
+                    await WorkflowCapability.ActivityVersion.CreateAsync(version, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {
@@ -176,35 +179,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             }
             else
             {
-                if (SameSerialization(_storedActivity.Version, Activity.Version)) return;
+                if (SameSerialization(_storedActivity.Version, version)) return;
+                try
                 {
-                    try
-                    {
-                        await WorkflowCapability.ActivityVersion.UpdateAsync(Activity.Version.Id, Activity.Version,
-                            cancellationToken);
-                    }
-                    catch (FulcrumConflictException)
-                    {
-                        // This is OK. Another thread has update the same Id after we did the read above.
-                    }
+                    await WorkflowCapability.ActivityVersion.UpdateAsync(version.Id, version,
+                        cancellationToken);
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. Another thread has update the same Id after we did the read above.
                 }
             }
-            var version = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowPersistence.VersionId, Activity.Form.Id, cancellationToken);
-            FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
-            Activity.Version = version;
-            Activity.Instance.ActivityVersionId = version.Id;
-            _storedActivity.Version = Activity.Version.AsCopy();
+            var latestVersion = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowPersistence.VersionId, Activity.Form.Id, cancellationToken);
+            FulcrumAssert.IsNotNull(latestVersion, CodeLocation.AsString());
+            Activity.Version = latestVersion;
+            Activity.Instance.ActivityVersionId = latestVersion.Id;
+            _storedActivity.Version = version.AsCopy();
         }
 
         private async Task PersistActivityInstance(CancellationToken cancellationToken)
         {
-            if (Activity.Instance.Etag == null)
+            var instance = Activity.Instance;
+            if (instance.Etag == null)
             {
                 try
                 {
-                    Activity.Instance.Id = "ignore";
-                    Activity.Instance.Etag = "ignore";
-                    var activityInstanceId = await WorkflowCapability.ActivityInstance.CreateAsync(Activity.Instance, cancellationToken);
+                    instance.Id = "ignore";
+                    instance.Etag = "ignore";
+                    var activityInstanceId = await WorkflowCapability.ActivityInstance.CreateAsync(instance, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {
@@ -213,31 +215,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             }
             else
             {
-                if (SameSerialization(_storedActivity.Instance, Activity.Instance)) return;
+                if (SameSerialization(_storedActivity.Instance, instance)) return;
+                try
                 {
-                    try
-                    {
-                        await WorkflowCapability.ActivityInstance.UpdateAsync(Activity.Instance.Id, Activity.Instance,
-                            cancellationToken);
-                    }
-                    catch (FulcrumConflictException)
-                    {
-                        // This is OK. Another thread has update the same Id after we did the read above.
-                    }
+                    await WorkflowCapability.ActivityInstance.UpdateAsync(instance.Id, instance,
+                        cancellationToken);
+                }
+                catch (FulcrumConflictException)
+                {
+                    // This is OK. Another thread has update the same Id after we did the read above.
                 }
             }
             var findUnique = new ActivityInstanceUnique
             {
-                WorkflowInstanceId = WorkflowPersistence.InstanceId,
-                ActivityVersionId = Activity.Instance.ActivityVersionId,
-                ParentActivityInstanceId = Activity.Instance.ParentActivityInstanceId,
-                ParentIteration = Activity.Instance.ParentIteration
+                WorkflowInstanceId = instance.WorkflowInstanceId,
+                ActivityVersionId = instance.ActivityVersionId,
+                ParentActivityInstanceId = instance.ParentActivityInstanceId,
+                ParentIteration = instance.ParentIteration
             };
 
-            var activityInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
-            FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
-            Activity.Instance = activityInstance;
-            _storedActivity.Instance = Activity.Instance.AsCopy();
+            var latestInstance = await WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken);
+            FulcrumAssert.IsNotNull(latestInstance, CodeLocation.AsString());
+            Activity.Instance = latestInstance;
+            _storedActivity.Instance = instance.AsCopy();
         }
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
