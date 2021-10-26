@@ -23,7 +23,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = new CancellationToken())
         {
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
@@ -31,9 +31,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             
             var recordCreate = new ActivityInstanceRecordCreate().From(item);
             recordCreate.StartedAt = DateTimeOffset.UtcNow;
-            var childIdAsGuid = await _runtimeTables.ActivityInstance.CreateAsync(recordCreate, cancellationToken);
-            var childId = MapperHelper.MapToType<string, Guid>(childIdAsGuid);
-            return childId;
+            var result = await _runtimeTables.ActivityInstance.CreateAndReturnAsync(recordCreate, cancellationToken);
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return new ActivityInstance().From(result);
         }
 
         /// <inheritdoc />
@@ -59,7 +59,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(string id, ActivityInstance item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityInstance> UpdateAndReturnAsync(string id, ActivityInstance item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -68,7 +68,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
 
             var record = new ActivityInstanceRecord().From(item);
-            await _runtimeTables.ActivityInstance.UpdateAsync(idAsGuid, record, cancellationToken);
+            var result = await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return new ActivityInstance().From(result);
         }
 
         /// <inheritdoc />

@@ -178,8 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
                 try
                 {
-                    await _runtimeTables.ActivityInstance.UpdateAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
-                    return activityInstanceRecord;
+                    return await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
                 }
                 catch (FulcrumConflictException)
                 {

@@ -26,7 +26,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             };
 
             // Act
-            var record = await CreateAcivityInstanceAsync(item);
+            var record = await CreateActivityInstanceAsync(item);
 
             // Assert
             Assert.NotNull(record);
@@ -59,10 +59,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 State = ActivityStateEnum.Waiting.ToString(),
                 ParentIteration = 1
             };
-            await CreateAcivityInstanceAsync(item);
+            await CreateActivityInstanceAsync(item);
 
             // Assert
-            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateAcivityInstanceAsync(item));
+            await Assert.ThrowsAsync<FulcrumConflictException>(async () => await CreateActivityInstanceAsync(item));
         }
 
         [Fact]
@@ -78,8 +78,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             createdRecord.HasCompleted = true;
 
             // Act
-            await RuntimeTables.ActivityInstance.UpdateAsync(createdRecord.Id, createdRecord);
-            var updatedRecord = await RuntimeTables.ActivityInstance.ReadAsync(createdRecord.Id);
+            var updatedRecord = await RuntimeTables.ActivityInstance.UpdateAndReturnAsync(createdRecord.Id, createdRecord);
 
             // Assert
             Assert.NotNull(updatedRecord);
@@ -114,7 +113,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             };
 
             // Act & Assert
-            await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateAcivityInstanceAsync(item));
+            await Assert.ThrowsAsync<FulcrumContractException>(async () => await CreateActivityInstanceAsync(item));
         }
     }
 }

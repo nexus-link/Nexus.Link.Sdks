@@ -31,7 +31,7 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
             };
 
             // Act
-            var id = await _service.CreateAsync(itemToCreate);
+            var createdItem = await _service.CreateAndReturnAsync(itemToCreate);
             var findUnique = new ActivityInstanceUnique
             {
                 WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
@@ -43,7 +43,7 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
 
             // Assert
             Assert.NotNull(readItem);
-            Assert.Equal(id, readItem.Id);
+            Assert.Equal(createdItem.Id, readItem.Id);
             Assert.Equal(workflowInstanceId, readItem.WorkflowInstanceId);
             Assert.Equal(itemToCreate.ActivityVersionId, readItem.ActivityVersionId);
             Assert.Equal(itemToCreate.ParentActivityInstanceId, readItem.ParentActivityInstanceId);
@@ -63,7 +63,7 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
                 ParentActivityInstanceId = Guid.NewGuid().ToString(),
                 ParentIteration = 1, 
             };
-            var id = await _service.CreateAsync(itemToCreate);
+            var createdItem = await _service.CreateAndReturnAsync(itemToCreate);
             var findUnique = new ActivityInstanceUnique
             {
                 WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
@@ -79,20 +79,19 @@ namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
             itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
             itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToString();
             itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
-            await _service.UpdateAsync(id, itemToUpdate);
-            var readItem = await _service.FindUniqueAsync(findUnique);
+            var updatedItem = await _service.UpdateAndReturnAsync(createdItem.Id, itemToUpdate);
 
             // Assert
-            Assert.Equal(id, readItem.Id);
-            Assert.Equal(workflowInstanceId, readItem.WorkflowInstanceId);
-            Assert.Equal(itemToUpdate.ActivityVersionId, readItem.ActivityVersionId);
-            Assert.Equal(itemToUpdate.ParentActivityInstanceId, readItem.ParentActivityInstanceId);
-            Assert.Equal(itemToUpdate.FinishedAt, readItem.FinishedAt);
-            Assert.Equal(itemToUpdate.ParentIteration, readItem.ParentIteration);
-            Assert.Equal(itemToUpdate.State, readItem.State);
-            Assert.Equal(itemToUpdate.ExceptionCategory, readItem.ExceptionCategory);
-            Assert.Equal(itemToUpdate.ExceptionFriendlyMessage, readItem.ExceptionFriendlyMessage);
-            Assert.Equal(itemToUpdate.ExceptionTechnicalMessage, readItem.ExceptionTechnicalMessage);
+            Assert.Equal(createdItem.Id, updatedItem.Id);
+            Assert.Equal(workflowInstanceId, updatedItem.WorkflowInstanceId);
+            Assert.Equal(itemToUpdate.ActivityVersionId, updatedItem.ActivityVersionId);
+            Assert.Equal(itemToUpdate.ParentActivityInstanceId, updatedItem.ParentActivityInstanceId);
+            Assert.Equal(itemToUpdate.FinishedAt, updatedItem.FinishedAt);
+            Assert.Equal(itemToUpdate.ParentIteration, updatedItem.ParentIteration);
+            Assert.Equal(itemToUpdate.State, updatedItem.State);
+            Assert.Equal(itemToUpdate.ExceptionCategory, updatedItem.ExceptionCategory);
+            Assert.Equal(itemToUpdate.ExceptionFriendlyMessage, updatedItem.ExceptionFriendlyMessage);
+            Assert.Equal(itemToUpdate.ExceptionTechnicalMessage, updatedItem.ExceptionTechnicalMessage);
         }
     }
 }

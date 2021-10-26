@@ -77,7 +77,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             item.AsyncRequestId = null;
             // TODO: item.ExceptionAlertHandled = null
 
-            await _workflowCapability.ActivityInstance.UpdateAsync(activityInstanceId, item, cancellationToken);
+            await _workflowCapability.ActivityInstance.UpdateAndReturnAsync(activityInstanceId, item, cancellationToken);
             await _requestMgmtCapability.Execution.ReadyForExecutionAsync(item.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log

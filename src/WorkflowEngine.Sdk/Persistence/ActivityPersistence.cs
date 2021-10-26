@@ -194,7 +194,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             FulcrumAssert.IsNotNull(latestVersion, CodeLocation.AsString());
             Activity.Version = latestVersion;
             Activity.Instance.ActivityVersionId = latestVersion.Id;
-            _storedActivity.Version = version.AsCopy();
+            _storedActivity.Version = latestVersion.AsCopy();
         }
 
         private async Task PersistActivityInstance(CancellationToken cancellationToken)
@@ -203,14 +203,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             await p.MeasureMethodAsync(async () =>
             {
                 var instance = Activity.Instance;
+                ActivityInstance updatedActivityInstance = null;
                 if (instance.Etag == null)
                 {
                     try
                     {
                         instance.Id = "ignore";
                         instance.Etag = "ignore";
-                        var activityInstanceId =
-                            await p.MeasureAsync(() => WorkflowCapability.ActivityInstance.CreateAsync(instance, cancellationToken));
+                        updatedActivityInstance = await p.MeasureAsync(() => WorkflowCapability.ActivityInstance.CreateAndReturnAsync(instance, cancellationToken));
                     }
                     catch (FulcrumConflictException)
                     {
@@ -223,7 +223,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     FulcrumAssert.IsTrue(!_storedActivity.Instance.HasCompleted, CodeLocation.AsString());
                     try
                     {
-                        await p.MeasureAsync(() => WorkflowCapability.ActivityInstance.UpdateAsync(instance.Id, instance,
+                        updatedActivityInstance = await p.MeasureAsync(() => WorkflowCapability.ActivityInstance.UpdateAndReturnAsync(instance.Id, instance,
                             cancellationToken));
                     }
                     catch (FulcrumConflictException)
@@ -232,19 +232,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     }
                 }
 
-                var findUnique = new ActivityInstanceUnique
+                if (updatedActivityInstance == null)
                 {
-                    WorkflowInstanceId = instance.WorkflowInstanceId,
-                    ActivityVersionId = instance.ActivityVersionId,
-                    ParentActivityInstanceId = instance.ParentActivityInstanceId,
-                    ParentIteration = instance.ParentIteration
-                };
+                    var findUnique = new ActivityInstanceUnique
+                    {
+                        WorkflowInstanceId = instance.WorkflowInstanceId,
+                        ActivityVersionId = instance.ActivityVersionId,
+                        ParentActivityInstanceId = instance.ParentActivityInstanceId,
+                        ParentIteration = instance.ParentIteration
+                    };
 
-                var latestInstance =
-                    await p.MeasureAsync(() => WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken));
-                FulcrumAssert.IsNotNull(latestInstance, CodeLocation.AsString());
-                Activity.Instance = latestInstance;
-                _storedActivity.Instance = instance.AsCopy();
+                    updatedActivityInstance =
+                        await p.MeasureAsync(() =>
+                            WorkflowCapability.ActivityInstance.FindUniqueAsync(findUnique, cancellationToken));
+                    FulcrumAssert.IsNotNull(updatedActivityInstance, CodeLocation.AsString());
+                }
+
+                Activity.Instance = updatedActivityInstance;
+                _storedActivity.Instance = updatedActivityInstance.AsCopy();
             });
         }
 

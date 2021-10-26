@@ -181,10 +181,9 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             return await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
-        protected async Task<ActivityInstanceRecord> CreateAcivityInstanceAsync(ActivityInstanceRecordCreate item, CancellationToken cancellationToken = default)
+        protected Task<ActivityInstanceRecord> CreateActivityInstanceAsync(ActivityInstanceRecordCreate item, CancellationToken cancellationToken = default)
         {
-            var id = await RuntimeTables.ActivityInstance.CreateAsync(item, cancellationToken);
-            return await RuntimeTables.ActivityInstance.ReadAsync(id, cancellationToken);
+            return RuntimeTables.ActivityInstance.CreateAndReturnAsync(item, cancellationToken);
         }
 
         protected async Task<ActivityInstanceRecord> CreateStandardActivityInstanceAsync(CancellationToken cancellationToken = default)
@@ -199,7 +198,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 State = ActivityStateEnum.Waiting.ToString(),
                 ParentIteration = 1
             };
-            return await CreateAcivityInstanceAsync(item, cancellationToken);
+            return await CreateActivityInstanceAsync(item, cancellationToken);
         }
     }
 }
