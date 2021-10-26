@@ -57,6 +57,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
             executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
             const int expectedValue = 10;
+            var minTime = DateTimeOffset.UtcNow;
 
             // Act
             var actualValue = await executor.ExecuteAsync((a, t) => Task.FromResult(expectedValue), null);
@@ -67,6 +68,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Success.ToString());
+            var maxTime = DateTimeOffset.UtcNow;
+            instance.FinishedAt.ShouldNotBeNull();
+            instance.FinishedAt.Value.ShouldBeInRange(minTime, maxTime);
         }
 
         [Fact]

@@ -186,18 +186,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private async Task SafeCallMethodAndUpdateActivityInformationAsync<TMethodReturnType>(ActivityMethod<TMethodReturnType> method, bool ignoreReturnValue, CancellationToken cancellationToken)
         {
             // Call the activity. The method will only return if this is a method with no external calls.
+            var activityInstance = ActivityPersistence.Activity.Instance;
             try
             {
                 if (ignoreReturnValue)
                 {
                     await method(Activity, cancellationToken);
-                    ActivityPersistence.Activity.Instance.ResultAsJson = "";
+                    activityInstance.ResultAsJson = "";
                 }
                 else
                 {
                     var result = await method(Activity, cancellationToken);
-                    ActivityPersistence.Activity.Instance.ResultAsJson = result.ToJsonString();
-                    ActivityPersistence.Activity.Instance.State = ActivityStateEnum.Success;
+                    activityInstance.ResultAsJson = result.ToJsonString();
+                    activityInstance.State = ActivityStateEnum.Success;
+                    activityInstance.FinishedAt = DateTimeOffset.UtcNow;
                 }
             }
             catch (FulcrumCancelledException)
@@ -214,7 +216,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
             catch (FulcrumTryAgainException)
             {
-                ActivityPersistence.Activity.Instance.State = ActivityStateEnum.Waiting;
+                activityInstance.State = ActivityStateEnum.Waiting;
                 await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
                 throw new HandledRequestPostponedException
                 {
@@ -224,8 +226,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             catch (RequestPostponedException e)
             {
                 if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
-                ActivityPersistence.Activity.Instance.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
-                ActivityPersistence.Activity.Instance.State = ActivityStateEnum.Waiting;
+                activityInstance.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
+                activityInstance.State = ActivityStateEnum.Waiting;
                 await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
                 throw new HandledRequestPostponedException(e);
             }
@@ -233,15 +235,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             {
                 // Normal error
                 // TODO: Handle error: Send event, throw postpone if halt
-                ActivityPersistence.Activity.Instance.State = ActivityStateEnum.Failed;
-                ActivityPersistence.Activity.Instance.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
-                ActivityPersistence.Activity.Instance.ExceptionTechnicalMessage =
+                activityInstance.State = ActivityStateEnum.Failed;
+                activityInstance.FinishedAt = DateTimeOffset.UtcNow;
+                activityInstance.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
+                activityInstance.ExceptionTechnicalMessage =
                     $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
-                ActivityPersistence.Activity.Instance.ExceptionFriendlyMessage =
+                activityInstance.ExceptionFriendlyMessage =
                     $"A local method failed with the following message: {e.Message}";
             }
 
-            if (ActivityPersistence.Activity.Instance.Id != null)
+            if (activityInstance.Id != null)
             {
                 await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
             }

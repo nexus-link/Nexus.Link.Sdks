@@ -161,7 +161,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var tasks = new List<Task<ActivityInstanceRecord>>();
             foreach (var activityInstanceRecord in activityInstancesList.Data)
             {
-                var task = string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
+                var task = activityInstanceRecord.HasCompleted || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
                     ? Task.FromResult(activityInstanceRecord)
                     : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
                 tasks.Add(task);
@@ -181,6 +181,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         private async Task<ActivityInstanceRecord> TryGetResponseAsync(ActivityInstanceRecord activityInstanceRecord, CancellationToken cancellationToken)
         {
+            InternalContract.Require(!activityInstanceRecord.HasCompleted, "The activity instance must not be completed.");
             var retries = 0;
             while (true)
             {
@@ -191,11 +192,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 if (response.Exception?.Name == null)
                 {
                     activityInstanceRecord.State = ActivityStateEnum.Success.ToString();
+                    activityInstanceRecord.FinishedAt = DateTimeOffset.UtcNow;
                     activityInstanceRecord.ResultAsJson = response.Content;
                 }
                 else
                 {
                     activityInstanceRecord.State = ActivityStateEnum.Failed.ToString();
+                    activityInstanceRecord.FinishedAt = DateTimeOffset.UtcNow;
                     activityInstanceRecord.ExceptionCategory = ActivityExceptionCategoryEnum.Technical.ToString();
                     activityInstanceRecord.ExceptionTechnicalMessage =
                         $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";

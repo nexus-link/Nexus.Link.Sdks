@@ -111,7 +111,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         protected internal async Task PersistAsync(CancellationToken cancellationToken)
         {
-                var hasCompleted = Activity.Instance.HasCompleted;
+                var hasCompleted = _storedActivity.Instance.HasCompleted;
                 if (!hasCompleted)
                 {
                     await PersistActivityFormAsync(cancellationToken);
