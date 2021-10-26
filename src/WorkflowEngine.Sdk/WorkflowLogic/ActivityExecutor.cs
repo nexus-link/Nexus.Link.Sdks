@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,11 +8,13 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
@@ -60,27 +63,39 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(Activity != null, $"Property {nameof(Activity)} must be set before calling the {nameof(InternalExecuteAsync)} method.");
-
-            await SafeSaveActivityInformationAsync(true, cancellationToken);
-
-            // Already have a result?
-            if (ActivityPersistence.HasCompleted)
+            var performance = new Performance(GetType().Name, $"{Activity}");
+            return await performance.MeasureMethodAsync(async () =>
             {
-                return await SafeGetResultOrThrowAsync(false, ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
-            }
+                InternalContract.RequireNotNull(method, nameof(method));
+                InternalContract.Require(Activity != null,
+                    $"Property {nameof(Activity)} must be set before calling the {nameof(InternalExecuteAsync)} method.");
 
-            if (!string.IsNullOrWhiteSpace(ActivityPersistence.Activity.Instance.AsyncRequestId))
-            {
-                throw new HandledRequestPostponedException(ActivityPersistence.Activity.Instance.AsyncRequestId);
-            }
+                await performance.MeasureAsync(
+                    async () => await SafeSaveActivityInformationAsync(true, cancellationToken),
+                    nameof(SafeSaveActivityInformationAsync));
 
-            await SafeVerifyMaxTimeAsync();
+                // Already have a result?
+                if (ActivityPersistence.HasCompleted)
+                {
+                    return await performance.MeasureAsync(() => SafeGetResultOrThrowAsync(false, ignoreReturnValue,
+                        getDefaultValueMethodAsync,
+                        cancellationToken));
+                }
 
-            await SafeCallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+                if (!string.IsNullOrWhiteSpace(ActivityPersistence.Activity.Instance.AsyncRequestId))
+                {
+                    throw new HandledRequestPostponedException(ActivityPersistence.Activity.Instance.AsyncRequestId);
+                }
 
-            return await SafeGetResultOrThrowAsync(false, ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
+                await performance.MeasureAsync(SafeVerifyMaxTimeAsync);
+
+                await performance.MeasureAsync(() =>
+                    SafeCallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken));
+
+                return await performance.MeasureAsync(() => SafeGetResultOrThrowAsync(false, ignoreReturnValue,
+                    getDefaultValueMethodAsync,
+                    cancellationToken));
+            });
         }
 
         private async Task SafeUpdateInstanceWithResultAndAlertExceptionsAsync(CancellationToken cancellationToken)

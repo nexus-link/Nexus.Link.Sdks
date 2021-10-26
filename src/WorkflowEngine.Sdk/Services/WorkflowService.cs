@@ -11,6 +11,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
@@ -57,6 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 await ReadAllActivitiesAndUpdateResponsesAsync(form.Id, version.Id, instance.Id, cancellationToken);
             workflow.Activities = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
             workflow.Activities.Sort(PositionSort);
+            workflow.NotReferredActivities = BuildNotReferred(activityForms, activityVersions, activityInstances);
 
             return workflow;
         }
@@ -64,6 +66,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         private static int PositionSort(Activity x, Activity y)
         {
             return x.Version.Position.CompareTo(y.Version.Position);
+        }
+
+        private List<Activity> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
+            Dictionary<string, ActivityVersion> activityVersions,
+            Dictionary<string, ActivityInstance> activityInstances)
+        {
+            var activities = new List<Activity>();
+            foreach (var (key, form) in activityForms)
+            {
+                var version = activityVersions.Values.FirstOrDefault(v => v.ActivityFormId == form.Id);
+                FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
+                var activity = new Activity
+                {
+                    Instance = null,
+                    Version = version,
+                    Form = form
+                };
+                activities.Add(activity);
+            }
+            return activities;
         }
 
         private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityForm> activityForms,
@@ -98,12 +120,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
                 new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId }), 0,
                 int.MaxValue, cancellationToken);
-            var activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityForm().From(x));
+            var activityForms = activityFormsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityForm().From(x));
 
             var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
                 new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
                 { WorkflowVersionId = versionId }), 0, int.MaxValue, cancellationToken);
-            var activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToString(), x => new ActivityVersion().From(x));
+            var activityVersions = activityVersionsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityVersion().From(x));
 
             var activityInstancesList = await _runtimeTables.ActivityInstance.SearchAsync(
                 new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
@@ -125,7 +147,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             }
 
             var activityInstances = activityInstancesRecords
-                .ToDictionary(x => x.Id.ToString(), x => new ActivityInstance().From(x));
+                .ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityInstance().From(x));
 
             return (activityForms, activityVersions, activityInstances);
         }
