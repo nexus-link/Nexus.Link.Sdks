@@ -19,7 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         {
             InternalContract.RequireNotNull(findUnique, nameof(findUnique));
 
-            return PostAsync<ActivityInstance, ActivityInstanceUnique>("ActivityInstances/FindUnique", findUnique, cancellationToken: cancellationToken);
+            return PostAsync<ActivityInstance, ActivityInstanceUnique>("FindUnique", findUnique, cancellationToken: cancellationToken);
         }
     }
 }

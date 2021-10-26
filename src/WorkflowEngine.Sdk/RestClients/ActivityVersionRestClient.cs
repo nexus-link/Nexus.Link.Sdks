@@ -21,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
 
-            var relativeUrl = $"ActivityVersions?workflowVersionId={WebUtility.UrlEncode(workflowVersionId)}&activityFormId={WebUtility.UrlEncode(activityFormId)}";
+            var relativeUrl = $"?workflowVersionId={WebUtility.UrlEncode(workflowVersionId)}&activityFormId={WebUtility.UrlEncode(activityFormId)}";
             return GetAsync<ActivityVersion>(relativeUrl, cancellationToken: cancellationToken);
         }
     }
