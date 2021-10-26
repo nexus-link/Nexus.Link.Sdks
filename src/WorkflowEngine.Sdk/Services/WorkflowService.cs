@@ -56,8 +56,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
             var (activityForms, activityVersions, activityInstances) =
                 await ReadAllActivitiesAndUpdateResponsesAsync(form.Id, version.Id, instance.Id, cancellationToken);
-            workflow.Activities = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
-            workflow.Activities.Sort(PositionSort);
+            workflow.ReferredActivities = BuildReferred(activityForms, activityVersions, activityInstances);
+            var activityTree = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
+            activityTree.Sort(PositionSort);
+            workflow.ActivityTree = activityTree;
             workflow.NotReferredActivities = BuildNotReferred(activityForms, activityVersions, activityInstances);
 
             return workflow;
@@ -66,6 +68,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         private static int PositionSort(Activity x, Activity y)
         {
             return x.Version.Position.CompareTo(y.Version.Position);
+        }
+
+        private List<Activity> BuildReferred(Dictionary<string, ActivityForm> activityForms,
+            Dictionary<string, ActivityVersion> activityVersions,
+            Dictionary<string, ActivityInstance> activityInstances)
+        {
+            var activities = new List<Activity>();
+            foreach (var entry in activityInstances)
+            {
+                var instance = entry.Value;
+                var version = activityVersions[instance.ActivityVersionId];
+                var form = activityForms[version.ActivityFormId];
+                var activity = new Activity
+                {
+                    Instance = instance,
+                    Version = version,
+                    Form = form
+                };
+                activity.Children = BuildActivityTree(activity, activityForms, activityVersions, activityInstances);
+                activities.Add(activity);
+            }
+
+            return activities;
         }
 
         private List<Activity> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
@@ -77,6 +102,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             {
                 var version = activityVersions.Values.FirstOrDefault(v => v.ActivityFormId == form.Id);
                 FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
+                var instance = activityInstances.Values.FirstOrDefault(i => i.ActivityVersionId == version!.Id);
+                if (instance != null) continue;
                 var activity = new Activity
                 {
                     Instance = null,

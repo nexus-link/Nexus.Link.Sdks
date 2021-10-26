@@ -27,8 +27,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             workflow.Form.Id.ShouldBe(WorkflowFormRecord.Id.ToString());
             workflow.Version.Id.ShouldBe(WorkflowVersionRecord.Id.ToString());
             workflow.Instance.Id.ShouldBe(id);
-            workflow.Activities.Count.ShouldBe(2);
-            foreach (var activity in workflow.Activities)
+            workflow.ActivityTree.Count.ShouldBe(2);
+            foreach (var activity in workflow.ActivityTree)
             {
                 activity.Instance.WorkflowInstanceId.ShouldBe(WorkflowInstanceRecord.Id.ToString());
                 activity.Children.Count.ShouldBe(1);

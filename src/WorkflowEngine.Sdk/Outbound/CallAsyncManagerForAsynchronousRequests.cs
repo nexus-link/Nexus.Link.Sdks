@@ -27,29 +27,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var p = new Performance(GetType().Name, $"{request.Method} {request.RequestUri}");
-            return await p.MeasureMethodAsync(async () =>
+            if (!AsyncWorkflowStatic.Context.ExecutionIsAsynchronous)
             {
-                if (!AsyncWorkflowStatic.Context.ExecutionIsAsynchronous)
-                {
-                    return await p.MeasureAsync(() => base.SendAsync(request, cancellationToken));
-                }
+                return await base.SendAsync(request, cancellationToken);
+            }
 
-                // Send the request to AM
-                string contentAsString = null;
-                if (request.Content != null)
-                {
-                    await request.Content.LoadIntoBufferAsync();
-                    contentAsString = await request.Content.ReadAsStringAsync();
-                }
+            // Send the request to AM
+            string contentAsString = null;
+            if (request.Content != null)
+            {
+                await request.Content.LoadIntoBufferAsync();
+                contentAsString = await request.Content.ReadAsStringAsync();
+            }
 
-                var requestId = await p.MeasureAsync(() => _asyncRequestClient
-                    .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
-                    .AddHeaders(request.Headers)
-                    .SetContent(contentAsString, "application/json")
-                    .SendAsync(cancellationToken));
-                throw new RequestPostponedException(requestId);
-            });
+            var requestId = await _asyncRequestClient
+                .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
+                .AddHeaders(request.Headers)
+                .SetContent(contentAsString, "application/json")
+                .SendAsync(cancellationToken);
+            throw new RequestPostponedException(requestId);
         }
     }
 }

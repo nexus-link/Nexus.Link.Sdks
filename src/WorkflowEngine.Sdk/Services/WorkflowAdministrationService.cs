@@ -38,7 +38,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 FinishedAt = workflowRecord.Instance.FinishedAt,
                 CancelledAt = workflowRecord.Instance.CancelledAt,
                 Title = $"{workflowRecord.Form.Title} {workflowRecord.Version.MajorVersion}.{workflowRecord.Version.MinorVersion}: {workflowRecord.Instance.Title}",
-                Activities = await BuildActivityTreeAsync(null, workflowRecord.Activities)
+                Activities = await BuildActivityTreeAsync(null, workflowRecord.ActivityTree)
             };
 
             // TODO: state på hela workflow
@@ -83,7 +83,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             // TODO: Audit log
         }
 
-        private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, List<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)
+        private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, IReadOnlyList<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)
         {
             var activities = new List<Activity>();
             foreach (var activityRecord in workflowRecordActivities)
