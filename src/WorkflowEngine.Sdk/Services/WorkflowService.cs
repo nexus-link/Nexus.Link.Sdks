@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
@@ -11,6 +12,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
@@ -185,6 +187,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var retries = 0;
             while (true)
             {
+                if (activityInstanceRecord.HasCompleted) return activityInstanceRecord;
                 var response = await _asyncRequestClient.GetFinalResponseAsync(activityInstanceRecord.AsyncRequestId,
                     cancellationToken);
                 if (response == null || !response.HasCompleted) return activityInstanceRecord;
@@ -208,13 +211,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
                 try
                 {
-                    return await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
+                    var result = await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
+                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {JsonConvert.SerializeObject(result)}");
+                    return result;
                 }
                 catch (FulcrumConflictException)
                 {
+                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {nameof(FulcrumConflictException)}");
                     // Concurrency problem, try again after short pause.
                     retries++;
                     if (retries > 5) throw;
+                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {nameof(FulcrumConflictException)} Retry");
                     await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
                     activityInstanceRecord = await _runtimeTables.ActivityInstance.ReadAsync(activityInstanceRecord.Id, cancellationToken);
                 }
