@@ -1,6 +1,6 @@
 ﻿using Nexus.Link.Libraries.Core.Context;
 
-namespace Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     /// <summary>
     /// Help class to setup your application

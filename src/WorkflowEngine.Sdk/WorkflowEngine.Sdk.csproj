@@ -32,10 +32,6 @@
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
     <Version>1.13.0-alfa02</Version>

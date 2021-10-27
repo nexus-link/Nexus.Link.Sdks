@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Inbound
 {

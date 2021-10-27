@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
         Activity activity,
@@ -18,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
     public abstract class Activity
     {
-        public IActivityExecutor ActivityExecutor { get; }
+        private ActivityExecutor _activityExecutor;
 
         protected internal ActivityPersistence ActivityPersistence { get; }
         public int? Iteration { get; protected set; }
@@ -38,15 +38,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public List<int> NestedIterations { get; } = new();
 
-        protected Activity(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor)
+        protected Activity(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
         {
             InternalContract.RequireNotNull(activityPersistence, nameof(activityPersistence));
-
-            ActivityExecutor = activityExecutor;
-            ActivityExecutor.Activity = this;
+            InternalContract.RequireNotNull(workflowVersion, nameof(workflowVersion));
             
             ActivityPersistence = activityPersistence;
+            _activityExecutor = new ActivityExecutor(workflowVersion, this);
 
             activityPersistence.MethodHandler.InstanceTitle = activityPersistence.NestedPositionAndTitle;
             if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
@@ -65,6 +63,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public TParameter GetArgument<TParameter>(string parameterName)
         {
             return ActivityPersistence.MethodHandler.GetArgument<TParameter>(parameterName);
+        }
+
+        internal Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
+            ActivityMethod<TMethodReturnType> method,
+            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+            return _activityExecutor.ExecuteAsync(method, getDefaultValueMethodAsync, cancellationToken);
+        }
+
+        internal async Task InternalExecuteAsync(
+            ActivityMethod method,
+            CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+
+            await _activityExecutor.ExecuteAsync(method, cancellationToken);
         }
     }
 }

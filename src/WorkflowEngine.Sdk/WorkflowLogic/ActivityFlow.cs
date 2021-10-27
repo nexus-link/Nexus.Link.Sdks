@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     internal abstract class ActivityFlowBase
     {
-        protected IWorkflowVersionBase WorkflowVersion { get; }
+        protected IWorkflowVersion WorkflowVersion { get; }
         protected readonly WorkflowPersistence WorkflowPersistence;
         protected readonly IWorkflowCapability WorkflowCapability;
         protected readonly IAsyncRequestClient AsyncRequestClient;
@@ -30,7 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         protected Activity Previous;
         protected ActivityFailUrgencyEnum FailUrgency;
 
-        protected ActivityFlowBase(IWorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
+        protected ActivityFlowBase(IWorkflowVersion workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
             WorkflowPersistence workflowPersistence, string formTitle, string activityFormId)
         {
@@ -93,8 +93,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityAction Action()
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.Action);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityAction( activityInformation, activityExecutor);
+            var activity = new ActivityAction( activityInformation, WorkflowVersion);
             return activity;
         }
         
@@ -102,8 +101,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityLoopUntilTrue LoopUntil()
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.LoopUntilTrue);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityLoopUntilTrue(activityInformation, activityExecutor);
+            var activity = new ActivityLoopUntilTrue(activityInformation, WorkflowVersion);
             return activity;
         }
         
@@ -111,8 +109,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TItem>(activityInformation, activityExecutor, items);
+            var activity = new ActivityForEachParallel<TItem>(activityInformation, WorkflowVersion, items);
             return activity;
         }
         
@@ -120,8 +117,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachSequential<TItem>(activityInformation, activityExecutor, items);
+            var activity = new ActivityForEachSequential<TItem>(activityInformation, WorkflowVersion, items);
             return activity;
         }
     }
@@ -182,18 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityAction<TActivityReturns> Action()
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.Action);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityAction<TActivityReturns>(activityInformation, activityExecutor, GetDefaultValueMethodAsync);
-            return activity;
-        }
-        
-        /// <inheritdoc/>
-        public ActivityIf<TActivityReturns> If()
-        {
-            InternalContract.Require(typeof(TActivityReturns) == typeof(bool), $"You can only use {nameof(If)}() with type {nameof(Boolean)}, not with type {nameof(TActivityReturns)}." );
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.Condition);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityIf<TActivityReturns>(activityInformation, activityExecutor, GetDefaultValueMethodAsync);
+            var activity = new ActivityAction<TActivityReturns>(activityInformation, WorkflowVersion, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -201,8 +186,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.LoopUntilTrue);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, activityExecutor, GetDefaultValueMethodAsync);
+            var activity = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, WorkflowVersion, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -210,8 +194,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -219,8 +202,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
@@ -228,8 +210,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activityExecutor = new ActivityExecutor(WorkflowVersion, AsyncRequestClient);
-            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, activityExecutor, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
             return activity;
         }
     }

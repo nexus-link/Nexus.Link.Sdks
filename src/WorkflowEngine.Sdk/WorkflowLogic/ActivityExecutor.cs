@@ -14,65 +14,67 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public class ActivityExecutor : IActivityExecutor
+    public class ActivityExecutor
     {
-        public IWorkflowVersionBase WorkflowVersion { get; }
+        public IWorkflowVersion WorkflowVersion { get; }
         public Activity Activity { get; set; }
-        public IAsyncRequestClient AsyncRequestClient { get; }
 
-        public ActivityExecutor(IWorkflowVersionBase workflowVersion, IAsyncRequestClient asyncRequestClient)
+        public ActivityExecutor(IWorkflowVersion workflowVersion, Activity activity)
         {
+            InternalContract.RequireNotNull(workflowVersion, nameof(workflowVersion));
+            InternalContract.RequireNotNull(activity, nameof(activity));
             WorkflowVersion = workflowVersion;
-            AsyncRequestClient = asyncRequestClient;
+            Activity = activity;
         }
 
         private ActivityPersistence ActivityPersistence => Activity.ActivityPersistence;
 
-        public Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
-            ActivityMethod<TMethodReturnType> method,
-            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
-            CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(ActivityMethod method, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(Activity != null, $"Property {nameof(Activity)} must be set before calling the {nameof(ExecuteAsync)} method.");
-
-            return InternalExecuteAsync(method, false, getDefaultValueMethodAsync, cancellationToken);
-        }
-
-        public async Task ExecuteAsync(
-            ActivityMethod method,
-            CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(Activity != null, $"Property {nameof(Activity)} must be set before calling the {nameof(ExecuteAsync)} method.");
-
-            await InternalExecuteAsync(async (instance, ct) =>
-            {
-                await method(instance, ct);
-                return Task.FromResult(false);
-            }, true, null, cancellationToken);
-        }
-
-        private async Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
-            ActivityMethod<TMethodReturnType> method,
-            bool ignoreReturnValue,
-            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
-            CancellationToken cancellationToken)
-        {
-            InternalContract.RequireNotNull(method, nameof(method));
-            InternalContract.Require(Activity != null,
-                $"Property {nameof(Activity)} must be set before calling the {nameof(InternalExecuteAsync)} method.");
 
             await SafeSaveActivityInformationAsync(true, cancellationToken);
 
             // Already have a result?
             if (ActivityPersistence.HasCompleted)
             {
-                return await SafeGetResultOrThrowAsync(false, ignoreReturnValue,
+                await SafeGetResultOrThrowAsync<bool>(false, true, null, cancellationToken);
+            }
+
+            if (!string.IsNullOrWhiteSpace(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId))
+            {
+                throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId);
+            }
+
+            await SafeVerifyMaxTimeAsync();
+
+            await SafeCallMethodAndUpdateActivityInformationAsync(async (a, ct) =>
+            {
+                await method(a, ct);
+                return Task.FromResult(true);
+            }, true, cancellationToken);
+
+            await SafeGetResultOrThrowAsync<bool>(false, true, null, cancellationToken);
+        }
+
+        public async Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
+            ActivityMethod<TMethodReturnType> method, 
+            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(method, nameof(method));
+
+            await SafeSaveActivityInformationAsync(true, cancellationToken);
+
+            // Already have a result?
+            if (ActivityPersistence.HasCompleted)
+            {
+                return await SafeGetResultOrThrowAsync(false, false,
                     getDefaultValueMethodAsync,
                     cancellationToken);
             }
@@ -84,9 +86,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             await SafeVerifyMaxTimeAsync();
 
-            await SafeCallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+            await SafeCallMethodAndUpdateActivityInformationAsync(method, false, cancellationToken);
 
-            return await SafeGetResultOrThrowAsync(false, ignoreReturnValue,
+            return await SafeGetResultOrThrowAsync(false, false,
                 getDefaultValueMethodAsync,
                 cancellationToken);
         }

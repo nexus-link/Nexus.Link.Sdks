@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public class ActivityForEachParallel<TItemType> : Activity
     {
@@ -19,8 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items)
-            : base(activityPersistence, activityExecutor)
+            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items)
+            : base(activityPersistence, workflowVersion)
         {
             Items = items;
             InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachParallel, ActivityPersistence.ActivityType, "Ignore",
@@ -32,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            await ActivityExecutor.ExecuteAsync(
+            await InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 cancellationToken);
         }
@@ -105,8 +104,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachParallel(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItem> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, activityExecutor)
+            IWorkflowVersion workflowVersion, IEnumerable<TItem> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityPersistence, workflowVersion)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
@@ -129,7 +128,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItem, ActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync(
+            return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 (ct) =>  null, cancellationToken);
         }

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
@@ -10,11 +9,12 @@ using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public abstract class WorkflowVersionBase : IWorkflowVersionBase
+    public abstract class WorkflowVersionBase : IWorkflowVersion
     {
         private readonly IWorkflowCapability _workflowCapability;
         public int MajorVersion { get; }

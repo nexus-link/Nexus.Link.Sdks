@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public abstract class ActivityLoopUntilTrueBase : Activity
     {
@@ -17,8 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public bool? EndLoop { get; set; }
 
-        protected ActivityLoopUntilTrueBase(ActivityPersistence activityPersistence, IActivityExecutor activityExecutor)
-            : base(activityPersistence, activityExecutor)
+        protected ActivityLoopUntilTrueBase(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
+            : base(activityPersistence, workflowVersion)
         {
             InternalContract.RequireAreEqual(ActivityTypeEnum.LoopUntilTrue, ActivityPersistence.ActivityType, "Ignore",
                 $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
@@ -39,8 +38,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     
     public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase
     {
-        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IActivityExecutor activityExecutor)
-            : base(activityPersistence, activityExecutor)
+        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
+            : base(activityPersistence, workflowVersion)
         {
         }
 
@@ -48,7 +47,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityLoopUntilTrue, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            await ActivityExecutor.ExecuteAsync(
+            await InternalExecuteAsync(
                 (a, ct) => LoopUntilMethod(method, a, ct), cancellationToken);
         }
 
@@ -81,8 +80,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, activityExecutor)
+        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityPersistence, workflowVersion)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
@@ -91,7 +90,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<ActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return await ActivityExecutor.ExecuteAsync(
+            return await InternalExecuteAsync(
                 (a, ct) => LoopUntilMethod(method, a, ct),
                 _getDefaultValueMethodAsync, cancellationToken);
         }

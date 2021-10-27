@@ -4,54 +4,51 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Extensions
 {
-    public static class WorkflowVersionExtensions
+    public static class WorkflowFormExtensions
     {
         /// <summary>
-        /// WorkflowVersionRecordCreate.From(WorkflowVersionCreate)
+        /// WorkflowRecord.From(Workflow)
         /// </summary>
-        public static WorkflowVersionRecordCreate From(this WorkflowVersionRecordCreate target, WorkflowVersionCreate source)
+        public static WorkflowFormRecordCreate From(this WorkflowFormRecordCreate target, WorkflowFormCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.WorkflowFormId = MapperHelper.MapToType<Guid, string>(source.WorkflowFormId);
-            target.MajorVersion = source.MajorVersion;
-            target.MinorVersion = source.MinorVersion;
-            target.DynamicCreate = source.DynamicCreate;
+            
+            target.CapabilityName = source.CapabilityName;
+            target.Title = source.Title;
             return target;
         }
 
         /// <summary>
-        /// WorkflowVersionRecord.From(WorkflowVersion)
+        /// WorkflowRecord.From(Workflow)
         /// </summary>
-        public static WorkflowVersionRecord From(this WorkflowVersionRecord target, WorkflowVersion source)
+        public static WorkflowFormRecord From(this WorkflowFormRecord target, WorkflowForm source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((WorkflowVersionRecordCreate) target).From(source);
+            ((WorkflowFormRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
             return target;
         }
 
         /// <summary>
-        /// WorkflowVersion.From(WorkflowVersionRecord)
+        /// Workflow.From(WorkflowRecord)
         /// </summary>
-        public static WorkflowVersion From(this WorkflowVersion target, WorkflowVersionRecord source)
+        public static WorkflowForm From(this WorkflowForm target, WorkflowFormRecord source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowFormId = MapperHelper.MapToType<string, Guid>(source.WorkflowFormId);
-            target.MajorVersion = source.MajorVersion;
-            target.MinorVersion = source.MinorVersion;
-            target.DynamicCreate = source.DynamicCreate;
+            target.Title = source.Title;
+            target.CapabilityName = source.CapabilityName;
             target.Etag = source.Etag;
             return target;
         }

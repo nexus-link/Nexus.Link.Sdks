@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public IWorkflowCapability Capability { get; }
         public IAsyncRequestClient AsyncRequestClient { get; }
 
-        private readonly Dictionary<int, IWorkflowVersionBase> _versions = new();
+        private readonly Dictionary<int, IWorkflowVersion> _versions = new();
 
         public string WorkflowCapabilityName { get; private set; }
         public string WorkflowFormId { get; set; }
@@ -64,7 +64,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return null;
         }
 
-        public WorkflowVersionCollection AddWorkflowVersion(IWorkflowVersionBase workflowVersion)
+        public WorkflowVersionCollection AddWorkflowVersion(IWorkflowVersion workflowVersion)
         {
             _versions.Add(workflowVersion.MajorVersion, workflowVersion);
             return this;

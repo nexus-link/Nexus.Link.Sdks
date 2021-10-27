@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public class ActivityForEachSequential<TItemType> : Activity
     {
@@ -18,8 +17,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items)
-            : base(activityPersistence, activityExecutor)
+            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items)
+            : base(activityPersistence, workflowVersion)
         {
             InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
                 $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
@@ -31,7 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync(
+            return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 cancellationToken);
         }
@@ -68,8 +67,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public object Result { get; set; }
 
         public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, activityExecutor)
+            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityPersistence, workflowVersion)
         {
             InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
                 $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
@@ -82,7 +81,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync(
+            return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 (ct) =>  null, cancellationToken);
         }

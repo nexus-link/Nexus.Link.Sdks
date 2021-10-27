@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
@@ -31,7 +32,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
 
         ActivityAction<TActivityReturns> Action();
-        ActivityIf<TActivityReturns> If();
         ActivityLoopUntilTrue<TActivityReturns> LoopUntil();
         ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items);
         ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);

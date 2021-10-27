@@ -1,7 +1,6 @@
-﻿using System;
-using Nexus.Link.Libraries.Core.Context;
+﻿using Nexus.Link.Libraries.Core.Context;
 
-namespace Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     public class AsyncWorkflowContext
     {

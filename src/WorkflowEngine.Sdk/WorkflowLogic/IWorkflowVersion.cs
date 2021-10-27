@@ -1,6 +1,6 @@
 ﻿namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public interface IWorkflowVersionBase
+    public interface IWorkflowVersion
     {
         int MajorVersion { get; }
         int MinorVersion { get; }

@@ -4,17 +4,16 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public class ActivityCondition<TActivityReturns> : Activity
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityCondition(ActivityPersistence activityPersistence, IActivityExecutor activityExecutor, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, activityExecutor)
+        public ActivityCondition(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityPersistence, workflowVersion)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             InternalContract.RequireAreEqual(ActivityTypeEnum.Condition, ActivityPersistence.ActivityType, "Ignore",
@@ -25,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<Activity, CancellationToken, Task<TActivityReturns>> conditionMethodAsync,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync((instance, ct) => MapMethodAsync(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
+            return InternalExecuteAsync((instance, ct) => MapMethodAsync(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
         }
 
         private static Task<TActivityReturns> MapMethodAsync(
