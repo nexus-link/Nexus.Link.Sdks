@@ -80,9 +80,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected async Task InternalExecuteAsync(CancellationToken cancellationToken)
         {
-            // Make sure we're on correct database version
-            InternalContract.RequireNotNull(DatabasePatchSettings.DatabasePatchLevelVerifier, "You need to setup DatabasePatchSettings.DatabasePatchLevelVerifier");
-            await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
+            // If service runs directly with database connection, make sure we're on correct database version
+#pragma warning disable CS0618
+            if (DatabasePatchSettings.DatabasePatchLevelVerifier != null)
+            {
+                await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
+            }
+#pragma warning restore CS0618
 
             if (string.IsNullOrWhiteSpace(AsyncWorkflowStatic.Context.WorkflowInstanceId))
             {

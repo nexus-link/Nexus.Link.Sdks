@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.12.2</Version>
+    <Version>1.12.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
       1.12.2 Fix in rest clients paths
       1.12.0 Now preloads activity information when a workflow starts
       1.11.2 Case confusion
@@ -59,15 +60,15 @@
       1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
       1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
       1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
-		1.7.0 Support for retry activity
-		1.6.0 Support for Cancel workflow
-		1.5.0 Service contract changes, mostly removing child things
-		1.4.0 Added error handling
-		1.3.0 Implemented WorkflowService and WorkflowAdministrationService
-		1.2.0 Refactored ActivityInstance with respect to fields for failed activities
-		1.1.0-New syntax for flow programming
-		1.0.5 First release
-	</PackageReleaseNotes>
+      1.7.0 Support for retry activity
+      1.6.0 Support for Cancel workflow
+      1.5.0 Service contract changes, mostly removing child things
+      1.4.0 Added error handling
+      1.3.0 Implemented WorkflowService and WorkflowAdministrationService
+      1.2.0 Refactored ActivityInstance with respect to fields for failed activities
+      1.1.0-New syntax for flow programming
+      1.0.5 First release
+    </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 

@@ -9,6 +9,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Temporary
 {
+    [Obsolete("You are discouraged to use the SQL implementation of Nexus Workflows. Instead use the Rest Clients implementation.")]
     public class DatabasePatchLevelVerifierSql : IVerifyDatabasePatchLevel
     {
         private readonly string _connectionString;
