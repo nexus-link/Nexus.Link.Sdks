@@ -38,7 +38,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             _asyncRequestClient = new AsyncRequestClient(asyncRequestMgmtCapability);
         }
 
-        public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowSummary> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
@@ -49,7 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                 await _configurationTables.WorkflowVersion.ReadAsync(instance.WorkflowVersionId, cancellationToken);
             var form = await _configurationTables.WorkflowForm.ReadAsync(version.WorkflowFormId, cancellationToken);
 
-            var workflow = new Workflow
+            var workflow = new WorkflowSummary
             {
                 Instance = new WorkflowInstance().From(instance),
                 Form = new WorkflowForm().From(form),
@@ -67,22 +67,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return workflow;
         }
 
-        private static int PositionSort(Activity x, Activity y)
+        private static int PositionSort(ActivitySummary x, ActivitySummary y)
         {
             return x.Version.Position.CompareTo(y.Version.Position);
         }
 
-        private List<Activity> BuildReferred(Dictionary<string, ActivityForm> activityForms,
+        private List<ActivitySummary> BuildReferred(Dictionary<string, ActivityForm> activityForms,
             Dictionary<string, ActivityVersion> activityVersions,
             Dictionary<string, ActivityInstance> activityInstances)
         {
-            var activities = new List<Activity>();
+            var activities = new List<ActivitySummary>();
             foreach (var entry in activityInstances)
             {
                 var instance = entry.Value;
                 var version = activityVersions[instance.ActivityVersionId];
                 var form = activityForms[version.ActivityFormId];
-                var activity = new Activity
+                var activity = new ActivitySummary
                 {
                     Instance = instance,
                     Version = version,
@@ -95,18 +95,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return activities;
         }
 
-        private List<Activity> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
+        private List<ActivitySummary> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
             Dictionary<string, ActivityVersion> activityVersions,
             Dictionary<string, ActivityInstance> activityInstances)
         {
-            var activities = new List<Activity>();
+            var activities = new List<ActivitySummary>();
             foreach (var (key, form) in activityForms)
             {
                 var version = activityVersions.Values.FirstOrDefault(v => v.ActivityFormId == form.Id);
                 FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
                 var instance = activityInstances.Values.FirstOrDefault(i => i.ActivityVersionId == version!.Id);
                 if (instance != null) continue;
-                var activity = new Activity
+                var activity = new ActivitySummary
                 {
                     Instance = null,
                     Version = version,
@@ -117,18 +117,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return activities;
         }
 
-        private List<Activity> BuildActivityTree(Activity parent, Dictionary<string, ActivityForm> activityForms,
+        private List<ActivitySummary> BuildActivityTree(ActivitySummary parent, Dictionary<string, ActivityForm> activityForms,
             Dictionary<string, ActivityVersion> activityVersions,
             Dictionary<string, ActivityInstance> activityInstances)
         {
-            var activities = new List<Activity>();
+            var activities = new List<ActivitySummary>();
             foreach (var entry in activityInstances.Where(x =>
                 x.Value.ParentActivityInstanceId?.ToString() == parent?.Instance.Id))
             {
                 var instance = entry.Value;
                 var version = activityVersions[instance.ActivityVersionId];
                 var form = activityForms[version.ActivityFormId];
-                var activity = new Activity
+                var activity = new ActivitySummary
                 {
                     Instance = instance,
                     Version = version,

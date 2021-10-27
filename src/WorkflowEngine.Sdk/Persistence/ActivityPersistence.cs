@@ -21,18 +21,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
         public IWorkflowCapability WorkflowCapability { get; }
         public WorkflowPersistence WorkflowPersistence { get; }
 
-        public Activity Activity { get; }
-        private readonly Activity _storedActivity;
+        public ActivitySummary ActivitySummary { get; }
+        private readonly ActivitySummary _storedActivitySummary;
 
         public MethodHandler MethodHandler { get; }
         public string PreviousActivityId { get; }
         public string NestedPosition { get; }
-        public string NestedPositionAndTitle => $"{NestedPosition} {Activity?.Form?.Title}";
+        public string NestedPositionAndTitle => $"{NestedPosition} {ActivitySummary?.Form?.Title}";
 
-        public ActivityTypeEnum? ActivityType => Activity?.Form?.Type;
+        public ActivityTypeEnum? ActivityType => ActivitySummary?.Form?.Type;
 
         public bool HasCompleted =>
-            Activity?.Instance?.State == ActivityStateEnum.Success || Activity?.Instance?.State == ActivityStateEnum.Failed;
+            ActivitySummary?.Instance?.State == ActivityStateEnum.Success || ActivitySummary?.Instance?.State == ActivityStateEnum.Failed;
 
         public ActivityPersistence(WorkflowPersistence workflowPersistence,
             MethodHandler methodHandler, string formTitle, int position, string activityFormId,
@@ -58,46 +58,46 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 parentIteration = parentActivity?.Iteration;
             }
 
-            var activity =
-                WorkflowPersistence.StoredWorkflow?.WorkflowHierarchy?.ReferredActivities?.FirstOrDefault(a =>
+            var activitySummary =
+                WorkflowPersistence.StoredWorkflow?.WorkflowSummary?.ReferredActivities?.FirstOrDefault(a =>
                     a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant()
                     && a.Instance.ParentActivityInstanceId == parentActivityInstanceId
                     && a.Instance.ParentIteration == parentIteration);
-            if (activity == null)
+            if (activitySummary == null)
             {
-                activity ??=
-                    WorkflowPersistence.StoredWorkflow?.WorkflowHierarchy?.NotReferredActivities?.FirstOrDefault(a =>
+                activitySummary ??=
+                    WorkflowPersistence.StoredWorkflow?.WorkflowSummary?.NotReferredActivities?.FirstOrDefault(a =>
                             a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant())
                         .AsCopy(); // We need a copy, because this activity can be used for several different instances, e.g. in a loop
             }
 
-            activity ??= new Activity();
-            activity.Form ??= new ActivityForm
+            activitySummary ??= new ActivitySummary();
+            activitySummary.Form ??= new ActivityForm
             {
                 Id = activityFormId,
                 WorkflowFormId = WorkflowPersistence.FormId,
                 Title = formTitle,
                 Type = activityType
             };
-            activity.Version ??= new ActivityVersion
+            activitySummary.Version ??= new ActivityVersion
             {
                 WorkflowVersionId = WorkflowPersistence.VersionId,
                 ActivityFormId = activityFormId,
-                ParentActivityVersionId = parentActivityPersistence?.Activity?.Version.Id,
+                ParentActivityVersionId = parentActivityPersistence?.ActivitySummary?.Version.Id,
                 FailUrgency = ActivityFailUrgencyEnum.Stopping,
                 Position = position
             };
-            activity.Instance ??= new ActivityInstance
+            activitySummary.Instance ??= new ActivityInstance
             {
                 WorkflowInstanceId = WorkflowPersistence.InstanceId,
                 ParentActivityInstanceId = parentActivityInstanceId,
-                ActivityVersionId = activity.Version.Id,
+                ActivityVersionId = activitySummary.Version.Id,
                 ParentIteration = parentIteration,
                 State = ActivityStateEnum.Started,
                 StartedAt = DateTimeOffset.UtcNow
             };
-            Activity = activity;
-            _storedActivity = Activity.AsCopy();
+            ActivitySummary = activitySummary;
+            _storedActivitySummary = ActivitySummary.AsCopy();
         }
 
         private bool SameSerialization(object a, object b)
@@ -107,11 +107,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
         }
 
         /// <inheritdoc />
-        public override string ToString() => $"{WorkflowPersistence.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({Activity?.Form?.Id})";
+        public override string ToString() => $"{WorkflowPersistence.VersionTitle}: {ActivityType} {NestedPositionAndTitle} ({ActivitySummary?.Form?.Id})";
 
         protected internal async Task PersistAsync(CancellationToken cancellationToken)
         {
-                var hasCompleted = _storedActivity.Instance.HasCompleted;
+                var hasCompleted = _storedActivitySummary.Instance.HasCompleted;
                 if (!hasCompleted)
                 {
                     await PersistActivityFormAsync(cancellationToken);
@@ -119,18 +119,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     await PersistActivityInstance(cancellationToken);
                     await PersistTransitionAsync(cancellationToken);
                 }
-                WorkflowPersistence.LatestActivityInstanceId = Activity.Instance.Id;
+                WorkflowPersistence.LatestActivityInstanceId = ActivitySummary.Instance.Id;
                 if (!hasCompleted)
                 {
                     await MethodHandler.PersistActivityParametersAsync(
-                        WorkflowCapability, Activity.Version.Id,
+                        WorkflowCapability, ActivitySummary.Version.Id,
                         cancellationToken);
                 }
         }
 
         private async Task PersistActivityFormAsync(CancellationToken cancellationToken)
         {
-            var form = Activity.Form;
+            var form = ActivitySummary.Form;
             if (form.Etag == null)
             {
                 try
@@ -146,7 +146,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             }
             else
             {
-                if (SameSerialization(_storedActivity.Form, form)) return;
+                if (SameSerialization(_storedActivitySummary.Form, form)) return;
                 // TODO: Error if tried to change ActivityType?
                 try
                 {
@@ -161,13 +161,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
             var latestForm = await WorkflowCapability.ActivityForm.ReadAsync(form.Id, cancellationToken);
             FulcrumAssert.IsNotNull(latestForm, CodeLocation.AsString());
-            Activity.Form = latestForm;
-            _storedActivity.Form = latestForm.AsCopy();
+            ActivitySummary.Form = latestForm;
+            _storedActivitySummary.Form = latestForm.AsCopy();
         }
 
         private async Task PersistActivityVersion(CancellationToken cancellationToken)
         {
-            var version = Activity.Version;
+            var version = ActivitySummary.Version;
             if (version.Etag == null)
             {
                 try
@@ -183,7 +183,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             }
             else
             {
-                if (SameSerialization(_storedActivity.Version, version)) return;
+                if (SameSerialization(_storedActivitySummary.Version, version)) return;
                 try
                 {
                     await WorkflowCapability.ActivityVersion.UpdateAsync(version.Id, version,
@@ -194,16 +194,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                     // This is OK. Another thread has update the same Id after we did the read above.
                 }
             }
-            var latestVersion = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowPersistence.VersionId, Activity.Form.Id, cancellationToken);
+            var latestVersion = await WorkflowCapability.ActivityVersion.FindUniqueAsync(WorkflowPersistence.VersionId, ActivitySummary.Form.Id, cancellationToken);
             FulcrumAssert.IsNotNull(latestVersion, CodeLocation.AsString());
-            Activity.Version = latestVersion;
-            Activity.Instance.ActivityVersionId = latestVersion.Id;
-            _storedActivity.Version = latestVersion.AsCopy();
+            ActivitySummary.Version = latestVersion;
+            ActivitySummary.Instance.ActivityVersionId = latestVersion.Id;
+            _storedActivitySummary.Version = latestVersion.AsCopy();
         }
 
         private async Task PersistActivityInstance(CancellationToken cancellationToken)
         {
-            var instance = Activity.Instance;
+            var instance = ActivitySummary.Instance;
             ActivityInstance updatedActivityInstance = null;
             if (instance.Id == null)
             {
@@ -220,8 +220,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             }
             else
             {
-                if (SameSerialization(_storedActivity.Instance, instance)) return;
-                FulcrumAssert.IsTrue(!_storedActivity.Instance.HasCompleted, CodeLocation.AsString());
+                if (SameSerialization(_storedActivitySummary.Instance, instance)) return;
+                FulcrumAssert.IsTrue(!_storedActivitySummary.Instance.HasCompleted, CodeLocation.AsString());
                 try
                 {
                     updatedActivityInstance = await WorkflowCapability.ActivityInstance.UpdateAndReturnAsync(instance.Id, instance,
@@ -248,8 +248,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 FulcrumAssert.IsNotNull(updatedActivityInstance, CodeLocation.AsString());
             }
 
-            Activity.Instance = updatedActivityInstance;
-            _storedActivity.Instance = updatedActivityInstance.AsCopy();
+            ActivitySummary.Instance = updatedActivityInstance;
+            _storedActivitySummary.Instance = updatedActivityInstance.AsCopy();
         }
 
         private async Task PersistTransitionAsync(CancellationToken cancellationToken)
@@ -258,8 +258,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
             var searchItem = new TransitionUnique
             {
                 WorkflowVersionId = WorkflowPersistence.VersionId,
-                FromActivityVersionId = previousActivityInformation?.Activity.Version.Id,
-                ToActivityVersionId = Activity.Version.Id
+                FromActivityVersionId = previousActivityInformation?.ActivitySummary.Version.Id,
+                ToActivityVersionId = ActivitySummary.Version.Id
             };
             var transition = await WorkflowCapability.Transition.FindUniqueAsync(WorkflowPersistence.VersionId, searchItem, cancellationToken);
             if (transition == null)
@@ -267,8 +267,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 var createItem = new TransitionCreate
                 {
                     WorkflowVersionId = WorkflowPersistence.VersionId,
-                    FromActivityVersionId = previousActivityInformation?.Activity.Version.Id,
-                    ToActivityVersionId = Activity.Version.Id
+                    FromActivityVersionId = previousActivityInformation?.ActivitySummary.Version.Id,
+                    ToActivityVersionId = ActivitySummary.Version.Id
                 };
                 try
                 {
