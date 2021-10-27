@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         /// <inheritdoc />
         public Task<Transition> FindUniqueAsync(string workflowVersionId, TransitionUnique transition, CancellationToken cancellationToken = default)
         {
-            var relativeUrl = $"WorkflowVersions/{WebUtility.UrlEncode(workflowVersionId)}/Transitions";
+            var relativeUrl = $"WorkflowVersions/{WebUtility.UrlEncode(workflowVersionId)}/Transitions/FindUnique";
             return PostAsync<Transition, TransitionUnique>(relativeUrl, transition, cancellationToken: cancellationToken);
         }
     }

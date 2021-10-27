@@ -1,7 +1,9 @@
-﻿using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
+﻿using System;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Temporary
 {
+    [Obsolete("You are discouraged to use the SQL implementation of Nexus Workflows. Instead use the Rest Clients implementation.")]
     public static class DatabasePatchSettings
     {
         /// <summary>
