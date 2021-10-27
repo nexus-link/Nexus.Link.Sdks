@@ -163,7 +163,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             var tasks = new List<Task<ActivityInstanceRecord>>();
             foreach (var activityInstanceRecord in activityInstancesList.Data)
             {
-                var task = activityInstanceRecord.HasCompleted || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
+                var task = HasCompleted(activityInstanceRecord) || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
                     ? Task.FromResult(activityInstanceRecord)
                     : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
                 tasks.Add(task);
@@ -183,11 +183,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         private async Task<ActivityInstanceRecord> TryGetResponseAsync(ActivityInstanceRecord activityInstanceRecord, CancellationToken cancellationToken)
         {
-            InternalContract.Require(!activityInstanceRecord.HasCompleted, "The activity instance must not be completed.");
+            InternalContract.Require(!HasCompleted(activityInstanceRecord), "The activity instance must not be completed.");
             var retries = 0;
             while (true)
             {
-                if (activityInstanceRecord.HasCompleted) return activityInstanceRecord;
+                if (HasCompleted(activityInstanceRecord)) return activityInstanceRecord;
                 var response = await _asyncRequestClient.GetFinalResponseAsync(activityInstanceRecord.AsyncRequestId,
                     cancellationToken);
                 if (response == null || !response.HasCompleted) return activityInstanceRecord;
@@ -226,6 +226,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
                     activityInstanceRecord = await _runtimeTables.ActivityInstance.ReadAsync(activityInstanceRecord.Id, cancellationToken);
                 }
             }
+        }
+
+        private static bool HasCompleted(ActivityInstanceRecord activityInstanceRecord)
+        {
+            return activityInstanceRecord.FinishedAt.HasValue;
         }
     }
 }

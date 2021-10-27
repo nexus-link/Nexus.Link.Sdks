@@ -37,7 +37,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             ((ActivityInstanceRecordCreate)target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
-            target.HasCompleted = source.HasCompleted;
             target.ResultAsJson = source.ResultAsJson;
             target.ExceptionCategory = MapperHelper.MapToType<string, ActivityExceptionCategoryEnum?>(source.ExceptionCategory);
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;

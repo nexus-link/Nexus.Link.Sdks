@@ -22,7 +22,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.ParentIteration),
                 nameof(ActivityInstanceRecord.StartedAt),
                 nameof(ActivityInstanceRecord.FinishedAt),
-                nameof(ActivityInstanceRecord.HasCompleted),
                 nameof(ActivityInstanceRecord.ResultAsJson),
                 nameof(ActivityInstanceRecord.State),
                 nameof(ActivityInstanceRecord.ExceptionCategory),

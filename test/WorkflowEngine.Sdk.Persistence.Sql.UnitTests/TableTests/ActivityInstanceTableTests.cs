@@ -75,7 +75,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             createdRecord.FinishedAt = DateTimeOffset.Now;
             createdRecord.ResultAsJson = "{}";
             createdRecord.State = ActivityStateEnum.Success.ToString();
-            createdRecord.HasCompleted = true;
 
             // Act
             var updatedRecord = await RuntimeTables.ActivityInstance.UpdateAndReturnAsync(createdRecord.Id, createdRecord);
@@ -89,7 +88,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(createdRecord.ParentIteration, updatedRecord.ParentIteration);
             Assert.Equal(createdRecord.FinishedAt, updatedRecord.FinishedAt);
             Assert.Equal(createdRecord.ResultAsJson, updatedRecord.ResultAsJson);
-            Assert.Equal(createdRecord.HasCompleted, updatedRecord.HasCompleted);
         }
         
         [Theory]
