@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>1.12.4</Version>
+    <Version>1.12.5</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.12.5 Fixed bug in ActivityExecutor
       1.12.4 Performance optimizations
       1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
       1.12.2 Fix in rest clients paths

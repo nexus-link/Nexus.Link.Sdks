@@ -14,10 +14,10 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 {
-    public abstract class AbstractDatabaseTest : IDatabaseOptions
+    public abstract class AbstractDatabaseTest
     {
         protected const string MasterConnectionString = "Server=localhost;Database=master;Trusted_Connection=True;";
-        private const string ConnString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
+        protected const string ConnectionString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
 
         protected static readonly Tenant Tenant = new Tenant("workflowenginesdk", "integrationtests");
 
@@ -26,24 +26,27 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         protected IConfigurationTables ConfigurationTables;
         protected IRuntimeTables RuntimeTables;
 
-        public string ConnectionString => ConnString;
         public OnBeforeNewSqlConnectionAsync OnBeforeNewSqlConnectionAsync { get; } = null;
 
         static AbstractDatabaseTest()
         {
             FulcrumApplicationHelper.UnitTestSetup("Workflow engine database tests");
 
-            DropDatabase(ConnString);
-            DatabasePatcherHandler.PatchIfNecessary(ConnString, MasterConnectionString);
+            DropDatabase(ConnectionString);
+            DatabasePatcherHandler.PatchIfNecessary(ConnectionString, MasterConnectionString);
 
-            using var connection = new SqlConnection(ConnString);
+            using var connection = new SqlConnection(ConnectionString);
             connection.Execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
         }
 
         protected AbstractDatabaseTest()
         {
-            ConfigurationTables = new ConfigurationTablesSql(this);
-            RuntimeTables = new RuntimeTablesSql(this);
+            var databaseOptions = new DatabaseOptions
+            {
+                ConnectionString = ConnectionString
+            };
+            ConfigurationTables = new ConfigurationTablesSql(databaseOptions);
+            RuntimeTables = new RuntimeTablesSql(databaseOptions);
         }
 
         protected static void DropDatabase(string connectionString)

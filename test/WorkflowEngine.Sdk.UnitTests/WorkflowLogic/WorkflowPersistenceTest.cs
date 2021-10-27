@@ -17,13 +17,13 @@ using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
-    public class WorkflowPerstianceTest
+    public class WorkflowPersistenceTest
     {
 
         private readonly WorkflowPersistence _persistence;
         private readonly WorkflowCapabilityMock _workflowCapability;
 
-        public WorkflowPerstianceTest()
+        public WorkflowPersistenceTest()
         {
             var configurationTables = new ConfigurationTablesMemory();
             var runtimeTables = new RuntimeTablesMemory();

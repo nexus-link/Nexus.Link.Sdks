@@ -198,9 +198,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 {
                     var result = await method(Activity, cancellationToken);
                     activityInstance.ResultAsJson = result.ToJsonString();
-                    activityInstance.State = ActivityStateEnum.Success;
-                    activityInstance.FinishedAt = DateTimeOffset.UtcNow;
                 }
+                activityInstance.State = ActivityStateEnum.Success;
+                activityInstance.FinishedAt = DateTimeOffset.UtcNow;
             }
             catch (FulcrumCancelledException)
             {

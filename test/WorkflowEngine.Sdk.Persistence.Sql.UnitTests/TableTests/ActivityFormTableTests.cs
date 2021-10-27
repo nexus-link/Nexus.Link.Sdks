@@ -139,7 +139,6 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                     if (!e.Message.Contains(partOfSqlException))
                     {
                         _testOutputHelper.WriteLine($"Error: expected '{partOfSqlException}' to be part of the SQL Exception");
-                        return;
                     }
                     throw;
                 }
