@@ -67,29 +67,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         /// <inheritdoc/>
         public ActivityAction Action()
         {
-            var activity = new ActivityAction(this);
-            return activity;
+            return new ActivityAction(this);
         }
         
         /// <inheritdoc/>
         public ActivityLoopUntilTrue LoopUntil()
         {
-            var activity = new ActivityLoopUntilTrue(this);
-            return activity;
+            return new ActivityLoopUntilTrue(this);
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
-            var activity = new ActivityForEachParallel<TItem>(this, items);
-            return activity;
+            return new ActivityForEachParallel<TItem>(this, items);
         }
         
         /// <inheritdoc/>
         public ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
-            var activity = new ActivityForEachSequential<TItem>(this, items);
-            return activity;
+            return new ActivityForEachSequential<TItem>(this, items);
         }
     }
 
@@ -134,36 +130,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         /// <inheritdoc/>
         public ActivityAction<TActivityReturns> Action()
         {
-            var activity = new ActivityAction<TActivityReturns>(this, GetDefaultValueMethodAsync);
-            return activity;
+            return new ActivityAction<TActivityReturns>(this, GetDefaultValueMethodAsync);
         }
         
         /// <inheritdoc/>
         public ActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
-            var activity = new ActivityLoopUntilTrue<TActivityReturns>(this, GetDefaultValueMethodAsync);
-            return activity;
+            return new ActivityLoopUntilTrue<TActivityReturns>(this, GetDefaultValueMethodAsync);
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
         {
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(this, items, GetDefaultValueMethodAsync);
-            return activity;
+            return new ActivityForEachParallel<TActivityReturns, TItem, TKey>(this, items, GetDefaultValueMethodAsync);
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(this, items, GetDefaultValueMethodAsync);
-            return activity;
+            return new ActivityForEachParallel<TActivityReturns, TItem, TItem>(this, items, GetDefaultValueMethodAsync);
         }
         
         /// <inheritdoc/>
         public ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
-            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(this, items, GetDefaultValueMethodAsync);
-            return activity;
+            return new ActivityForEachSequential<TActivityReturns, TItem>(this, items, GetDefaultValueMethodAsync);
         }
     }
 }
