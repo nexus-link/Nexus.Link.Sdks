@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 {
     internal abstract class ActivityFlowBase : IInternalActivityFlow
     {
@@ -27,28 +24,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public ActivityFailUrgencyEnum FailUrgency { get; protected set; }
         public int Position { get; }
 
-        protected ActivityFlowBase(IWorkflowVersion workflowVersion, IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position)
+        protected ActivityFlowBase(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
+            WorkflowPersistence workflowPersistence,
+            IWorkflowVersion workflowVersion, int position, string formTitle, string activityFormId)
         {
-            WorkflowVersion = workflowVersion;
-            WorkflowPersistence = workflowPersistence;
             WorkflowCapability = workflowCapability;
             AsyncRequestClient = asyncRequestClient;
-            ActivityFormId = activityFormId;
+            WorkflowPersistence = workflowPersistence;
+            WorkflowVersion = workflowVersion;
             Position = position;
             FormTitle = formTitle;
+            ActivityFormId = activityFormId;
             MethodHandler = new MethodHandler(formTitle);
+            FailUrgency = ActivityFailUrgencyEnum.Stopping;
         }
     }
 
     internal class ActivityFlow : ActivityFlowBase, IActivityFlow
     {
 
-        public ActivityFlow(int position, WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId, position)
+        public ActivityFlow(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient, WorkflowPersistence workflowPersistence,
+            WorkflowVersionBase workflowVersion,
+            int position, string formTitle, string activityFormId)
+        : base(workflowCapability, asyncRequestClient, workflowPersistence, workflowVersion, position, formTitle, activityFormId)
         {
         }
 
@@ -95,10 +93,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         public Func<CancellationToken, Task<TActivityReturns>> GetDefaultValueMethodAsync { get; private set; }
 
-        public ActivityFlow(WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
-            IAsyncRequestClient asyncRequestClient,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId, position)
+        public ActivityFlow(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
+            WorkflowPersistence workflowPersistence,
+            WorkflowVersionBase workflowVersion, int position, string formTitle, string activityFormId)
+        : base(workflowCapability, asyncRequestClient, workflowPersistence, workflowVersion, position, formTitle, activityFormId)
         {
         }
 

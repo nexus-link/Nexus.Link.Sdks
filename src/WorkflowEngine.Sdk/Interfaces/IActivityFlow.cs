@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IInternalActivityFlow
     {
-        IWorkflowVersion WorkflowVersion { get; }
         WorkflowPersistence WorkflowPersistence { get; }
+        IWorkflowVersion WorkflowVersion { get; }
         MethodHandler MethodHandler { get; }
+        int Position { get; }
         string FormTitle { get; }
         string ActivityFormId { get; }
         ActivityFailUrgencyEnum FailUrgency { get; }
-        int Position { get; }
     }
 
     public interface IActivityFlow
