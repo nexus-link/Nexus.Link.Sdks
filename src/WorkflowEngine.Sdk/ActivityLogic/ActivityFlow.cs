@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 {
     internal abstract class ActivityFlowBase : IInternalActivityFlow
     {

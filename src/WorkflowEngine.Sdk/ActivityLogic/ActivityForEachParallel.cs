@@ -7,10 +7,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
+namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 {
     public class ActivityForEachParallel<TItemType> : Activity
     {

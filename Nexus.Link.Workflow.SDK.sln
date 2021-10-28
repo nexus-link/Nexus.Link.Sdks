@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTests.Abstract", "test\WorkflowEngine.Sdk.UnitTests.Abstract\WorkflowEngine.Sdk.UnitTests.Abstract.csproj", "{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.AspNet", "src\WorkflowEngine.Sdk.AspNet\WorkflowEngine.Sdk.AspNet.csproj", "{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ci|Any CPU = ci|Any CPU
@@ -174,6 +176,22 @@ Global
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.int|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prdsim|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

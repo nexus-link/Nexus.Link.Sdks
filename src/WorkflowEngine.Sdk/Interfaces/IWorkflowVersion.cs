@@ -1,4 +1,4 @@
-﻿namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+﻿namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IWorkflowVersion
     {
