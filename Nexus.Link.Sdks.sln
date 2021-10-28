@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nexus.Link.AsyncCaller.Sdk", "src\AsyncCaller.Sdk\Nexus.Link.AsyncCaller.Sdk.csproj", "{AC0B63AD-E18A-4D8E-93CC-D50F9DA4FA5C}"
 EndProject
@@ -77,6 +77,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTests", "test\WorkflowEngine.Sdk.UnitTests\WorkflowEngine.Sdk.UnitTests.csproj", "{0794EB3C-8F3D-4F38-A16E-B840E89014E1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTests.Abstract", "test\WorkflowEngine.Sdk.UnitTests.Abstract\WorkflowEngine.Sdk.UnitTests.Abstract.csproj", "{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowEngine.Sdk.AspNet", "src\WorkflowEngine.Sdk.AspNet\WorkflowEngine.Sdk.AspNet.csproj", "{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -570,6 +572,22 @@ Global
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.int|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prdsim|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
