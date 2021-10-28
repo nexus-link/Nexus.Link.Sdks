@@ -140,7 +140,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             return new ActivityLoopUntilTrue<TActivityReturns>(this, GetDefaultValueMethodAsync);
         }
-        
+
+        /// <inheritdoc />
+        public ActivityCondition<TActivityReturns> Condition()
+        {
+            return new ActivityCondition<TActivityReturns>(this, GetDefaultValueMethodAsync);
+        }
+
         /// <inheritdoc/>
         public ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
         {
