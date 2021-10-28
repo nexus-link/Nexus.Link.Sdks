@@ -66,7 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
                 activityFlow.WorkflowPersistence, 
                 activityFlow.MethodHandler,
                 activityFlow.FormTitle, 
-                1, 
+                activityFlow.Position, 
                 activityFlow.ActivityFormId,
                 activityType, activityFlow.FailUrgency);
             return activityInformation;

@@ -58,24 +58,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected abstract string GetInstanceTitle();
 
-        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(string title, string id)
+        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
+            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id, position);
         }
 
-        protected IActivityFlow CreateActivity(string title, string id)
+        protected IActivityFlow CreateActivity(int position, string title, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
+            return new ActivityFlow(position, this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
         }
 
         protected async Task InternalExecuteAsync(CancellationToken cancellationToken)

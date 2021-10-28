@@ -18,6 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string FormTitle { get; }
         string ActivityFormId { get; }
         ActivityFailUrgencyEnum FailUrgency { get; }
+        int Position { get; }
     }
 
     public interface IActivityFlow

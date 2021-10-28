@@ -25,16 +25,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         public MethodHandler MethodHandler { get; }
         public string FormTitle { get; }
         public ActivityFailUrgencyEnum FailUrgency { get; protected set; }
+        public int Position { get; }
 
         protected ActivityFlowBase(IWorkflowVersion workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position)
         {
             WorkflowVersion = workflowVersion;
             WorkflowPersistence = workflowPersistence;
             WorkflowCapability = workflowCapability;
             AsyncRequestClient = asyncRequestClient;
             ActivityFormId = activityFormId;
+            Position = position;
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
         }
@@ -43,10 +45,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     internal class ActivityFlow : ActivityFlowBase, IActivityFlow
     {
 
-        public ActivityFlow(WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
+        public ActivityFlow(int position, WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
             WorkflowPersistence workflowPersistence, string formTitle, string activityFormId) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId)
+        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId, position)
         {
         }
 
@@ -95,8 +97,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public ActivityFlow(WorkflowVersionBase workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId) 
-        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position) 
+        :base(workflowVersion, workflowCapability, asyncRequestClient,workflowPersistence, formTitle, activityFormId, position)
         {
         }
 

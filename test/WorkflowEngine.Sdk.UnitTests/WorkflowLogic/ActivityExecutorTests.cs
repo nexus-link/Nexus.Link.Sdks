@@ -51,8 +51,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _workflowVersionMock = new Mock<IWorkflowVersion>();
             _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
 
-            _activityFlowMock = new ActivityFlowMock(_workflowVersionMock.Object, _workflowCapability,
-                _asyncRequestClientMock.Object,
+            _activityFlowMock = new ActivityFlowMock(_workflowVersionMock.Object,
                 _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF");
         }
 
@@ -111,8 +110,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var alertHandler = new WorkflowVersionWithAlertHandler((a, ct) => Task.FromResult(true));
-            var activityFlowMock = new ActivityFlowMock(alertHandler, _workflowCapability,
-                _asyncRequestClientMock.Object,
+            var activityFlowMock = new ActivityFlowMock(alertHandler,
                 _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF");
             var activity = new ActivityAction<int>(activityFlowMock, null);
             var executor = new ActivityExecutor(alertHandler, activity);
