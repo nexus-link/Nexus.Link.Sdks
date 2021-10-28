@@ -20,7 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
 
         /// <inheritdoc />
         [HttpGet("{workflowInstanceId}")]
-        public async Task<Workflow> ReadAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        public async Task<WorkflowSummary> ReadAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
