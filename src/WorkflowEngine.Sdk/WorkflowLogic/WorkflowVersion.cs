@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
@@ -10,11 +9,12 @@ using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    public abstract class WorkflowVersionBase : IWorkflowVersionBase
+    public abstract class WorkflowVersionBase : IWorkflowVersion
     {
         private readonly IWorkflowCapability _workflowCapability;
         public int MajorVersion { get; }
@@ -58,24 +58,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         protected abstract string GetInstanceTitle();
 
-        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(string title, string id)
+        protected IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
+            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id, position);
         }
 
-        protected IActivityFlow CreateActivity(string title, string id)
+        protected IActivityFlow CreateActivity(int position, string title, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
+            return new ActivityFlow(position, this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
         }
 
         protected async Task InternalExecuteAsync(CancellationToken cancellationToken)

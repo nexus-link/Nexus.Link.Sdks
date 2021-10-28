@@ -9,17 +9,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         private readonly IWorkflowCapability _workflowCapability;
         private readonly string _workflowInstanceId;
-        public Workflow WorkflowHierarchy { get; private set; }
+        public WorkflowSummary WorkflowSummary { get; private set; }
         private readonly NexusAsyncSemaphore _semaphore = new NexusAsyncSemaphore();
 
-        public async Task<Workflow> LoadDataAsync()
+        public async Task<WorkflowSummary> LoadDataAsync()
         {
-            if (WorkflowHierarchy != null) return WorkflowHierarchy;
+            if (WorkflowSummary != null) return WorkflowSummary;
             return await _semaphore.ExecuteAsync(async () => 
             {
-                if (WorkflowHierarchy != null) return WorkflowHierarchy;
-                WorkflowHierarchy = await _workflowCapability.Workflow.ReadAsync(_workflowInstanceId);
-                return WorkflowHierarchy;
+                if (WorkflowSummary != null) return WorkflowSummary;
+                WorkflowSummary = await _workflowCapability.Workflow.ReadAsync(_workflowInstanceId);
+                return WorkflowSummary;
             });
         }
 

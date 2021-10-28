@@ -4,54 +4,59 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Extensions
 {
-    public static class ActivityFormExtensions
+    public static class WorkflowInstanceExtensions
     {
         /// <summary>
-        /// WorkflowRecord.From(Workflow)
+        /// WorkflowInstanceRecordCreate.From(WorkflowInstanceCreate)
         /// </summary>
-        public static ActivityFormRecordCreate From(this ActivityFormRecordCreate target, ActivityFormCreate source)
+        public static WorkflowInstanceRecordCreate From(this WorkflowInstanceRecordCreate target, WorkflowInstanceCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            
-            target.WorkflowFormId = MapperHelper.MapToType<Guid, string>(source.WorkflowFormId);
-            target.Type = source.Type.ToString();
+            target.WorkflowVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
             target.Title = source.Title;
+            target.InitialVersion = source.InitialVersion;
+            target.StartedAt = source.StartedAt;
             return target;
         }
 
         /// <summary>
-        /// WorkflowRecord.From(Workflow)
+        /// WorkflowInstanceRecord.From(WorkflowInstance)
         /// </summary>
-        public static ActivityFormRecord From(this ActivityFormRecord target, ActivityForm source)
+        public static WorkflowInstanceRecord From(this WorkflowInstanceRecord target, WorkflowInstance source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((ActivityFormRecordCreate) target).From(source);
+            ((WorkflowInstanceRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
+            target.FinishedAt = source.FinishedAt;
+            target.CancelledAt = source.CancelledAt;
             return target;
         }
 
         /// <summary>
-        /// Workflow.From(WorkflowRecord)
+        /// WorkflowInstance.From(WorkflowInstanceRecord)
         /// </summary>
-        public static ActivityForm From(this ActivityForm target, ActivityFormRecord source)
+        public static WorkflowInstance From(this WorkflowInstance target, WorkflowInstanceRecord source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowFormId = MapperHelper.MapToType<string, Guid>(source.WorkflowFormId);
-            target.Type = source.Type.ToEnum<ActivityTypeEnum>();
-            target.Title = source.Title;
             target.Etag = source.Etag;
+            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.WorkflowVersionId);
+            target.Title = source.Title;
+            target.InitialVersion = source.InitialVersion;
+            target.StartedAt = source.StartedAt;
+            target.FinishedAt = source.FinishedAt;
+            target.CancelledAt = source.CancelledAt;
             return target;
         }
         

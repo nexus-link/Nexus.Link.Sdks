@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Support;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public class ActivityForEachSequential<TItemType> : Activity
     {
@@ -17,12 +17,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public object Result { get; set; }
 
-        public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items)
-            : base(activityPersistence, activityExecutor)
+        public ActivityForEachSequential(
+            IInternalActivityFlow activityFlow, IEnumerable<TItemType> items)
+            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            InternalContract.RequireNotNull(items, nameof(items));
             Items = items;
             Iteration = 0;
         }
@@ -31,21 +30,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync(
+            return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 cancellationToken);
         }
 
         private async Task ForEachMethod(Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
         {
-            FulcrumAssert.IsNotNull(ActivityPersistence.Activity.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.Activity.Instance.Id;
+            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
             foreach (var item in Items)
             {
                 Iteration++;
                 await MapMethodAsync(item, method, activity, cancellationToken);
-                FulcrumAssert.IsNotNull(ActivityPersistence.Activity.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.Activity.Instance.Id;
+                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
+                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
             }
         }
 
@@ -67,12 +66,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public object Result { get; set; }
 
-        public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IActivityExecutor activityExecutor, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, activityExecutor)
+        public ActivityForEachSequential(
+            IInternalActivityFlow activityFlow, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            InternalContract.RequireNotNull(items, nameof(items));
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;
@@ -82,23 +80,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return ActivityExecutor.ExecuteAsync(
+            return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
                 (ct) =>  null, cancellationToken);
         }
 
         private async Task<IList<TActivityReturns>> ForEachMethod(Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
         {
-            FulcrumAssert.IsNotNull(ActivityPersistence.Activity.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.Activity.Instance.Id;
+            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
             var resultList = new List<TActivityReturns>();
             foreach (var item in Items)
             {
                 Iteration++;
                 var result = await MapMethodAsync(item, method, activity, cancellationToken);
                 resultList.Add(result);
-                FulcrumAssert.IsNotNull(ActivityPersistence.Activity.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.Activity.Instance.Id;
+                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
+                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
             }
 
             return resultList;

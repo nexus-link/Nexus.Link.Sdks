@@ -6,9 +6,11 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc.Models;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
@@ -83,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             // TODO: Audit log
         }
 
-        private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, IReadOnlyList<Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity> workflowRecordActivities)
+        private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, IReadOnlyList<ActivitySummary> workflowRecordActivities)
         {
             var activities = new List<Activity>();
             foreach (var activityRecord in workflowRecordActivities)
@@ -106,9 +108,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             return activities;
         }
 
-        private Task<AnnotatedWorkflowId> GetWaitingForWorkflowAsync(Capabilities.WorkflowMgmt.Abstract.Entities.Runtime.Activity activityRecord)
+        private Task<AnnotatedId<string>> GetWaitingForWorkflowAsync(ActivitySummary activityRecord)
         {
-            AnnotatedWorkflowId waitingForWorkflow = null;
+            AnnotatedId<string> waitingForWorkflow = null;
             // TODO: Enable when AM capability has support
             //if (string.IsNullOrWhiteSpace(activityRecord.Instance.AsyncRequestId))
             //{
@@ -119,7 +121,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             //        var workflowInstance = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid);
             //        if (workflowInstance != null)
             //        {
-            //            waitingForWorkflow = new AnnotatedWorkflowId
+            //            waitingForWorkflow = new AnnotatedId<string>
             //            {
             //                Id = requestResponse.ExecutionId,
             //                Title = $"{workflowInstance.Title}" // TODO: Good enough title?

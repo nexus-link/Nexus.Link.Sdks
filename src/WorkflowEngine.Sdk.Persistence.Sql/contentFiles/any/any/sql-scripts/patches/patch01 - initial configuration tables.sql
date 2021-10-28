@@ -77,7 +77,7 @@ CREATE TABLE ActivityVersion
     ParentActivityVersionId uniqueidentifier CONSTRAINT FK_ActivityVersion_ParentActivityVersionId REFERENCES ActivityVersion ON UPDATE NO ACTION ON DELETE NO ACTION,
     FailUrgency nvarchar(16) NOT NULL CONSTRAINT DF_ActivityVersion_FailUrgency DEFAULT ('Stopping'),
 
-	CONSTRAINT UQ_ActivityVersion_1 UNIQUE (WorkflowVersionId, ActivityFormId, Position)
+	CONSTRAINT UQ_ActivityVersion_1 UNIQUE (WorkflowVersionId, ActivityFormId)
 )
 CREATE CLUSTERED INDEX IX_ActivityVersion_RecordCreatedAt ON ActivityVersion (RecordCreatedAt)
 

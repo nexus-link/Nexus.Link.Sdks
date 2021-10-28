@@ -9,7 +9,7 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
-using Activity = Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activity;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 {
@@ -79,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         private async Task PersistFormAsync(CancellationToken cancellationToken)
         {
-            var workflowForm = StoredWorkflow.WorkflowHierarchy?.Form;
+            var workflowForm = StoredWorkflow.WorkflowSummary?.Form;
             if (workflowForm == null)
             {
                 var workflowCreate = new WorkflowFormCreate
@@ -115,7 +115,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         public async Task<string> PersistVersionAsync(CancellationToken cancellationToken)
         {
-            var workflowVersion = StoredWorkflow.WorkflowHierarchy?.Version;
+            var workflowVersion = StoredWorkflow.WorkflowSummary?.Version;
             if (workflowVersion == null)
             {
                 var workflowVersionCreate = new WorkflowVersionCreate
@@ -161,7 +161,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         private async Task PersistInstanceAsync(CancellationToken cancellationToken)
         {
-            var workflowInstance = StoredWorkflow.WorkflowHierarchy?.Instance;
+            var workflowInstance = StoredWorkflow.WorkflowSummary?.Instance;
             if (workflowInstance == null)
             {
                 var workflowCreate = new WorkflowInstanceCreate

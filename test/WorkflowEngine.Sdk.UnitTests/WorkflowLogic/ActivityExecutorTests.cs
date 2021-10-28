@@ -19,7 +19,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
+using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 using Shouldly;
+using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
@@ -27,9 +29,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
     public class ActivityExecutorTests
     {
         private readonly Mock<IAsyncRequestClient> _asyncRequestClientMock;
-        private readonly ActivityPersistence _activityPersistence;
         private readonly IRuntimeTables _runtimeTables;
-        private readonly Mock<IWorkflowVersionBase> _workflowVersionMock;
+        private readonly Mock<IWorkflowVersion> _workflowVersionMock;
+        private readonly IInternalActivityFlow _activityFlowMock;
+        private readonly WorkflowPersistence _workflowPersistence;
+        private readonly WorkflowCapability _workflowCapability;
 
         public ActivityExecutorTests()
         {
@@ -37,25 +41,26 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _runtimeTables = new RuntimeTablesMemory();
             
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            var workflowCapability = new WorkflowCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            var workflowInformation = new WorkflowPersistence(workflowCapability, new MethodHandler("Workflow"))
+            _workflowCapability = new WorkflowCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
+            _workflowPersistence = new WorkflowPersistence(_workflowCapability, new MethodHandler("Workflow"))
             {
                 FormId = "CD72BDE7-4D6A-42A6-B683-28CFB2AFD122",
                 VersionId = "C5739B52-CAEF-4EAE-BEFB-61F01C54501A",
                 InstanceId = "F2746172-ADD3-49CF-94B8-548536DD578D"
             };
-            _workflowVersionMock = new Mock<IWorkflowVersionBase>();
+            _workflowVersionMock = new Mock<IWorkflowVersion>();
             _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
-            _activityPersistence = new ActivityPersistence(workflowInformation, new MethodHandler("Activity"),
-                "Form title", 1, "0D759290-9F93-4B3A-8333-76019DE227CF", ActivityTypeEnum.Action);
+
+            _activityFlowMock = new ActivityFlowMock(_workflowVersionMock.Object,
+                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
         }
 
         [Fact]
         public async Task Execute_Given_MethodReturns_Gives_Success()
         {
             // Arrange
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
             const int expectedValue = 10;
             var minTime = DateTimeOffset.UtcNow;
 
@@ -64,8 +69,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
             // Assert
             actualValue.ShouldBe(expectedValue);
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Success.ToString());
             var maxTime = DateTimeOffset.UtcNow;
@@ -77,16 +82,16 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_Postponed()
         {
             // Arrange
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
-            _activityPersistence.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            executor.ActivityPersistence.ActivitySummary.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;
             try
             {
-                await executor.ExecuteAsync<int>(
-                    (a, t) => throw new Exception("Fail"), null);
+                await executor.ExecuteAsync(
+                    (a, t) => throw new Exception("Fail"));
             }
             catch (Exception e)
             {
@@ -94,8 +99,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 postponed = e as RequestPostponedException;
             }
             postponed.ShouldNotBeNull();
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
         }
@@ -105,16 +110,18 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var alertHandler = new WorkflowVersionWithAlertHandler((a, ct) => Task.FromResult(true));
-            var executor = new ActivityExecutor(alertHandler, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
-            _activityPersistence.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            var activityFlowMock = new ActivityFlowMock(alertHandler,
+                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
+            var activity = new ActivityAction<int>(activityFlowMock, null);
+            var executor = new ActivityExecutor(alertHandler, activity);
+            executor.ActivityPersistence.ActivitySummary.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<RequestPostponedException>( () => executor.ExecuteAsync<int>(
-                    (a, t) => throw new Exception("Fail"), null));
+            await Assert.ThrowsAnyAsync<RequestPostponedException>( () => executor.ExecuteAsync(
+                    (a, t) => throw new Exception("Fail")));
             alertHandler.AlertResult.ShouldBe(true);
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             instance.ExceptionAlertHandled.ShouldBe(true);
@@ -126,16 +133,16 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_MethodThrowsAndNotStopping_Gives_Default(ActivityFailUrgencyEnum failUrgency)
         {
             // Arrange
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
-            _activityPersistence.Activity.Version.FailUrgency = failUrgency;
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            executor.ActivityPersistence.ActivitySummary.Version.FailUrgency = failUrgency;
             const int expectedValue = 10;
 
             // Act
-            var actualValue = await executor.ExecuteAsync(
+            var actualValue = await executor.ExecuteAsync<int>(
                 (a, t) => throw new Exception("Fail"), ct => Task.FromResult(expectedValue));
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             actualValue.ShouldBe(expectedValue);
@@ -145,16 +152,16 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_MethodThrowsRequestPostponed_Gives_RequestIdSet()
         {
             // Arrange
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
             var expectedRequestId = Guid.NewGuid().ToString();
 
             // Act & Assert
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
@@ -175,13 +182,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                     c.CreateRequest(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<double>()))
                 .Returns(new AsyncHttpRequest_ForTest(_asyncRequestClientMock.Object, HttpMethod.Post, "http://example.com",
                     1.0));
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
-            executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
+            activity = new ActivityAction<int>(_activityFlowMock, null);
+            executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -203,9 +210,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_FuclrumTryAgainException_Gives_PostponeTryAgain()
         {
             // Arrange
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, _asyncRequestClientMock.Object);
-            executor.Activity = new ActivityAction<int>(_activityPersistence, executor, null);
-            _activityPersistence.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            var activity = new ActivityAction<int>(_activityFlowMock, null);
+            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            executor.ActivityPersistence.ActivitySummary.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -221,8 +228,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             }
             postponed.ShouldNotBeNull();
             postponed.TryAgain.ShouldBe(true);
-            _activityPersistence.Activity.Instance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(_activityPersistence.Activity.Instance.Id));
+            executor.ActivityPersistence.ActivitySummary.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityPersistence.ActivitySummary.Instance.Id));
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
         }
@@ -244,7 +251,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
     }
 
-    internal class WorkflowVersionWithAlertHandler : IWorkflowVersionBase, IActivityExceptionAlertHandler
+    internal class WorkflowVersionWithAlertHandler : IWorkflowVersion, IActivityExceptionAlertHandler
     {
         private readonly Func<ActivityExceptionAlert, CancellationToken, Task<bool>> _alertHandlerMethod;
 

@@ -4,7 +4,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.Extensions
 {
     public static class ActivityInstanceExtensions
     {
