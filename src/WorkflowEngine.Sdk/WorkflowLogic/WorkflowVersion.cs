@@ -66,7 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id, position);
+            return new ActivityFlow<TActivityReturns>(_workflowCapability, _asyncRequestClient, _workflowPersistence, this, position, title, id);
         }
 
         protected IActivityFlow CreateActivity(int position, string title, string id)
@@ -76,7 +76,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
 
-            return new ActivityFlow(position, this, _workflowCapability, _asyncRequestClient, _workflowPersistence, title, id);
+            return new ActivityFlow(_workflowCapability, _asyncRequestClient, _workflowPersistence, this, position, title, id);
         }
 
         protected async Task InternalExecuteAsync(CancellationToken cancellationToken)

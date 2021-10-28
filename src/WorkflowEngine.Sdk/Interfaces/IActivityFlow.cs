@@ -12,13 +12,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IInternalActivityFlow
     {
-        IWorkflowVersion WorkflowVersion { get; }
         WorkflowPersistence WorkflowPersistence { get; }
+        IWorkflowVersion WorkflowVersion { get; }
         MethodHandler MethodHandler { get; }
+        int Position { get; }
         string FormTitle { get; }
         string ActivityFormId { get; }
         ActivityFailUrgencyEnum FailUrgency { get; }
-        int Position { get; }
     }
 
     public interface IActivityFlow
