@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
@@ -12,12 +13,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityCondition(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, workflowVersion)
+        public ActivityCondition(IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(ActivityTypeEnum.Condition, activityFlow)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Condition, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityCondition<TActivityReturns>)}.");
         }
 
         public Task<TActivityReturns> ExecuteAsync(

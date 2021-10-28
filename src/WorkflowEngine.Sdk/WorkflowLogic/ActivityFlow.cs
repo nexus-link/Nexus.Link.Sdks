@@ -15,20 +15,16 @@ using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
-    internal abstract class ActivityFlowBase
+    internal abstract class ActivityFlowBase : IInternalActivityFlow
     {
-        protected IWorkflowVersion WorkflowVersion { get; }
-        protected readonly WorkflowPersistence WorkflowPersistence;
-        protected readonly IWorkflowCapability WorkflowCapability;
-        protected readonly IAsyncRequestClient AsyncRequestClient;
-        protected readonly string ActivityFormId;
-        protected readonly MethodHandler MethodHandler;
-        protected readonly string FormTitle;
-        [Obsolete("No need anymore")]
-        protected Activity Parent;
-        [Obsolete("No need anymore")]
-        protected Activity Previous;
-        protected ActivityFailUrgencyEnum FailUrgency;
+        public IWorkflowVersion WorkflowVersion { get; }
+        public  WorkflowPersistence WorkflowPersistence { get; }
+        protected IWorkflowCapability WorkflowCapability { get; }
+        protected IAsyncRequestClient AsyncRequestClient { get; }
+        public string ActivityFormId { get; }
+        public MethodHandler MethodHandler { get; }
+        public string FormTitle { get; }
+        public ActivityFailUrgencyEnum FailUrgency { get; protected set; }
 
         protected ActivityFlowBase(IWorkflowVersion workflowVersion, IWorkflowCapability workflowCapability,
             IAsyncRequestClient asyncRequestClient,
@@ -41,13 +37,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             ActivityFormId = activityFormId;
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
-        }
-
-        protected ActivityPersistence CreateActivityInformation(ActivityTypeEnum activityType)
-        {
-            var activityInformation = new ActivityPersistence(WorkflowPersistence, MethodHandler,
-                FormTitle, 1, ActivityFormId, activityType);
-            return activityInformation;
         }
     }
 
@@ -68,20 +57,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             return this;
         }
 
-        [Obsolete("No need anymore")]
-        public IActivityFlow SetParent(Activity parent)
-        {
-            Parent = parent;
-            return this;
-        }
-
-        [Obsolete("No need anymore")]
-        public IActivityFlow SetPrevious(Activity previous)
-        {
-            Previous = previous;
-            return this;
-        }
-
         /// <inheritdoc />
         public IActivityFlow OnException(ActivityFailUrgencyEnum failUrgency)
         {
@@ -92,32 +67,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         /// <inheritdoc/>
         public ActivityAction Action()
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.Action);
-            var activity = new ActivityAction( activityInformation, WorkflowVersion);
+            var activity = new ActivityAction(this);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityLoopUntilTrue LoopUntil()
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.LoopUntilTrue);
-            var activity = new ActivityLoopUntilTrue(activityInformation, WorkflowVersion);
+            var activity = new ActivityLoopUntilTrue(this);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activity = new ActivityForEachParallel<TItem>(activityInformation, WorkflowVersion, items);
+            var activity = new ActivityForEachParallel<TItem>(this, items);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activity = new ActivityForEachSequential<TItem>(activityInformation, WorkflowVersion, items);
+            var activity = new ActivityForEachSequential<TItem>(this, items);
             return activity;
         }
     }
@@ -137,20 +108,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             MethodHandler.DefineParameter<T>(name);
             MethodHandler.SetParameter(name, value);
-            return this;
-        }
-        
-        [Obsolete("No need anymore")]
-        public IActivityFlow<TActivityReturns> SetParent(Activity parent)
-        {
-            Parent = parent;
-            return this;
-        }
-        
-        [Obsolete("No need anymore")]
-        public IActivityFlow<TActivityReturns> SetPrevious(Activity previous)
-        {
-            Previous = previous;
             return this;
         }
 
@@ -177,40 +134,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         /// <inheritdoc/>
         public ActivityAction<TActivityReturns> Action()
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.Action);
-            var activity = new ActivityAction<TActivityReturns>(activityInformation, WorkflowVersion, GetDefaultValueMethodAsync);
+            var activity = new ActivityAction<TActivityReturns>(this, GetDefaultValueMethodAsync);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.LoopUntilTrue);
-            var activity = new ActivityLoopUntilTrue<TActivityReturns>(activityInformation, WorkflowVersion, GetDefaultValueMethodAsync);
+            var activity = new ActivityLoopUntilTrue<TActivityReturns>(this, GetDefaultValueMethodAsync);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TKey>(this, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachParallel<TActivityReturns, TItem, TItem>(this, items, GetDefaultValueMethodAsync);
             return activity;
         }
         
         /// <inheritdoc/>
         public ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
-            var activityInformation = CreateActivityInformation(ActivityTypeEnum.ForEachParallel);
-            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(activityInformation, WorkflowVersion, items, GetDefaultValueMethodAsync);
+            var activity = new ActivityForEachSequential<TActivityReturns, TItem>(this, items, GetDefaultValueMethodAsync);
             return activity;
         }
     }

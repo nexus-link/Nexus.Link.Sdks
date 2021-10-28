@@ -4,14 +4,15 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 {
     public class ActivityAction : Activity
     {
-        public ActivityAction(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
-            : base(activityPersistence, workflowVersion)
+        public ActivityAction(IInternalActivityFlow activityFlow)
+            : base(ActivityTypeEnum.Action, activityFlow)
         {
             InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityPersistence.ActivityType, "Ignore",
                 $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityAction)}.");
@@ -38,13 +39,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityAction(ActivityPersistence activityPersistence,
-            IWorkflowVersion workflowVersion, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, workflowVersion)
+        public ActivityAction(
+            IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(ActivityTypeEnum.Action, activityFlow)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
         public Task<TActivityReturns> ExecuteAsync(
             Func<ActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 

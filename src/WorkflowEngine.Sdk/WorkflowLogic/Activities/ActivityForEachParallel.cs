@@ -6,6 +6,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -17,13 +18,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public object Result { get; set; }
 
-        public ActivityForEachParallel(ActivityPersistence activityPersistence,
-            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items)
-            : base(activityPersistence, workflowVersion)
+        public ActivityForEachParallel(IInternalActivityFlow activityFlow, IEnumerable<TItemType> items)
+            : base(ActivityTypeEnum.ForEachParallel, activityFlow)
         {
+            InternalContract.RequireNotNull(items, nameof(items));
             Items = items;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachParallel, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
             Iteration = 0;
         }
 
@@ -103,15 +102,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public object Result { get; set; }
 
-        public ActivityForEachParallel(ActivityPersistence activityPersistence,
-            IWorkflowVersion workflowVersion, IEnumerable<TItem> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, workflowVersion)
+        public ActivityForEachParallel(
+            IInternalActivityFlow activityFlow, IEnumerable<TItem> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(ActivityTypeEnum.ForEachParallel, activityFlow)
         {
+            InternalContract.RequireNotNull(items, nameof(items));
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachParallel, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItem>)}.");
             if (typeof(TKey).IsAssignableFrom(typeof(TItem)))
             {
                 GetKeyMethod = item => (TKey) (object) item;

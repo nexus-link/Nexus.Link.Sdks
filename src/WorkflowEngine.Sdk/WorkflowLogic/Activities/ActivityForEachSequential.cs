@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -16,12 +17,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public object Result { get; set; }
 
-        public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items)
-            : base(activityPersistence, workflowVersion)
+        public ActivityForEachSequential(
+            IInternalActivityFlow activityFlow, IEnumerable<TItemType> items)
+            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            InternalContract.RequireNotNull(items, nameof(items));
             Items = items;
             Iteration = 0;
         }
@@ -66,12 +66,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public object Result { get; set; }
 
-        public ActivityForEachSequential(ActivityPersistence activityPersistence,
-            IWorkflowVersion workflowVersion, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, workflowVersion)
+        public ActivityForEachSequential(
+            IInternalActivityFlow activityFlow, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.ForEachSequential, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityForEachParallel<TItemType>)}.");
+            InternalContract.RequireNotNull(items, nameof(items));
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;

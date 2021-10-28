@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -16,11 +17,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public bool? EndLoop { get; set; }
 
-        protected ActivityLoopUntilTrueBase(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
-            : base(activityPersistence, workflowVersion)
+        protected ActivityLoopUntilTrueBase(IInternalActivityFlow activityFlow)
+            : base(ActivityTypeEnum.LoopUntilTrue, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.LoopUntilTrue, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityLoopUntilTrue)}.");
             Iteration = 0;
         }
 
@@ -38,8 +37,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
     
     public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase
     {
-        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
-            : base(activityPersistence, workflowVersion)
+        public ActivityLoopUntilTrue(IInternalActivityFlow activityFlow)
+            : base(activityFlow)
         {
         }
 
@@ -80,8 +79,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityPersistence, workflowVersion)
+        public ActivityLoopUntilTrue(IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityFlow)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }

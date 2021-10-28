@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             Activity = activity;
         }
 
-        private ActivityPersistence ActivityPersistence => Activity.ActivityPersistence;
+        public ActivityPersistence ActivityPersistence => Activity.ActivityPersistence;
 
         public async Task ExecuteAsync(ActivityMethod method, CancellationToken cancellationToken = default)
         {

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -18,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
     public abstract class Activity
     {
-        private ActivityExecutor _activityExecutor;
+        private readonly ActivityExecutor _activityExecutor;
 
         protected internal ActivityPersistence ActivityPersistence { get; }
         public int? Iteration { get; protected set; }
@@ -38,15 +41,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public List<int> NestedIterations { get; } = new();
 
-        protected Activity(ActivityPersistence activityPersistence, IWorkflowVersion workflowVersion)
+        protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {
-            InternalContract.RequireNotNull(activityPersistence, nameof(activityPersistence));
-            InternalContract.RequireNotNull(workflowVersion, nameof(workflowVersion));
+            InternalContract.RequireNotNull(activityFlow, nameof(activityFlow));
             
-            ActivityPersistence = activityPersistence;
-            _activityExecutor = new ActivityExecutor(workflowVersion, this);
-
-            activityPersistence.MethodHandler.InstanceTitle = activityPersistence.NestedPositionAndTitle;
+            ActivityPersistence = CreateActivityInformation(activityType, activityFlow);
+            _activityExecutor = new ActivityExecutor(activityFlow.WorkflowVersion, this);
             if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
             {
                 var parentActivity =
@@ -58,6 +58,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
                     NestedIterations.Add(parentActivity.Iteration.Value);
                 }
             }
+        }
+
+        private ActivityPersistence CreateActivityInformation(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
+        {
+            var activityInformation = new ActivityPersistence(
+                activityFlow.WorkflowPersistence, 
+                activityFlow.MethodHandler,
+                activityFlow.FormTitle, 
+                1, 
+                activityFlow.ActivityFormId,
+                activityType);
+            return activityInformation;
         }
 
         public TParameter GetArgument<TParameter>(string parameterName)
