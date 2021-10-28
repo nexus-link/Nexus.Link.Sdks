@@ -35,7 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         public ActivityPersistence(WorkflowPersistence workflowPersistence,
             MethodHandler methodHandler, string formTitle, int position, string activityFormId,
-            ActivityTypeEnum activityType)
+            ActivityTypeEnum activityType, ActivityFailUrgencyEnum failUrgency)
         {
             InternalContract.RequireNotNull(workflowPersistence, nameof(workflowPersistence));
             InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
@@ -83,7 +83,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 WorkflowVersionId = WorkflowPersistence.VersionId,
                 ActivityFormId = activityFormId,
                 ParentActivityVersionId = parentActivityPersistence?.ActivitySummary?.Version.Id,
-                FailUrgency = ActivityFailUrgencyEnum.Stopping,
+                FailUrgency = failUrgency,
                 Position = position
             };
             activitySummary.Instance ??= new ActivityInstance
