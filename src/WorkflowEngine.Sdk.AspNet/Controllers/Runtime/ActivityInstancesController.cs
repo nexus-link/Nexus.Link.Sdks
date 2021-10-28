@@ -19,15 +19,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
             _capability = capability;
         }
 
-     /// <inheritdoc />
-        [HttpPost("")]
-        public async Task<string> CreateAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = default)
+        /// <inheritdoc />
+        [HttpPost("ReturnCreated")]
+        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
 
-            var result = await _capability.ActivityInstance.CreateAsync(item, cancellationToken);
-            FulcrumAssert.IsNotNullOrWhiteSpace(result, CodeLocation.AsString());
+            var result = await _capability.ActivityInstance.CreateAndReturnAsync(item, cancellationToken);
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
 
@@ -41,16 +41,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
-
+        
         /// <inheritdoc />
-        [HttpPut("{id}")]
-        public async Task UpdateAsync(string id, ActivityInstance item, CancellationToken cancellationToken = default)
+        [HttpPut("{id}/ReturnUpdated")]
+        public async Task<ActivityInstance> UpdateAndReturnAsync(string id, ActivityInstance item, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
 
-            await _capability.ActivityInstance.UpdateAsync(id, item ,cancellationToken);
+            var result = await _capability.ActivityInstance.UpdateAndReturnAsync(id, item, cancellationToken);
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return result;
         }
 
         /// <inheritdoc />
