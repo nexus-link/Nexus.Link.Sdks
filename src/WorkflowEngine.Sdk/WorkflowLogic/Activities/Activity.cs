@@ -41,6 +41,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic.Activities
 
         public List<int> NestedIterations { get; } = new();
 
+        public string InstanceId { get; internal set; }
+
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {
             InternalContract.RequireNotNull(activityFlow, nameof(activityFlow));

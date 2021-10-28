@@ -31,7 +31,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 
 
         public ActivityFlowMock(IWorkflowVersion workflowVersion,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId)
+            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position)
         {
             WorkflowVersion = workflowVersion;
             WorkflowPersistence = workflowPersistence;
@@ -39,6 +39,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             ActivityFormId = activityFormId;
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
+            Position = position;
         }
     }
 }

@@ -57,19 +57,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 parentIteration = parentActivity?.Iteration;
             }
 
+            NestedPosition = parentActivityPersistence == null
+                ? $"{position}"
+                : $"{parentActivityPersistence.NestedPosition}.{position}";
+
             var activitySummary =
                 WorkflowPersistence.StoredWorkflow?.WorkflowSummary?.ReferredActivities?.FirstOrDefault(a =>
                     a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant()
                     && a.Instance.ParentActivityInstanceId == parentActivityInstanceId
                     && a.Instance.ParentIteration == parentIteration);
-            if (activitySummary == null)
-            {
-                activitySummary ??=
+            activitySummary ??=
                     WorkflowPersistence.StoredWorkflow?.WorkflowSummary?.NotReferredActivities?.FirstOrDefault(a =>
                             a.Form.Id.ToLowerInvariant() == activityFormId.ToLowerInvariant())
                         .AsCopy(); // We need a copy, because this activity can be used for several different instances, e.g. in a loop
-            }
-
             activitySummary ??= new ActivitySummary();
             activitySummary.Form ??= new ActivityForm
             {
@@ -110,21 +110,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 
         protected internal async Task PersistAsync(CancellationToken cancellationToken)
         {
-                var hasCompleted = _storedActivitySummary.Instance.HasCompleted;
-                if (!hasCompleted)
-                {
-                    await PersistActivityFormAsync(cancellationToken);
-                    await PersistActivityVersion(cancellationToken);
-                    await PersistActivityInstance(cancellationToken);
-                    await PersistTransitionAsync(cancellationToken);
-                }
-                WorkflowPersistence.LatestActivityInstanceId = ActivitySummary.Instance.Id;
-                if (!hasCompleted)
-                {
-                    await MethodHandler.PersistActivityParametersAsync(
-                        WorkflowCapability, ActivitySummary.Version.Id,
-                        cancellationToken);
-                }
+
+            if (_storedActivitySummary.Instance.HasCompleted) return;
+
+            var shouldUpdateConfiguration = ActivitySummary.Instance.Id == null;
+            if (shouldUpdateConfiguration)
+            {
+                await PersistActivityFormAsync(cancellationToken);
+                await PersistActivityVersion(cancellationToken);
+                await PersistTransitionAsync(cancellationToken);
+                await MethodHandler.PersistActivityParametersAsync(
+                    WorkflowCapability, ActivitySummary.Version.Id,
+                    cancellationToken);
+            }
+
+            await PersistActivityInstance(cancellationToken);
         }
 
         private async Task PersistActivityFormAsync(CancellationToken cancellationToken)

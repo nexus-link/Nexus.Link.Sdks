@@ -38,113 +38,72 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         {
             InternalContract.RequireNotNull(method, nameof(method));
 
-            await SafeSaveActivityInformationAsync(true, cancellationToken);
-
-            // Already have a result?
-            if (ActivityPersistence.HasCompleted)
-            {
-                await SafeGetResultOrThrowAsync<bool>(false, true, null, cancellationToken);
-            }
-
-            if (!string.IsNullOrWhiteSpace(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId))
-            {
-                throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId);
-            }
-
-            await SafeVerifyMaxTimeAsync();
-
-            await SafeCallMethodAndUpdateActivityInformationAsync(async (a, ct) =>
-            {
-                await method(a, ct);
-                return Task.FromResult(true);
-            }, true, cancellationToken);
-
-            await SafeGetResultOrThrowAsync<bool>(false, true, null, cancellationToken);
+            await SafeExecuteAsync(
+                async (a, ct) =>
+                {
+                    await method(a, ct);
+                    return true;
+                },
+                true,
+                ct => Task.FromResult(false),
+                cancellationToken);
         }
 
-        public async Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
-            ActivityMethod<TMethodReturnType> method, 
+        public Task<TMethodReturnType> ExecuteAsync<TMethodReturnType>(
+            ActivityMethod<TMethodReturnType> method,
             Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(method, nameof(method));
 
-            await SafeSaveActivityInformationAsync(true, cancellationToken);
-
-            // Already have a result?
-            if (ActivityPersistence.HasCompleted)
-            {
-                return await SafeGetResultOrThrowAsync(false, false,
-                    getDefaultValueMethodAsync,
-                    cancellationToken);
-            }
-
-            if (!string.IsNullOrWhiteSpace(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId))
-            {
-                throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId);
-            }
-
-            await SafeVerifyMaxTimeAsync();
-
-            await SafeCallMethodAndUpdateActivityInformationAsync(method, false, cancellationToken);
-
-            return await SafeGetResultOrThrowAsync(false, false,
-                getDefaultValueMethodAsync,
-                cancellationToken);
+            return SafeExecuteAsync(method, false, getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task SafeUpdateInstanceWithResultAndAlertExceptionsAsync(CancellationToken cancellationToken)
+        private async Task<TMethodReturnType> SafeExecuteAsync<TMethodReturnType>(
+            ActivityMethod<TMethodReturnType> method, 
+            bool ignoreReturnValue,
+            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken)
         {
             try
             {
-                if (ActivityPersistence.ActivitySummary.Instance.State == ActivityStateEnum.Failed)
+                // Already have a result?
+                if (ActivityPersistence.HasCompleted)
                 {
-
-
-                    if (!ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled.HasValue ||
-                        !ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled.Value)
-                    {
-                        if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
-                        {
-                            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.ExceptionCategory,
-                                CodeLocation.AsString());
-                            var alert = new ActivityExceptionAlert
-                            {
-                                WorkflowInstanceId = ActivityPersistence.WorkflowPersistence.InstanceId,
-                                ActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id,
-                                ExceptionCategory = ActivityPersistence.ActivitySummary.Instance.ExceptionCategory!.Value,
-                                ExceptionFriendlyMessage =
-                                    ActivityPersistence.ActivitySummary.Instance.ExceptionFriendlyMessage,
-                                ExceptionTechnicalMessage =
-                                    ActivityPersistence.ActivitySummary.Instance.ExceptionTechnicalMessage
-                            };
-                            try
-                            {
-                                var handled =
-                                    await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
-                                ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled = handled;
-                            }
-                            catch (Exception)
-                            {
-                                // We will try again next reentry.
-                            }
-                        }
-                    }
+                    return await SafeGetResultOrThrowAsync(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
                 }
 
-                await SafeSaveActivityInformationAsync(false, cancellationToken);
-            }
-            catch (Exception)
-            {
-                // TODO: Log
-                throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId)
+                await SafeSaveActivityInformationAsync(true, cancellationToken);
+
+                Activity.InstanceId ??= ActivityPersistence.ActivitySummary.Instance.Id;
+                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = Activity.InstanceId;
+
+                if (!string.IsNullOrWhiteSpace(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId))
                 {
-                    TryAgain = true
-                };
+                    throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId);
+                }
+
+                await SafeVerifyMaxTimeAsync();
+
+                await SafeCallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+
+                return await SafeGetResultOrThrowAsync(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
+            }
+            catch (HandledRequestPostponedException)
+            {
+                throw;
+            }
+            catch (FulcrumCancelledException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new FulcrumAssertionFailedException( $"{CodeLocation.AsString()}: Unexpected exception: {e} detected", e);
             }
         }
 
-        private async Task<TMethodReturnType> SafeGetResultOrThrowAsync<TMethodReturnType>(bool publishEvent,
+        private async Task<TMethodReturnType> SafeGetResultOrThrowAsync<TMethodReturnType>(
             bool ignoreReturnValue, Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
@@ -153,11 +112,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 return ignoreReturnValue
                     ? default
                     : JsonHelper.SafeDeserializeObject<TMethodReturnType>(ActivityPersistence.ActivitySummary.Instance.ResultAsJson);
-            }
-
-            if (publishEvent)
-            {
-                // Publish message about exception
             }
 
             switch (ActivityPersistence.ActivitySummary.Version.FailUrgency)
@@ -249,6 +203,57 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             if (activityInstance.Id != null)
             {
                 await SafeUpdateInstanceWithResultAndAlertExceptionsAsync(cancellationToken);
+            }
+        }
+
+        private async Task SafeUpdateInstanceWithResultAndAlertExceptionsAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (ActivityPersistence.ActivitySummary.Instance.State == ActivityStateEnum.Failed)
+                {
+
+
+                    if (!ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled.HasValue ||
+                        !ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled.Value)
+                    {
+                        if (WorkflowVersion is IActivityExceptionAlertHandler alertHandler)
+                        {
+                            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.ExceptionCategory,
+                                CodeLocation.AsString());
+                            var alert = new ActivityExceptionAlert
+                            {
+                                WorkflowInstanceId = ActivityPersistence.WorkflowPersistence.InstanceId,
+                                ActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id,
+                                ExceptionCategory = ActivityPersistence.ActivitySummary.Instance.ExceptionCategory!.Value,
+                                ExceptionFriendlyMessage =
+                                    ActivityPersistence.ActivitySummary.Instance.ExceptionFriendlyMessage,
+                                ExceptionTechnicalMessage =
+                                    ActivityPersistence.ActivitySummary.Instance.ExceptionTechnicalMessage
+                            };
+                            try
+                            {
+                                var handled =
+                                    await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
+                                ActivityPersistence.ActivitySummary.Instance.ExceptionAlertHandled = handled;
+                            }
+                            catch (Exception)
+                            {
+                                // We will try again next reentry.
+                            }
+                        }
+                    }
+                }
+
+                await SafeSaveActivityInformationAsync(false, cancellationToken);
+            }
+            catch (Exception)
+            {
+                // TODO: Log
+                throw new HandledRequestPostponedException(ActivityPersistence.ActivitySummary.Instance.AsyncRequestId)
+                {
+                    TryAgain = true
+                };
             }
         }
 

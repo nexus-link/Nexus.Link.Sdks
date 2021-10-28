@@ -52,7 +52,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
 
             _activityFlowMock = new ActivityFlowMock(_workflowVersionMock.Object,
-                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF");
+                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var alertHandler = new WorkflowVersionWithAlertHandler((a, ct) => Task.FromResult(true));
             var activityFlowMock = new ActivityFlowMock(alertHandler,
-                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF");
+                _workflowPersistence, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
             var activity = new ActivityAction<int>(activityFlowMock, null);
             var executor = new ActivityExecutor(alertHandler, activity);
             executor.ActivityPersistence.ActivitySummary.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
