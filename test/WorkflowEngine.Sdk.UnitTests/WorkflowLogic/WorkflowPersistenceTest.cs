@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
@@ -37,7 +33,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         [Fact]
         public async Task TODO()
         {
-            var workflowServiceMock = new Mock<IWorkflowService>();
+            var workflowServiceMock = new Mock<IWorkflowSummaryService>();
             _workflowCapability.Workflow = workflowServiceMock.Object;
             workflowServiceMock
                 .Setup(x => x.ReadAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -53,6 +49,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
         }
 
-        public new IWorkflowService Workflow { get; set; }
+        public new IWorkflowSummaryService Workflow { get; set; }
     }
 }

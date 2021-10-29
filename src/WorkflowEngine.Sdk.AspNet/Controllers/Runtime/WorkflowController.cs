@@ -2,18 +2,18 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
 {
-    /// <inheritdoc cref="IWorkflowService" />
-    public abstract class WorkflowController : ControllerBase, IWorkflowService
+    /// <inheritdoc cref="IWorkflowSummaryService" />
+    public abstract class WorkflowController : ControllerBase, IWorkflowSummaryService
     {
-        private readonly IWorkflowCapability _capability;
+        private readonly IWorkflowMgmtCapability _capability;
 
-        protected WorkflowController(IWorkflowCapability capability)
+        protected WorkflowController(IWorkflowMgmtCapability capability)
         {
             _capability = capability;
         }
@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
         {
             ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
-            var workflow = await _capability.Workflow.ReadAsync(workflowInstanceId, cancellationToken);
+            var workflow = await _capability.WorkflowSummary.ReadAsync(workflowInstanceId, cancellationToken);
             return workflow;
         }
     }

@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
-using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Xunit;
 
-namespace Nexus.Link.Capabilities.WorkflowMgmt.UnitTests.Services
+namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 {
     public abstract class ActivityInstanceServiceTestsBase
     {

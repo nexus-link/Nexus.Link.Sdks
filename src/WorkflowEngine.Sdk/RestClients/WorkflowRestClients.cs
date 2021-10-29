@@ -1,10 +1,15 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration;
+using Nexus.Link.WorkflowEngine.Sdk.RestClients.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.RestClients.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 {
-    public class WorkflowRestClients : IWorkflowCapability
+    public class WorkflowRestClients : IWorkflowMgmtCapability
     {
         public WorkflowRestClients(IHttpSender httpSender)
         {
@@ -13,12 +18,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             WorkflowParameter = new WorkflowParameterRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityForm= new ActivityFormRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityVersion= new ActivityVersionRestClient(httpSender.CreateHttpSender("Configuration"));
-            ActivityInstance= new ActivityInstanceRestClient(httpSender.CreateHttpSender("Runtime"));
+            ActivityInstance= new ActivityInstanceRestClient(httpSender.CreateHttpSender("State"));
             Transition= new TransitionRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityParameter = new ActivityParameterRestClient(httpSender.CreateHttpSender("Configuration"));
-            WorkflowInstance = new WorkflowInstanceRestClient(httpSender.CreateHttpSender("Runtime"));
-            Workflow = new WorkflowRestClient(httpSender.CreateHttpSender("Runtime"));
-            WorkflowAdministrationService = new WorkflowAdministrationRestClient(httpSender.CreateHttpSender("Administration"));
+            WorkflowInstance = new WorkflowInstanceRestClient(httpSender.CreateHttpSender("State"));
+            WorkflowSummary = new WorkflowSummaryRestClient(httpSender.CreateHttpSender("State"));
+            Workflow = new WorkflowRestClient(httpSender.CreateHttpSender("Administration"));
         }
 
         /// <inheritdoc />
@@ -49,9 +54,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
         public IWorkflowInstanceService WorkflowInstance { get; }
 
         /// <inheritdoc />
-        public IWorkflowService Workflow { get; }
+        public IWorkflowSummaryService WorkflowSummary { get; }
 
         /// <inheritdoc />
-        public IWorkflowAdministrationService WorkflowAdministrationService { get; }
+        public IWorkflowService Workflow { get; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;

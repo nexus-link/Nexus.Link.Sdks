@@ -1,6 +1,5 @@
 ﻿using System;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities

@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services
@@ -15,7 +17,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
     public abstract class WorkflowServiceTestsBases
     {
         // System under test
-        protected static readonly IWorkflowService WorkflowService;
+        protected static readonly IWorkflowSummaryService WorkflowSummaryService;
 
         protected static WorkflowFormRecord WorkflowFormRecord;
         protected static WorkflowVersionRecord WorkflowVersionRecord;
@@ -29,7 +31,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
         static WorkflowServiceTestsBases()
         {
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            WorkflowService = new WorkflowService(ConfigurationTables, RuntimeTables, asyncRequestMgmtCapabilityMock.Object);
+            WorkflowSummaryService = new WorkflowSummaryService(ConfigurationTables, RuntimeTables, asyncRequestMgmtCapabilityMock.Object);
 
             SetupWorkflowMockStructureAsync().Wait();
         }

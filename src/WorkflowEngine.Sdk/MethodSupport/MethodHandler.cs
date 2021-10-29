@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -94,7 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
             _arguments.Add(parameter.Name, argument);
         }
 
-        public async Task PersistWorkflowParametersAsync(IWorkflowCapability capability, string workflowVersionId, CancellationToken cancellationToken)
+        public async Task PersistWorkflowParametersAsync(IWorkflowMgmtCapability capability, string workflowVersionId, CancellationToken cancellationToken)
         {
             foreach (var parameterName in _parameters.Select(methodParameter => methodParameter.Value.Name))
             {
@@ -123,7 +123,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
             }
         }
 
-        public async Task PersistActivityParametersAsync(IWorkflowCapability capability, string activityVersionId, CancellationToken cancellationToken)
+        public async Task PersistActivityParametersAsync(IWorkflowMgmtCapability capability, string activityVersionId, CancellationToken cancellationToken)
         {
             foreach (var parameterName in _parameters.Select(methodParameter => methodParameter.Value.Name))
             {

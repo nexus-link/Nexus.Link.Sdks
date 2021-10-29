@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Runtime;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
 {
     public class ActivityPersistence
     {
-        public IWorkflowCapability WorkflowCapability { get; }
+        public IWorkflowMgmtCapability WorkflowCapability { get; }
         public WorkflowPersistence WorkflowPersistence { get; }
 
         public ActivitySummary ActivitySummary { get; }

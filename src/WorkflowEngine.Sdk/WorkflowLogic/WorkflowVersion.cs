@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public abstract class WorkflowVersionBase : IWorkflowVersion
     {
-        private readonly IWorkflowCapability _workflowCapability;
+        private readonly IWorkflowMgmtCapability _workflowCapability;
         public int MajorVersion { get; }
         public int MinorVersion { get; }
         private readonly WorkflowPersistence _workflowPersistence;

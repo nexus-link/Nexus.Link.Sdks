@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Xunit;
 

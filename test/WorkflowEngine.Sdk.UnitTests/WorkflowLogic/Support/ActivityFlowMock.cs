@@ -1,8 +1,7 @@
-﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {

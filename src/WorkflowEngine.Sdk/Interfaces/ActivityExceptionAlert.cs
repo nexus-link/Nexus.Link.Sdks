@@ -1,4 +1,4 @@
-﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {

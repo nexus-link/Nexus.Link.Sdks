@@ -6,7 +6,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IWorkflowVersionCollection
     {
-        IWorkflowCapability Capability { get; }
+        IWorkflowMgmtCapability Capability { get; }
         IAsyncRequestClient AsyncRequestClient { get; }
         WorkflowVersionCollection AddWorkflowVersion(IWorkflowVersion workflowVersion);
         WorkflowVersion<TResponse> SelectWorkflowVersion<TResponse>(int minVersion, int maxVersion);

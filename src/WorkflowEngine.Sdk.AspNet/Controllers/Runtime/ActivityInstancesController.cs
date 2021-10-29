@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 
@@ -12,9 +12,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
     /// <inheritdoc cref="IActivityInstanceService" />
     public abstract class ActivityInstancesController : ControllerBase, IActivityInstanceService
     {
-        private readonly IWorkflowCapability _capability;
+        private readonly IWorkflowMgmtCapability _capability;
 
-        protected ActivityInstancesController(IWorkflowCapability capability)
+        protected ActivityInstancesController(IWorkflowMgmtCapability capability)
         {
             _capability = capability;
         }

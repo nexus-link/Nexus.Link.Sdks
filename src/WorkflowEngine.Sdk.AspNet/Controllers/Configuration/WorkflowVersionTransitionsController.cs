@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -13,9 +13,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
     /// <inheritdoc cref="ITransitionService" />
     public abstract class WorkflowVersionTransitionsController : ControllerBase, ITransitionService
     {
-        private readonly IWorkflowCapability _capability;
+        private readonly IWorkflowMgmtCapability _capability;
 
-        protected WorkflowVersionTransitionsController(IWorkflowCapability capability)
+        protected WorkflowVersionTransitionsController(IWorkflowMgmtCapability capability)
         {
             _capability = capability;
         }

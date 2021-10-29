@@ -1,13 +1,17 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
+using Nexus.Link.WorkflowEngine.Sdk.Services.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
-    public class WorkflowCapability : IWorkflowCapability
+    public class WorkflowCapability : IWorkflowMgmtCapability
     {
         public WorkflowCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
@@ -20,8 +24,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             ActivityParameter = new ActivityParameterService(configurationTables);
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);
             ActivityInstance = new ActivityInstanceService(runtimeTables);
-            Workflow = new WorkflowService(configurationTables, runtimeTables, requestMgmtCapability);
-            WorkflowAdministrationService = new WorkflowAdministrationService(this, requestMgmtCapability);
+            WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables, requestMgmtCapability);
+            Workflow = new WorkflowService(this, requestMgmtCapability);
         }
 
         /// <inheritdoc />
@@ -52,9 +56,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public IWorkflowInstanceService WorkflowInstance { get; }
 
         /// <inheritdoc />
-        public IWorkflowService Workflow { get; }
+        public IWorkflowSummaryService WorkflowSummary { get; }
 
         /// <inheritdoc />
-        public IWorkflowAdministrationService WorkflowAdministrationService { get; }
+        public IWorkflowService Workflow { get; }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
     {
         public IWorkflowVersion WorkflowVersion { get; }
         public  WorkflowPersistence WorkflowPersistence { get; }
-        protected IWorkflowCapability WorkflowCapability { get; }
+        protected IWorkflowMgmtCapability WorkflowCapability { get; }
         protected IAsyncRequestClient AsyncRequestClient { get; }
         public string ActivityFormId { get; }
         public MethodHandler MethodHandler { get; }
@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
         public ActivityFailUrgencyEnum FailUrgency { get; protected set; }
         public int Position { get; }
 
-        protected ActivityFlowBase(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
+        protected ActivityFlowBase(IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
             WorkflowPersistence workflowPersistence,
             IWorkflowVersion workflowVersion, int position, string formTitle, string activityFormId)
         {
@@ -43,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
     internal class ActivityFlow : ActivityFlowBase, IActivityFlow
     {
 
-        public ActivityFlow(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient, WorkflowPersistence workflowPersistence,
+        public ActivityFlow(IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient, WorkflowPersistence workflowPersistence,
             WorkflowVersionBase workflowVersion,
             int position, string formTitle, string activityFormId)
         : base(workflowCapability, asyncRequestClient, workflowPersistence, workflowVersion, position, formTitle, activityFormId)
@@ -93,7 +93,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
     {
         public Func<CancellationToken, Task<TActivityReturns>> GetDefaultValueMethodAsync { get; private set; }
 
-        public ActivityFlow(IWorkflowCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
+        public ActivityFlow(IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient,
             WorkflowPersistence workflowPersistence,
             WorkflowVersionBase workflowVersion, int position, string formTitle, string activityFormId)
         : base(workflowCapability, asyncRequestClient, workflowPersistence, workflowVersion, position, formTitle, activityFormId)

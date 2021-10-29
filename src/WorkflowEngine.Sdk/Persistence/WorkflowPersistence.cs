@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -17,11 +18,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
     {
         public MethodHandler MethodHandler { get; }
 
-        public IWorkflowCapability WorkflowCapability { get; }
+        public IWorkflowMgmtCapability WorkflowCapability { get; }
 
         public WorkflowCache StoredWorkflow { get; private set; }
 
-        public WorkflowPersistence(IWorkflowCapability workflowCapability, MethodHandler methodHandler)
+        public WorkflowPersistence(IWorkflowMgmtCapability workflowCapability, MethodHandler methodHandler)
         {
             MethodHandler = methodHandler;
             WorkflowCapability = workflowCapability;

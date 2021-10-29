@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
