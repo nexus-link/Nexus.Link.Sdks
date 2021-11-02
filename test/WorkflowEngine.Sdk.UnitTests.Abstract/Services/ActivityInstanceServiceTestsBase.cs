@@ -92,5 +92,71 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             Assert.Equal(itemToUpdate.ExceptionFriendlyMessage, updatedItem.ExceptionFriendlyMessage);
             Assert.Equal(itemToUpdate.ExceptionTechnicalMessage, updatedItem.ExceptionTechnicalMessage);
         }
+
+        [Fact]
+        public async Task Can_Set_To_Success()
+        {
+            // Arrange
+            var item = await CreateActivityInstance();
+
+            // Assert the arrangements
+            Assert.Equal(ActivityStateEnum.Started, item.State);
+            Assert.Null(item.ResultAsJson);
+            Assert.Null(item.FinishedAt);
+
+            // Act
+            var result = new ActivityInstanceSuccessResult { ResultAsJson = "{}"};
+            await _service.SuccessAsync(item.Id, result);
+            var updatedItem = await _service.ReadAsync(item.Id);
+
+            // Assert
+            Assert.Equal(result.ResultAsJson, updatedItem.ResultAsJson);
+            Assert.Equal(ActivityStateEnum.Success, updatedItem.State);
+            Assert.NotNull(updatedItem.FinishedAt);
+        }
+
+        [Fact]
+        public async Task Can_Set_To_Failed()
+        {
+            // Arrange
+            var item = await CreateActivityInstance();
+
+            // Assert the arrangements
+            Assert.Equal(ActivityStateEnum.Started, item.State);
+            Assert.Null(item.ResultAsJson);
+            Assert.Null(item.FinishedAt);
+
+            // Act
+            var result = new ActivityInstanceFailedResult
+            {
+                ExceptionCategory = ActivityExceptionCategoryEnum.Business,
+                ExceptionFriendlyMessage = "Speak, friend",
+                ExceptionTechnicalMessage = "VagueSpeechException"
+            };
+            await _service.FailedAsync(item.Id, result);
+            var updatedItem = await _service.ReadAsync(item.Id);
+
+            // Assert
+            Assert.Equal(result.ExceptionCategory, updatedItem.ExceptionCategory);
+            Assert.Equal(result.ExceptionFriendlyMessage, updatedItem.ExceptionFriendlyMessage);
+            Assert.Equal(result.ExceptionTechnicalMessage, updatedItem.ExceptionTechnicalMessage);
+            Assert.Equal(ActivityStateEnum.Failed, updatedItem.State);
+            Assert.NotNull(updatedItem.FinishedAt);
+        }
+
+        private async Task<ActivityInstance> CreateActivityInstance()
+        {
+            var workflowInstanceId = Guid.NewGuid().ToString();
+            var activityVersionId = Guid.NewGuid().ToString();
+            var itemToCreate = new ActivityInstanceCreate
+            {
+                WorkflowInstanceId = workflowInstanceId,
+                ActivityVersionId = activityVersionId,
+                ParentActivityInstanceId = Guid.NewGuid().ToString(),
+                ParentIteration = 1,
+            };
+            var item = await _service.CreateAndReturnAsync(itemToCreate);
+            return item;
+        }
     }
 }

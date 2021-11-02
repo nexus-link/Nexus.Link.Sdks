@@ -66,5 +66,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
+
+        /// <inheritdoc />
+        [HttpPost("{id}/Success")]
+        public async Task SuccessAsync(string id, ActivityInstanceSuccessResult result, CancellationToken cancellationToken = default)
+        {
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNull(result, nameof(result));
+            ServiceContract.RequireValidated(result, nameof(result));
+
+            await _capability.ActivityInstance.SuccessAsync(id, result, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        [HttpPost("{id}/Failed")]
+        public async Task FailedAsync(string id, ActivityInstanceFailedResult result, CancellationToken cancellationToken = default)
+        {
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNull(result, nameof(result));
+            ServiceContract.RequireValidated(result, nameof(result));
+
+            await _capability.ActivityInstance.FailedAsync(id, result, cancellationToken);
+        }
     }
 }

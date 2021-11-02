@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
@@ -16,19 +17,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
     public class ActivityInstanceService : IActivityInstanceService
     {
         private readonly IRuntimeTables _runtimeTables;
+        private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public ActivityInstanceService(IRuntimeTables runtimeTables)
+        public ActivityInstanceService(IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             _runtimeTables = runtimeTables;
+            _requestMgmtCapability = requestMgmtCapability;
         }
 
         /// <inheritdoc />
-        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
-            
+
             var recordCreate = new ActivityInstanceRecordCreate().From(item);
             recordCreate.StartedAt = DateTimeOffset.UtcNow;
             var result = await _runtimeTables.ActivityInstance.CreateAndReturnAsync(recordCreate, cancellationToken);
@@ -40,17 +43,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         public async Task<ActivityInstance> FindUniqueAsync(ActivityInstanceUnique findUnique, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(findUnique, nameof(findUnique));
-            
+
             var record = await _runtimeTables.ActivityInstance.FindUniqueAsync(
                 new SearchDetails<ActivityInstanceRecord>(
-                    new {
+                    new
+                    {
                         WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(findUnique.WorkflowInstanceId),
                         ActivityVersionId = MapperHelper.MapToType<Guid, string>(findUnique.ActivityVersionId),
                         ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(findUnique.ParentActivityInstanceId),
                         findUnique.ParentIteration
                     }),
                 cancellationToken);
-             if (record == null) return null;
+            if (record == null) return null;
 
             var result = new ActivityInstance().From(record);
             FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
@@ -59,12 +63,52 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         }
 
         /// <inheritdoc />
+        public async Task SuccessAsync(string id, ActivityInstanceSuccessResult result, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+
+            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
+            if (record == null) return;
+
+            record.State = ActivityStateEnum.Success.ToString();
+            record.ResultAsJson = result.ResultAsJson;
+            record.FinishedAt = DateTimeOffset.UtcNow;
+
+            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
+            // TODO: Audit log?
+        }
+
+        /// <inheritdoc />
+        public async Task FailedAsync(string id, ActivityInstanceFailedResult result, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+
+            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
+            if (record == null) return;
+
+            record.State = ActivityStateEnum.Failed.ToString();
+            record.ExceptionCategory = result.ExceptionCategory.ToString();
+            record.ExceptionTechnicalMessage = result.ExceptionTechnicalMessage;
+            record.ExceptionFriendlyMessage = result.ExceptionFriendlyMessage;
+            record.FinishedAt = DateTimeOffset.UtcNow;
+
+            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
+            // TODO: Audit log?
+        }
+
+        /// <inheritdoc />
         public async Task<ActivityInstance> UpdateAndReturnAsync(string id, ActivityInstance item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
-            
+
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
 
             var record = new ActivityInstanceRecord().From(item);
@@ -78,7 +122,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
-            
+
             var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return null;
 
