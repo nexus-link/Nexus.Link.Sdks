@@ -7,7 +7,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
+namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.State
 {
     /// <inheritdoc cref="IActivityInstanceService" />
     public abstract class ActivityInstancesController : ControllerBase, IActivityInstanceService

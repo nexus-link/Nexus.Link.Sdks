@@ -2,12 +2,12 @@
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Runtime
+namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.State
 {
     /// <inheritdoc cref="IWorkflowService" />
     [ApiController]
-    [Route("api/v1/workflows/Runtime/Workflows")]
-    public class WorkflowController : Controllers.Runtime.WorkflowController
+    [Route("api/v1/workflows/State/Workflows")]
+    public class WorkflowController : Controllers.State.WorkflowController
     {
         /// <inheritdoc />
         public WorkflowController(IWorkflowMgmtCapability capability) : base(capability)

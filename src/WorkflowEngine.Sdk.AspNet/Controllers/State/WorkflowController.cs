@@ -6,7 +6,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Runtime
+namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.State
 {
     /// <inheritdoc cref="IWorkflowSummaryService" />
     public abstract class WorkflowController : ControllerBase, IWorkflowSummaryService
