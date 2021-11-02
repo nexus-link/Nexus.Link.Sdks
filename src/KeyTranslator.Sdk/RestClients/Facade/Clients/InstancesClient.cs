@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 using Nexus.Link.KeyTranslator.Sdk.Models;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
@@ -19,6 +23,19 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
         {
             const string relativeUrl = "Instances/Exists";
             return await RestClient.PostAsync<IDictionary<string, InstancesExistsResult>, IEnumerable<string>>(relativeUrl, conceptKeys, cancellationToken: cancellationToken);
+        }
+
+        public async Task DeleteAsync(ConceptValue conceptValue, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(conceptValue, nameof(conceptValue));
+            InternalContract.RequireValidated(conceptValue, nameof(conceptValue));
+
+            const string relativeUrl = "Instances";
+            var request = new HttpRequestMessage(HttpMethod.Delete, relativeUrl)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(conceptValue), Encoding.UTF8, "application/json")
+            };
+            await RestClient.SendAsync(request, cancellationToken);
         }
     }
 }
