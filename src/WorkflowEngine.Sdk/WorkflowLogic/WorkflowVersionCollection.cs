@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(workflowTitle, nameof(workflowTitle));
             InternalContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
             WorkflowCapabilityName = capabilityName;
-            WorkflowFormId = workflowFormId;
+            WorkflowFormId = workflowFormId.ToLowerInvariant();
             WorkflowFormTitle = workflowTitle;
             return this;
         }

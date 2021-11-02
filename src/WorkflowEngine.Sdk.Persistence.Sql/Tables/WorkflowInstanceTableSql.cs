@@ -22,6 +22,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(WorkflowInstanceRecord.StartedAt),
                 nameof(WorkflowInstanceRecord.FinishedAt),
                 nameof(WorkflowInstanceRecord.CancelledAt),
+                nameof(WorkflowInstanceRecord.IsComplete),
+                nameof(WorkflowInstanceRecord.ResultAsJson),
+                nameof(WorkflowInstanceRecord.ExceptionFriendlyMessage),
+                nameof(WorkflowInstanceRecord.ExceptionTechnicalMessage),
+                nameof(WorkflowInstanceRecord.State),
             },
             OrderBy = new List<string> { nameof(WorkflowInstanceRecord.RecordCreatedAt) }
         })

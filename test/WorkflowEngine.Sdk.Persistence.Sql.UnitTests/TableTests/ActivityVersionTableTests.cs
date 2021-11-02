@@ -59,7 +59,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             recordToUpdate.FailUrgency = ActivityFailUrgencyEnum.Ignore.ToString();
 
             // Act
-            await ConfigurationTables.ActivityVersion.UpdateAsync(recordToUpdate.Id, recordToUpdate);
+            await ConfigurationTables.ActivityVersion.UpdateAndReturnAsync(recordToUpdate.Id, recordToUpdate);
             var updatedRecord = await ConfigurationTables.ActivityVersion.ReadAsync(recordToUpdate.Id);
 
             // Assert

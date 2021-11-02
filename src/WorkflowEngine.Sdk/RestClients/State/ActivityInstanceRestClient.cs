@@ -16,14 +16,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.State
         }
 
         /// <inheritdoc />
-        public Task<ActivityInstance> FindUniqueAsync(ActivityInstanceUnique findUnique, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(findUnique, nameof(findUnique));
-
-            return PostAsync<ActivityInstance, ActivityInstanceUnique>("FindUnique", findUnique, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
         public async Task SuccessAsync(string id, ActivityInstanceSuccessResult result, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));

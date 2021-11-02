@@ -13,6 +13,11 @@ CREATE TABLE WorkflowInstance
 	StartedAt datetimeoffset NOT NULL CONSTRAINT DF_WorkflowInstance_StartedAt DEFAULT (sysdatetimeoffset()),
 	FinishedAt datetimeoffset,
 	CancelledAt datetimeoffset,
+    IsComplete bit NOT NULL  CONSTRAINT DF_WorkflowInstance_IsComplete DEFAULT ((1)),
+    ResultAsJson nvarchar(MAX) NULL,
+    ExceptionFriendlyMessage nvarchar(MAX) NULL,
+    ExceptionTechnicalMessage nvarchar(MAX) NULL,
+    [State] nvarchar(16)  NOT NULL  CONSTRAINT DF_WorkflowInstance_State DEFAULT ('Executing'), 
 )
 CREATE CLUSTERED INDEX IX_WorkflowInstance_RecordCreatedAt ON WorkflowInstance (RecordCreatedAt)
 
@@ -33,7 +38,7 @@ CREATE TABLE ActivityInstance
 	ExceptionAlertHandled bit NULL,
 
     ResultAsJson nvarchar(max),
-    State nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_State DEFAULT ('Started'),
+    [State] nvarchar(16) NOT NULL CONSTRAINT DF_ActivityInstance_State DEFAULT ('Executing'),
     ExceptionCategory nvarchar(16),
     ExceptionFriendlyMessage nvarchar(max),
     ExceptionTechnicalMessage nvarchar(max),

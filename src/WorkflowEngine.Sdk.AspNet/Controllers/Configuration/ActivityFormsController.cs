@@ -20,13 +20,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
         }
 
         /// <inheritdoc />
-        [HttpPost("")]
-        public async Task CreateWithSpecifiedIdAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
-        {
-            await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
-        }
-
-        /// <inheritdoc />
         [HttpPost("ReturnCreated")]
         public async Task<ActivityForm> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
         {
@@ -49,14 +42,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
         }
 
         /// <inheritdoc />
-        [HttpPut("")]
-        public async Task UpdateAsync(string id, ActivityForm item, CancellationToken cancellationToken = default)
+        [HttpPut("ReturnUpdated")]
+        public async Task<ActivityForm> UpdateAndReturnAsync(string id, ActivityForm item, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
             
-            await _capability.ActivityForm.UpdateAsync(id, item, cancellationToken);
+            return await _capability.ActivityForm.UpdateAndReturnAsync(id, item, cancellationToken);
         }
     }
 }

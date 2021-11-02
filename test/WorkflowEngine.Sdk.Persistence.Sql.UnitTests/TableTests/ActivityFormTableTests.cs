@@ -56,7 +56,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             createdRecord.Title = "Phobos of Mars";
 
             // Act
-            await ConfigurationTables.ActivityForm.UpdateAsync(createdRecord.Id, createdRecord);
+            await ConfigurationTables.ActivityForm.UpdateAndReturnAsync(createdRecord.Id, createdRecord);
             var updatedRecord = await ConfigurationTables.ActivityForm.ReadAsync(createdRecord.Id);
 
             // Assert

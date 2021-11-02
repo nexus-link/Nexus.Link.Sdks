@@ -11,7 +11,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public IWorkflowVersion WorkflowVersion { get; set; }
 
         /// <inheritdoc />
-        public  WorkflowPersistence WorkflowPersistence { get; set; }
+        public WorkflowCache WorkflowCache { get; set; }
 
         /// <inheritdoc />
         public string ActivityFormId { get; set; }
@@ -30,10 +30,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 
 
         public ActivityFlowMock(IWorkflowVersion workflowVersion,
-            WorkflowPersistence workflowPersistence, string formTitle, string activityFormId, int position)
+            WorkflowCache workflowCache, string formTitle, string activityFormId, int position)
         {
             WorkflowVersion = workflowVersion;
-            WorkflowPersistence = workflowPersistence;
+            WorkflowCache = workflowCache;
 
             ActivityFormId = activityFormId;
             FormTitle = formTitle;

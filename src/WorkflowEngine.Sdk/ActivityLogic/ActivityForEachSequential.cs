@@ -36,14 +36,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 
         private async Task ForEachMethod(Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
         {
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
             foreach (var item in Items)
             {
                 Iteration++;
                 await MapMethodAsync(item, method, activity, cancellationToken);
-                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+                WorkflowCache.LatestActivityInstanceId = Instance.Id;
             }
         }
 
@@ -86,16 +86,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 
         private async Task<IList<TActivityReturns>> ForEachMethod(Func<TItemType, ActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
         {
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
             var resultList = new List<TActivityReturns>();
             foreach (var item in Items)
             {
                 Iteration++;
                 var result = await MapMethodAsync(item, method, activity, cancellationToken);
                 resultList.Add(result);
-                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+                WorkflowCache.LatestActivityInstanceId = Instance.Id;
             }
 
             return resultList;

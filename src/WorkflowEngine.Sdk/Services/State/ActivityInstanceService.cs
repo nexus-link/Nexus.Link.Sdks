@@ -26,40 +26,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         }
 
         /// <inheritdoc />
-        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = default)
+        public async Task<ActivityInstance> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityInstanceCreate item, CancellationToken cancellationToken = new CancellationToken())
         {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
-
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
             var recordCreate = new ActivityInstanceRecordCreate().From(item);
-            recordCreate.StartedAt = DateTimeOffset.UtcNow;
-            var result = await _runtimeTables.ActivityInstance.CreateAndReturnAsync(recordCreate, cancellationToken);
+            var result = await _runtimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return new ActivityInstance().From(result);
-        }
-
-        /// <inheritdoc />
-        public async Task<ActivityInstance> FindUniqueAsync(ActivityInstanceUnique findUnique, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(findUnique, nameof(findUnique));
-
-            var record = await _runtimeTables.ActivityInstance.FindUniqueAsync(
-                new SearchDetails<ActivityInstanceRecord>(
-                    new
-                    {
-                        WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(findUnique.WorkflowInstanceId),
-                        ActivityVersionId = MapperHelper.MapToType<Guid, string>(findUnique.ActivityVersionId),
-                        ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(findUnique.ParentActivityInstanceId),
-                        findUnique.ParentIteration
-                    }),
-                cancellationToken);
-            if (record == null) return null;
-
-            var result = new ActivityInstance().From(record);
-            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
-            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
-            return result;
         }
 
         /// <inheritdoc />

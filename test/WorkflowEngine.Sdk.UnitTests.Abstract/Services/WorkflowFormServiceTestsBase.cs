@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
@@ -20,11 +21,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
 
             // Act
@@ -42,14 +43,14 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Create_Given_SameTitle_Gives_Exception()
         {
             // Arrange
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
             await _workflowFormService.CreateWithSpecifiedIdAsync(id, itemToCreate);
-            var newId = Guid.NewGuid().ToString();
+            var newId = Guid.NewGuid().ToLowerCaseString();
 
             // Act && Assert
             await Assert.ThrowsAsync<FulcrumConflictException>(() =>
@@ -60,17 +61,17 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task UpdateAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
             await _workflowFormService.CreateWithSpecifiedIdAsync(id, itemToCreate);
             var itemToUpdate = await _workflowFormService.ReadAsync(id);
 
             // Act
-            itemToUpdate.Title = Guid.NewGuid().ToString();
+            itemToUpdate.Title = Guid.NewGuid().ToLowerCaseString();
             await _workflowFormService.UpdateAsync(id, itemToUpdate);
             var readItem = await _workflowFormService.ReadAsync(id);
 
@@ -83,18 +84,18 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Update_Given_WrongEtag_Gives_Exception()
         {
             // Arrange
-            var id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
             await _workflowFormService.CreateWithSpecifiedIdAsync(id, itemToCreate);
             var itemToUpdate = await _workflowFormService.ReadAsync(id);
 
             // Act & Assert
-            itemToUpdate.Title = Guid.NewGuid().ToString();
-            itemToUpdate.Etag = Guid.NewGuid().ToString();
+            itemToUpdate.Title = Guid.NewGuid().ToLowerCaseString();
+            itemToUpdate.Etag = Guid.NewGuid().ToLowerCaseString();
             await Assert.ThrowsAsync<FulcrumConflictException>(() =>
                 _workflowFormService.UpdateAsync(id, itemToUpdate));
         }
@@ -103,18 +104,18 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Update_Given_ExistingTitle_Gives_Exception()
         {
             // Arrange
-            var id1 = Guid.NewGuid().ToString();
+            var id1 = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate1 = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
             await _workflowFormService.CreateWithSpecifiedIdAsync(id1, itemToCreate1);
-            var id2 = Guid.NewGuid().ToString();
+            var id2 = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate2 = new WorkflowFormCreate
             {
-                CapabilityName = Guid.NewGuid().ToString(),
-                Title = Guid.NewGuid().ToString()
+                CapabilityName = Guid.NewGuid().ToLowerCaseString(),
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
             await _workflowFormService.CreateWithSpecifiedIdAsync(id2, itemToCreate2);
             var itemToUpdate = await _workflowFormService.ReadAsync(id2);

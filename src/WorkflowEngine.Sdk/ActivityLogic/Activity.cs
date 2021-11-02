@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -20,18 +22,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 
     public abstract class Activity
     {
+        private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
 
-        protected internal ActivityPersistence ActivityPersistence { get; }
+        protected internal WorkflowCache WorkflowCache => _activityFlow.WorkflowCache;
+        
+        protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
+        protected internal ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
+        protected internal ActivityInstance Instance => WorkflowCache.GetActivityInstance(InstanceId);
         public int? Iteration { get; protected set; }
+        public string NestedPosition { get; }
+        public string NestedPositionAndTitle => $"{NestedPosition} {_activityFlow.FormTitle}";
 
         public string Title
         {
             get
             {
-                if (!NestedIterations.Any()) return ActivityPersistence.NestedPositionAndTitle;
+                if (!NestedIterations.Any()) return NestedPositionAndTitle;
                 var iterations = string.Join(",", NestedIterations);
-                return $"{ActivityPersistence.NestedPositionAndTitle} [{iterations}]";
+                return $"{NestedPositionAndTitle} [{iterations}]";
             }
         }
 
@@ -45,37 +54,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {
             InternalContract.RequireNotNull(activityFlow, nameof(activityFlow));
-            
-            ActivityPersistence = CreateActivityInformation(activityType, activityFlow);
-            _activityExecutor = new ActivityExecutor(activityFlow.WorkflowVersion, this);
+            _activityFlow = activityFlow;
+            Activity parentActivity = null;
             if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
             {
-                var parentActivity =
-                    ActivityPersistence.WorkflowPersistence.GetActivity(AsyncWorkflowStatic.Context
-                        .ParentActivityInstanceId);
+                parentActivity = WorkflowCache.GetActivity(AsyncWorkflowStatic.Context.ParentActivityInstanceId);
+                FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
                 NestedIterations.AddRange(parentActivity.NestedIterations);
                 if (parentActivity.Iteration is > 0)
                 {
                     NestedIterations.Add(parentActivity.Iteration.Value);
                 }
+                NestedPosition = $"{parentActivity.NestedPosition}.{activityFlow.Position}";
             }
-        }
+            else
+            {
+                NestedPosition = $"{activityFlow.Position}";
+            }
 
-        private ActivityPersistence CreateActivityInformation(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
-        {
-            var activityInformation = new ActivityPersistence(
-                activityFlow.WorkflowPersistence, 
-                activityFlow.MethodHandler,
-                activityFlow.FormTitle, 
-                activityFlow.Position, 
-                activityFlow.ActivityFormId,
-                activityType, activityFlow.FailUrgency);
-            return activityInformation;
+            InstanceId = _activityFlow.WorkflowCache.GetOrCreateInstanceId(activityType, _activityFlow, parentActivity);
+            _activityExecutor = new ActivityExecutor(activityFlow.WorkflowVersion, this);
         }
 
         public TParameter GetArgument<TParameter>(string parameterName)
         {
-            return ActivityPersistence.MethodHandler.GetArgument<TParameter>(parameterName);
+            return _activityFlow.MethodHandler.GetArgument<TParameter>(parameterName);
         }
 
         internal Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
@@ -92,7 +95,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
             CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(method, nameof(method));
-
             await _activityExecutor.ExecuteAsync(method, cancellationToken);
         }
     }

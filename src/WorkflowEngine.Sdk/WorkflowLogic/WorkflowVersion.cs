@@ -1,7 +1,10 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
@@ -17,44 +20,47 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 {
     public abstract class WorkflowVersionBase : IWorkflowVersion
     {
-        private readonly IWorkflowMgmtCapability _workflowCapability;
-        public int MajorVersion { get; }
-        public int MinorVersion { get; }
-        private readonly WorkflowPersistence _workflowPersistence;
-        private readonly IAsyncRequestClient _asyncRequestClient;
+        private readonly WorkflowInformation _workflowInformation;
+        private readonly WorkflowVersionCollection _workflowVersionCollection;
+        private readonly MethodHandler _methodHandler;
+        private WorkflowCache _workflowCache;
+
+        /// <inheritdoc />
+        public int MajorVersion => _workflowInformation.MajorVersion;
+
+        /// <inheritdoc />
+        public int MinorVersion => _workflowInformation.MinorVersion;
 
         protected WorkflowVersionBase(int majorVersion, int minorVersion,
             WorkflowVersionCollection workflowVersionCollection)
         {
-            var workflowVersionCollection1 = workflowVersionCollection;
-            _workflowCapability = workflowVersionCollection.Capability;
-            _asyncRequestClient = workflowVersionCollection.AsyncRequestClient;
-            MajorVersion = majorVersion;
-            MinorVersion = minorVersion;
-            var methodHandler = new MethodHandler(workflowVersionCollection1.WorkflowFormTitle);
-            _workflowPersistence = new WorkflowPersistence(workflowVersionCollection1.Capability, methodHandler)
+            _workflowVersionCollection = workflowVersionCollection;
+            _workflowInformation = new WorkflowInformation
             {
-                CapabilityName = workflowVersionCollection1.WorkflowCapabilityName,
-                FormId = workflowVersionCollection1.WorkflowFormId,
-                FormTitle = workflowVersionCollection1.WorkflowFormTitle,
-                MajorVersion = MajorVersion,
-                MinorVersion = MinorVersion
+                WorkflowCapability = workflowVersionCollection.Capability,
+                FormId = workflowVersionCollection.WorkflowFormId,
+                FormTitle = workflowVersionCollection.WorkflowFormTitle,
+                CapabilityName = workflowVersionCollection.WorkflowCapabilityName,
+                MajorVersion = majorVersion,
+                MinorVersion = minorVersion,
+                InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId
             };
+            _methodHandler = new MethodHandler(workflowVersionCollection.WorkflowFormTitle);
         }
 
         protected void DefineParameter<T>(string name)
         {
-            _workflowPersistence.MethodHandler.DefineParameter<T>(name);
+            _methodHandler.DefineParameter<T>(name);
         }
 
         protected TParameter GetArgument<TParameter>(string name)
         {
-            return _workflowPersistence.MethodHandler.GetArgument<TParameter>(name);
+            return _methodHandler.GetArgument<TParameter>(name);
         }
 
         protected void InternalSetParameter<TParameter>(string name, TParameter value)
         {
-            _workflowPersistence.MethodHandler.SetParameter(name, value);
+            _methodHandler.SetParameter(name, value);
         }
 
         protected abstract string GetInstanceTitle();
@@ -64,9 +70,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowCache.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(_workflowCapability, _asyncRequestClient, _workflowPersistence, this, position, title, id);
+            return new ActivityFlow<TActivityReturns>(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, this, position, title, id.ToLowerInvariant());
         }
 
         protected IActivityFlow CreateActivity(int position, string title, string id)
@@ -74,12 +80,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowPersistence.LatestActivityInstanceId;
+            AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowCache.LatestActivityInstanceId;
 
-            return new ActivityFlow(_workflowCapability, _asyncRequestClient, _workflowPersistence, this, position, title, id);
+            return new ActivityFlow(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, this, position, title, id);
         }
 
-        protected async Task InternalExecuteAsync(CancellationToken cancellationToken)
+        protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             // If service runs directly with database connection, make sure we're on correct database version
 #pragma warning disable CS0618
@@ -94,17 +100,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
                 throw new FulcrumNotImplementedException($"Currently all workflows must be called via AsyncManager, because they are dependent on the request header {Constants.ExecutionIdHeaderName}.");
             }
 
+            _workflowInformation.InstanceTitle = GetInstanceTitle();
+            _workflowCache = new WorkflowCache(_workflowInformation);
+            await _workflowCache.LoadAsync(cancellationToken);
+            _workflowCache.Form.CapabilityName = _workflowVersionCollection.WorkflowCapabilityName;
+            _workflowCache.Form.Title = _workflowVersionCollection.WorkflowFormTitle;
+            _workflowCache.Version.MinorVersion = _workflowInformation.MinorVersion;
+            _workflowCache.Instance.State = WorkflowStateEnum.Executing;
+            _workflowCache.Instance.Title = GetInstanceTitle();
+            await _workflowCache.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
-            if (_workflowPersistence.CancelledAt != null)
+            if (_workflowCache.Instance.CancelledAt != null)
             {
                 throw new FulcrumCancelledException(
-                    $"This workflow was manually marked for cancelling at {_workflowPersistence.CancelledAt.Value.ToLogString()}.");
+                    $"This workflow was manually marked for cancelling at {_workflowCache.Instance.CancelledAt.Value.ToLogString()}.");
             }
+        }
 
-            _workflowPersistence.InstanceTitle = GetInstanceTitle();
-            _workflowPersistence.MethodHandler.InstanceTitle = _workflowPersistence.InstanceTitle;
-            _workflowPersistence.InstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
-            await _workflowPersistence.PersistAsync(cancellationToken);
+        protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
+        {
+            await _workflowCache.SaveAsync(cancellationToken);
         }
     }
 
@@ -112,7 +127,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         protected WorkflowVersion(int majorVersion, int minorVersion,
             WorkflowVersionCollection workflowVersionCollection)
-        :base(majorVersion, minorVersion, workflowVersionCollection)
+        : base(majorVersion, minorVersion, workflowVersionCollection)
         {
         }
 
@@ -126,9 +141,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task<TResponse> ExecuteAsync(CancellationToken cancellationToken)
         {
-            await InternalExecuteAsync(cancellationToken);
+            await PrepareBeforeExecutionAsync(cancellationToken);
             AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
-            return await ExecuteWorkflowAsync(cancellationToken);
+            try
+            {
+                var result = await ExecuteWorkflowAsync(cancellationToken);
+                return result;
+            }
+            finally
+            {
+                await AfterExecutionAsync(cancellationToken);
+            }
         }
 
         protected abstract Task<TResponse> ExecuteWorkflowAsync(CancellationToken cancellationToken);
@@ -138,12 +161,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
     {
         protected WorkflowVersion(int majorVersion, int minorVersion,
             WorkflowVersionCollection workflowVersionCollection)
-        :base(majorVersion, minorVersion, workflowVersionCollection)
+        : base(majorVersion, minorVersion, workflowVersionCollection)
         {
         }
 
         public abstract WorkflowVersion CreateWorkflowInstance();
-        
+
 
         public WorkflowVersion SetParameter<TParameter>(string name, TParameter value)
         {
@@ -153,9 +176,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            await InternalExecuteAsync(cancellationToken);
+            await PrepareBeforeExecutionAsync(cancellationToken);
             AsyncWorkflowStatic.Context.ExecutionIsAsynchronous = true;
-            await ExecuteWorkflowAsync(cancellationToken);
+            try
+            {
+                await ExecuteWorkflowAsync(cancellationToken);
+            }
+            finally
+            {
+                await AfterExecutionAsync(cancellationToken);
+            }
         }
 
         protected abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken);

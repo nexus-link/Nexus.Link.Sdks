@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Xunit;
@@ -30,7 +31,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 WorkflowVersionId = workflowVersion.Id,
                 Title = "Flying to Deimos",
                 StartedAt = DateTimeOffset.Now,
-                InitialVersion = "1.0"
+                InitialVersion = "1.0",
+                State = WorkflowStateEnum.Executing.ToString()
             };
 
             // Act
@@ -48,6 +50,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             Assert.Equal(item.Title, record.Title);
             Assert.Equal(item.StartedAt, record.StartedAt);
             Assert.Equal(item.InitialVersion, record.InitialVersion);
+            Assert.Equal(item.State, record.State);
         }
 
         [Theory]
@@ -71,7 +74,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 WorkflowVersionId = workflowVersion?.Id ?? Guid.Empty,
                 Title = title,
                 StartedAt = futureStartedAt ? DateTimeOffset.Now.AddSeconds(1) : DateTimeOffset.Now.AddSeconds(-1),
-                InitialVersion = initialVersion
+                InitialVersion = initialVersion,
+                State = WorkflowStateEnum.Executing.ToString()
             };
 
             // Act & Assert
@@ -95,7 +99,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
             {
                 WorkflowVersionId = workflowVersion?.Id ?? Guid.Empty,
                 Title = title,
-                InitialVersion = initialVersion
+                InitialVersion = initialVersion,
+                State = WorkflowStateEnum.Executing.ToString()
             };
 
             // Act & Assert
@@ -106,8 +111,9 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                     connection.Execute($"INSERT INTO WorkflowInstance (" +
                                        $" {nameof(WorkflowInstanceRecord.WorkflowVersionId)}," +
                                        $" {nameof(WorkflowInstanceRecord.Title)}," +
-                                       $" {nameof(WorkflowInstanceRecord.InitialVersion)})" +
-                                       $" VALUES (@WorkflowVersionId, @Title, @InitialVersion)", item);
+                                       $" {nameof(WorkflowInstanceRecord.InitialVersion)}," +
+                                       $" {nameof(WorkflowInstanceRecord.State)})" +
+                                       $" VALUES (@WorkflowVersionId, @Title, @InitialVersion, @State)", item);
                 }
                 catch (Exception e)
                 {

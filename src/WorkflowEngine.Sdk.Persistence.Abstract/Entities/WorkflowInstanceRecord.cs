@@ -24,20 +24,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// <inheritdoc />
         public byte[] RecordVersion { get; set; }
 
-        public DateTimeOffset? FinishedAt { get; set; }
-        
-        public DateTimeOffset? CancelledAt { get; set; }
-
         /// <inheritdoc />
         public override void Validate(string errorLocation, string propertyPath = "")
         {
             base.Validate(errorLocation, propertyPath);
             TableItemHelper.Validate(this, false, errorLocation, propertyPath);
-            if (FinishedAt != null)
-            {
-                FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, FinishedAt.Value, nameof(FinishedAt), errorLocation);
-                FulcrumValidate.IsGreaterThanOrEqualTo(StartedAt, FinishedAt.Value, nameof(FinishedAt), errorLocation);
-            }
         }
     }
 
@@ -54,6 +45,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public DateTimeOffset StartedAt { get; set; }
 
+        public string State { get; set; }
+
+        public DateTimeOffset? FinishedAt { get; set; }
+        
+        public DateTimeOffset? CancelledAt { get; set; }
+
+        public bool IsComplete { get; set; }
+
+        public string ResultAsJson { get; set; }
+
+        public string ExceptionTechnicalMessage { get; set; }
+
+        public string ExceptionFriendlyMessage { get; set; }
+
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {
@@ -61,6 +66,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotNullOrWhiteSpace(Title, nameof(Title), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(InitialVersion, nameof(InitialVersion), errorLocation);
             FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, StartedAt, nameof(StartedAt), errorLocation);
+            if (FinishedAt != null)
+            {
+                FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, FinishedAt.Value, nameof(FinishedAt), errorLocation);
+                FulcrumValidate.IsGreaterThanOrEqualTo(StartedAt, FinishedAt.Value, nameof(FinishedAt), errorLocation);
+            }
         }
     }
 }

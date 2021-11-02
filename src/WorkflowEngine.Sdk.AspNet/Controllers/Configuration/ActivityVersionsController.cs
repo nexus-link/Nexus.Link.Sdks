@@ -20,38 +20,36 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
         }
 
         /// <inheritdoc />
-        [HttpPost("")]
-        public async Task<string> CreateAsync(ActivityVersionCreate item, CancellationToken cancellationToken = default)
+        [HttpPost("{id}")]
+        public async Task<ActivityVersion> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityVersionCreate item, CancellationToken cancellationToken = default)
         {
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
 
-            var id = await _capability.ActivityVersion.CreateAsync(item, cancellationToken);
-            FulcrumAssert.IsNotNullOrWhiteSpace(id, CodeLocation.AsString());
-            return id;
+            return await _capability.ActivityVersion.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
         /// <inheritdoc />
-        [HttpGet("")]
-        public async Task<ActivityVersion> FindUniqueAsync(string workflowVersionId, string activityFormId, CancellationToken cancellationToken = default)
+        [HttpGet("{id}")]
+        public async Task<ActivityVersion> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
-            ServiceContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             
-            var result = await _capability.ActivityVersion.FindUniqueAsync(workflowVersionId, activityFormId, cancellationToken);
+            var result = await _capability.ActivityVersion.ReadAsync(id, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
 
         /// <inheritdoc />
         [HttpPut("{id}")]
-        public async Task UpdateAsync(string id, ActivityVersion item, CancellationToken cancellationToken = default)
+        public async Task<ActivityVersion> UpdateAndReturnAsync(string id, ActivityVersion item, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
 
-            await _capability.ActivityVersion.UpdateAsync(id, item, cancellationToken);
+            return await _capability.ActivityVersion.UpdateAndReturnAsync(id, item, cancellationToken);
         }
     }
 }

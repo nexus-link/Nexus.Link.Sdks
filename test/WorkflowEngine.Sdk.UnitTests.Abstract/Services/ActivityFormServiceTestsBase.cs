@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
@@ -20,17 +21,17 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var parentId = Guid.NewGuid().ToString();
-            var childId = Guid.NewGuid().ToString();
+            var parentId = Guid.NewGuid().ToLowerCaseString();
+            var childId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
                 Type = ActivityTypeEnum.Action,
-                Title = Guid.NewGuid().ToString()
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
 
             // Act
-            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAndReturnAsync(childId, itemToCreate);
             var readItem = await _service.ReadAsync(childId);
 
             // Assert
@@ -45,20 +46,20 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task UpdateAsync()
         {
             // Arrange
-            var parentId = Guid.NewGuid().ToString();
-            var childId = Guid.NewGuid().ToString();
+            var parentId = Guid.NewGuid().ToLowerCaseString();
+            var childId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
                 Type = ActivityTypeEnum.Action,
-                Title = Guid.NewGuid().ToString()
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
-            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAndReturnAsync(childId, itemToCreate);
             var itemToUpdate = await _service.ReadAsync(childId);
 
             // Act
-            itemToUpdate.Title = Guid.NewGuid().ToString();
-            await _service.UpdateAsync(childId, itemToUpdate);
+            itemToUpdate.Title = Guid.NewGuid().ToLowerCaseString();
+            await _service.UpdateAndReturnAsync(childId, itemToUpdate);
             var readItem = await _service.ReadAsync(childId);
 
             // Assert
@@ -70,22 +71,22 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Update_Given_WrongEtag_Gives_Exception()
         {
             // Arrange
-            var parentId = Guid.NewGuid().ToString();
-            var childId = Guid.NewGuid().ToString();
+            var parentId = Guid.NewGuid().ToLowerCaseString();
+            var childId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new ActivityFormCreate
             {
                 WorkflowFormId = parentId,
                 Type = ActivityTypeEnum.Action,
-                Title = Guid.NewGuid().ToString()
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
-            await _service.CreateWithSpecifiedIdAsync(childId, itemToCreate);
+            await _service.CreateWithSpecifiedIdAndReturnAsync(childId, itemToCreate);
             var itemToUpdate = await _service.ReadAsync(childId);
 
             // Act & Assert
-            itemToUpdate.Title = Guid.NewGuid().ToString();
-            itemToUpdate.Etag = Guid.NewGuid().ToString();
+            itemToUpdate.Title = Guid.NewGuid().ToLowerCaseString();
+            itemToUpdate.Etag = Guid.NewGuid().ToLowerCaseString();
             await Assert.ThrowsAsync<FulcrumConflictException>(() =>
-                _service.UpdateAsync(childId, itemToUpdate));
+                _service.UpdateAndReturnAsync(childId, itemToUpdate));
         }
     }
 }

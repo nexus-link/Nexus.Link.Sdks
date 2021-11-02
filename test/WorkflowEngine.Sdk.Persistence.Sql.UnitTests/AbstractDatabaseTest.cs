@@ -88,8 +88,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 
         protected async Task<WorkflowVersionRecord> CreateWorkflowVersionAsync(WorkflowVersionRecordCreate item, CancellationToken cancellationToken = default)
         {
-            await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
-            return await ConfigurationTables.WorkflowVersion.ReadByFormAndMajorAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), item, cancellationToken);
         }
 
         protected async Task<WorkflowVersionRecord> CreateStandardWorkflowVersionAsync(CancellationToken cancellationToken = default)
@@ -102,8 +101,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 MinorVersion = 0,
                 DynamicCreate = true
             };
-            await ConfigurationTables.WorkflowVersion.CreateAsync(item, cancellationToken);
-            return await ConfigurationTables.WorkflowVersion.ReadByFormAndMajorAsync(item.WorkflowFormId, item.MajorVersion, cancellationToken);
+            return await ConfigurationTables.WorkflowVersion.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), item, cancellationToken);
         }
 
         protected async Task<WorkflowVersionParameterRecord> CreateWorkflowVersionParameterAsync(WorkflowVersionParameterRecordCreate item, CancellationToken cancellationToken = default)
@@ -136,8 +134,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 
         protected async Task<ActivityVersionRecord> CreateActivityVersionAsync(ActivityVersionRecordCreate item, CancellationToken cancellationToken = default)
         {
-            var id = await ConfigurationTables.ActivityVersion.CreateAsync(item, cancellationToken);
-            return await ConfigurationTables.ActivityVersion.ReadAsync(id, cancellationToken);
+            return await ConfigurationTables.ActivityVersion.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), item, cancellationToken);
         }
 
         protected async Task<ActivityVersionRecord> CreateStandardActivityVersionAsync(CancellationToken cancellationToken = default)
@@ -180,14 +177,15 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                 WorkflowVersionId = workflowVersion.Id,
                 Title = "Flying to Deimos",
                 StartedAt = DateTimeOffset.Now,
-                InitialVersion = "1.0"
+                InitialVersion = "1.0",
+                State = WorkflowStateEnum.Executing.ToString()
             };
             return await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
         protected Task<ActivityInstanceRecord> CreateActivityInstanceAsync(ActivityInstanceRecordCreate item, CancellationToken cancellationToken = default)
         {
-            return RuntimeTables.ActivityInstance.CreateAndReturnAsync(item, cancellationToken);
+            return RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), item, cancellationToken);
         }
 
         protected async Task<ActivityInstanceRecord> CreateStandardActivityInstanceAsync(CancellationToken cancellationToken = default)

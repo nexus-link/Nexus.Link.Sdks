@@ -23,28 +23,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateAsync(ActivityVersionCreate item, CancellationToken cancellationToken = default)
+        public async Task<ActivityVersion> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityVersionCreate item, CancellationToken cancellationToken = default)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
             
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
             var recordCreate = new ActivityVersionRecordCreate().From(item);
-            var childIdAsGuid = await _configurationTables.ActivityVersion.CreateAsync(recordCreate, cancellationToken);
-            var childId = MapperHelper.MapToType<string, Guid>(childIdAsGuid);
-            return childId;
+            var result = await _configurationTables.ActivityVersion.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
+            return new ActivityVersion().From(result);
         }
 
         /// <inheritdoc />
-        public async Task<ActivityVersion> FindUniqueAsync(string workflowVersionId, string activityId, CancellationToken cancellationToken = default)
+        public async Task<ActivityVersion> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
-            InternalContract.RequireNotNullOrWhiteSpace(activityId, nameof(activityId));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             
-            var workflowVersionIdAsGuid = MapperHelper.MapToType<Guid, string>(workflowVersionId);
-            var activityIdAsGuid = MapperHelper.MapToType<Guid, string>(activityId);
-            var record = await _configurationTables.ActivityVersion.FindUniqueAsync(
-                new SearchDetails<ActivityVersionRecord>(new {WorkflowVersionId = workflowVersionIdAsGuid, ActivityFormId = activityIdAsGuid}),
-                cancellationToken);
+            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var record = await _configurationTables.ActivityVersion.ReadAsync(idAsGuid, cancellationToken);
              if (record == null) return null;
 
             var result = new ActivityVersion().From(record);
@@ -54,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(string id, ActivityVersion item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityVersion> UpdateAndReturnAsync(string id, ActivityVersion item, CancellationToken cancellationToken = new CancellationToken())
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -63,7 +60,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
 
             var record = new ActivityVersionRecord().From(item);
-            await _configurationTables.ActivityVersion.UpdateAsync(idAsGuid, record, cancellationToken);
+            var result = await _configurationTables.ActivityVersion.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            return new ActivityVersion().From(result);
         }
     }
 }

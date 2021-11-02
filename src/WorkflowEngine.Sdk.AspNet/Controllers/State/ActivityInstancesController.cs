@@ -20,13 +20,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.State
         }
 
         /// <inheritdoc />
-        [HttpPost("ReturnCreated")]
-        public async Task<ActivityInstance> CreateAndReturnAsync(ActivityInstanceCreate item, CancellationToken cancellationToken = default)
+        [HttpPost("{id}/ReturnCreated")]
+        public async Task<ActivityInstance> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityInstanceCreate item, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
 
-            var result = await _capability.ActivityInstance.CreateAndReturnAsync(item, cancellationToken);
+            var result = await _capability.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
@@ -51,18 +51,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.State
             ServiceContract.RequireValidated(item, nameof(item));
 
             var result = await _capability.ActivityInstance.UpdateAndReturnAsync(id, item, cancellationToken);
-            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
-            return result;
-        }
-
-        /// <inheritdoc />
-        [HttpPost("FindUnique")]
-        public async Task<ActivityInstance> FindUniqueAsync(ActivityInstanceUnique item, CancellationToken cancellationToken = default)
-        {
-            ServiceContract.RequireNotNull(item, nameof(item));
-            ServiceContract.RequireValidated(item, nameof(item));
-
-            var result = await _capability.ActivityInstance.FindUniqueAsync(item, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }

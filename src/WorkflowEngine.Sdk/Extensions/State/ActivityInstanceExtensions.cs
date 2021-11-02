@@ -20,8 +20,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
             target.ParentIteration = source.ParentIteration;
             target.State = MapperHelper.MapToType<string, ActivityStateEnum>(source.State);
+            target.StartedAt = source.StartedAt;
             target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
             target.ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityInstanceId);
+            target.ResultAsJson = source.ResultAsJson;
+            target.ExceptionCategory = MapperHelper.MapToType<string, ActivityExceptionCategoryEnum?>(source.ExceptionCategory);
+            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
+            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
+            target.FinishedAt = source.FinishedAt;
+            target.AsyncRequestId = source.AsyncRequestId;
+            target.ExceptionAlertHandled = source.ExceptionAlertHandled;
             return target;
         }
 
@@ -37,14 +45,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             ((ActivityInstanceRecordCreate)target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
-            target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionCategory = MapperHelper.MapToType<string, ActivityExceptionCategoryEnum?>(source.ExceptionCategory);
-            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
-            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
-            target.StartedAt = source.StartedAt;
-            target.FinishedAt = source.FinishedAt;
-            target.AsyncRequestId = source.AsyncRequestId;
-            target.ExceptionAlertHandled = source.ExceptionAlertHandled;
             return target;
         }
 

@@ -19,13 +19,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="2.1.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.0.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.5" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.AspNet</PackageId>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -35,7 +35,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.3.0 "Runtime" => "State"
+      1.3.1 Renamed "Runtime" to "State"
       1.2.0 Support for setting Success and Failed on an ActivityInstance
       1.1.0 Added controllers for Integration API
       1.0.2 First release

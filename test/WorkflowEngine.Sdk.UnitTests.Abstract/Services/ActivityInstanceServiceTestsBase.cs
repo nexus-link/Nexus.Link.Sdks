@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
@@ -19,18 +20,19 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var workflowInstanceId = Guid.NewGuid().ToString();
-            var activityVersionId = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
+            var workflowInstanceId = Guid.NewGuid().ToLowerCaseString();
+            var activityVersionId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
                 ActivityVersionId = activityVersionId,
-                ParentActivityInstanceId = Guid.NewGuid().ToString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToLowerCaseString(),
                 ParentIteration = 1, 
             };
 
             // Act
-            var createdItem = await _service.CreateAndReturnAsync(itemToCreate);
+            var createdItem = await _service.CreateWithSpecifiedIdAndReturnAsync(id, itemToCreate);
             var findUnique = new ActivityInstanceUnique
             {
                 WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
@@ -38,7 +40,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ParentActivityInstanceId = itemToCreate.ParentActivityInstanceId,
                 ParentIteration = itemToCreate.ParentIteration
             };
-            var readItem = await _service.FindUniqueAsync(findUnique);
+            var readItem = await _service.ReadAsync(id);
 
             // Assert
             Assert.NotNull(readItem);
@@ -53,16 +55,17 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task UpdateAsync()
         {
             // Arrange
-            var workflowInstanceId = Guid.NewGuid().ToString();
-            var activityVersionId = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToLowerCaseString();
+            var workflowInstanceId = Guid.NewGuid().ToLowerCaseString();
+            var activityVersionId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
                 ActivityVersionId = activityVersionId,
-                ParentActivityInstanceId = Guid.NewGuid().ToString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToLowerCaseString(),
                 ParentIteration = 1, 
             };
-            var createdItem = await _service.CreateAndReturnAsync(itemToCreate);
+            var createdItem = await _service.CreateWithSpecifiedIdAndReturnAsync(id, itemToCreate);
             var findUnique = new ActivityInstanceUnique
             {
                 WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
@@ -70,14 +73,14 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ParentActivityInstanceId = itemToCreate.ParentActivityInstanceId,
                 ParentIteration = itemToCreate.ParentIteration
             };
-            var itemToUpdate = await _service.FindUniqueAsync(findUnique);
+            var itemToUpdate = await _service.ReadAsync(id);
 
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
             itemToUpdate.State = ActivityStateEnum.Failed;
             itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
-            itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToString();
-            itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
+            itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToLowerCaseString();
+            itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToLowerCaseString();
             var updatedItem = await _service.UpdateAndReturnAsync(createdItem.Id, itemToUpdate);
 
             // Assert

@@ -20,6 +20,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.Title = source.Title;
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
+            target.State = MapperHelper.MapToType<string, WorkflowStateEnum>(source.State);
+            target.FinishedAt = source.FinishedAt;
+            target.CancelledAt = source.CancelledAt;
+            target.ResultAsJson = source.ResultAsJson;
+            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
+            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
+            target.IsComplete = source.IsComplete;
             return target;
         }
 
@@ -35,8 +42,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             ((WorkflowInstanceRecordCreate) target).From(source);
             target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
             target.Etag = source.Etag;
-            target.FinishedAt = source.FinishedAt;
-            target.CancelledAt = source.CancelledAt;
             return target;
         }
 
@@ -56,7 +61,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
+            target.State = source.State.ToEnum<WorkflowStateEnum>();
             target.CancelledAt = source.CancelledAt;
+            target.ResultAsJson = source.ResultAsJson;
+            target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
+            target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
+            target.IsComplete = source.IsComplete;
             return target;
         }
         

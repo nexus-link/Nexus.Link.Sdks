@@ -20,38 +20,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
         }
 
         /// <inheritdoc />
-        [HttpPost("")]
-        public async Task CreateWithSpecifiedIdAsync(string workflowFormId, int majorVersion, WorkflowVersionCreate item, CancellationToken cancellationToken = default)
+        [HttpPost("ReturnResult")]
+        public async Task<WorkflowVersion> CreateWithSpecifiedIdAndReturnAsync(string workflowVersionId, WorkflowVersionCreate item, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
+            ServiceContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
             
-            await _capability.WorkflowVersion.CreateWithSpecifiedIdAsync(workflowFormId, majorVersion, item, cancellationToken);
+            return await _capability.WorkflowVersion.CreateWithSpecifiedIdAndReturnAsync(workflowVersionId, item, cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpGet("")]
-        public async Task<WorkflowVersion> ReadAsync(string workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
+        public async Task<WorkflowVersion> ReadAsync(string workflowVersionId, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
+            ServiceContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             
-            var result = await _capability.WorkflowVersion.ReadAsync(workflowFormId, majorVersion, cancellationToken);
+            var result = await _capability.WorkflowVersion.ReadAsync(workflowVersionId, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
 
         /// <inheritdoc />
-        [HttpPut("")]
-        public async Task UpdateAsync(string workflowFormId, int majorVersion, WorkflowVersion item, CancellationToken cancellationToken = default)
+        public async Task<WorkflowVersion> UpdateAndReturnAsync(string workflowVersionId, WorkflowVersion item,
+            CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
+            ServiceContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             ServiceContract.RequireNotNull(item, nameof(item));
             ServiceContract.RequireValidated(item, nameof(item));
-            ServiceContract.RequireAreEqual(workflowFormId, item.WorkflowFormId, $"{nameof(item)}.{nameof(item.WorkflowFormId)}");
-            ServiceContract.RequireAreEqual(majorVersion, item.MajorVersion, $"{nameof(item)}.{nameof(item.MajorVersion)}");
-
-            await _capability.WorkflowVersion.UpdateAsync(workflowFormId, majorVersion, item, cancellationToken);
+            return await _capability.WorkflowVersion.UpdateAndReturnAsync(workflowVersionId, item, cancellationToken);
         }
     }
 }

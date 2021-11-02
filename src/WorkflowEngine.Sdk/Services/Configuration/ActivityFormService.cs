@@ -21,12 +21,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             _configurationTables = configurationTables;
         }
 
-        /// <inheritdoc />
-        public async Task CreateWithSpecifiedIdAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
-        {
-            await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
-        }
-
         public async Task<ActivityForm> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityFormCreate item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
@@ -59,7 +53,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(string id, ActivityForm item, CancellationToken cancellationToken = default)
+        public async Task<ActivityForm> UpdateAndReturnAsync(string id, ActivityForm item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -68,7 +62,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
 
             var record = new ActivityFormRecord().From(item);
-            await _configurationTables.ActivityForm.UpdateAsync(idAsGuid, record, cancellationToken);
+            var result = await _configurationTables.ActivityForm.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
+            return new ActivityForm().From(result);
         }
     }
 }

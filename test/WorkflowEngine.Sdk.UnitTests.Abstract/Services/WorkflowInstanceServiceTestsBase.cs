@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
@@ -20,14 +21,14 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var workflowVersionId = Guid.NewGuid().ToString();
-            var instanceId = Guid.NewGuid().ToString();
+            var workflowVersionId = Guid.NewGuid().ToLowerCaseString();
+            var instanceId = Guid.NewGuid().ToLowerCaseString();
             var itemToCreate = new WorkflowInstanceCreate
             {
                 WorkflowVersionId = workflowVersionId,
-                InitialVersion = Guid.NewGuid().ToString(),
+                InitialVersion = Guid.NewGuid().ToLowerCaseString(),
                 StartedAt = DateTimeOffset.Now,
-                Title = Guid.NewGuid().ToString()
+                Title = Guid.NewGuid().ToLowerCaseString()
             };
 
             // Act

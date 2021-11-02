@@ -13,8 +13,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
         public ActivityAction(IInternalActivityFlow activityFlow)
             : base(ActivityTypeEnum.Action, activityFlow)
         {
-            InternalContract.RequireAreEqual(ActivityTypeEnum.Action, ActivityPersistence.ActivityType, "Ignore",
-                $"The activity {ActivityPersistence} was declared as {ActivityPersistence.ActivityType}, so you can't use {nameof(ActivityAction)}.");
         }
         
         public Task ExecuteAsync(

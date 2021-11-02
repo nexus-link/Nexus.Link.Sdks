@@ -36,19 +36,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
 
         private async Task ForEachMethod(Func<TItemType, ActivityForEachParallel<TItemType>, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
         {
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
             var taskList = new List<Task>();
             foreach (var item in Items)
             {
                 Iteration++;
-                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+                WorkflowCache.LatestActivityInstanceId = Instance.Id;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskList.Add(task);
             }
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            WorkflowCache.LatestActivityInstanceId = Instance.Id;
             
             await AggregatePostponeExceptions(taskList);
         }
@@ -135,8 +135,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
             Activity activity, CancellationToken cancellationToken)
         {
             InternalContract.Require(GetKeyMethod != null, $"You must call {nameof(SetGetKeyMethod)} before you call the {nameof(ExecuteAsync)} method.");
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            AsyncWorkflowStatic.Context.ParentActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            AsyncWorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
             var taskDictionary = new Dictionary<TKey, Task<TActivityReturns>>();
             foreach (var item in Items)
             {
@@ -151,13 +151,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
                     InternalContract.Require(false, $"The {nameof(GetKeyMethod)} method failed. You must make it safe, so that it never fails.");
                 }
                 InternalContract.Require(key != null, $"The {nameof(GetKeyMethod)} method must not return null.");
-                FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-                ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+                WorkflowCache.LatestActivityInstanceId = Instance.Id;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskDictionary.Add(key!, task);
             }
-            FulcrumAssert.IsNotNull(ActivityPersistence.ActivitySummary.Instance.Id, CodeLocation.AsString());
-            ActivityPersistence.WorkflowPersistence.LatestActivityInstanceId = ActivityPersistence.ActivitySummary.Instance.Id;
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            WorkflowCache.LatestActivityInstanceId = Instance.Id;
             return AggregatePostponeExceptions(taskDictionary);
         }
 

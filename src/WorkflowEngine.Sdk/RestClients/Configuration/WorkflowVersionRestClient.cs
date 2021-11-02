@@ -5,9 +5,9 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Configuration
 {
-    public class WorkflowVersionRestClient : CrudDependentToMasterRestClient<WorkflowVersionCreate, WorkflowVersion, string, int>, IWorkflowVersionService
+    public class WorkflowVersionRestClient : CrudRestClient<WorkflowVersionCreate, WorkflowVersion, string>, IWorkflowVersionService
     {
-        public WorkflowVersionRestClient(IHttpSender httpSender) : base("WorkflowForms", "Versions", httpSender)
+        public WorkflowVersionRestClient(IHttpSender httpSender) : base(httpSender)
         {
         }
     }

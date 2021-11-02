@@ -37,33 +37,72 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             _asyncRequestClient = new AsyncRequestClient(asyncRequestMgmtCapability);
         }
 
-        public async Task<WorkflowSummary> ReadAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowSummary> GetSummaryAsync(string instanceId,
+            CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(instanceId, nameof(instanceId));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
-            var instance = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid, cancellationToken);
+            var instanceIdAsGuid = MapperHelper.MapToType<Guid, string>(instanceId);
+            var instance = await _runtimeTables.WorkflowInstance.ReadAsync(instanceIdAsGuid, cancellationToken);
             if (instance == null) return null;
-            var version =
-                await _configurationTables.WorkflowVersion.ReadAsync(instance.WorkflowVersionId, cancellationToken);
+
+            var version = await _configurationTables.WorkflowVersion.ReadAsync(instance.WorkflowVersionId, cancellationToken);
+            FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
             var form = await _configurationTables.WorkflowForm.ReadAsync(version.WorkflowFormId, cancellationToken);
+            FulcrumAssert.IsNotNull(form, CodeLocation.AsString());
 
-            var workflow = new WorkflowSummary
+            return await GetSummaryAsync(form, version, instance, cancellationToken);
+        }
+
+        public async Task<WorkflowSummary> GetSummaryAsync(string formId, int majorVersion, string instanceId,
+            CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(formId, nameof(formId));
+            InternalContract.RequireGreaterThanOrEqualTo(0, majorVersion, nameof(majorVersion));
+            InternalContract.RequireNotNullOrWhiteSpace(instanceId, nameof(instanceId));
+
+            // Form
+            var formIdAsGuid = MapperHelper.MapToType<Guid, string>(formId);
+            var form = await _configurationTables.WorkflowForm.ReadAsync(formIdAsGuid, cancellationToken);
+
+            // Version
+            WorkflowVersionRecord version = null;
+            if (form != null)
             {
-                Instance = new WorkflowInstance().From(instance),
-                Form = new WorkflowForm().From(form),
-                Version = new WorkflowVersion().From(version)
-            };
+                version = await _configurationTables.WorkflowVersion.ReadByFormAndMajorAsync(formIdAsGuid, majorVersion,
+                    cancellationToken);
+            }
 
+            // Instance
+            var instanceIdAsGuid = MapperHelper.MapToType<Guid, string>(instanceId);
+            var instance = await _runtimeTables.WorkflowInstance.ReadAsync(instanceIdAsGuid, cancellationToken);
+
+            return await GetSummaryAsync(form, version, instance, cancellationToken);
+        }
+
+        private async Task<WorkflowSummary> GetSummaryAsync(WorkflowFormRecord form, WorkflowVersionRecord version, WorkflowInstanceRecord instance,
+            CancellationToken cancellationToken = default)
+        {
+            // Activities
             var (activityForms, activityVersions, activityInstances) =
-                await ReadAllActivitiesAndUpdateResponsesAsync(form.Id, version.Id, instance.Id, cancellationToken);
-            workflow.ReferredActivities = BuildReferred(activityForms, activityVersions, activityInstances);
+                await ReadAllActivitiesAndUpdateResponsesAsync(form?.Id, version?.Id, instance?.Id, cancellationToken);
+
             var activityTree = BuildActivityTree(null, activityForms, activityVersions, activityInstances);
             activityTree.Sort(PositionSort);
-            workflow.ActivityTree = activityTree;
-            workflow.NotReferredActivities = BuildNotReferred(activityForms, activityVersions, activityInstances);
 
-            return workflow;
+            var workflowSummary = new WorkflowSummary
+            {
+                Instance = instance == null ? null : new WorkflowInstance().From(instance),
+                Form = form == null ? null : new WorkflowForm().From(form),
+                Version = version == null ? null : new WorkflowVersion().From(version),
+                ActivityForms = activityForms,
+                ActivityVersions = activityVersions,
+                ActivityInstances = activityInstances,
+                ReferredActivities = BuildReferred(activityForms, activityVersions, activityInstances),
+                ActivityTree = activityTree
+            };
+
+            return workflowSummary;
         }
 
         private static int PositionSort(ActivitySummary x, ActivitySummary y)
@@ -94,35 +133,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             return activities;
         }
 
-        private List<ActivitySummary> BuildNotReferred(Dictionary<string, ActivityForm> activityForms,
-            Dictionary<string, ActivityVersion> activityVersions,
-            Dictionary<string, ActivityInstance> activityInstances)
-        {
-            var activities = new List<ActivitySummary>();
-            foreach (var (key, form) in activityForms)
-            {
-                var version = activityVersions.Values.FirstOrDefault(v => v.ActivityFormId == form.Id);
-                FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
-                var instance = activityInstances.Values.FirstOrDefault(i => i.ActivityVersionId == version!.Id);
-                if (instance != null) continue;
-                var activity = new ActivitySummary
-                {
-                    Instance = null,
-                    Version = version,
-                    Form = form
-                };
-                activities.Add(activity);
-            }
-            return activities;
-        }
-
         private List<ActivitySummary> BuildActivityTree(ActivitySummary parent, Dictionary<string, ActivityForm> activityForms,
             Dictionary<string, ActivityVersion> activityVersions,
             Dictionary<string, ActivityInstance> activityInstances)
         {
             var activities = new List<ActivitySummary>();
             foreach (var entry in activityInstances.Where(x =>
-                x.Value.ParentActivityInstanceId?.ToString() == parent?.Instance.Id))
+                x.Value.ParentActivityInstanceId == parent?.Instance.Id))
             {
                 var instance = entry.Value;
                 var version = activityVersions[instance.ActivityVersionId];
@@ -143,39 +160,66 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         private async Task<(Dictionary<string, ActivityForm> activityForms,
                 Dictionary<string, ActivityVersion> activityVersions, Dictionary<string, ActivityInstance>
                 activityInstances)>
-            ReadAllActivitiesAndUpdateResponsesAsync(Guid formId, Guid versionId, Guid instanceId, CancellationToken cancellationToken)
+            ReadAllActivitiesAndUpdateResponsesAsync(Guid? formId, Guid? versionId, Guid? instanceId, CancellationToken cancellationToken)
         {
-            var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
-                new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId }), 0,
-                int.MaxValue, cancellationToken);
-            var activityForms = activityFormsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityForm().From(x));
-
-            var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
-                new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
-                { WorkflowVersionId = versionId }), 0, int.MaxValue, cancellationToken);
-            var activityVersions = activityVersionsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityVersion().From(x));
-
-            var activityInstancesList = await _runtimeTables.ActivityInstance.SearchAsync(
-                new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
-                { WorkflowInstanceId = instanceId }), 0, int.MaxValue, cancellationToken);
-            
-            var tasks = new List<Task<ActivityInstanceRecord>>();
-            foreach (var activityInstanceRecord in activityInstancesList.Data)
+            // ActivityForms
+            Dictionary<string, ActivityForm> activityForms;
+            if (formId == null)
             {
-                var task = HasCompleted(activityInstanceRecord) || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
-                    ? Task.FromResult(activityInstanceRecord)
-                    : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
-                tasks.Add(task);
+                activityForms = new Dictionary<string, ActivityForm>();
             }
-            var activityInstancesRecords = new List<ActivityInstanceRecord>();
-            foreach (var task in tasks)
+            else
             {
-                var activityInstanceRecord = await task;
-                activityInstancesRecords.Add(activityInstanceRecord);
+                var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
+                    new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId.Value }), 0,
+                    int.MaxValue, cancellationToken);
+                activityForms = activityFormsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityForm().From(x));
+            }
+            // ActivityVersions
+            Dictionary<string, ActivityVersion> activityVersions;
+            if (versionId == null)
+            {
+                activityVersions = new Dictionary<string, ActivityVersion>();
+            }
+            else
+            {
+                var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
+                    new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
+                    { WorkflowVersionId = versionId.Value }), 0, int.MaxValue, cancellationToken);
+                activityVersions = activityVersionsList.Data.ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityVersion().From(x));
             }
 
-            var activityInstances = activityInstancesRecords
-                .ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityInstance().From(x));
+            // ActivityInstances
+            Dictionary<string, ActivityInstance> activityInstances;
+            if (instanceId == null)
+            {
+                activityInstances = new Dictionary<string, ActivityInstance>();
+            }
+            else
+            {
+
+                var activityInstancesList = await _runtimeTables.ActivityInstance.SearchAsync(
+                    new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
+                    { WorkflowInstanceId = instanceId.Value }), 0, int.MaxValue, cancellationToken);
+
+                var tasks = new List<Task<ActivityInstanceRecord>>();
+                foreach (var activityInstanceRecord in activityInstancesList.Data)
+                {
+                    var task = HasCompleted(activityInstanceRecord) || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
+                        ? Task.FromResult(activityInstanceRecord)
+                        : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
+                    tasks.Add(task);
+                }
+                var activityInstancesRecords = new List<ActivityInstanceRecord>();
+                foreach (var task in tasks)
+                {
+                    var activityInstanceRecord = await task;
+                    activityInstancesRecords.Add(activityInstanceRecord);
+                }
+
+                activityInstances = activityInstancesRecords
+                    .ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityInstance().From(x));
+            }
 
             return (activityForms, activityVersions, activityInstances);
         }

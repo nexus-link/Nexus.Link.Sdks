@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
@@ -33,7 +34,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
         public async Task The_Convenience_Workflow_Contains_All_Information_And_Hierarchy()
         {
             // Arrange
-            var id = WorkflowInstanceRecord.Id.ToString();
+            var id = WorkflowInstanceRecord.Id.ToLowerCaseString();
 
             // Act
             var workflow = await _service.ReadAsync(id);
@@ -57,7 +58,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
         public async Task Cancelling_A_Workflow_Sets_CancelledAt()
         {
             // Arrange
-            var id = WorkflowInstanceRecord.Id.ToString();
+            var id = WorkflowInstanceRecord.Id.ToLowerCaseString();
 
             // Act
             await _service.CancelWorkflowAsync(id);

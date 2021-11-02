@@ -4,7 +4,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
-    public interface IActivityInstanceTable: ICreateAndReturn<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>, IRead<ActivityInstanceRecord, Guid>, IUpdateAndReturn<ActivityInstanceRecord, Guid>, ISearch<ActivityInstanceRecord, Guid>
+    public interface IActivityInstanceTable: ICreateWithSpecifiedIdAndReturn<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>, IRead<ActivityInstanceRecord, Guid>, IUpdateAndReturn<ActivityInstanceRecord, Guid>, ISearch<ActivityInstanceRecord, Guid>
     {
     }
 }

@@ -18,13 +18,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.7.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.8.0" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.11.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.0 Refactored methods
       1.2.0 Create and Update now returns the resulting object
       1.1.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
       1.1.2 Unique for ActivityVersionRecord

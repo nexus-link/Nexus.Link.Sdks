@@ -11,7 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IInternalActivityFlow
     {
-        WorkflowPersistence WorkflowPersistence { get; }
+        WorkflowCache WorkflowCache { get; }
         IWorkflowVersion WorkflowVersion { get; }
         MethodHandler MethodHandler { get; }
         int Position { get; }
