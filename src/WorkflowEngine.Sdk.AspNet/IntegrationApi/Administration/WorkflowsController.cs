@@ -7,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Administration
     /// <inheritdoc cref="IWorkflowService" />
     [ApiController]
     [Route("api/v1/workflows/Administration")]
-    public class WorkflowsController : Controllers.Administration.WorkflowsController
+    public abstract class WorkflowsController : Controllers.Administration.WorkflowsController
     {
         /// <inheritdoc />
-        public WorkflowsController(IWorkflowMgmtCapability capability) : base(capability)
+        protected WorkflowsController(IWorkflowMgmtCapability capability) : base(capability)
         {
         }
     }

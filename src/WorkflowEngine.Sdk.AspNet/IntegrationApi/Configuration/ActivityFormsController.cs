@@ -7,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Configuration
     /// <inheritdoc cref="IActivityFormService" />
     [ApiController]
     [Route("api/v1/workflows/Configuration/ActivityForms/{id}")]
-    public class ActivityFormsController : Controllers.Configuration.ActivityFormsController
+    public abstract class ActivityFormsController : Controllers.Configuration.ActivityFormsController
     {
         /// <inheritdoc />
-        public ActivityFormsController(IWorkflowMgmtCapability capability) : base(capability)
+        protected ActivityFormsController(IWorkflowMgmtCapability capability) : base(capability)
         {
         }
     }

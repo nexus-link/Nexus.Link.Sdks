@@ -7,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Configuration
     /// <inheritdoc cref="IActivityVersionService" />
     [ApiController]
     [Route("api/v1/workflows/Configuration/ActivityVersions")]
-    public class ActivityVersionsController : Controllers.Configuration.ActivityVersionsController
+    public abstract class ActivityVersionsController : Controllers.Configuration.ActivityVersionsController
     {
         /// <inheritdoc />
-        public ActivityVersionsController(IWorkflowMgmtCapability capability) : base(capability)
+        protected ActivityVersionsController(IWorkflowMgmtCapability capability) : base(capability)
         {
         }
     }

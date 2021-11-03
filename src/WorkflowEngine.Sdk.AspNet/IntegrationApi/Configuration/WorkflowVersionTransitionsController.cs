@@ -7,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Configuration
     /// <inheritdoc cref="ITransitionService" />
     [ApiController]
     [Route("api/v1/workflows/Configuration/WorkflowVersions/{workflowVersionId}/Transitions")]
-    public class WorkflowVersionTransitionsController : Controllers.Configuration.WorkflowVersionTransitionsController
+    public abstract class WorkflowVersionTransitionsController : Controllers.Configuration.WorkflowVersionTransitionsController
     {
         /// <inheritdoc />
-        public WorkflowVersionTransitionsController(IWorkflowMgmtCapability capability) : base(capability)
+        protected WorkflowVersionTransitionsController(IWorkflowMgmtCapability capability) : base(capability)
         {
         }
     }

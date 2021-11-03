@@ -7,10 +7,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Configuration
     /// <inheritdoc cref="IWorkflowParameterService" />
     [ApiController]
     [Route("api/v1/workflows/Configuration/WorkflowForms/{workflowFormId}/Versions/{majorVersion}")]
-    public class WorkflowFormVersionsController : Controllers.Configuration.WorkflowFormVersionsController
+    public abstract class WorkflowFormVersionsController : Controllers.Configuration.WorkflowFormVersionsController
     {
         /// <inheritdoc />
-        public WorkflowFormVersionsController(IWorkflowMgmtCapability capability) : base(capability)
+        protected WorkflowFormVersionsController(IWorkflowMgmtCapability capability) : base(capability)
         {
         }
     }
