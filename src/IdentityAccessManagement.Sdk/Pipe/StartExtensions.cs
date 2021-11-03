@@ -53,7 +53,12 @@ namespace IdentityAccessManagement.Sdk.Pipe
                     options.TokenValidationParameters.ValidAudiences = validAudiences;
                     options.TokenValidationParameters.ValidateAudience = validAudiences != null && validAudiences.Any();
 
-                    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+                    // Note: We sometimes get a "jwt" in the "typ" claim.
+                    // By not setting ValidTypes, there will be no validation of the value of the "typ" claim.
+                    // We could also add more valid types, but how do we know all the valid types?
+                    // options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+                    // options.TokenValidationParameters.ValidTypes = new[] { "at+jwt", "application/at+jwt", "jwt" };
+
                     options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
                     options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
 
