@@ -103,7 +103,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             var item = await CreateActivityInstance();
 
             // Assert the arrangements
-            Assert.Equal(ActivityStateEnum.Started, item.State);
+            Assert.Equal(ActivityStateEnum.Executing, item.State);
             Assert.Null(item.ResultAsJson);
             Assert.Null(item.FinishedAt);
 
@@ -125,7 +125,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             var item = await CreateActivityInstance();
 
             // Assert the arrangements
-            Assert.Equal(ActivityStateEnum.Started, item.State);
+            Assert.Equal(ActivityStateEnum.Executing, item.State);
             Assert.Null(item.ResultAsJson);
             Assert.Null(item.FinishedAt);
 
@@ -151,6 +151,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         {
             var workflowInstanceId = Guid.NewGuid().ToString();
             var activityVersionId = Guid.NewGuid().ToString();
+            var activityInstanceId = Guid.NewGuid().ToString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
@@ -158,7 +159,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ParentActivityInstanceId = Guid.NewGuid().ToString(),
                 ParentIteration = 1,
             };
-            var item = await _service.CreateAndReturnAsync(itemToCreate);
+            var item = await _service.CreateWithSpecifiedIdAndReturnAsync(activityInstanceId, itemToCreate);
             return item;
         }
     }
