@@ -42,6 +42,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Configuration
         }
 
         /// <inheritdoc />
+        [HttpPut("")]
         public async Task<WorkflowVersion> UpdateAndReturnAsync(string workflowVersionId, WorkflowVersion item,
             CancellationToken cancellationToken = default)
         {
