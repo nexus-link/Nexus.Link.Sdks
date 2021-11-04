@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
@@ -11,6 +12,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
@@ -85,11 +87,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowCache.LatestActivityInstanceId;
 
-            return new ActivityFlow(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, 
+            return new ActivityFlow(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache,
                 this, position, title, id.ToLowerInvariant());
         }
 
-        protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
+        internal async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             // If service runs directly with database connection, make sure we're on correct database version
 #pragma warning disable CS0618
@@ -126,8 +128,42 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             }
         }
 
-        protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
+        internal void MarkWorkflowAsSuccess<TResult>(TResult result)
         {
+            _workflowCache.Instance.ResultAsJson = JsonConvert.SerializeObject(result);
+            MarkWorkflowAsSuccess();
+        }
+
+        internal bool HandleAndReportIfRethrow(Exception e)
+        {
+            switch (e)
+            {
+                case HandledRequestPostponedException:
+                case FulcrumCancelledException:
+                    return true;
+                case WorkflowFailedException wfe:
+                    _workflowCache.Instance.State = WorkflowStateEnum.Failed;
+                    _workflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
+                    _workflowCache.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
+                    _workflowCache.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
+                    throw new FulcrumCancelledException(wfe.TechnicalMessage);
+                default:
+                    _workflowCache.Instance.State = WorkflowStateEnum.Halted;
+                    _workflowCache.Instance.ExceptionTechnicalMessage = $"Unexpected exception: {e}";
+                    _workflowCache.Instance.ExceptionFriendlyMessage = $"Unexpected exception: {e.Message}";
+                    return false;
+            }
+        }
+
+        internal void MarkWorkflowAsSuccess()
+        {
+            _workflowCache.Instance.State = WorkflowStateEnum.Success;
+            _workflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
+        }
+
+        internal async Task AfterExecutionAsync(CancellationToken cancellationToken)
+        {
+            _workflowCache.AggregateActivityInformation();
             await _workflowCache.SaveAsync(cancellationToken);
             if (_workflowDistributedLock != null)
             {
@@ -160,7 +196,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             try
             {
                 var result = await ExecuteWorkflowAsync(cancellationToken);
+                MarkWorkflowAsSuccess(result);
                 return result;
+            }
+            catch (Exception e)
+            {
+                if (HandleAndReportIfRethrow(e)) throw;
+                throw new HandledRequestPostponedException();
             }
             finally
             {
@@ -195,6 +237,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             try
             {
                 await ExecuteWorkflowAsync(cancellationToken);
+                MarkWorkflowAsSuccess();
+            }
+            catch (Exception e)
+            {
+                if (HandleAndReportIfRethrow(e)) throw;
+                throw new HandledRequestPostponedException();
             }
             finally
             {

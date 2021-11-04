@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
@@ -164,7 +165,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
         private async Task InternalSaveAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
-            
+
             await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
 
             await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
@@ -276,5 +277,73 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
         }
 
         public bool InstanceExists() => Instance?.Etag != null;
+
+        public void AggregateActivityInformation()
+        {
+            int executing = 0;
+            int waiting = 0;
+            int success = 0;
+            int failedAndStopping = 0;
+            int failedAndLater = 0;
+            int failedAndIgnore = 0;
+            var cancelWorkflow = false;
+            foreach (var activity in _activities.Values)
+            {
+                switch (activity.Instance.State)
+                {
+                    case ActivityStateEnum.Executing:
+                        executing++;
+                        break;
+                    case ActivityStateEnum.Waiting:
+                        waiting++;
+                        break;
+                    case ActivityStateEnum.Success:
+                        success++;
+                        break;
+                    case ActivityStateEnum.Failed:
+                        switch (activity.Version.FailUrgency)
+                        {
+                            case ActivityFailUrgencyEnum.Stopping:
+                                failedAndStopping++;
+                                break;
+                            case ActivityFailUrgencyEnum.CancelWorkflow:
+                                cancelWorkflow = true;
+                                break;
+                            case ActivityFailUrgencyEnum.HandleLater:
+                                failedAndLater++;
+                                break;
+                            case ActivityFailUrgencyEnum.Ignore:
+                                failedAndIgnore++;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            if (Instance.State == WorkflowStateEnum.Success)
+            {
+                Instance.IsComplete = failedAndLater == 0;
+                FulcrumAssert.IsNotNull(Instance.FinishedAt, CodeLocation.AsString());
+            }
+            else if (failedAndStopping > 0)
+            {
+                Instance.State = waiting > 0 ? WorkflowStateEnum.Halting : WorkflowStateEnum.Halted;
+            }
+            else if (waiting > 0)
+            {
+                Instance.State = WorkflowStateEnum.Waiting;
+            }
+            else
+            {
+                Instance.State = cancelWorkflow ? WorkflowStateEnum.Failed : WorkflowStateEnum.Success;
+                Instance.FinishedAt = DateTimeOffset.UtcNow;
+                if (cancelWorkflow && Instance.CancelledAt == null) Instance.CancelledAt = Instance.FinishedAt;
+            }
+        }
     }
 }

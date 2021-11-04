@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>3.3.0</Version>
+    <Version>3.3.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
       3.3.0 Support for IDistributedLock
       3.2.0 New fields for WorkflowInstance
       3.1.0 Support for setting Success and Failed on an ActivityInstance
