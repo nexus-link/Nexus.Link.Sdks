@@ -49,3 +49,17 @@ CREATE TABLE ActivityInstance
 )
 CREATE CLUSTERED INDEX IX_ActivityInstance_RecordCreatedAt ON ActivityInstance (RecordCreatedAt)
 
+CREATE TABLE DistributedLock
+(
+    Id uniqueidentifier NOT NULL ROWGUIDCOL CONSTRAINT PK_DistributedLock PRIMARY KEY NONCLUSTERED CONSTRAINT DF_DistributedLock_Id DEFAULT (newid()),
+	LockId uniqueidentifier NOT NULL,
+	TableName nvarchar(50) NOT NULL,
+	LockedRecordId uniqueidentifier NOT NULL,
+	ValidUntil datetimeoffset NOT NULL,
+    RecordVersion rowversion NOT NULL,
+    RecordCreatedAt datetimeoffset NOT NULL CONSTRAINT DF_DistributedLock_RecordCreatedAt DEFAULT (sysdatetimeoffset()),
+	RecordUpdatedAt datetimeoffset NOT NULL CONSTRAINT DF_DistributedLock_RecordUpdatedAt DEFAULT (sysdatetimeoffset()),
+	
+	CONSTRAINT UQ_DistributedLock_1 UNIQUE (LockedRecordId)
+)
+CREATE CLUSTERED INDEX IX_DistributedLock_RecordCreatedAt ON DistributedLock (RecordCreatedAt)

@@ -44,8 +44,10 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
         {
             var databaseOptions = new DatabaseOptions
             {
-                ConnectionString = ConnectionString
+                ConnectionString = ConnectionString,
+                DefaultLockTimeSpan = TimeSpan.FromSeconds(30)
             };
+            databaseOptions.DistributedLockTable = new DistributedLockTable(databaseOptions);
             ConfigurationTables = new ConfigurationTablesSql(databaseOptions);
             RuntimeTables = new RuntimeTablesSql(databaseOptions);
         }

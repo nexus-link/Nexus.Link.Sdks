@@ -164,27 +164,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
         private async Task InternalSaveAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
-            var tasks = new List<Task>();
             
-            var task = _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
-            tasks.Add(task);
+            await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
 
-            task = _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
-            tasks.Add(task);
+            await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
 
-            task = _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, cancellationToken);
-            tasks.Add(task);
+            await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, cancellationToken);
 
-            task = _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
-            tasks.Add(task);
+            await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
 
-            task = _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, cancellationToken);
-            tasks.Add(task);
+            await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, cancellationToken);
 
-            task = _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
-            tasks.Add(task);
-            
-            await Task.WhenAll(tasks);
+            await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
         }
 
         public ActivityForm GetActivityForm(string formId)
@@ -283,5 +274,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
                 return instance.Id;
             }
         }
+
+        public bool InstanceExists() => Instance?.Etag != null;
     }
 }

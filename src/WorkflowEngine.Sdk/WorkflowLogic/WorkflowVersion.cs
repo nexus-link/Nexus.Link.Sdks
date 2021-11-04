@@ -8,6 +8,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -24,6 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         private readonly WorkflowVersionCollection _workflowVersionCollection;
         private readonly MethodHandler _methodHandler;
         private WorkflowCache _workflowCache;
+        private Lock<string> _workflowDistributedLock;
 
         /// <inheritdoc />
         public int MajorVersion => _workflowInformation.MajorVersion;
@@ -72,7 +74,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowCache.LatestActivityInstanceId;
 
-            return new ActivityFlow<TActivityReturns>(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, this, position, title, id.ToLowerInvariant());
+            return new ActivityFlow<TActivityReturns>(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache,
+                this, position, title, id.ToLowerInvariant());
         }
 
         protected IActivityFlow CreateActivity(int position, string title, string id)
@@ -82,7 +85,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
 
             AsyncWorkflowStatic.Context.LatestActivityInstanceId = _workflowCache.LatestActivityInstanceId;
 
-            return new ActivityFlow(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, this, position, title, id);
+            return new ActivityFlow(_workflowInformation.WorkflowCapability, _workflowVersionCollection.AsyncRequestClient, _workflowCache, 
+                this, position, title, id.ToLowerInvariant());
         }
 
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
@@ -103,6 +107,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
             _workflowInformation.InstanceTitle = GetInstanceTitle();
             _workflowCache = new WorkflowCache(_workflowInformation);
             await _workflowCache.LoadAsync(cancellationToken);
+            if (_workflowCache.InstanceExists())
+            {
+                _workflowDistributedLock = await _workflowInformation.WorkflowCapability.WorkflowInstance.ClaimDistributedLockAsync(
+                    _workflowInformation.InstanceId, null, null, cancellationToken);
+            }
             _workflowCache.Form.CapabilityName = _workflowVersionCollection.WorkflowCapabilityName;
             _workflowCache.Form.Title = _workflowVersionCollection.WorkflowFormTitle;
             _workflowCache.Version.MinorVersion = _workflowInformation.MinorVersion;
@@ -120,6 +129,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic
         protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
         {
             await _workflowCache.SaveAsync(cancellationToken);
+            if (_workflowDistributedLock != null)
+            {
+                await _workflowInformation.WorkflowCapability.WorkflowInstance.ReleaseDistributedLockAsync(
+                    _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, cancellationToken);
+            }
         }
     }
 

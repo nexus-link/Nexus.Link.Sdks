@@ -149,9 +149,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 
         private async Task<ActivityInstance> CreateActivityInstance()
         {
+            var id = Guid.NewGuid().ToLowerCaseString();
             var workflowInstanceId = Guid.NewGuid().ToString();
             var activityVersionId = Guid.NewGuid().ToString();
-            var activityInstanceId = Guid.NewGuid().ToString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
@@ -159,7 +159,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
                 ParentActivityInstanceId = Guid.NewGuid().ToString(),
                 ParentIteration = 1,
             };
-            var item = await _service.CreateWithSpecifiedIdAndReturnAsync(activityInstanceId, itemToCreate);
+            var item = await _service.CreateWithSpecifiedIdAndReturnAsync(id, itemToCreate);
             return item;
         }
     }

@@ -6,6 +6,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -66,6 +67,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
             var record = new WorkflowInstanceRecord().From(item);
             await _runtimeTables.WorkflowInstance.UpdateAsync(record.Id, record, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<Lock<string>> ClaimDistributedLockAsync(string id, TimeSpan? lockTimeSpan = null, string currentLockId = null,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            var idAsGuid = id.ToGuid();
+            Guid lockIdAsGuid = Guid.Empty;
+            if (currentLockId != null) lockIdAsGuid = currentLockId.ToGuid();
+
+            var result = await _runtimeTables.WorkflowInstance.ClaimDistributedLockAsync(idAsGuid, lockTimeSpan, lockIdAsGuid,
+                cancellationToken);
+            return new Lock<string>().From(result);
+
+        }
+
+        /// <inheritdoc />
+        public Task ReleaseDistributedLockAsync(string id, string lockId,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
+            var idAsGuid = id.ToGuid();
+            Guid lockIdAsGuid = lockId.ToGuid();
+
+            return _runtimeTables.WorkflowInstance.ReleaseDistributedLockAsync(idAsGuid, lockIdAsGuid,
+                cancellationToken);
         }
     }
 }
