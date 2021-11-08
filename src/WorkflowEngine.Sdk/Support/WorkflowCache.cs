@@ -42,14 +42,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 
         public Activity LatestActivity { get; set; }
 
-        private readonly NexusAsyncSemaphore _semaphore = new NexusAsyncSemaphore();
+        private readonly NexusAsyncSemaphore _semaphore = new();
         private readonly CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string> _activityVersionCache;
         private readonly CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string> _activityInstanceCache;
         private readonly CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string> _workflowFormCache;
         private readonly CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string> _workflowVersionCache;
         private readonly CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string> _workflowInstanceCache;
 
-        private readonly Dictionary<string, Activity> _activities = new Dictionary<string, Activity>();
+        private readonly Dictionary<string, Activity> _activities = new();
 
         public WorkflowCache(WorkflowInformation workflowInformation)
         {
@@ -89,7 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 {
                     _summary.Version = new WorkflowVersion
                     {
-                        Id = Guid.NewGuid().ToLowerCaseString(),
+                        Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
                         WorkflowFormId = _workflowInformation.FormId,
                         MajorVersion = _workflowInformation.MajorVersion,
                         MinorVersion = _workflowInformation.MinorVersion,
@@ -240,7 +240,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 {
                     version = new ActivityVersion
                     {
-                        Id = Guid.NewGuid().ToLowerCaseString(),
+                        Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
                         WorkflowVersionId = _summary.Version.Id,
                         ActivityFormId = activityFlow.ActivityFormId,
                         FailUrgency = activityFlow.FailUrgency,
@@ -258,7 +258,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 if (instance != null) return instance.Id;
                 instance = new ActivityInstance
                 {
-                    Id = Guid.NewGuid().ToLowerCaseString(),
+                    Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
                     WorkflowInstanceId = _workflowInformation.InstanceId,
                     ActivityVersionId = version.Id,
                     ParentActivityInstanceId = parentActivity?.InstanceId,

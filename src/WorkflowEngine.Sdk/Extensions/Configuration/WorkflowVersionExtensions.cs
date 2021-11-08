@@ -1,7 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.WorkflowFormId = MapperHelper.MapToType<Guid, string>(source.WorkflowFormId);
+            target.WorkflowFormId = source.WorkflowFormId.ToGuid();
             target.MajorVersion = source.MajorVersion;
             target.MinorVersion = source.MinorVersion;
             target.DynamicCreate = source.DynamicCreate;
@@ -33,7 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireValidated(source, nameof(source));
 
             ((WorkflowVersionRecordCreate) target).From(source);
-            target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
+            target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
         }
@@ -47,8 +47,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowFormId = MapperHelper.MapToType<string, Guid>(source.WorkflowFormId);
+            target.Id = source.Id.ToLowerCaseString();
+            target.WorkflowFormId = source.WorkflowFormId.ToLowerCaseString();
             target.MajorVersion = source.MajorVersion;
             target.MinorVersion = source.MinorVersion;
             target.DynamicCreate = source.DynamicCreate;

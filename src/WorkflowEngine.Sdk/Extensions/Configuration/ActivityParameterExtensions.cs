@@ -1,7 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
@@ -16,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
+            target.ActivityVersionId = source.ActivityVersionId.ToGuid();
             target.Name = source.Name;
             return target;
         }
@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireValidated(source, nameof(source));
 
             ((ActivityVersionParameterRecordCreate) target).From(source);
-            target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
+            target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
         }
@@ -45,8 +45,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
+            target.Id = source.Id.ToLowerCaseString();
+            target.ActivityVersionId = source.ActivityVersionId.ToLowerCaseString();
             target.Name = source.Name;
             target.Etag = source.Etag;
             return target;

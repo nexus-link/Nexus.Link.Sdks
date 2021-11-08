@@ -5,7 +5,6 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -34,7 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
             var recordCreate = new WorkflowInstanceRecordCreate().From(item);
             var record = await _runtimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
 
@@ -49,7 +48,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
             var record = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return null;
 
@@ -75,7 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             var idAsGuid = id.ToGuid();
-            Guid lockIdAsGuid = Guid.Empty;
+            var lockIdAsGuid = Guid.Empty;
             if (currentLockId != null) lockIdAsGuid = currentLockId.ToGuid();
 
             var result = await _runtimeTables.WorkflowInstance.ClaimDistributedLockAsync(idAsGuid, lockTimeSpan, lockIdAsGuid,
@@ -91,7 +90,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));
             var idAsGuid = id.ToGuid();
-            Guid lockIdAsGuid = lockId.ToGuid();
+            var lockIdAsGuid = lockId.ToGuid();
 
             return _runtimeTables.WorkflowInstance.ReleaseDistributedLockAsync(idAsGuid, lockIdAsGuid,
                 cancellationToken);

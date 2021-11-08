@@ -1,7 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
@@ -17,11 +17,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.WorkflowVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuid();
             target.Position = source.Position;
-            target.ActivityFormId = MapperHelper.MapToType<Guid, string>(source.ActivityFormId);
-            target.ParentActivityVersionId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityVersionId);
-            target.FailUrgency = MapperHelper.MapToType<string, ActivityFailUrgencyEnum?>(source.FailUrgency);
+            target.ActivityFormId = source.ActivityFormId.ToGuid();
+            target.ParentActivityVersionId = source.ParentActivityVersionId.ToNullableGuid();
+            target.FailUrgency = source.FailUrgency.ToString();
             return target;
         }
 
@@ -35,7 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireValidated(source, nameof(source));
 
             ((ActivityVersionRecordCreate) target).From(source);
-            target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
+            target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
         }
@@ -49,12 +49,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
-            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.WorkflowVersionId);
+            target.Id = source.Id.ToLowerCaseString();
+            target.WorkflowVersionId = source.WorkflowVersionId.ToLowerCaseString();
             target.Position = source.Position;
-            target.ActivityFormId = MapperHelper.MapToType<string, Guid>(source.ActivityFormId);
-            target.ParentActivityVersionId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityVersionId);
-            target.FailUrgency = MapperHelper.MapToStruct<ActivityFailUrgencyEnum, string>(source.FailUrgency);
+            target.ActivityFormId = source.ActivityFormId.ToLowerCaseString();
+            target.ParentActivityVersionId = source.ParentActivityVersionId.ToLowerCaseString();
+            target.FailUrgency = source.FailUrgency.ToEnum<ActivityFailUrgencyEnum>();
             target.Etag = source.Etag;
             return target;
         }
