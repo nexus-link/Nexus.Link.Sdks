@@ -1,4 +1,5 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -27,6 +28,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public ActivityFailUrgencyEnum FailUrgency { get; set; }
 
         /// <inheritdoc />
+        public double AsyncRequestPriority { get; set; }
+
+        /// <inheritdoc />
+        public ActivityExceptionAlertHandler ExceptionAlertHandler { get; set; }
+
+        /// <inheritdoc />
         public int Position { get; set; }
 
 
@@ -40,6 +47,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
             Position = position;
+            FailUrgency = workflowInformation.DefaultFailUrgency;
+            AsyncRequestPriority = workflowInformation.DefaultAsyncRequestPriority;
+            ExceptionAlertHandler = workflowInformation.DefaultExceptionAlertHandler;
         }
     }
 }

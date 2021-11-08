@@ -19,12 +19,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string FormTitle { get; }
         string ActivityFormId { get; }
         ActivityFailUrgencyEnum FailUrgency { get; }
+        double AsyncRequestPriority { get; }
+        ActivityExceptionAlertHandler ExceptionAlertHandler { get; }
     }
 
     public interface IActivityFlow
     {
         IActivityFlow SetParameter<T>(string name, T value);
-        IActivityFlow OnException(ActivityFailUrgencyEnum failUrgency);
+        IActivityFlow SetAsyncRequestPriority(double priority);
+        IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
+        IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
 
         IActivityAction Action();
         IActivityLoopUntilTrue LoopUntil();
@@ -35,10 +39,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     public interface IActivityFlow<TActivityReturns>
     {
         IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value);
+        IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority);
+        IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
+        IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
         
-        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, TActivityReturns defaultValue);
-        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<TActivityReturns> getDefaultValueMethod);
-        IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
+        IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
+        IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);
+        IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
 
         IActivityAction<TActivityReturns> Action();
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();

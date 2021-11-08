@@ -1,6 +1,7 @@
 ﻿using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -23,6 +24,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public int MajorVersion => WorkflowImplementation.MajorVersion;
         public int MinorVersion => WorkflowImplementation.MinorVersion;
         public string InstanceId { get; set; }
+        public ActivityFailUrgencyEnum DefaultFailUrgency { get; set; } = ActivityFailUrgencyEnum.Stopping;
+        public ActivityExceptionAlertHandler DefaultExceptionAlertHandler { get; set; }
+        public double DefaultAsyncRequestPriority { get; set; } = 0.5;
 
         public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
         {

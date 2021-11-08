@@ -62,7 +62,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             }
 
             // Send the request to AM
-            var asyncRequest = await new HttpRequestCreate().FromAsync(request, 0.5, cancellationToken);
+            var asyncRequest = await new HttpRequestCreate().FromAsync(request, activity.AsyncRequestPriority, cancellationToken);
             var requestId = await _asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
 
             // Remember the request id and postpone the activity.

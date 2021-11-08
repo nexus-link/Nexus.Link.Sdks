@@ -27,6 +27,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         protected internal WorkflowCache WorkflowCache => _activityFlow.WorkflowCache;
 
+        public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
+
         protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
         protected internal ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
         protected internal ActivityInstance Instance => WorkflowCache.GetActivityInstance(InstanceId);
@@ -50,6 +52,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public List<int> NestedIterations { get; } = new();
 
         public string InstanceId { get; internal set; }
+        public double AsyncRequestPriority => _activityFlow.AsyncRequestPriority;
 
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {

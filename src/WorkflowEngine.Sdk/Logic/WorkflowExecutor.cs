@@ -127,6 +127,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             _methodHandler.SetParameter(name, value);
         }
 
+        public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
+        {
+            WorkflowInformation.DefaultFailUrgency = failUrgency;
+        }
+
+        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        {
+            WorkflowInformation.DefaultExceptionAlertHandler = alertHandler;
+        }
+
+        public void SetDefaultAsyncRequestPriority(double priority)
+        {
+            WorkflowInformation.DefaultAsyncRequestPriority = priority;
+        }
+
         public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
         {
             await PrepareBeforeExecutionAsync(cancellationToken);

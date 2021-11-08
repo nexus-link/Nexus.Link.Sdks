@@ -1,11 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
+    public delegate Task<bool> ActivityExceptionAlertHandler(ActivityExceptionAlert alert,
+        CancellationToken cancellationToken = default);
+
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
         /// <inheritdoc />
@@ -49,6 +54,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public void DefineParameter<T>(string name)
         {
             WorkflowExecutor.DefineParameter<T>(name);
+        }
+
+        public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
+        {
+            WorkflowExecutor.SetDefaultFailUrgency(failUrgency);
+        }
+
+        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        {
+            WorkflowExecutor.SetDefaultExceptionAlertHandler(alertHandler);
+        }
+
+        public void SetDefaultAsyncRequestPriority(double priority)
+        {
+            WorkflowExecutor.SetDefaultAsyncRequestPriority(priority);
         }
     }
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
