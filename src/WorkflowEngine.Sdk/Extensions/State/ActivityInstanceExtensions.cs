@@ -1,7 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
@@ -17,14 +17,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            target.WorkflowInstanceId = MapperHelper.MapToType<Guid, string>(source.WorkflowInstanceId);
+            target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuid();
             target.ParentIteration = source.ParentIteration;
-            target.State = MapperHelper.MapToType<string, ActivityStateEnum>(source.State);
+            target.State = source.State.ToString();
             target.StartedAt = source.StartedAt;
-            target.ActivityVersionId = MapperHelper.MapToType<Guid, string>(source.ActivityVersionId);
-            target.ParentActivityInstanceId = MapperHelper.MapToType<Guid?, string>(source.ParentActivityInstanceId);
+            target.ActivityVersionId = source.ActivityVersionId.ToGuid();
+            target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToNullableGuid();
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionCategory = MapperHelper.MapToType<string, ActivityExceptionCategoryEnum?>(source.ExceptionCategory);
+            target.ExceptionCategory = source.ExceptionCategory.ToString();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.FinishedAt = source.FinishedAt;
@@ -43,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireValidated(source, nameof(source));
 
             ((ActivityInstanceRecordCreate)target).From(source);
-            target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
+            target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
         }
@@ -57,19 +57,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
+            target.Id = source.Id.ToLowerCaseString();
             target.Etag = source.Etag;
-            target.WorkflowInstanceId = MapperHelper.MapToType<string, Guid>(source.WorkflowInstanceId);
+            target.WorkflowInstanceId = source.WorkflowInstanceId.ToLowerCaseString();
             target.ParentIteration = source.ParentIteration;
-            target.ActivityVersionId = MapperHelper.MapToType<string, Guid>(source.ActivityVersionId);
-            target.ParentActivityInstanceId = MapperHelper.MapToType<string, Guid?>(source.ParentActivityInstanceId);
+            target.ActivityVersionId = source.ActivityVersionId.ToLowerCaseString();
+            target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToLowerCaseString();
             target.ResultAsJson = source.ResultAsJson;
-            target.State = MapperHelper.MapToStruct<ActivityStateEnum, string>(source.State);
-            target.ExceptionCategory = null;
-            if (source.ExceptionCategory != null)
-            {
-                target.ExceptionCategory = MapperHelper.MapToStruct<ActivityExceptionCategoryEnum, string>(source.ExceptionCategory);
-            }
+            target.State = source.State.ToEnum<ActivityStateEnum>();
+            target.ExceptionCategory = source.ExceptionCategory.ToEnum<ActivityExceptionCategoryEnum>();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.StartedAt = source.StartedAt;

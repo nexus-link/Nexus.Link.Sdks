@@ -1,7 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
@@ -16,11 +16,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.WorkflowVersionId = MapperHelper.MapToType<Guid, string>(source.WorkflowVersionId);
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuid();
             target.Title = source.Title;
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
-            target.State = MapperHelper.MapToType<string, WorkflowStateEnum>(source.State);
+            target.State = source.State.ToString();
             target.FinishedAt = source.FinishedAt;
             target.CancelledAt = source.CancelledAt;
             target.ResultAsJson = source.ResultAsJson;
@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireValidated(source, nameof(source));
 
             ((WorkflowInstanceRecordCreate) target).From(source);
-            target.Id = MapperHelper.MapToType<Guid, string>(source.Id);
+            target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
         }
@@ -54,9 +54,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = MapperHelper.MapToType<string, Guid>(source.Id);
+            target.Id = source.Id.ToLowerCaseString();
             target.Etag = source.Etag;
-            target.WorkflowVersionId = MapperHelper.MapToType<string, Guid>(source.WorkflowVersionId);
+            target.WorkflowVersionId = source.WorkflowVersionId.ToLowerCaseString();
             target.Title = source.Title;
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
