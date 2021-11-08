@@ -3,17 +3,16 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
-using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
@@ -28,34 +27,26 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
     {
         private readonly Mock<IAsyncRequestClient> _asyncRequestClientMock;
         private readonly IRuntimeTables _runtimeTables;
-        private readonly Mock<IWorkflowVersion> _workflowVersionMock;
+        private readonly Mock<IWorkflowImplementation> _workflowVersionMock;
         private readonly IInternalActivityFlow _activityFlowMock;
         private readonly WorkflowCache _workflowCache;
-        private readonly WorkflowCapability _workflowCapability;
+        private readonly WorkflowMgmtCapability _workflowMgmtCapability;
+        private readonly IWorkflowImplementationBase _workflowImplementation;
 
         public ActivityExecutorTests()
         {
             var configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
-            
+
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            _workflowCapability = new WorkflowCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            var workflowInfo = new WorkflowInformation
-            {
-                WorkflowCapability = _workflowCapability,
-                CapabilityName = "Capability name",
-                FormId = Guid.NewGuid().ToLowerCaseString(),
-                FormTitle = "Form title",
-                MajorVersion = 1,
-                MinorVersion = 2,
-                InstanceId = Guid.NewGuid().ToLowerCaseString(),
-                InstanceTitle = "Instance title"
-            };
+            _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
+            _workflowMgmtCapability = new WorkflowMgmtCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
+            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestClientMock.Object);
+            var workflowInfo = new WorkflowInformation(_workflowImplementation);
             _workflowCache = new WorkflowCache(workflowInfo);
             _workflowCache.LoadAsync(default).Wait();
-            _workflowVersionMock = new Mock<IWorkflowVersion>();
-            _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
-            _activityFlowMock = new ActivityFlowMock(_workflowVersionMock.Object,
+            _workflowVersionMock = new Mock<IWorkflowImplementation>();
+            _activityFlowMock = new ActivityFlowMock(workflowInfo,
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
         }
 
@@ -64,7 +55,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             const int expectedValue = 10;
             var minTime = DateTimeOffset.UtcNow;
 
@@ -88,7 +79,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
@@ -115,16 +106,18 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_AlertHandlerCalled()
         {
             // Arrange
-            var alertHandler = new WorkflowVersionWithAlertHandler((a, ct) => Task.FromResult(true));
-            var activityFlowMock = new ActivityFlowMock(alertHandler,
+            var alertHandler = new WorkflowImplementationWithAlertHandler((a, ct) => Task.FromResult(true),
+                _workflowMgmtCapability, _asyncRequestClientMock.Object);
+            var workflowInformation = new WorkflowInformation(alertHandler);
+            var activityFlowMock = new ActivityFlowMock(workflowInformation,
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
             var activity = new ActivityAction<int>(activityFlowMock, null);
             var executor = new ActivityExecutor(alertHandler, activity);
             executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<RequestPostponedException>( () => executor.ExecuteAsync(
-                    (a, t) => throw new Exception("Fail")));
+            await Assert.ThrowsAnyAsync<RequestPostponedException>(() => executor.ExecuteAsync(
+                   (a, t) => throw new Exception("Fail")));
             await _workflowCache.SaveAsync();
 
             alertHandler.AlertResult.ShouldBe(true);
@@ -142,7 +135,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             executor.ActivityVersion.FailUrgency = failUrgency;
             const int expectedValue = 10;
 
@@ -165,7 +158,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
 
             // Act & Assert
@@ -190,18 +183,18 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 .ReturnsAsync(expectedRequestId);
             _asyncRequestClientMock.Setup(c =>
                     c.GetFinalResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((AsyncHttpResponse) null);
+                .ReturnsAsync((AsyncHttpResponse)null);
             _asyncRequestClientMock.Setup(c =>
                     c.CreateRequest(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<double>()))
                 .Returns(new AsyncHttpRequest_ForTest(_asyncRequestClientMock.Object, HttpMethod.Post, "http://example.com",
                     1.0));
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
             activity = new ActivityAction<int>(_activityFlowMock, null);
-            executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            executor = new ActivityExecutor(_workflowImplementation, activity);
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -225,7 +218,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowVersionMock.Object, activity);
+            var executor = new ActivityExecutor(_workflowImplementation, activity);
             executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
@@ -249,6 +242,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
         }
     }
+
     /// <summary>
     /// Class to access protected parts of the <see cref="AsyncHttpRequest"/> class.
     /// </summary>
@@ -266,22 +260,16 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
     }
 
-    internal class WorkflowVersionWithAlertHandler : IWorkflowVersion, IActivityExceptionAlertHandler
+    internal class WorkflowImplementationWithAlertHandler : TestWorkflowImplementation, IWorkflowImplementationBase, IActivityExceptionAlertHandler
     {
         private readonly Func<ActivityExceptionAlert, CancellationToken, Task<bool>> _alertHandlerMethod;
 
-        public WorkflowVersionWithAlertHandler(Func<ActivityExceptionAlert, CancellationToken, Task<bool>> alertHandlerMethod)
+        public WorkflowImplementationWithAlertHandler(Func<ActivityExceptionAlert, CancellationToken, Task<bool>> alertHandlerMethod,
+            IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient) 
+            : base(workflowCapability, asyncRequestClient)
         {
             _alertHandlerMethod = alertHandlerMethod;
-            MajorVersion = 1;
-            MinorVersion = 0;
         }
-
-        /// <inheritdoc />
-        public int MajorVersion { get; }
-
-        /// <inheritdoc />
-        public int MinorVersion { get; }
 
         /// <inheritdoc />
         public async Task<bool> HandleActivityExceptionAlertAsync(ActivityExceptionAlert alert, CancellationToken cancellationToken = default)

@@ -1,4 +1,4 @@
-﻿namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
+﻿namespace Nexus.Link.WorkflowEngine.Sdk.Support.Method
 {
     internal class MethodArgument
     {

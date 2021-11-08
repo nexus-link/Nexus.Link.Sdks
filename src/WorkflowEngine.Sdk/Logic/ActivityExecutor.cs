@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -11,24 +10,24 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
     public class ActivityExecutor
     {
-        public IWorkflowVersion WorkflowVersion { get; }
+        public IWorkflowImplementationBase WorkflowImplementation { get; }
         public Activity Activity { get; set; }
 
         public ActivityInstance ActivityInstance => Activity.Instance;
 
         public ActivityVersion ActivityVersion => Activity.Version;
 
-        public ActivityExecutor(IWorkflowVersion workflowVersion, Activity activity)
+        public ActivityExecutor(IWorkflowImplementationBase workflowImplementation, Activity activity)
         {
-            InternalContract.RequireNotNull(workflowVersion, nameof(workflowVersion));
+            InternalContract.RequireNotNull(workflowImplementation, nameof(workflowImplementation));
             InternalContract.RequireNotNull(activity, nameof(activity));
-            WorkflowVersion = workflowVersion;
+            WorkflowImplementation = workflowImplementation;
             Activity = activity;
         }
 
@@ -208,7 +207,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
             if (Activity.Instance.ExceptionAlertHandled.HasValue &&
                 Activity.Instance.ExceptionAlertHandled.Value) return;
 
-            if (!(WorkflowVersion is IActivityExceptionAlertHandler alertHandler)) return;
+            if (!(WorkflowImplementation is IActivityExceptionAlertHandler alertHandler)) return;
 
             try
             {

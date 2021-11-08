@@ -18,8 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public static void LogAtLevel(LogSeverityLevel level, string technicalMessage, string friendlyMessage, object data, 
             string memberName, string filePath, int lineNumber)
         {
-            var workflowInstanceId = AsyncWorkflowStatic.Context.WorkflowInstanceId;
-            var activityInstanceId = AsyncWorkflowStatic.Context.LatestActivityInstanceId;
+            var workflowInstanceId = WorkflowStatic.Context.WorkflowInstanceId;
+            var activityInstanceId = WorkflowStatic.Context.LatestActivityInstanceId;
             Log.LogWarning($"{technicalMessage} (Workflow: {workflowInstanceId}, Activity: {activityInstanceId}", data, null, memberName, filePath, lineNumber);
         }
     }

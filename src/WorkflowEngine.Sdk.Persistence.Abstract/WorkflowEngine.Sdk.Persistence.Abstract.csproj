@@ -24,7 +24,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>2.0.1</Version>
+    <Version>2.0.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.1 Support for IDistributedLock
+      2.0.3 Support for IDistributedLock
       2.0.0 Refactored methods
       1.2.0 Create and Update now returns the resulting object
       1.1.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete

@@ -1,14 +1,15 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
     internal class ActivityFlowMock : IInternalActivityFlow
     {
         /// <inheritdoc />
-        public IWorkflowVersion WorkflowVersion { get; set; }
+        public WorkflowInformation WorkflowInformation { get; set; }
 
         /// <inheritdoc />
         public WorkflowCache WorkflowCache { get; set; }
@@ -29,10 +30,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public int Position { get; set; }
 
 
-        public ActivityFlowMock(IWorkflowVersion workflowVersion,
+        public ActivityFlowMock(WorkflowInformation workflowInformation,
             WorkflowCache workflowCache, string formTitle, string activityFormId, int position)
         {
-            WorkflowVersion = workflowVersion;
+            WorkflowInformation = workflowInformation;
             WorkflowCache = workflowCache;
 
             ActivityFormId = activityFormId;

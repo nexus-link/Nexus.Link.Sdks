@@ -1,22 +1,32 @@
 ﻿using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     public class WorkflowInformation : IValidatable
     {
-        public IWorkflowMgmtCapability WorkflowCapability { get; set; }
-        public string CapabilityName { get; set; }
-        public string FormId { get; set; }
-        public string FormTitle { get; set; }
-        public int MajorVersion { get; set; }
-        public int MinorVersion { get; set; }
+        public IWorkflowImplementationBase WorkflowImplementation { get; set; }
+
+        public IWorkflowVersions WorkflowVersions =>
+            WorkflowImplementation.WorkflowVersions;
+
+        public IAsyncRequestClient AsyncRequestClient => WorkflowVersions.AsyncRequestClient;
+
+        public IWorkflowMgmtCapability WorkflowCapability => WorkflowVersions.WorkflowCapability;
+        public string CapabilityName => WorkflowVersions.WorkflowCapabilityName;
+        public string FormId => WorkflowVersions.WorkflowFormId;
+        public string FormTitle => WorkflowVersions.WorkflowFormTitle;
+        public string InstanceTitle => WorkflowImplementation.GetInstanceTitle();
+        public int MajorVersion => WorkflowImplementation.MajorVersion;
+        public int MinorVersion => WorkflowImplementation.MinorVersion;
         public string InstanceId { get; set; }
-        public string InstanceTitle { get; set; }
+
+        public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
+        {
+            WorkflowImplementation = workflowImplementation;
+        }
 
         /// <inheritdoc />
         public void Validate(string errorLocation, string propertyPath = "")

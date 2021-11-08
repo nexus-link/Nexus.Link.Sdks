@@ -8,7 +8,6 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
-using Nexus.Link.WorkflowEngine.Sdk.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 using Xunit.Abstractions;
 

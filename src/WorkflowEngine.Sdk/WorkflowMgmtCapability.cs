@@ -4,16 +4,15 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
-using Nexus.Link.WorkflowEngine.Sdk.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
-    public class WorkflowCapability : IWorkflowMgmtCapability
+    public class WorkflowMgmtCapability : IWorkflowMgmtCapability
     {
-        public WorkflowCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowMgmtCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion = new WorkflowVersionService(configurationTables);

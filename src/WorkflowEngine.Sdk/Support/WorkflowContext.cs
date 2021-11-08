@@ -2,7 +2,7 @@
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
-    public class AsyncWorkflowContext
+    public class WorkflowContext
     {
         public IContextValueProvider ValueProvider { get; }
 
@@ -11,7 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         private readonly OneValueProvider<string> _parentActivityInstanceId;
         private readonly OneValueProvider<string> _latestActivityInstanceId;
 
-        public AsyncWorkflowContext(IContextValueProvider valueProvider)
+        public WorkflowContext(IContextValueProvider valueProvider)
         {
             ValueProvider = valueProvider;
             _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");

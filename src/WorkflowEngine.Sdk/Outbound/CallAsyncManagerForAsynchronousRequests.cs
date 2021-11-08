@@ -26,7 +26,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (!AsyncWorkflowStatic.Context.ExecutionIsAsynchronous)
+            if (!WorkflowStatic.Context.ExecutionIsAsynchronous)
             {
                 return await base.SendAsync(request, cancellationToken);
             }

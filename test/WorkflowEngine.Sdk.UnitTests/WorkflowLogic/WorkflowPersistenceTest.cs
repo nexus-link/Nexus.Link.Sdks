@@ -1,19 +1,18 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Moq;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Xunit;
+using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
@@ -21,7 +20,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
     {
 
         private readonly WorkflowCache _workflowCache;
-        private readonly WorkflowCapabilityMock _workflowCapability;
+        private readonly WorkflowMgmtCapabilityMock _workflowMgmtCapability;
+        private readonly IWorkflowImplementationBase _workflowImplementation;
 
         public WorkflowPersistenceTest()
         {
@@ -29,18 +29,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var runtimeTables = new RuntimeTablesMemory();
 
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            _workflowCapability = new WorkflowCapabilityMock(configurationTables, runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            var workflowInfo = new WorkflowInformation
-            {
-                WorkflowCapability = _workflowCapability,
-                CapabilityName = "Capability name",
-                FormId = Guid.NewGuid().ToLowerCaseString(),
-                FormTitle = "Form title",
-                MajorVersion = 1,
-                MinorVersion = 2,
-                InstanceId = Guid.NewGuid().ToLowerCaseString(),
-                InstanceTitle = "Instance title"
-            };
+            var asyncRequestClientMock = new Mock<IAsyncRequestClient>();
+            _workflowMgmtCapability = new WorkflowMgmtCapabilityMock(configurationTables, runtimeTables, asyncRequestMgmtCapabilityMock.Object);
+            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, asyncRequestClientMock.Object);
+            var workflowInfo = new WorkflowInformation(_workflowImplementation);
             FulcrumAssert.IsValidated(workflowInfo);
             _workflowCache = new WorkflowCache(workflowInfo);
         }
@@ -49,7 +41,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task TODO()
         {
             var workflowServiceMock = new Mock<IWorkflowSummaryService>();
-            _workflowCapability.Workflow = workflowServiceMock.Object;
+            _workflowMgmtCapability.Workflow = workflowServiceMock.Object;
             workflowServiceMock
                 .Setup(x => x.GetSummaryAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new FulcrumNotFoundException());
@@ -58,9 +50,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
     }
 
-    public class WorkflowCapabilityMock : WorkflowCapability
+    public class WorkflowMgmtCapabilityMock : WorkflowMgmtCapability
     {
-        public WorkflowCapabilityMock(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability) : base(configurationTables, runtimeTables, requestMgmtCapability)
+        public WorkflowMgmtCapabilityMock(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
+            : base(configurationTables, runtimeTables, requestMgmtCapability)
         {
         }
 

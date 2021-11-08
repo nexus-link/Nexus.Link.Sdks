@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
@@ -27,14 +28,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
     {
         private readonly IConfigurationTables _configurationTables;
         private readonly IRuntimeTables _runtimeTables;
-        private readonly AsyncRequestClient _asyncRequestClient;
+        private readonly IAsyncRequestClient _asyncRequestClient;
 
         public WorkflowSummaryService(IConfigurationTables configurationTables, IRuntimeTables runtimeTables,
-            IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
+            IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             _configurationTables = configurationTables;
             _runtimeTables = runtimeTables;
-            _asyncRequestClient = new AsyncRequestClient(asyncRequestMgmtCapability);
+            _asyncRequestClient = new AsyncRequestClient(requestMgmtCapability);
         }
 
         public async Task<WorkflowSummary> GetSummaryAsync(string instanceId,

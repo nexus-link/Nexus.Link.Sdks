@@ -11,7 +11,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
     public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
         Activity activity,
@@ -20,13 +20,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
         Activity activity,
         CancellationToken cancellationToken);
 
-    public abstract class Activity
+    public abstract class Activity : IActivity
     {
         private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
 
         protected internal WorkflowCache WorkflowCache => _activityFlow.WorkflowCache;
-        
+
         protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
         protected internal ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
         protected internal ActivityInstance Instance => WorkflowCache.GetActivityInstance(InstanceId);
@@ -56,9 +56,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
             InternalContract.RequireNotNull(activityFlow, nameof(activityFlow));
             _activityFlow = activityFlow;
             Activity parentActivity = null;
-            if (AsyncWorkflowStatic.Context.ParentActivityInstanceId != null)
+            if (WorkflowStatic.Context.ParentActivityInstanceId != null)
             {
-                parentActivity = WorkflowCache.GetActivity(AsyncWorkflowStatic.Context.ParentActivityInstanceId);
+                parentActivity = WorkflowCache.GetActivity(WorkflowStatic.Context.ParentActivityInstanceId);
                 FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
                 NestedIterations.AddRange(parentActivity.NestedIterations);
                 if (parentActivity.Iteration is > 0)
@@ -73,7 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.ActivityLogic
             }
 
             InstanceId = _activityFlow.WorkflowCache.GetOrCreateInstanceId(activityType, _activityFlow, parentActivity);
-            _activityExecutor = new ActivityExecutor(activityFlow.WorkflowVersion, this);
+            _activityExecutor = new ActivityExecutor(activityFlow.WorkflowInformation.WorkflowImplementation, this);
         }
 
         public TParameter GetArgument<TParameter>(string parameterName)

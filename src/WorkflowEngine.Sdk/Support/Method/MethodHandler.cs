@@ -9,7 +9,7 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.MethodSupport
+namespace Nexus.Link.WorkflowEngine.Sdk.Support.Method
 {
     public class MethodHandler
     {

@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
-using Nexus.Link.WorkflowEngine.Sdk.MethodSupport;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IInternalActivityFlow
     {
         WorkflowCache WorkflowCache { get; }
-        IWorkflowVersion WorkflowVersion { get; }
+        WorkflowInformation WorkflowInformation { get; }
         MethodHandler MethodHandler { get; }
         int Position { get; }
         string FormTitle { get; }
@@ -25,10 +26,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetParameter<T>(string name, T value);
         IActivityFlow OnException(ActivityFailUrgencyEnum failUrgency);
 
-        ActivityAction Action();
-        ActivityLoopUntilTrue LoopUntil();
-        ActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
-        ActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
+        IActivityAction Action();
+        IActivityLoopUntilTrue LoopUntil();
+        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
+        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }
 
     public interface IActivityFlow<TActivityReturns>
@@ -39,11 +40,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<TActivityReturns> getDefaultValueMethod);
         IActivityFlow<TActivityReturns> OnException(ActivityFailUrgencyEnum failUrgency, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
 
-        ActivityAction<TActivityReturns> Action();
-        ActivityLoopUntilTrue<TActivityReturns> LoopUntil();
-        ActivityCondition<TActivityReturns> Condition();
-        ActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items);
-        ActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
-        ActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
+        IActivityAction<TActivityReturns> Action();
+        IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
+        IActivityCondition<TActivityReturns> Condition();
+        IActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items);
+        IActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
+        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }
 }

@@ -17,6 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\Administration\**" />
+    <EmbeddedResource Remove="Extensions\Administration\**" />
+    <None Remove="Extensions\Administration\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.1.0" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
@@ -32,13 +38,9 @@
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\Administration\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>3.3.2</Version>
+    <Version>4.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +50,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
       3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
       3.3.0 Support for IDistributedLock
       3.2.0 New fields for WorkflowInstance

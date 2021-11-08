@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
-using Nexus.Link.WorkflowEngine.Sdk.ActivityLogic;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Nexus.Link.WorkflowEngine.Sdk.WorkflowLogic;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
 using WorkflowVersion = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration.WorkflowVersion;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Persistence
+namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     public class WorkflowCache
     {
