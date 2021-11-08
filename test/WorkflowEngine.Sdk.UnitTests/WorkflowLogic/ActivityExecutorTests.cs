@@ -178,43 +178,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
 
         [Fact]
-        public async Task Execute_Given_HasRequestIdButNoResponse_Gives_Postpone()
-        {
-            // Arrange
-            var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
-            _asyncRequestMgmtCapabilityMock.RequestServiceMock.Setup(c =>
-                    c.CreateAsync(It.IsAny<HttpRequestCreate>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedRequestId);
-            _asyncRequestMgmtCapabilityMock.RequestResponseServiceMock.Setup(c =>
-                    c.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((AsyncHttpResponse)null);
-            var activity = new ActivityAction<int>(_activityFlowMock, null);
-            var executor = new ActivityExecutor(_workflowImplementation, activity);
-            await Assert.ThrowsAnyAsync<RequestPostponedException>(
-                () => executor.ExecuteAsync<int>(
-                    (a, t) => throw new RequestPostponedException(expectedRequestId), null));
-            activity = new ActivityAction<int>(_activityFlowMock, null);
-            executor = new ActivityExecutor(_workflowImplementation, activity);
-
-            // Act & Assert
-            RequestPostponedException postponed = null;
-            try
-            {
-                await executor.ExecuteAsync<int>(
-                    (a, t) => Task.FromResult(10), null);
-            }
-            catch (Exception e)
-            {
-                e.ShouldBeAssignableTo<RequestPostponedException>();
-                postponed = e as RequestPostponedException;
-            }
-            await _workflowCache.SaveAsync();
-            postponed.ShouldNotBeNull();
-            postponed.WaitingForRequestIds.ShouldContain(expectedRequestId);
-        }
-
-        [Fact]
-        public async Task Execute_Given_FuclrumTryAgainException_Gives_PostponeTryAgain()
+        public async Task Execute_Given_FulcrumTryAgainException_Gives_PostponeTryAgain()
         {
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);

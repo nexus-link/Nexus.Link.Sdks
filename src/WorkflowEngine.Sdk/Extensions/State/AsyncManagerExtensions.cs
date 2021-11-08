@@ -14,6 +14,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.BodyAsString = source.Content;
             target.Headers = source.Headers;
             target.StatusCode = (HttpStatusCode)source.HttpStatus!.Value;
+            target.ContentType = "application/json";
+            target.ContentLength = target.BodyAsString?.Length;
             return target;
         }
 

@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.ActivityVersionId = source.ActivityVersionId.ToGuid();
             target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToNullableGuid();
             target.ResultAsJson = source.ResultAsJson;
-            target.ExceptionCategory = source.ExceptionCategory.ToString();
+            target.ExceptionCategory = source.ExceptionCategory?.ToString();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.FinishedAt = source.FinishedAt;
@@ -65,7 +65,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToLowerCaseString();
             target.ResultAsJson = source.ResultAsJson;
             target.State = source.State.ToEnum<ActivityStateEnum>();
-            target.ExceptionCategory = source.ExceptionCategory.ToEnum<ActivityExceptionCategoryEnum>();
+            target.ExceptionCategory = source.ExceptionCategory?.ToEnum<ActivityExceptionCategoryEnum>();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.StartedAt = source.StartedAt;
