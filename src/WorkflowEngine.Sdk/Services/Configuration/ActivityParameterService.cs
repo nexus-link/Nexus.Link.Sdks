@@ -7,7 +7,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -41,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         {
             InternalContract.RequireNotNullOrWhiteSpace(masterId, nameof(masterId));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
+            var idAsGuid = masterId.ToGuid();
             var record = await _configurationTables.ActivityVersionParameter.ReadAsync(idAsGuid, dependentId, cancellationToken);
             if (record == null) return null;
 
@@ -57,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         {
             InternalContract.RequireNotNullOrWhiteSpace(masterId, nameof(masterId));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(masterId);
+            var idAsGuid = masterId.ToGuid();
             var records = await _configurationTables.ActivityVersionParameter.ReadAllWithPagingAsync(idAsGuid, offset, limit, cancellationToken);
             if (records == null) return null;
 

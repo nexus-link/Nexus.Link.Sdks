@@ -116,7 +116,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             //    var requestResponse = await _requestResponseService.ReadResponseAsync(activityRecord.Instance.AsyncRequestId);
             //    if (!string.IsNullOrWhiteSpace(requestResponse.ExecutionId))
             //    {
-            //        var idAsGuid = MapperHelper.MapToType<Guid, string>(requestResponse.ExecutionId);
+            //        var idAsGuid = requestResponse.ExecutionId.ToGuid();
             //        var workflowInstance = await _runtimeTables.WorkflowInstance.ReadAsync(idAsGuid);
             //        if (workflowInstance != null)
             //        {

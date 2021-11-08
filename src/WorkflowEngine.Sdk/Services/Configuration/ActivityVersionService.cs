@@ -5,7 +5,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -28,7 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
             var recordCreate = new ActivityVersionRecordCreate().From(item);
             var result = await _configurationTables.ActivityVersion.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
             return new ActivityVersion().From(result);
@@ -39,7 +39,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
             var record = await _configurationTables.ActivityVersion.ReadAsync(idAsGuid, cancellationToken);
              if (record == null) return null;
 
@@ -56,7 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
             
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
 
             var record = new ActivityVersionRecord().From(item);
             var result = await _configurationTables.ActivityVersion.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);

@@ -9,7 +9,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -70,7 +70,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Assert
             actualValue.ShouldBe(expectedValue);
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Success.ToString());
             var maxTime = DateTimeOffset.UtcNow;
@@ -101,7 +101,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             await _workflowCache.SaveAsync();
             postponed.ShouldNotBeNull();
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
         }
@@ -126,7 +126,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
             alertHandler.AlertResult.ShouldBe(true);
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             instance.ExceptionAlertHandled.ShouldBe(true);
@@ -148,7 +148,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 (a, t) => throw new Exception("Fail"), ct => Task.FromResult(expectedValue));
             await _workflowCache.SaveAsync();
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             actualValue.ShouldBe(expectedValue);
@@ -171,7 +171,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
             await _workflowCache.SaveAsync();
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
@@ -201,7 +201,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             postponed.ShouldNotBeNull();
             postponed.TryAgain.ShouldBe(true);
             executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(MapperHelper.MapToType<Guid, string>(executor.ActivityInstance.Id));
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
         }

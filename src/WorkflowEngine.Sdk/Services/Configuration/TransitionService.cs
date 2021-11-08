@@ -7,7 +7,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -33,7 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
 
             var recordCreate = new TransitionRecordCreate().From(item);
             var idAsGuid = await _configurationTables.Transition.CreateAsync(recordCreate, cancellationToken);
-            var id = MapperHelper.MapToType<string, Guid>(idAsGuid);
+            var id = idAsGuid.ToLowerCaseString();
             return id;
         }
 
@@ -57,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         /// <inheritdoc />
         public async Task<PageEnvelope<Transition>> ReadChildrenWithPagingAsync(string workflowVersionId, int offset, int? limit = null, CancellationToken token = default)
         {
-            var parentIdAsGuid = MapperHelper.MapToType<Guid, string>(workflowVersionId);
+            var parentIdAsGuid = workflowVersionId.ToGuid();
             var page = await _configurationTables.Transition.ReadChildrenWithPagingAsync(parentIdAsGuid, offset, limit,
                 token);
             var data = page.Data.Select(record => new Transition().From(record)).ToArray();

@@ -6,7 +6,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
             var recordCreate = new ActivityInstanceRecordCreate().From(item);
             var result = await _runtimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
@@ -43,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
 
             var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return;
@@ -62,7 +62,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
 
             var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return;
@@ -85,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             InternalContract.RequireNotNull(item, nameof(item));
             InternalContract.RequireValidated(item, nameof(item));
 
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
 
             var record = new ActivityInstanceRecord().From(item);
             var result = await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
@@ -97,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         public async Task<ActivityInstance> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-            var idAsGuid = MapperHelper.MapToType<Guid, string>(id);
+            var idAsGuid = id.ToGuid();
 
             var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
             if (record == null) return null;
