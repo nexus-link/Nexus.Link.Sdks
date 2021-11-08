@@ -1,19 +1,38 @@
+using System;
+using System.Data;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.AsyncManager.Sdk.Extensions;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
     public class CallAsyncManagerForAsynchronousRequests : DelegatingHandler
     {
-        private readonly IAsyncRequestClient _asyncRequestClient;
+        private readonly IAsyncRequestMgmtCapability _asyncRequestMgmtCapability;
 
-        public CallAsyncManagerForAsynchronousRequests(IAsyncRequestClient asyncRequestClient)
+        public CallAsyncManagerForAsynchronousRequests(IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
-            _asyncRequestClient = asyncRequestClient;
+            _asyncRequestMgmtCapability = asyncRequestMgmtCapability;
         }
 
         /// <summary>
@@ -31,20 +50,43 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            // Send the request to AM
-            string contentAsString = null;
-            if (request.Content != null)
+            var activity = WorkflowStatic.Context.LatestActivity;
+            FulcrumAssert.IsNotNull(activity, CodeLocation.AsString());
+            FulcrumAssert.IsNotNull(activity.Instance, CodeLocation.AsString());
+
+            if (activity.Instance.AsyncRequestId != null)
             {
-                await request.Content.LoadIntoBufferAsync();
-                contentAsString = await request.Content.ReadAsStringAsync();
+                var response = await TryGetResponseAsync(request, activity, cancellationToken);
+                if (response != null) return response;
+                throw new RequestPostponedException(activity.Instance.AsyncRequestId);
             }
 
-            var requestId = await _asyncRequestClient
-                .CreateRequest(request.Method, request.RequestUri.AbsoluteUri, 0.5)
-                .AddHeaders(request.Headers)
-                .SetContent(contentAsString, "application/json")
-                .SendAsync(cancellationToken);
+            // Send the request to AM
+            var asyncRequest = await new HttpRequestCreate().FromAsync(request, 0.5, cancellationToken);
+            var requestId = await _asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
+
+            // Remember the request id and postpone the activity.
+            activity.Instance.AsyncRequestId = requestId;
             throw new RequestPostponedException(requestId);
+        }
+
+        private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, Activity activity, CancellationToken cancellationToken)
+        {
+            InternalContract.Require(!activity.Instance.HasCompleted, "The activity instance must not be completed.");
+            var asyncResponse = await _asyncRequestMgmtCapability.RequestResponse.ReadResponseAsync(activity.Instance.AsyncRequestId,
+                cancellationToken);
+            if (asyncResponse == null || !asyncResponse.Metadata.RequestHasCompleted) return null;
+
+            if (asyncResponse.HttpStatus == null)
+            {
+                throw new ActivityException(
+                    ActivityExceptionCategoryEnum.Technical,
+                    $"A remote method returned an exception with the name {asyncResponse.Exception.Name} and message: {asyncResponse.Exception.Message}",
+                    $"A remote method failed with the following message: {asyncResponse.Exception.Message}");
+            }
+
+            var response = asyncResponse.ToHttpResponseMessage(request);
+            return response;
         }
     }
 }

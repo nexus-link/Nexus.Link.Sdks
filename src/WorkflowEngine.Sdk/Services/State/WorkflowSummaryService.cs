@@ -28,14 +28,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
     {
         private readonly IConfigurationTables _configurationTables;
         private readonly IRuntimeTables _runtimeTables;
-        private readonly IAsyncRequestClient _asyncRequestClient;
+        private readonly IAsyncRequestMgmtCapability _asyncRequestMgmtCapability;
 
         public WorkflowSummaryService(IConfigurationTables configurationTables, IRuntimeTables runtimeTables,
-            IAsyncRequestMgmtCapability requestMgmtCapability)
+            IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
             _configurationTables = configurationTables;
             _runtimeTables = runtimeTables;
-            _asyncRequestClient = new AsyncRequestClient(requestMgmtCapability);
+            _asyncRequestMgmtCapability = asyncRequestMgmtCapability;
         }
 
         public async Task<WorkflowSummary> GetSummaryAsync(string instanceId,
@@ -203,73 +203,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                     new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch
                     { WorkflowInstanceId = instanceId.Value }), 0, int.MaxValue, cancellationToken);
 
-                var tasks = new List<Task<ActivityInstanceRecord>>();
-                foreach (var activityInstanceRecord in activityInstancesList.Data)
-                {
-                    var task = HasCompleted(activityInstanceRecord) || string.IsNullOrWhiteSpace(activityInstanceRecord.AsyncRequestId)
-                        ? Task.FromResult(activityInstanceRecord)
-                        : TryGetResponseAsync(activityInstanceRecord, cancellationToken);
-                    tasks.Add(task);
-                }
-                var activityInstancesRecords = new List<ActivityInstanceRecord>();
-                foreach (var task in tasks)
-                {
-                    var activityInstanceRecord = await task;
-                    activityInstancesRecords.Add(activityInstanceRecord);
-                }
-
-                activityInstances = activityInstancesRecords
+                activityInstances = activityInstancesList.Data
                     .ToDictionary(x => MapperHelper.MapToType<string, Guid>(x.Id), x => new ActivityInstance().From(x));
             }
 
             return (activityForms, activityVersions, activityInstances);
-        }
-
-        private async Task<ActivityInstanceRecord> TryGetResponseAsync(ActivityInstanceRecord activityInstanceRecord, CancellationToken cancellationToken)
-        {
-            InternalContract.Require(!HasCompleted(activityInstanceRecord), "The activity instance must not be completed.");
-            var retries = 0;
-            while (true)
-            {
-                if (HasCompleted(activityInstanceRecord)) return activityInstanceRecord;
-                var response = await _asyncRequestClient.GetFinalResponseAsync(activityInstanceRecord.AsyncRequestId,
-                    cancellationToken);
-                if (response == null || !response.HasCompleted) return activityInstanceRecord;
-
-                if (response.Exception?.Name == null)
-                {
-                    activityInstanceRecord.State = ActivityStateEnum.Success.ToString();
-                    activityInstanceRecord.FinishedAt = DateTimeOffset.UtcNow;
-                    activityInstanceRecord.ResultAsJson = response.Content;
-                }
-                else
-                {
-                    activityInstanceRecord.State = ActivityStateEnum.Failed.ToString();
-                    activityInstanceRecord.FinishedAt = DateTimeOffset.UtcNow;
-                    activityInstanceRecord.ExceptionCategory = ActivityExceptionCategoryEnum.Technical.ToString();
-                    activityInstanceRecord.ExceptionTechnicalMessage =
-                        $"A remote method returned an exception with the name {response.Exception.Name} and message: {response.Exception.Message}";
-                    activityInstanceRecord.ExceptionFriendlyMessage =
-                        $"A remote method failed with the following message: {response.Exception.Message}";
-                }
-
-                try
-                {
-                    var result = await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(activityInstanceRecord.Id, activityInstanceRecord, cancellationToken);
-                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {JsonConvert.SerializeObject(result)}");
-                    return result;
-                }
-                catch (FulcrumConflictException)
-                {
-                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {nameof(FulcrumConflictException)}");
-                    // Concurrency problem, try again after short pause.
-                    retries++;
-                    if (retries > 5) throw;
-                    Log.LogVerbose($"ActivityInstance.UpdateAndReturnAsync(): {nameof(FulcrumConflictException)} Retry");
-                    await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
-                    activityInstanceRecord = await _runtimeTables.ActivityInstance.ReadAsync(activityInstanceRecord.Id, cancellationToken);
-                }
-            }
         }
 
         private static bool HasCompleted(ActivityInstanceRecord activityInstanceRecord)

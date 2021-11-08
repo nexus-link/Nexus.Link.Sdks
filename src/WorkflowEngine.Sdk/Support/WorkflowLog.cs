@@ -19,8 +19,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             string memberName, string filePath, int lineNumber)
         {
             var workflowInstanceId = WorkflowStatic.Context.WorkflowInstanceId;
-            var activityInstanceId = WorkflowStatic.Context.LatestActivityInstanceId;
-            Log.LogWarning($"{technicalMessage} (Workflow: {workflowInstanceId}, Activity: {activityInstanceId}", data, null, memberName, filePath, lineNumber);
+            var activity = WorkflowStatic.Context.LatestActivity;
+            Log.LogWarning($"{technicalMessage} (Workflow: {workflowInstanceId}, Activity: {activity}", data, null, memberName, filePath, lineNumber);
         }
     }
 }

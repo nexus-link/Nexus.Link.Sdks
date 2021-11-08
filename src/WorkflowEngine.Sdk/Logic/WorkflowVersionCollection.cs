@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -12,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
     {
         public IWorkflowVersions WorkflowVersions { get; }
         public IWorkflowMgmtCapability Capability => WorkflowVersions.WorkflowCapability;
-        public IAsyncRequestClient AsyncRequestClient => WorkflowVersions.AsyncRequestClient;
+        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability => WorkflowVersions.AsyncRequestMgmtCapability;
 
         private readonly Dictionary<int, IWorkflowImplementationBase> _versions = new();
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -25,7 +26,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
     public class ActivityExecutorTests
     {
-        private readonly Mock<IAsyncRequestClient> _asyncRequestClientMock;
+        private readonly AsyncRequestMgmtMock _asyncRequestMgmtCapabilityMock;
         private readonly IRuntimeTables _runtimeTables;
         private readonly Mock<IWorkflowImplementation> _workflowVersionMock;
         private readonly IInternalActivityFlow _activityFlowMock;
@@ -39,10 +40,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _runtimeTables = new RuntimeTablesMemory();
 
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            _asyncRequestClientMock = new Mock<IAsyncRequestClient>();
+            _asyncRequestMgmtCapabilityMock = new AsyncRequestMgmtMock();
             _workflowMgmtCapability = new WorkflowMgmtCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestClientMock.Object);
-            var workflowInfo = new WorkflowInformation(_workflowImplementation);
+            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowInfo = new WorkflowInformation(_workflowImplementation)
+            {
+                InstanceId = Guid.NewGuid().ToLowerCaseString()
+            };
             _workflowCache = new WorkflowCache(workflowInfo);
             _workflowCache.LoadAsync(default).Wait();
             _workflowVersionMock = new Mock<IWorkflowImplementation>();
@@ -107,7 +111,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var alertHandler = new WorkflowImplementationWithAlertHandler((a, ct) => Task.FromResult(true),
-                _workflowMgmtCapability, _asyncRequestClientMock.Object);
+                _workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
             var workflowInformation = new WorkflowInformation(alertHandler);
             var activityFlowMock = new ActivityFlowMock(workflowInformation,
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
@@ -178,16 +182,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
-            _asyncRequestClientMock.Setup(c =>
-                    c.SendRequestAsync(It.IsAny<AsyncHttpRequest>(), It.IsAny<CancellationToken>()))
+            _asyncRequestMgmtCapabilityMock.RequestServiceMock.Setup(c =>
+                    c.CreateAsync(It.IsAny<HttpRequestCreate>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedRequestId);
-            _asyncRequestClientMock.Setup(c =>
-                    c.GetFinalResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            _asyncRequestMgmtCapabilityMock.RequestResponseServiceMock.Setup(c =>
+                    c.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((AsyncHttpResponse)null);
-            _asyncRequestClientMock.Setup(c =>
-                    c.CreateRequest(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<double>()))
-                .Returns(new AsyncHttpRequest_ForTest(_asyncRequestClientMock.Object, HttpMethod.Post, "http://example.com",
-                    1.0));
             var activity = new ActivityAction<int>(_activityFlowMock, null);
             var executor = new ActivityExecutor(_workflowImplementation, activity);
             await Assert.ThrowsAnyAsync<RequestPostponedException>(
@@ -243,30 +243,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         }
     }
 
-    /// <summary>
-    /// Class to access protected parts of the <see cref="AsyncHttpRequest"/> class.
-    /// </summary>
-    // ReSharper disable once InconsistentNaming
-    public class AsyncHttpRequest_ForTest : AsyncHttpRequest
-    {
-        /// <inheritdoc />
-        public AsyncHttpRequest_ForTest(IAsyncRequestClient asyncRequestClient, HttpMethod method, string url, double priority) : base(asyncRequestClient, method, url, priority)
-        {
-        }
-
-        /// <inheritdoc />
-        public AsyncHttpRequest_ForTest(HttpMethod method, string url, double priority) : base(new Mock<IAsyncRequestClient>().Object, method, url, priority)
-        {
-        }
-    }
-
     internal class WorkflowImplementationWithAlertHandler : TestWorkflowImplementation, IWorkflowImplementationBase, IActivityExceptionAlertHandler
     {
         private readonly Func<ActivityExceptionAlert, CancellationToken, Task<bool>> _alertHandlerMethod;
 
         public WorkflowImplementationWithAlertHandler(Func<ActivityExceptionAlert, CancellationToken, Task<bool>> alertHandlerMethod,
-            IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient) 
-            : base(workflowCapability, asyncRequestClient)
+            IWorkflowMgmtCapability workflowCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability) 
+            : base(workflowCapability, asyncRequestMgmtCapability)
         {
             _alertHandlerMethod = alertHandlerMethod;
         }

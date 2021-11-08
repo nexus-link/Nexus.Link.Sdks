@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
@@ -18,9 +19,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         /// <seealso cref="AddCorrelationId"/>
         /// <seealso cref="LogRequestAndResponse"/>
         /// <returns>A list of recommended handlers.</returns>
-        public static DelegatingHandler[] CreateDelegatingHandlers(IAsyncRequestClient asyncRequestClient)
+        public static DelegatingHandler[] CreateDelegatingHandlers(IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
-            return CreateDelegatingHandlers(true, asyncRequestClient);
+            return CreateDelegatingHandlers(true, asyncRequestMgmtCapability);
         }
 
         /// <summary>
@@ -29,20 +30,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         /// <seealso cref="ThrowFulcrumExceptionOnFail"/>
         /// <seealso cref="AddCorrelationId"/>
         /// <returns>A list of recommended handlers.</returns>
-        public static DelegatingHandler[] CreateDelegatingHandlersWithoutLogging(IAsyncRequestClient asyncRequestClient)
+        public static DelegatingHandler[] CreateDelegatingHandlersWithoutLogging(IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
-            return CreateDelegatingHandlers(false, asyncRequestClient);
+            return CreateDelegatingHandlers(false, asyncRequestMgmtCapability);
         }
 
 
-        private static DelegatingHandler[] CreateDelegatingHandlers(bool withLogging, IAsyncRequestClient asyncRequestClient)
+        private static DelegatingHandler[] CreateDelegatingHandlers(bool withLogging, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
             var handlers = new List<DelegatingHandler>
             {
                 new ThrowFulcrumExceptionOnFail(),
                 new AddCorrelationId(),
                 new PropagateNexusTestHeader(),
-                new CallAsyncManagerForAsynchronousRequests(asyncRequestClient)
+                new CallAsyncManagerForAsynchronousRequests(asyncRequestMgmtCapability)
             };
             if (withLogging)
             {

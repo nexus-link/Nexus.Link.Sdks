@@ -173,7 +173,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            WorkflowStatic.Context.LatestActivityInstanceId = WorkflowCache.LatestActivityInstanceId;
+            WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
             return new ActivityFlow<TActivityReturns>(WorkflowInformation, WorkflowCache,
                 position, title, id.ToLowerInvariant());
@@ -184,7 +184,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            WorkflowStatic.Context.LatestActivityInstanceId = WorkflowCache.LatestActivityInstanceId;
+            WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
             return new ActivityFlow(WorkflowInformation, WorkflowCache, position, title, id.ToLowerInvariant());
         }

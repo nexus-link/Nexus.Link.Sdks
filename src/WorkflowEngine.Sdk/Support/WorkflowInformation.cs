@@ -1,4 +1,5 @@
 ﻿using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -12,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public IWorkflowVersions WorkflowVersions =>
             WorkflowImplementation.WorkflowVersions;
 
-        public IAsyncRequestClient AsyncRequestClient => WorkflowVersions.AsyncRequestClient;
+        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability => WorkflowVersions.AsyncRequestMgmtCapability;
 
         public IWorkflowMgmtCapability WorkflowCapability => WorkflowVersions.WorkflowCapability;
         public string CapabilityName => WorkflowVersions.WorkflowCapabilityName;

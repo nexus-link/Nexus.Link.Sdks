@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             set => _summary.Instance = value;
         }
 
-        public string LatestActivityInstanceId { get; set; }
+        public Activity LatestActivity { get; set; }
 
         private readonly NexusAsyncSemaphore _semaphore = new NexusAsyncSemaphore();
         private readonly CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string> _activityVersionCache;

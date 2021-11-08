@@ -21,7 +21,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
         private readonly WorkflowCache _workflowCache;
         private readonly WorkflowMgmtCapabilityMock _workflowMgmtCapability;
-        private readonly IWorkflowImplementationBase _workflowImplementation;
 
         public WorkflowPersistenceTest()
         {
@@ -29,10 +28,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var runtimeTables = new RuntimeTablesMemory();
 
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
-            var asyncRequestClientMock = new Mock<IAsyncRequestClient>();
             _workflowMgmtCapability = new WorkflowMgmtCapabilityMock(configurationTables, runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, asyncRequestClientMock.Object);
-            var workflowInfo = new WorkflowInformation(_workflowImplementation);
+            var workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, asyncRequestMgmtCapabilityMock.Object);
+            var workflowInfo = new WorkflowInformation(workflowImplementation);
             FulcrumAssert.IsValidated(workflowInfo);
             _workflowCache = new WorkflowCache(workflowInfo);
         }

@@ -67,18 +67,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 // Already have a result?
                 FulcrumAssert.IsNotNull(Activity.Instance, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(Activity.Instance.Id);
+
                 Activity.WorkflowCache.AddActivity(Activity.Instance.Id, Activity);
+                Activity.WorkflowCache.LatestActivity = Activity;
+                WorkflowStatic.Context.LatestActivity = Activity;
 
                 if (Activity.Instance.HasCompleted)
                 {
                     return await SafeGetResultOrThrowAsync(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
-                }
-
-                Activity.WorkflowCache.LatestActivityInstanceId = Activity.Instance.Id;
-
-                if (!string.IsNullOrWhiteSpace(Activity.Instance.AsyncRequestId))
-                {
-                    throw new HandledRequestPostponedException(Activity.Instance.AsyncRequestId);
                 }
 
                 await SafeVerifyMaxTimeAsync();
@@ -193,7 +189,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 activityInstance.FinishedAt = DateTimeOffset.UtcNow;
                 activityInstance.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
                 activityInstance.ExceptionTechnicalMessage =
-                    $"A local method throw an exception of type {e.GetType().FullName} and message: {e.Message}";
+                    $"A local method throw an exception: {e}";
                 activityInstance.ExceptionFriendlyMessage =
                     $"A local method failed with the following message: {e.Message}";
             }

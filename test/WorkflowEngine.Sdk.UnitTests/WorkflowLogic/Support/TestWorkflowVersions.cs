@@ -1,4 +1,5 @@
 using Nexus.Link.AsyncManager.Sdk;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -8,15 +9,15 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
     public class TestWorkflowVersions : IWorkflowVersions
     {
-        public TestWorkflowVersions(IWorkflowMgmtCapability workflowCapability, IAsyncRequestClient asyncRequestClient)
+        public TestWorkflowVersions(IWorkflowMgmtCapability workflowCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
-            AsyncRequestClient = asyncRequestClient;
+            AsyncRequestMgmtCapability = asyncRequestMgmtCapability;
             WorkflowCapability = workflowCapability;
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
         }
 
         /// <inheritdoc />
-        public IAsyncRequestClient AsyncRequestClient { get; }
+        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; }
 
         /// <inheritdoc />
         public IWorkflowMgmtCapability WorkflowCapability { get; }

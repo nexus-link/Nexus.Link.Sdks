@@ -41,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 Iteration++;
                 await MapMethodAsync(item, method, activity, cancellationToken);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivityInstanceId = Instance.Id;
+                WorkflowCache.LatestActivity = this;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 var result = await MapMethodAsync(item, method, activity, cancellationToken);
                 resultList.Add(result);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivityInstanceId = Instance.Id;
+                WorkflowCache.LatestActivity = this;
             }
 
             return resultList;

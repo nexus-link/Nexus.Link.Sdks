@@ -41,12 +41,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             {
                 Iteration++;
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivityInstanceId = Instance.Id;
+                WorkflowCache.LatestActivity = this;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskList.Add(task);
             }
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-            WorkflowCache.LatestActivityInstanceId = Instance.Id;
+            WorkflowCache.LatestActivity = this;
 
             await AggregatePostponeExceptions(taskList);
         }
@@ -149,12 +149,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 }
                 InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivityInstanceId = Instance.Id;
+                WorkflowCache.LatestActivity = this;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskDictionary.Add(key!, task);
             }
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-            WorkflowCache.LatestActivityInstanceId = Instance.Id;
+            WorkflowCache.LatestActivity = this;
             return AggregatePostponeExceptions(taskDictionary);
         }
 

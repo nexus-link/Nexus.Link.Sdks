@@ -1,4 +1,5 @@
 ﻿using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
@@ -9,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         private readonly OneValueProvider<bool> _executionIsAsynchronous;
         private readonly OneValueProvider<string> _workflowInstanceId;
         private readonly OneValueProvider<string> _parentActivityInstanceId;
-        private readonly OneValueProvider<string> _latestActivityInstanceId;
+        private readonly OneValueProvider<Activity> _latestActivity;
 
         public WorkflowContext(IContextValueProvider valueProvider)
         {
@@ -17,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
             _parentActivityInstanceId = new OneValueProvider<string>(ValueProvider, "ParentActivityInstanceId");
-            _latestActivityInstanceId = new OneValueProvider<string>(ValueProvider, "LatestActivityInstanceId");
+            _latestActivity = new OneValueProvider<Activity>(ValueProvider, "LatestActivity");
         }
 
         /// <summary>
@@ -52,10 +53,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// If non-null, contains information about the current parent id.
         /// </summary>
-        public string LatestActivityInstanceId
+        public Activity LatestActivity
         {
-            get => _latestActivityInstanceId.GetValue();
-            set => _latestActivityInstanceId.SetValue(value);
+            get => _latestActivity.GetValue();
+            set => _latestActivity.SetValue(value);
         }
     }
 }
