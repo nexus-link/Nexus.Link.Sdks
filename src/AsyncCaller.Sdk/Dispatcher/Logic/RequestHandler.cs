@@ -206,24 +206,25 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             if (_authenticationSettings == null) throw new GiveUpException(_envelope, "Access token is expired and there is no 'Authentication' Lever setting to refresh it.");
 
             var originator = GetOriginator();
+            if (originator == null)
+            {
+                throw new GiveUpException(_envelope, "Could not find Originator from token. Set 'ClientNameClaim' in Async Caller configuration. Authentication was not refreshed.");
+            }
             var originatorSettings = _authenticationSettings.Originators.FirstOrDefault(x => x.Name == originator);
             if (originatorSettings == null)
             {
-                Log.LogVerbose($"Originator '{originator}' has no 'Authentication' configuration. Authentication was not refreshed.");
-                return;
+                throw new GiveUpException(_envelope, $"Originator '{originator}' has no 'Authentication' configuration. Authentication was not refreshed.");
             }
 
             if (!Uri.IsWellFormedUriString(originatorSettings.TokenUrl, UriKind.Absolute))
             {
-                Log.LogVerbose($"Originator '{originator}' has invalid {nameof(originatorSettings.TokenUrl)}: '{originatorSettings.TokenUrl}'.");
-                return;
+                throw new GiveUpException(_envelope, $"Originator '{originator}' has invalid {nameof(originatorSettings.TokenUrl)}: '{originatorSettings.TokenUrl}'.");
             }
 
             var authMethod = _authenticationSettings?.Methods.FirstOrDefault(x => x.Id == originatorSettings.AuthenticationMethod);
             if (authMethod == null)
             {
-                Log.LogWarning($"Originator '{originator}' has configuration, but no Authentication.Method is provided. Authentication was not refreshed.");
-                return;
+                throw new GiveUpException(_envelope, $"Originator '{originator}' has configuration, but no Authentication.Method is provided. Authentication was not refreshed.");
             }
 
             var expiredAuthHeader = _envelope.Request.CallOut.Headers.Authorization.ToString();
@@ -243,8 +244,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             var result = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                Log.LogWarning($"Bad response from POST {originatorSettings.TokenUrl}: {response.StatusCode}; {result}");
-                return;
+                throw new GiveUpException(_envelope, $"Bad response from POST {originatorSettings.TokenUrl}: {response.StatusCode}; {result}");
             }
             var authenticationResult = JsonConvert.DeserializeObject<RefreshAuthenticationResult>(result);
             if (authenticationResult.Headers.Any())
@@ -261,7 +261,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             }
             else
             {
-                Log.LogWarning($"There was no authentication headers present for authentication context '{authenticationContext}' (originator '{originator}')");
+                throw new GiveUpException(_envelope, $"There was no authentication headers present for authentication context '{authenticationContext}' (originator '{originator}')");
             }
         }
 
@@ -269,7 +269,15 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
         {
             if (_envelope.Request?.CallOut?.Headers.Authorization == null) return null;
             var token = ReadToken(_envelope.Request?.CallOut?.Headers.Authorization.Parameter);
-            return token?.Claims.FirstOrDefault(x => x.Type == "unique_name")?.Value;
+            var name = token?.Claims.FirstOrDefault(x => x.Type == "unique_name")?.Value;
+            if (!string.IsNullOrWhiteSpace(name)) return name;
+            // TODO: take from configuration
+            /*
+             * {
+             *   "ClientNameClaim": "uniqe_name"
+             * }
+             */
+
         }
 
         private bool TokenIsExpired()
@@ -287,7 +295,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             {
                 var parameter = authorization.Substring("bearer ".Length).Trim();
                 var token = ReadToken(parameter);
-                if (token.ValidTo < DateTimeOffset.UtcNow.AddMinutes(5))
+                if (token.ValidTo < DateTimeOffset.UtcNow.AddMinutes(2)) // Should be valid over the lifespan of a http request (100s)
                 {
                     return true;
                 }

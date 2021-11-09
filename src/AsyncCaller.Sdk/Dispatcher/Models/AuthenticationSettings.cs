@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using Nexus.Link.Libraries.Web.ServiceAuthentication;
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable CollectionNeverUpdated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Models
 {
