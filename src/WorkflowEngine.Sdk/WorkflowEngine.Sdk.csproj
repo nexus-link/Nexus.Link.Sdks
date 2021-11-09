@@ -24,11 +24,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.1.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.2.0" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.2" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.9.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.23.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.6" />
   </ItemGroup>
@@ -40,7 +40,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>4.2.0</Version>
+    <Version>4.3.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -50,6 +50,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
       4.2.0 Introduced more settings for activities and a default value for them on workflow level
       4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
       4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter

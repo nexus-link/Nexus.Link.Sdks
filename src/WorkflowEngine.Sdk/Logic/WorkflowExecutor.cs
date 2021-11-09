@@ -6,7 +6,9 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -35,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             return _methodHandler.GetArgument<T>(name);
         }
-        
+
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             // If service runs directly with database connection, make sure we're on correct database version
@@ -69,8 +71,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             // TODO: Unit test for cancelled
             if (WorkflowCache.Instance.CancelledAt != null)
             {
-                throw new FulcrumCancelledException(
-                    $"This workflow was manually marked for cancelling at {WorkflowCache.Instance.CancelledAt.Value.ToLogString()}.");
+                throw new WorkflowFailedException(
+                    ActivityExceptionCategoryEnum.BusinessError,
+                    $"This workflow was manually marked for cancelling at {WorkflowCache.Instance.CancelledAt.Value.ToLogString()}.",
+                $"This workflow was manually marked for cancelling at {WorkflowCache.Instance.CancelledAt.Value.ToLogString()}.");
             }
         }
 
@@ -78,27 +82,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             WorkflowCache.Instance.ResultAsJson = JsonConvert.SerializeObject(result);
             MarkWorkflowAsSuccess();
-        }
-
-        protected bool HandleAndReportIfRethrow(Exception e)
-        {
-            switch (e)
-            {
-                case HandledRequestPostponedException:
-                case FulcrumCancelledException:
-                    return true;
-                case WorkflowFailedException wfe:
-                    WorkflowCache.Instance.State = WorkflowStateEnum.Failed;
-                    WorkflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
-                    WorkflowCache.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
-                    WorkflowCache.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
-                    throw new FulcrumCancelledException(wfe.TechnicalMessage);
-                default:
-                    WorkflowCache.Instance.State = WorkflowStateEnum.Halted;
-                    WorkflowCache.Instance.ExceptionTechnicalMessage = $"Unexpected exception: {e}";
-                    WorkflowCache.Instance.ExceptionFriendlyMessage = $"Unexpected exception: {e.Message}";
-                    return false;
-            }
         }
 
         protected void MarkWorkflowAsSuccess()
@@ -154,8 +137,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
             catch (Exception e)
             {
-                if (HandleAndReportIfRethrow(e)) throw;
-                throw new HandledRequestPostponedException();
+                throw HandleAndCreate(e);
             }
             finally
             {
@@ -174,12 +156,54 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
             catch (Exception e)
             {
-                if (HandleAndReportIfRethrow(e)) throw;
-                throw new HandledRequestPostponedException();
+                throw HandleAndCreate(e);
             }
             finally
             {
                 await AfterExecutionAsync(cancellationToken);
+            }
+        }
+
+        private Exception HandleAndCreate(Exception exception)
+        {
+            if (!(exception is ExceptionTransporter exceptionTransporter))
+            {
+                UnexpectedException(exception);
+                return new RequestPostponedException();
+            }
+
+            var innerException = exceptionTransporter.InnerException;
+
+            switch (innerException)
+            {
+                case WorkflowFailedException wfe:
+                    WorkflowCache.Instance.State = WorkflowStateEnum.Failed;
+                    WorkflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
+                    WorkflowCache.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
+                    WorkflowCache.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
+                    return new FulcrumCancelledException(wfe.TechnicalMessage)
+                    {
+                        FriendlyMessage = wfe.FriendlyMessage
+                    };
+                case RequestPostponedException:
+                    return innerException;
+                case FulcrumTryAgainException:
+                    return new RequestPostponedException
+                    {
+                        TryAgain = true
+                    };
+                default:
+                    UnexpectedException(innerException);
+                    return new RequestPostponedException();
+            }
+
+            void UnexpectedException(Exception unexpected)
+            {
+                WorkflowCache.Instance.State = WorkflowStateEnum.Halted;
+                WorkflowCache.Instance.ExceptionTechnicalMessage =
+                    $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected}";
+                WorkflowCache.Instance.ExceptionFriendlyMessage =
+                    $"The workflow engine failed; it encountered an unexpected exception";
             }
         }
 

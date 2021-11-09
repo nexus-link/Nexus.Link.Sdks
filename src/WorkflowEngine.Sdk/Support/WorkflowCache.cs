@@ -202,9 +202,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             return _summary.ActivityInstances[instanceId];
         }
 
-        public void AddActivity(string activityId, Activity activity)
+        public void AddActivity(string activityInstanceId, Activity activity)
         {
-            _activities[activityId] = activity;
+            _activities[activityInstanceId] = activity;
         }
 
         public Activity GetActivity(string activityId)
@@ -261,7 +261,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                     Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
                     WorkflowInstanceId = _workflowInformation.InstanceId,
                     ActivityVersionId = version.Id,
-                    ParentActivityInstanceId = parentActivity?.InstanceId,
+                    ParentActivityInstanceId = parentActivity?.ActivityInstanceId,
                     ParentIteration = parentActivity?.Iteration,
                     State = ActivityStateEnum.Executing,
                     StartedAt = DateTimeOffset.UtcNow
@@ -276,12 +276,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 
         public void AggregateActivityInformation()
         {
-            int executing = 0;
-            int waiting = 0;
-            int success = 0;
-            int failedAndStopping = 0;
-            int failedAndLater = 0;
-            int failedAndIgnore = 0;
+            var executing = 0;
+            var waiting = 0;
+            var success = 0;
+            var failedAndStopping = 0;
+            var failedAndLater = 0;
+            var failedAndIgnore = 0;
             var cancelWorkflow = false;
             foreach (var activity in _activities.Values)
             {

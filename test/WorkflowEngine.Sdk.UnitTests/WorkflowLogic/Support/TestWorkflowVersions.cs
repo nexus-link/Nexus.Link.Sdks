@@ -26,7 +26,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public string WorkflowCapabilityName => "Workflow capability name";
 
         /// <inheritdoc />
-        public string WorkflowFormId => "995974ED-829B-46CC-B1B3-2121A895F5F1";
+        public string WorkflowFormId => "995974ED-829B-46CC-B1B3-2121A895F5F1".ToLowerInvariant();
 
         /// <inheritdoc />
         public string WorkflowFormTitle => "Workflow form title";

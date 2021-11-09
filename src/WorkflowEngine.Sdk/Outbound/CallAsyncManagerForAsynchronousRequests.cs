@@ -66,7 +66,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             var requestId = await _asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
 
             // Remember the request id and postpone the activity.
-            activity.Instance.AsyncRequestId = requestId;
             throw new RequestPostponedException(requestId);
         }
 
@@ -80,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             if (asyncResponse.HttpStatus == null)
             {
                 throw new ActivityException(
-                    ActivityExceptionCategoryEnum.Technical,
+                    ActivityExceptionCategoryEnum.TechnicalError,
                     $"A remote method returned an exception with the name {asyncResponse.Exception.Name} and message: {asyncResponse.Exception.Message}",
                     $"A remote method failed with the following message: {asyncResponse.Exception.Message}");
             }

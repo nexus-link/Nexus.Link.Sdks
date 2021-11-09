@@ -5,15 +5,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {
     internal class ActivityException : Exception
     {
-        public ActivityExceptionCategoryEnum CategoryEnum { get; }
+        public ActivityExceptionCategoryEnum ExceptionCategory { get; }
         public string TechnicalMessage { get; }
         public string FriendlyMessage { get; }
 
-        public ActivityException(ActivityExceptionCategoryEnum categoryEnum, 
+        public ActivityException(ActivityExceptionCategoryEnum exceptionCategory, 
             string technicalMessage, string friendlyMessage)
         :base(technicalMessage)
         {
-            CategoryEnum = categoryEnum;
+            ExceptionCategory = exceptionCategory;
             TechnicalMessage = technicalMessage;
             FriendlyMessage = friendlyMessage;
         }

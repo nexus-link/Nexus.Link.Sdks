@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -53,7 +54,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private static async Task AggregatePostponeExceptions(IList<Task> taskList)
         {
-            HandledRequestPostponedException outException = null;
+            RequestPostponedException outException = null;
             var current = 0;
             while (taskList.Count > current)
             {
@@ -62,16 +63,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     await taskList[current];
                     current++;
                 }
-                catch (HandledRequestPostponedException e)
+                catch (ExceptionTransporter et)
                 {
-                    outException ??= new HandledRequestPostponedException();
-                    outException.AddWaitingForIds(e.WaitingForRequestIds);
-                    if (!outException.TryAgain) outException.TryAgain = e.TryAgain;
-                    taskList.RemoveAt(current);
-                }
-                catch (Exception)
-                {
-                    current++;
+                    if (et.InnerException is RequestPostponedException rpe)
+                    {
+                        outException ??= new RequestPostponedException();
+                        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
+                        if (!outException.TryAgain) outException.TryAgain = rpe.TryAgain;
+                        taskList.RemoveAt(current);
+                    }
+                    else current++;
                 }
             }
 
@@ -170,25 +171,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private static async Task<IDictionary<TKey, TActivityReturns>> AggregatePostponeExceptions(IDictionary<TKey, Task<TActivityReturns>> taskDictionary)
         {
-            HandledRequestPostponedException outException = null;
+            RequestPostponedException outException = null;
             var resultDictionary = new Dictionary<TKey, TActivityReturns>();
             foreach (var (key, task) in taskDictionary)
             {
-
                 try
                 {
                     var result = await task;
                     resultDictionary.Add(key, result);
                 }
-                catch (HandledRequestPostponedException e)
+                catch (ExceptionTransporter et)
                 {
-                    outException ??= new HandledRequestPostponedException();
-                    outException.AddWaitingForIds(e.WaitingForRequestIds);
-                    if (!outException.TryAgain) outException.TryAgain = e.TryAgain;
-                }
-                catch (Exception)
-                {
-                    // TODO: Do we need to handle this in some way?
+                    if (et.InnerException is RequestPostponedException rpe)
+                    {
+                        outException ??= new RequestPostponedException();
+                        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
+                        if (!outException.TryAgain) outException.TryAgain = rpe.TryAgain;
+                    }
                 }
             }
 

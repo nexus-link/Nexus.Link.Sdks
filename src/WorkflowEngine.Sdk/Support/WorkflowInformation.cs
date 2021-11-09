@@ -18,11 +18,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 
         public IWorkflowMgmtCapability WorkflowCapability => WorkflowVersions.WorkflowCapability;
         public string CapabilityName => WorkflowVersions.WorkflowCapabilityName;
-        public string FormId => WorkflowVersions.WorkflowFormId;
         public string FormTitle => WorkflowVersions.WorkflowFormTitle;
         public string InstanceTitle => WorkflowImplementation.GetInstanceTitle();
         public int MajorVersion => WorkflowImplementation.MajorVersion;
         public int MinorVersion => WorkflowImplementation.MinorVersion;
+        public string FormId { get; }
         public string InstanceId { get; set; }
         public ActivityFailUrgencyEnum DefaultFailUrgency { get; set; } = ActivityFailUrgencyEnum.Stopping;
         public ActivityExceptionAlertHandler DefaultExceptionAlertHandler { get; set; }
@@ -31,6 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
         {
             WorkflowImplementation = workflowImplementation;
+            FormId = WorkflowVersions.WorkflowFormId.ToLowerInvariant();
         }
 
         /// <inheritdoc />

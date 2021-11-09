@@ -1,11 +1,12 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
     public class ActivityExceptionAlert
     {
-        public string WorkflowInstanceId { get; set; }
-        public string ActivityInstanceId { get; set; }
+        public IActivity Activity { get; set; }
 
         public ActivityExceptionCategoryEnum ExceptionCategory { get; set; }
 

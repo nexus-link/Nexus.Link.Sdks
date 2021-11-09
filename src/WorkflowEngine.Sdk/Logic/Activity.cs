@@ -30,13 +30,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
 
         protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
-        protected internal ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
-        protected internal ActivityInstance Instance => WorkflowCache.GetActivityInstance(InstanceId);
+        public ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
+        public ActivityInstance Instance => WorkflowCache.GetActivityInstance(ActivityInstanceId);
         public int? Iteration { get; protected set; }
         public string NestedPosition { get; }
         public string NestedPositionAndTitle => $"{NestedPosition} {_activityFlow.FormTitle}";
 
-        public string Title
+        public string ActivityTitle
         {
             get
             {
@@ -47,12 +47,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public override string ToString() => Title;
+        public override string ToString() => ActivityTitle;
 
         public List<int> NestedIterations { get; } = new();
 
-        public string InstanceId { get; internal set; }
+        /// <inheritdoc />
+        public string WorkflowInstanceId => WorkflowInformation.InstanceId;
+        public string ActivityInstanceId { get; internal set; }
         public double AsyncRequestPriority => _activityFlow.AsyncRequestPriority;
+        public ActivityExceptionAlertHandler ExceptionAlertHandler => _activityFlow.ExceptionAlertHandler;
 
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {
@@ -75,7 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 NestedPosition = $"{activityFlow.Position}";
             }
 
-            InstanceId = _activityFlow.WorkflowCache.GetOrCreateInstanceId(activityType, _activityFlow, parentActivity);
+            ActivityInstanceId = _activityFlow.WorkflowCache.GetOrCreateInstanceId(activityType, _activityFlow, parentActivity);
             _activityExecutor = new ActivityExecutor(activityFlow.WorkflowInformation.WorkflowImplementation, this);
         }
 

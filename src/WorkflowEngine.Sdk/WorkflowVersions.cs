@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowCapabilityName = capabilityName;
             WorkflowFormTitle = workflowTitle;
-            WorkflowFormId = workflowId;
+            WorkflowFormId = workflowId.ToLowerInvariant();
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
         }
 

@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.1.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.2.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.6" />
   </ItemGroup>
 

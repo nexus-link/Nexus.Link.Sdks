@@ -2,8 +2,9 @@
 {
     public interface IActivity
     {
-        string InstanceId { get; }
-        string Title { get; }
+        string WorkflowInstanceId { get; }
+        string ActivityInstanceId { get; }
+        string ActivityTitle { get; }
         int? Iteration { get; }
 
         TParameter GetArgument<TParameter>(string parameterName);

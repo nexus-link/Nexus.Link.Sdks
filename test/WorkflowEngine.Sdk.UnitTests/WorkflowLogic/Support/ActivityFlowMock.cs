@@ -43,7 +43,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             WorkflowInformation = workflowInformation;
             WorkflowCache = workflowCache;
 
-            ActivityFormId = activityFormId;
+            ActivityFormId = activityFormId.ToLowerInvariant();
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
             Position = position;

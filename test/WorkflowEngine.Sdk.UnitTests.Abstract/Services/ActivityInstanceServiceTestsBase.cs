@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
@@ -78,7 +78,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
             itemToUpdate.State = ActivityStateEnum.Failed;
-            itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
+            itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.TechnicalError;
             itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToLowerCaseString();
             itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToLowerCaseString();
             var updatedItem = await _service.UpdateAndReturnAsync(createdItem.Id, itemToUpdate);
@@ -132,7 +132,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
             // Act
             var result = new ActivityInstanceFailedResult
             {
-                ExceptionCategory = ActivityExceptionCategoryEnum.Business,
+                ExceptionCategory = ActivityExceptionCategoryEnum.BusinessError,
                 ExceptionFriendlyMessage = "Speak, friend",
                 ExceptionTechnicalMessage = "VagueSpeechException"
             };

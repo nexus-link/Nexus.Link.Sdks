@@ -69,8 +69,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
             // Assert
             actualValue.ShouldBe(expectedValue);
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Success.ToString());
             var maxTime = DateTimeOffset.UtcNow;
@@ -84,7 +84,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
             var executor = new ActivityExecutor(_workflowImplementation, activity);
-            executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -100,8 +100,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             }
             await _workflowCache.SaveAsync();
             postponed.ShouldNotBeNull();
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
         }
@@ -110,23 +110,30 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_AlertHandlerCalled()
         {
             // Arrange
-            var alertHandler = new WorkflowImplementationWithAlertHandler((a, ct) => Task.FromResult(true),
-                _workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
-            var workflowInformation = new WorkflowInformation(alertHandler);
+            bool? alertResult = null;
+            var implementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowInformation = new WorkflowInformation(implementation)
+            {
+                DefaultExceptionAlertHandler = (alert, token) =>
+                {
+                    alertResult = true;
+                    return Task.FromResult(true);
+                }
+            };
             var activityFlowMock = new ActivityFlowMock(workflowInformation,
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
             var activity = new ActivityAction<int>(activityFlowMock, null);
-            var executor = new ActivityExecutor(alertHandler, activity);
-            executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            var executor = new ActivityExecutor(implementation, activity);
+            executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             await Assert.ThrowsAnyAsync<RequestPostponedException>(() => executor.ExecuteAsync(
                    (a, t) => throw new Exception("Fail")));
             await _workflowCache.SaveAsync();
 
-            alertHandler.AlertResult.ShouldBe(true);
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            alertResult.ShouldBe(true);
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             instance.ExceptionAlertHandled.ShouldBe(true);
@@ -140,15 +147,15 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
             var executor = new ActivityExecutor(_workflowImplementation, activity);
-            executor.ActivityVersion.FailUrgency = failUrgency;
+            executor.Activity.Version.FailUrgency = failUrgency;
             const int expectedValue = 10;
 
             // Act
             var actualValue = await executor.ExecuteAsync(
                 (a, t) => throw new Exception("Fail"), ct => Task.FromResult(expectedValue));
             await _workflowCache.SaveAsync();
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
             actualValue.ShouldBe(expectedValue);
@@ -170,8 +177,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
             await _workflowCache.SaveAsync();
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
@@ -183,7 +190,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
             var executor = new ActivityExecutor(_workflowImplementation, activity);
-            executor.ActivityVersion.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+            executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
             RequestPostponedException postponed = null;
@@ -200,43 +207,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             await _workflowCache.SaveAsync();
             postponed.ShouldNotBeNull();
             postponed.TryAgain.ShouldBe(true);
-            executor.ActivityInstance.Id.ShouldNotBeNull();
-            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.ActivityInstance.Id.ToGuid());
+            executor.Activity.Instance.Id.ShouldNotBeNull();
+            var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();
             instance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
         }
-    }
-
-    internal class WorkflowImplementationWithAlertHandler : TestWorkflowImplementation, IWorkflowImplementationBase, IActivityExceptionAlertHandler
-    {
-        private readonly Func<ActivityExceptionAlert, CancellationToken, Task<bool>> _alertHandlerMethod;
-
-        public WorkflowImplementationWithAlertHandler(Func<ActivityExceptionAlert, CancellationToken, Task<bool>> alertHandlerMethod,
-            IWorkflowMgmtCapability workflowCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability) 
-            : base(workflowCapability, asyncRequestMgmtCapability)
-        {
-            _alertHandlerMethod = alertHandlerMethod;
-        }
-
-        /// <inheritdoc />
-        public async Task<bool> HandleActivityExceptionAlertAsync(ActivityExceptionAlert alert, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var result = await _alertHandlerMethod(alert, cancellationToken);
-                AlertResult = result;
-                return result;
-            }
-            catch (Exception e)
-            {
-                AlertException = e;
-                throw;
-            }
-        }
-
-        public bool? AlertResult { get; private set; }
-
-        public Exception AlertException { get; private set; }
     }
 }
 

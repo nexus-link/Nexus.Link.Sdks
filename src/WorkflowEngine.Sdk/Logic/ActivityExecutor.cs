@@ -6,6 +6,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
@@ -19,10 +20,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public IWorkflowImplementationBase WorkflowImplementation { get; }
         public Activity Activity { get; set; }
 
-        public ActivityInstance ActivityInstance => Activity.Instance;
-
-        public ActivityVersion ActivityVersion => Activity.Version;
-
         public ActivityExecutor(IWorkflowImplementationBase workflowImplementation, Activity activity)
         {
             InternalContract.RequireNotNull(workflowImplementation, nameof(workflowImplementation));
@@ -35,14 +32,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             InternalContract.RequireNotNull(method, nameof(method));
 
-            await SafeExecuteAsync(
+            await SafeExecuteAsync1(
                 async (a, ct) =>
                 {
                     await method(a, ct);
                     return true;
                 },
                 true,
-                ct => Task.FromResult(false),
+                _ => Task.FromResult(false),
                 cancellationToken);
         }
 
@@ -53,87 +50,91 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             InternalContract.RequireNotNull(method, nameof(method));
 
-            return SafeExecuteAsync(method, false, getDefaultValueMethodAsync, cancellationToken);
+            return SafeExecuteAsync1(method, false, getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task<TMethodReturnType> SafeExecuteAsync<TMethodReturnType>(
+        private async Task<TMethodReturnType> SafeExecuteAsync1<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
             bool ignoreReturnValue,
             Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
+            var activityInstance = Activity.Instance;
             try
             {
-                // Already have a result?
-                FulcrumAssert.IsNotNull(Activity.Instance, CodeLocation.AsString());
-                FulcrumAssert.IsNotNullOrWhiteSpace(Activity.Instance.Id);
-
-                Activity.WorkflowCache.AddActivity(Activity.Instance.Id, Activity);
-                Activity.WorkflowCache.LatestActivity = Activity;
-                WorkflowStatic.Context.LatestActivity = Activity;
-
-                if (Activity.Instance.HasCompleted)
-                {
-                    return await SafeGetResultOrThrowAsync(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
-                }
-
-                await SafeVerifyMaxTimeAsync();
-
-                await SafeCallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
-
-                return await SafeGetResultOrThrowAsync(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
+                return await SafeExecuteAsync2(method, ignoreReturnValue, getDefaultValueMethodAsync,
+                    cancellationToken);
             }
-            catch (HandledRequestPostponedException)
+            catch (ActivityException e)
             {
-                throw;
+                activityInstance.State = ActivityStateEnum.Failed;
+                activityInstance.FinishedAt = DateTimeOffset.UtcNow;
+                activityInstance.ExceptionCategory = e.ExceptionCategory;
+                activityInstance.ExceptionTechnicalMessage = e.TechnicalMessage;
+                activityInstance.ExceptionFriendlyMessage = e.FriendlyMessage;
+                await SafeAlertExceptionAsync(cancellationToken);
+                throw new ExceptionTransporter(new RequestPostponedException());
             }
-            catch (FulcrumCancelledException)
+            catch (ExceptionTransporter)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new FulcrumAssertionFailedException($"{CodeLocation.AsString()}: Unexpected exception: {e} detected", e);
+                if (activityInstance.HasCompleted)
+                {
+                    Log.LogError(
+                        $"The workflow engine encountered an unexpected error. {CodeLocation.AsString()}:\r{e}");
+                }
+                else
+                {
+                    activityInstance.State = ActivityStateEnum.Failed;
+                    activityInstance.FinishedAt = DateTimeOffset.UtcNow;
+                    ;
+                    activityInstance.ExceptionCategory = ActivityExceptionCategoryEnum.WorkflowCapabilityError;
+                    activityInstance.ExceptionTechnicalMessage =
+                        "Internal WorkflowEngine error. Try to run this activity again when the engine has been fixed and updated."
+                        + " The engine encountered an unexpected exception:\r{e}";
+                    activityInstance.ExceptionFriendlyMessage =
+                        "The workflow engine software encountered an internal error.";
+                    await SafeAlertExceptionAsync(cancellationToken);
+                }
+                throw new ExceptionTransporter(new RequestPostponedException());
             }
         }
 
-        private async Task<TMethodReturnType> SafeGetResultOrThrowAsync<TMethodReturnType>(
-            bool ignoreReturnValue, Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
+        private async Task<TMethodResult> SafeExecuteAsync2<TMethodResult>(
+            ActivityMethod<TMethodResult> method,
+            bool ignoreReturnValue,
+            Func<CancellationToken, Task<TMethodResult>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            if (Activity.Instance.State != ActivityStateEnum.Failed)
+            // Book keeping
+            BookKeeping();
+            await Activity.WorkflowCache.SaveAsync(cancellationToken);
+            var activityInstance = Activity.Instance;
+
+            // Already have a result?
+            if (activityInstance.HasCompleted)
             {
-                return ignoreReturnValue
-                    ? default
-                    : JsonHelper.SafeDeserializeObject<TMethodReturnType>(Activity.Instance.ResultAsJson);
+                if (activityInstance.State == ActivityStateEnum.Success) return GetResultValue<TMethodResult>(ignoreReturnValue);
+                return await ThrowOrGetDefaultValue(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
             }
 
-            switch (Activity.Version.FailUrgency)
+            await CallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+
+            if (activityInstance.HasCompleted)
             {
-                case ActivityFailUrgencyEnum.CancelWorkflow:
-                    throw new FulcrumCancelledException($"Activity {Activity} failed with the following message: {Activity.Instance.ExceptionTechnicalMessage}");
-                case ActivityFailUrgencyEnum.Stopping:
-                    throw new HandledRequestPostponedException();
-                default:
-                    if (getDefaultValueMethodAsync == null) return default;
-                    try
-                    {
-                        return await getDefaultValueMethodAsync(cancellationToken);
-                    }
-                    catch (Exception)
-                    {
-                        // Errors in the default method overrides stopping.
-                        // TODO: How do we convey information about this to the person who has to deal with this stopping activity?
-                        // TODO: Log
-                        throw new HandledRequestPostponedException
-                        {
-                            TryAgain = true
-                        };
-                    }
+                if (activityInstance.State == ActivityStateEnum.Success) return GetResultValue<TMethodResult>(ignoreReturnValue);
+                return await ThrowOrGetDefaultValue(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
             }
+
+            activityInstance.State = ActivityStateEnum.Waiting;
+            throw new ExceptionTransporter(new RequestPostponedException());
         }
 
-        private async Task SafeCallMethodAndUpdateActivityInformationAsync<TMethodReturnType>(ActivityMethod<TMethodReturnType> method, bool ignoreReturnValue, CancellationToken cancellationToken)
+        private async Task CallMethodAndUpdateActivityInformationAsync<TMethodReturnType>(
+            ActivityMethod<TMethodReturnType> method, bool ignoreReturnValue, CancellationToken cancellationToken)
         {
             // Call the activity. The method will only return if this is a method with no external calls.
             var activityInstance = Activity.Instance;
@@ -149,99 +150,125 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     var result = await method(Activity, cancellationToken);
                     activityInstance.ResultAsJson = result.ToJsonString();
                 }
+
                 activityInstance.State = ActivityStateEnum.Success;
                 activityInstance.FinishedAt = DateTimeOffset.UtcNow;
             }
-            catch (FulcrumCancelledException)
-            {
-                throw;
-            }
-            catch (HandledRequestPostponedException)
-            {
-                throw;
-            }
-            catch (ActivityPostponedException)
-            {
-                throw new HandledRequestPostponedException();
-            }
-            catch (FulcrumTryAgainException)
-            {
-                activityInstance.State = ActivityStateEnum.Waiting;
-                await SafeAlertExceptionAsync(cancellationToken);
-                throw new HandledRequestPostponedException
-                {
-                    TryAgain = true
-                };
-            }
-            catch (RequestPostponedException e)
-            {
-                if (e.WaitingForRequestIds == null || e.WaitingForRequestIds.Count != 1) throw;
-                activityInstance.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
-                activityInstance.State = ActivityStateEnum.Waiting;
-                await SafeAlertExceptionAsync(cancellationToken);
-                throw new HandledRequestPostponedException(e);
-            }
             catch (Exception e)
             {
-                // Normal error
-                // TODO: Handle error: Send event, throw postpone if halt
-                activityInstance.State = ActivityStateEnum.Failed;
-                activityInstance.FinishedAt = DateTimeOffset.UtcNow;
-                activityInstance.ExceptionCategory = ActivityExceptionCategoryEnum.Technical;
-                activityInstance.ExceptionTechnicalMessage =
-                    $"A local method throw an exception: {e}";
-                activityInstance.ExceptionFriendlyMessage =
-                    $"A local method failed with the following message: {e.Message}";
+                switch (e)
+                {
+                    case ExceptionTransporter:
+                    case ActivityException:
+                        throw;
+                    case WorkflowFailedException:
+                    case FulcrumTryAgainException:
+                        throw new ExceptionTransporter(e);
+                    case ActivityPostponedException:
+                        throw new ExceptionTransporter(new RequestPostponedException());
+                    case RequestPostponedException rpe:
+                        if (rpe.WaitingForRequestIds.Count == 1)
+                        {
+                            activityInstance.AsyncRequestId = rpe.WaitingForRequestIds.FirstOrDefault();
+                        }
+                        throw new ExceptionTransporter(rpe);
+                    default:
+                        throw new ActivityException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
+                            $"An activity is only supposed to throw a limited set of exceptions."
+                            + $" The activity threw the following unexpected exception of type {e.GetType().Name}:\r{e}",
+                            "The workflow implementation encountered an unexpected error. Please contact the workflow developer.");
+                }
             }
+        }
+
+        private void BookKeeping()
+        {
+            var activityInstance = Activity.Instance;
+            FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
+            FulcrumAssert.IsNotNullOrWhiteSpace(activityInstance.Id);
+            Activity.WorkflowCache.AddActivity(activityInstance.Id, Activity);
+            Activity.WorkflowCache.LatestActivity = Activity;
+            WorkflowStatic.Context.LatestActivity = Activity;
+        }
+
+        private TMethodResult GetResultValue<TMethodResult>(bool ignoreReturnValue)
+        {
+            FulcrumAssert.AreEqual(ActivityStateEnum.Success, Activity.Instance.State, CodeLocation.AsString());
+            return ignoreReturnValue
+                        ? default
+                        : JsonHelper.SafeDeserializeObject<TMethodResult>(Activity.Instance.ResultAsJson);
+
+        }
+
+        private async Task<TMethodReturnType> ThrowOrGetDefaultValue<TMethodReturnType>(
+            bool ignoreReturnValue, Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
+            CancellationToken cancellationToken)
+        {
+            FulcrumAssert.AreEqual(ActivityStateEnum.Failed, Activity.Instance.State, CodeLocation.AsString());
 
             await SafeAlertExceptionAsync(cancellationToken);
+            switch (Activity.Version.FailUrgency)
+            {
+                case ActivityFailUrgencyEnum.CancelWorkflow:
+                    throw new WorkflowFailedException(
+                        Activity.Instance.ExceptionCategory!.Value,
+                        $"Activity {Activity}:\r{Activity.Instance.ExceptionTechnicalMessage}",
+                        $"Activity {Activity}:\r{Activity.Instance.ExceptionFriendlyMessage}");
+                case ActivityFailUrgencyEnum.Stopping:
+                    throw new RequestPostponedException();
+                case ActivityFailUrgencyEnum.HandleLater:
+                case ActivityFailUrgencyEnum.Ignore:
+                    if (getDefaultValueMethodAsync == null) return default;
+                    try
+                    {
+                        return await getDefaultValueMethodAsync(cancellationToken);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogError($"The default value method for activity {Activity} threw an exception." +
+                                     $" The default value for {typeof(TMethodReturnType).Name} ({default(TMethodReturnType)}) is used instead. The exception:\r{e}");
+                        return default;
+                    }
+                default:
+                    throw new FulcrumAssertionFailedException(
+                        $"Unexpected {nameof(ActivityFailUrgencyEnum)} value: {Activity.Version.FailUrgency}.",
+                        CodeLocation.AsString());
+            }
         }
 
         private async Task SafeAlertExceptionAsync(CancellationToken cancellationToken)
         {
             if (Activity.Instance.State != ActivityStateEnum.Failed) return;
+            if (Activity.Instance.ExceptionCategory == null)
+            {
+                Log.LogError($"Activity.Instance.ExceptionCategory was null. {CodeLocation.AsString()}");
+                return;
+            }
+
             if (Activity.Instance.ExceptionAlertHandled.HasValue &&
                 Activity.Instance.ExceptionAlertHandled.Value) return;
 
-            if (!(WorkflowImplementation is IActivityExceptionAlertHandler alertHandler)) return;
+            if (Activity.ExceptionAlertHandler == null) return;
 
+            var alert = new ActivityExceptionAlert
+            {
+                Activity = Activity,
+                ExceptionCategory = Activity.Instance.ExceptionCategory!.Value,
+                ExceptionFriendlyMessage =
+                    Activity.Instance.ExceptionFriendlyMessage,
+                ExceptionTechnicalMessage =
+                    Activity.Instance.ExceptionTechnicalMessage
+            };
             try
             {
-                FulcrumAssert.IsNotNull(Activity.Instance.ExceptionCategory, CodeLocation.AsString());
-                var alert = new ActivityExceptionAlert
-                {
-                    WorkflowInstanceId = Activity.WorkflowCache.Instance.Id,
-                    ActivityInstanceId = Activity.Instance.Id,
-                    ExceptionCategory = Activity.Instance.ExceptionCategory!.Value,
-                    ExceptionFriendlyMessage =
-                        Activity.Instance.ExceptionFriendlyMessage,
-                    ExceptionTechnicalMessage =
-                        Activity.Instance.ExceptionTechnicalMessage
-                };
-                try
-                {
-                    var handled =
-                        await alertHandler.HandleActivityExceptionAlertAsync(alert, cancellationToken);
-                    Activity.Instance.ExceptionAlertHandled = handled;
-                }
-                catch (Exception)
-                {
-                    // We will try again next reentry.
-                }
+                var handled =
+                    await Activity.ExceptionAlertHandler(alert, cancellationToken);
+                Activity.Instance.ExceptionAlertHandled = handled;
             }
             catch (Exception)
             {
-                // TODO: Log
-                throw new HandledRequestPostponedException(Activity.Instance.AsyncRequestId)
-                {
-                    TryAgain = true
-                };
+                // We will try again next reentry.
             }
-        }
-
-        private static Task SafeVerifyMaxTimeAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }
