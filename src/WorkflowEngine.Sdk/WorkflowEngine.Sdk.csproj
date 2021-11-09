@@ -1,0 +1,90 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Nexus.Link.WorkflowEngine.Sdk</AssemblyName>
+    <RootNamespace>Nexus.Link.WorkflowEngine.Sdk</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\Administration\**" />
+    <EmbeddedResource Remove="Extensions\Administration\**" />
+    <None Remove="Extensions\Administration\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.2.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="1.0.2-rc01" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.9.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.23.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AsyncManager.Sdk\AsyncManager.Sdk.csproj" />
+    <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
+    <Version>4.3.0</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>The Nexus Link WorkflowEngine SDK.</Description>
+    <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
+      4.2.0 Introduced more settings for activities and a default value for them on workflow level
+      4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
+      4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
+      3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
+      3.3.0 Support for IDistributedLock
+      3.2.0 New fields for WorkflowInstance
+      3.1.0 Support for setting Success and Failed on an ActivityInstance
+      3.0.0 New capability contract structure.
+      2.0.1 Changed som method signatures
+      2.0.0 Refactored. One breaking change: You need to specify the activity position when calling the CreateActivity() method
+      1.12.5 Fixed bug in ActivityExecutor
+      1.12.4 Performance optimizations
+      1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+      1.12.2 Fix in rest clients paths
+      1.12.0 Now preloads activity information when a workflow starts
+      1.11.2 Case confusion
+      1.11.1 Renamed some classes
+      1.11.0 Moved FailUrgency to ActivityVersion
+      1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data
+      1.9.0 Made SetParent and SetPrevious obsolete
+      1.8.3 Refactored ActivityForEachParallel
+      1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
+      1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
+      1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
+      1.7.0 Support for retry activity
+      1.6.0 Support for Cancel workflow
+      1.5.0 Service contract changes, mostly removing child things
+      1.4.0 Added error handling
+      1.3.0 Implemented WorkflowService and Workflow
+      1.2.0 Refactored ActivityInstance with respect to fields for failed activities
+      1.1.0-New syntax for flow programming
+      1.0.5 First release
+    </PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>

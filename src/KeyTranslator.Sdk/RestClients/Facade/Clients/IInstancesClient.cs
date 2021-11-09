@@ -8,5 +8,6 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
     public interface IInstancesClient
     {
         Task<IDictionary<string, InstancesExistsResult>> InstancesExists(IEnumerable<string> conceptKeys, CancellationToken cancellationToken = default);
+        Task DeleteAsync(ConceptValue conceptValue, CancellationToken cancellationToken = default);
     }
 }

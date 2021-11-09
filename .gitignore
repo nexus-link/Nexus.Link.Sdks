@@ -331,3 +331,5 @@ ASALocalRun/
 /Nexus.Link.Sdks.v3.ncrunchsolution
 /src/Services.Contracts/Nexus.Link.Services.Contracts.xml
 /src/Services.Controllers/Nexus.Link.Services.Controllers.xml
+/src/AsyncManager.Sdk/AsyncManager.Sdk.xml
+/Nexus.Link.Workflow.SDK.sln.DotSettings

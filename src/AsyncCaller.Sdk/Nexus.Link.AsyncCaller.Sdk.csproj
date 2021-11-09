@@ -5,11 +5,22 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Nexus.Link.AsyncCaller.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.AsyncCaller.Sdk</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.16.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.4.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.8.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
@@ -19,7 +30,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.1.0-gamma01</Version>
+    <Version>3.1.0-gamma02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -30,6 +41,9 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       3.1.0 Support for refreshing authentication
+      3.0.5 Bump
+      3.0.4 Fix: Catch exception if could not access Azure queue
+      3.0.3 Symbols
       3.0.2 Added CancellationToken where missing.
       2.1.6 Fix for Content-Type in Callback request (it's always application/json, not the content-type from the server response)
       2.1.5 Fix for dotnet core regarding HTTP header "Expires: -1"

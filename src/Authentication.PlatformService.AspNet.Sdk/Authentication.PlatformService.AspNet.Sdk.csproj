@@ -4,13 +4,24 @@
     <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
     <RootNamespace>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</AssemblyName>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.27.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.16.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.4.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.4.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="2.29.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.8.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
@@ -25,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <Version>1.0.49</Version>
+      <Version>1.0.51</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -35,6 +46,8 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.0.51 Bump
+        1.0.50 Symbols
         1.0.49 Bump
         1.0.46 Fix: Avoid argument null exception.
         1.0.45 Bump

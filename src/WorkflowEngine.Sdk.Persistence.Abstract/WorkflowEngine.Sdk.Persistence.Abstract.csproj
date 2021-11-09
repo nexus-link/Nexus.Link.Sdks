@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</AssemblyName>
+    <RootNamespace>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</RootNamespace>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.1" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.12.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
+    <Version>2.0.3</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Support for the Nexus Link WorkflowEngine SDK.</Description>
+    <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      2.0.3 Support for IDistributedLock
+      2.0.0 Refactored methods
+      1.2.0 Create and Update now returns the resulting object
+      1.1.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+      1.1.2 Unique for ActivityVersionRecord
+      1.1.0 Moved FailUrgency to ActivityVersion
+      1.0.5 Use IDatabaseOptions
+      1.0.4 Moved FailUrgency to Create.
+      1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
+      1.0.0 First release
+    </PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>

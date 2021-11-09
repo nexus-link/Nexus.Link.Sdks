@@ -4,11 +4,27 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Nexus.Link.Services.Contracts</RootNamespace>
     <AssemblyName>Nexus.Link.Services.Contracts</AssemblyName>
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.9.0-alfa03" />
+  </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Contracts</PackageId>
-    <Version>3.4.3</Version>
+    <Version>3.4.5</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -18,6 +34,8 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.4.5 Bump
+      3.4.4 Symbols
       3.4.3 Bump
       3.4.0 Support for Value Translator Concept service
       3.3.1 Added documentation XML
@@ -52,10 +70,5 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>Nexus.Link.Services.Contracts.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.4.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.0.3" />
-  </ItemGroup>
 
 </Project>

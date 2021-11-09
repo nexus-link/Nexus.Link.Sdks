@@ -24,3 +24,4 @@ jobs:
     nugetProjectsPath: '**/src/Authentication.PlatformService.AspNet.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
+    publishVstsFeed: 'Nexus Libs/nexus-nugets'
