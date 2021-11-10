@@ -40,7 +40,8 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       1.5.0 Moved inbound filter here.
-      1.4.0 Support for IDistributedLock
+      1.4.1 Fix: "WorkflowSummaries" route
+	  1.4.0 Support for IDistributedLock
       1.3.5 IntegrationApi controllers abstract
       1.3.4 Fix: Admin/WorkflowsController: activityInstanceId
       1.3.3 WorkflowFormVersionsController PUT

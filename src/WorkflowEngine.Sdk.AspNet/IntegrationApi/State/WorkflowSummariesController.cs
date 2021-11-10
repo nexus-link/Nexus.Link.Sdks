@@ -6,7 +6,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.State
 {
     /// <inheritdoc cref="IWorkflowService" />
     [ApiController]
-    [Route("api/v1/workflows/State/Workflows")]
+    [Route("api/v1/workflows/State/WorkflowSummaries")]
     public abstract class WorkflowSummariesController : Controllers.State.WorkflowSummariesController
     {
         /// <inheritdoc />
