@@ -18,13 +18,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.1" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.12.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.2" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.12.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.4 Bump
       2.0.3 Support for IDistributedLock
       2.0.0 Refactored methods
       1.2.0 Create and Update now returns the resulting object

@@ -15,7 +15,6 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             Request = new RequestRestClient(httpSender);
             RequestResponse = new RequestResponseRestClient(httpSender);
             Execution = new ExecutionRestClient(httpSender);
-            ExecutionResponse = new ExecutionResponseRestClient(httpSender);
         }
         
         /// <inheritdoc />
@@ -26,8 +25,5 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
 
         /// <inheritdoc />
         public IExecutionService Execution { get; }
-
-        /// <inheritdoc />
-        public IExecutionResponseService ExecutionResponse { get; }
     }
 }

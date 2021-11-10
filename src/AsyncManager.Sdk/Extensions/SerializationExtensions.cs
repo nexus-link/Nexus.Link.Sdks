@@ -11,7 +11,7 @@ using Microsoft.Rest;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.AsyncManager.Sdk.Extensions

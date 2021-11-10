@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
@@ -43,6 +44,16 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             }
 
             return result.Body;
+        }
+
+        /// <inheritdoc />
+        public RequestResponseEndpoints GetEndpoints(string requestId)
+        {
+            return new RequestResponseEndpoints
+            {
+                PollingUrl = $"/Requests/{WebUtility.UrlEncode(requestId)}/Response",
+                RegisterCallbackUrl = null
+            };
         }
     }
 }

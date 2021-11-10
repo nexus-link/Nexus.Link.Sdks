@@ -59,43 +59,33 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken)
         {
-            var activityInstance = Activity.Instance;
             try
             {
                 return await SafeExecuteAsync2(method, ignoreReturnValue, getDefaultValueMethodAsync,
                     cancellationToken);
             }
-            catch (ActivityException e)
-            {
-                activityInstance.State = ActivityStateEnum.Failed;
-                activityInstance.FinishedAt = DateTimeOffset.UtcNow;
-                activityInstance.ExceptionCategory = e.ExceptionCategory;
-                activityInstance.ExceptionTechnicalMessage = e.TechnicalMessage;
-                activityInstance.ExceptionFriendlyMessage = e.FriendlyMessage;
-                await SafeAlertExceptionAsync(cancellationToken);
-                throw new ExceptionTransporter(new RequestPostponedException());
-            }
             catch (ExceptionTransporter)
             {
+                Activity.Instance.State = ActivityStateEnum.Waiting;
                 throw;
             }
             catch (Exception e)
             {
-                if (activityInstance.HasCompleted)
+                if (Activity.Instance.HasCompleted)
                 {
                     Log.LogError(
                         $"The workflow engine encountered an unexpected error. {CodeLocation.AsString()}:\r{e}");
                 }
                 else
                 {
-                    activityInstance.State = ActivityStateEnum.Failed;
-                    activityInstance.FinishedAt = DateTimeOffset.UtcNow;
+                    Activity.Instance.State = ActivityStateEnum.Failed;
+                    Activity.Instance.FinishedAt = DateTimeOffset.UtcNow;
                     ;
-                    activityInstance.ExceptionCategory = ActivityExceptionCategoryEnum.WorkflowCapabilityError;
-                    activityInstance.ExceptionTechnicalMessage =
+                    Activity.Instance.ExceptionCategory = ActivityExceptionCategoryEnum.WorkflowCapabilityError;
+                    Activity.Instance.ExceptionTechnicalMessage =
                         "Internal WorkflowEngine error. Try to run this activity again when the engine has been fixed and updated."
                         + " The engine encountered an unexpected exception:\r{e}";
-                    activityInstance.ExceptionFriendlyMessage =
+                    Activity.Instance.ExceptionFriendlyMessage =
                         "The workflow engine software encountered an internal error.";
                     await SafeAlertExceptionAsync(cancellationToken);
                 }
@@ -121,7 +111,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 return await ThrowOrGetDefaultValue(ignoreReturnValue, getDefaultValueMethodAsync, cancellationToken);
             }
 
-            await CallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+            try
+            {
+                await CallMethodAndUpdateActivityInformationAsync(method, ignoreReturnValue, cancellationToken);
+            }
+            catch (ActivityException e)
+            {
+                Activity.Instance.State = ActivityStateEnum.Failed;
+                Activity.Instance.FinishedAt = DateTimeOffset.UtcNow;
+                Activity.Instance.ExceptionCategory = e.ExceptionCategory;
+                Activity.Instance.ExceptionTechnicalMessage = e.TechnicalMessage;
+                Activity.Instance.ExceptionFriendlyMessage = e.FriendlyMessage;
+                await SafeAlertExceptionAsync(cancellationToken);
+            }
 
             if (activityInstance.HasCompleted)
             {

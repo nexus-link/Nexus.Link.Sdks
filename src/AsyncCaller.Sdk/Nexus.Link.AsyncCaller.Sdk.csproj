@@ -19,8 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.22.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.8.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.3" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
@@ -30,7 +30,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.0.5</Version>
+    <Version>3.0.6</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -40,7 +40,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.0.5 Bump
+      3.0.6 Bump
       3.0.4 Fix: Catch exception if could not access Azure queue
       3.0.3 Symbols
       3.0.2 Added CancellationToken where missing.

@@ -2,14 +2,16 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.Libraries.Web.Serialization;
 
 namespace Nexus.Link.AsyncManager.Sdk.RestClients
 {
     /// <inheritdoc />
-    public class ExecutionRestClient : IExecutionService
+    public class ExecutionRestClient : RestClient, IExecutionService
     {
         private readonly IHttpSender _httpSender;
 
@@ -17,17 +19,18 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         /// Constructor
         /// </summary>
         public ExecutionRestClient(IHttpSender httpSender)
+        : base(httpSender)
         {
             _httpSender = httpSender;
         }
 
         /// <inheritdoc />
-        public async Task ReadyForExecutionAsync(string executionId, CancellationToken cancellationToken = default)
+        public Task ReadyForExecutionAsync(string executionId, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(executionId, nameof(executionId));
 
             var relativeUrl = $"Executions/{WebUtility.UrlEncode(executionId)}/ReadyForExecution";
-            await _httpSender.SendRequestAsync<HttpResponseMessage>(HttpMethod.Post, relativeUrl, cancellationToken: cancellationToken);
+            return PostNoResponseContentAsync(relativeUrl, null, cancellationToken);
         }
     }
 }

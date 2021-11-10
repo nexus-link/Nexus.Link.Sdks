@@ -8,6 +8,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
@@ -19,6 +20,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Shouldly;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
 using Xunit;
 
@@ -36,6 +38,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
         public ActivityExecutorTests()
         {
+            FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
             var configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
 
@@ -95,8 +98,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             }
             catch (Exception e)
             {
-                e.ShouldBeAssignableTo<RequestPostponedException>();
-                postponed = e as RequestPostponedException;
+                e.ShouldBeAssignableTo<ExceptionTransporter>();
+                e.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
+                postponed = e.InnerException as RequestPostponedException;
             }
             await _workflowCache.SaveAsync();
             postponed.ShouldNotBeNull();
@@ -127,7 +131,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<RequestPostponedException>(() => executor.ExecuteAsync(
+            await Assert.ThrowsAnyAsync<ExceptionTransporter>(() => executor.ExecuteAsync(
                    (a, t) => throw new Exception("Fail")));
             await _workflowCache.SaveAsync();
 
@@ -173,7 +177,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<RequestPostponedException>(
+            await Assert.ThrowsAnyAsync<ExceptionTransporter>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
             await _workflowCache.SaveAsync();
@@ -193,7 +197,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            RequestPostponedException postponed = null;
+            FulcrumTryAgainException tryAgain = null;
             try
             {
                 await executor.ExecuteAsync<int>(
@@ -201,12 +205,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             }
             catch (Exception e)
             {
-                e.ShouldBeAssignableTo<RequestPostponedException>();
-                postponed = e as RequestPostponedException;
+                e.ShouldBeAssignableTo<ExceptionTransporter>();
+                e.InnerException.ShouldBeAssignableTo<FulcrumTryAgainException>();
+                tryAgain = e.InnerException as FulcrumTryAgainException;
             }
             await _workflowCache.SaveAsync();
-            postponed.ShouldNotBeNull();
-            postponed.TryAgain.ShouldBe(true);
+            tryAgain.ShouldNotBeNull();
             executor.Activity.Instance.Id.ShouldNotBeNull();
             var instance = await _runtimeTables.ActivityInstance.ReadAsync(executor.Activity.Instance.Id.ToGuid());
             instance.ShouldNotBeNull();

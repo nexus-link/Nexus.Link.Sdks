@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
@@ -40,6 +41,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
+            {
+                throw new RequestPostponedException
+                {
+                    TryAgain = true
+                };
+            }
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
+            WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId;
             // If service runs directly with database connection, make sure we're on correct database version
 #pragma warning disable CS0618
             if (DatabasePatchSettings.DatabasePatchLevelVerifier != null)
@@ -47,11 +57,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
             }
 #pragma warning restore CS0618
-
-            if (string.IsNullOrWhiteSpace(WorkflowStatic.Context.WorkflowInstanceId))
-            {
-                throw new FulcrumNotImplementedException($"Currently all workflows must be called via AsyncManager, because they are dependent on the request header {Constants.ExecutionIdHeaderName}.");
-            }
 
             WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
 
