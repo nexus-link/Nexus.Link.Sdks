@@ -30,12 +30,8 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
             InternalContract.RequireNotNull(conceptValue, nameof(conceptValue));
             InternalContract.RequireValidated(conceptValue, nameof(conceptValue));
 
-            const string relativeUrl = "Instances";
-            var request = new HttpRequestMessage(HttpMethod.Delete, relativeUrl)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(conceptValue), Encoding.UTF8, "application/json")
-            };
-            await RestClient.SendAsync(request, cancellationToken);
+            var relativeUrl = $"Instances";
+            await RestClient.SendRequestAsync(HttpMethod.Delete, relativeUrl, conceptValue, null, cancellationToken);
         }
     }
 }
