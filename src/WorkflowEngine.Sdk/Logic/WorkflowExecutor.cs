@@ -41,15 +41,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
-            {
-                throw new RequestPostponedException
-                {
-                    TryAgain = true
-                };
-            }
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId;
+
             // If service runs directly with database connection, make sure we're on correct database version
 #pragma warning disable CS0618
             if (DatabasePatchSettings.DatabasePatchLevelVerifier != null)

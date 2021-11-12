@@ -1,4 +1,6 @@
-﻿using Nexus.Link.AsyncManager.Sdk;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -40,14 +42,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowVersionCollection.AddWorkflowVersion(workflowImplementation);
         }
 
-        public IWorkflowImplementation<TWorkflowResult> SelectWorkflowVersion<TWorkflowResult>(int minVersion, int maxVersion)
+        public Task<IWorkflowImplementation<TWorkflowResult>> SelectWorkflowVersionAsync<TWorkflowResult>(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersion<TWorkflowResult>(minVersion, maxVersion);
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion, cancellationToken);
         }
 
-        public IWorkflowImplementation SelectWorkflowVersion(int minVersion, int maxVersion)
+        public Task<IWorkflowImplementation<TWorkflowResult>> SelectWorkflowVersionAsync<TWorkflowResult>(int minVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersion(minVersion, maxVersion);
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);
         }
+
+        public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
+        {
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion, cancellationToken);
+        }
+
+        public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, CancellationToken cancellationToken = default)
+        {
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override string ToString() => $"{WorkflowCapabilityName}.{WorkflowFormTitle}";
     }
 }

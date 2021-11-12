@@ -55,6 +55,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowExecutor.DefineParameter<T>(name);
         }
+        protected T GetArgument<T>(string name)
+        {
+            return WorkflowExecutor.GetArgument<T>(name);
+        }
 
         public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
@@ -70,6 +74,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowExecutor.SetDefaultAsyncRequestPriority(priority);
         }
+
+        /// <inheritdoc />
+        public override string ToString() =>
+            $"{WorkflowVersions} {MajorVersion}.{MinorVersion}";
     }
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
     {
@@ -100,11 +108,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
     public abstract class WorkflowImplementation<TWorkflowResult> : WorkflowImplementationBase, IWorkflowImplementation<TWorkflowResult>
     {
-        protected T GetArgument<T>(string name)
-        {
-            return WorkflowExecutor.GetArgument<T>(name);
-        }
-
         /// <inheritdoc />
         protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
             : base(majorVersion, minorVersion, workflowVersions)
@@ -115,7 +118,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         public Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken)
         {
-            return WorkflowExecutor.ExecuteAsync<TWorkflowResult>(this, cancellationToken);
+            return WorkflowExecutor.ExecuteAsync(this, cancellationToken);
         }
 
         public abstract Task<TWorkflowResult> ExecuteWorkflowAsync(CancellationToken cancellationToken);
