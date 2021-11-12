@@ -80,7 +80,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 {
                     Activity.Instance.State = ActivityStateEnum.Failed;
                     Activity.Instance.FinishedAt = DateTimeOffset.UtcNow;
-                    ;
+                    Activity.ContextDictionary.Clear();
                     Activity.Instance.ExceptionCategory = ActivityExceptionCategoryEnum.WorkflowCapabilityError;
                     Activity.Instance.ExceptionTechnicalMessage =
                         "Internal WorkflowEngine error. Try to run this activity again when the engine has been fixed and updated."
@@ -119,6 +119,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             {
                 Activity.Instance.State = ActivityStateEnum.Failed;
                 Activity.Instance.FinishedAt = DateTimeOffset.UtcNow;
+                Activity.ContextDictionary.Clear();
                 Activity.Instance.ExceptionCategory = e.ExceptionCategory;
                 Activity.Instance.ExceptionTechnicalMessage = e.TechnicalMessage;
                 Activity.Instance.ExceptionFriendlyMessage = e.FriendlyMessage;
@@ -155,6 +156,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
                 activityInstance.State = ActivityStateEnum.Success;
                 activityInstance.FinishedAt = DateTimeOffset.UtcNow;
+                activityInstance.ContextDictionary.Clear();
             }
             catch (Exception e)
             {

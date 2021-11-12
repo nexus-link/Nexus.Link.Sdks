@@ -45,6 +45,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public bool? ExceptionAlertHandled { get; set; }
 
+        public string ContextAsJson { get; set; }
+
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {

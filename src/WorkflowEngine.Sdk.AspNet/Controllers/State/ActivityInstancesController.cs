@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
@@ -75,6 +77,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.State
             ServiceContract.RequireValidated(result, nameof(result));
 
             await _capability.ActivityInstance.FailedAsync(id, result, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        [HttpPost("{id)}/Context/{key}")]
+        public async Task SetContextAsync(string id, string key, JToken content,
+            CancellationToken cancellationToken = default)
+        {
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            ServiceContract.RequireNotNull(content, nameof(content));
+
+            await _capability.ActivityInstance.SetContextAsync(id, key, content, cancellationToken);
         }
     }
 }

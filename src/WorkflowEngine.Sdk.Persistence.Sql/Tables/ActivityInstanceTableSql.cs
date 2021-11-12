@@ -23,6 +23,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.StartedAt),
                 nameof(ActivityInstanceRecord.FinishedAt),
                 nameof(ActivityInstanceRecord.ResultAsJson),
+                nameof(ActivityInstanceRecord.ContextAsJson),
                 nameof(ActivityInstanceRecord.State),
                 nameof(ActivityInstanceRecord.ExceptionCategory),
                 nameof(ActivityInstanceRecord.ExceptionFriendlyMessage),

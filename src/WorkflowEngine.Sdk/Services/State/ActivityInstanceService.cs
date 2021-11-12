@@ -1,10 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
@@ -76,6 +78,42 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
             await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
             // TODO: Audit log?
+        }
+
+        /// <inheritdoc />
+        public async Task SetContextAsync(string id, string key, JToken content,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            InternalContract.RequireNotNull(content, nameof(content));
+            var idAsGuid = id.ToGuid();
+
+            var tryCount = 0;
+            ActivityInstanceRecord record;
+            while (true)
+            {
+                tryCount++;
+                record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
+                if (record == null) throw new FulcrumNotFoundException($"No ActivityInstance record with id = {id}");
+
+                var activity = new ActivityInstance().From(record);
+                activity.ContextDictionary[key] = content;
+
+                record = new ActivityInstanceRecord().From(activity);
+                try
+                {
+                    await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+                    break;
+                }
+                catch (FulcrumConflictException)
+                {
+                    if (tryCount >= 3) throw;
+                    // This is OK, try again
+                }
+            }
+
+            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
         }
 
         /// <inheritdoc />

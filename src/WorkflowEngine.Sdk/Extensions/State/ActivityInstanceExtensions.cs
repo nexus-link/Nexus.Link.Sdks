@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -22,8 +26,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.State = source.State.ToString();
             target.StartedAt = source.StartedAt;
             target.ActivityVersionId = source.ActivityVersionId.ToGuid();
-            target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToNullableGuid();
+            target.ParentActivityInstanceId = source.ParentActivityInstanceId?.ToGuid();
             target.ResultAsJson = source.ResultAsJson;
+            target.ContextAsJson = source.ContextDictionary == null || !source.ContextDictionary.Any()? null : JsonConvert.SerializeObject(source.ContextDictionary);
             target.ExceptionCategory = source.ExceptionCategory?.ToString();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
@@ -64,6 +69,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.ActivityVersionId = source.ActivityVersionId.ToLowerCaseString();
             target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToLowerCaseString();
             target.ResultAsJson = source.ResultAsJson;
+            target.ContextDictionary = source.ContextAsJson == null 
+                ? new Dictionary<string, JToken>() 
+                : JsonConvert.DeserializeObject<Dictionary<string, JToken>>(source.ContextAsJson);
             target.State = source.State.ToEnum<ActivityStateEnum>();
             target.ExceptionCategory = source.ExceptionCategory?.ToEnum<ActivityExceptionCategoryEnum>();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
@@ -24,6 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
     {
         private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
+        public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
 
         protected internal WorkflowCache WorkflowCache => _activityFlow.WorkflowCache;
 
@@ -94,6 +98,38 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public TParameter GetArgument<TParameter>(string parameterName)
         {
             return _activityFlow.MethodHandler.GetArgument<TParameter>(parameterName);
+        }
+
+        /// <inheritdoc />
+        public void SetContext<T>(string key, T value)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
+            ContextDictionary[key] = JToken.FromObject(value);
+        }
+
+        /// <inheritdoc />
+        public T GetContext<T>(string key)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
+            if (!ContextDictionary.ContainsKey(key))
+            {
+                throw new FulcrumNotFoundException($"Could not find key {key} in context dictionary for activity {ActivityInstanceId}.");
+            } 
+            var jToken = ContextDictionary[key];
+            FulcrumAssert.IsNotNull(jToken, CodeLocation.AsString());
+            return jToken.ToObject<T>();
+        }
+
+        /// <inheritdoc />
+        public bool TryGetContext<T>(string key, out T value)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            value = default;
+            if (!ContextDictionary.ContainsKey(key)) return false;
+            value = GetContext<T>(key);
+            return true;
         }
 
         internal Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(

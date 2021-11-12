@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
@@ -35,6 +37,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.State
 
             var relativeUrl = $"{WebUtility.UrlEncode(id)}/Failed";
             await PostNoResponseContentAsync(relativeUrl, result, cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task SetContextAsync(string id, string key, JToken content,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+            InternalContract.RequireNotNull(content, nameof(content));
+
+            var relativeUrl = $"{WebUtility.UrlEncode(id)}/Context/{key}";
+            await PostNoResponseContentAsync(relativeUrl, content, cancellationToken: cancellationToken);
         }
     }
 }

@@ -3,7 +3,7 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {
-    internal class ActivityException : Exception
+    public class ActivityException : Exception
     {
         public ActivityExceptionCategoryEnum ExceptionCategory { get; }
         public string TechnicalMessage { get; }

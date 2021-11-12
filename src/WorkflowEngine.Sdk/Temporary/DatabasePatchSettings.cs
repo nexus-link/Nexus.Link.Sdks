@@ -12,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Temporary
         /// Until we use the Workflow Engine SaaS,
         /// we use the <see cref="IVerifyDatabasePatchLevel"/> mechanism to handle database patching.
         /// </summary>
-        public const int DatabasePatchVersion = 2;
+        public const int DatabasePatchVersion = 3;
 
         public static IVerifyDatabasePatchLevel DatabasePatchLevelVerifier { get; set; }
 
