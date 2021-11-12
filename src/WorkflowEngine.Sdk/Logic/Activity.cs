@@ -47,6 +47,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         /// <inheritdoc />
         public int? Iteration { get; protected set; }
 
+        /// <inheritdoc />
+        public ActivityFailUrgencyEnum FailUrgency => _activityFlow.FailUrgency;
+
         public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
 
         protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
