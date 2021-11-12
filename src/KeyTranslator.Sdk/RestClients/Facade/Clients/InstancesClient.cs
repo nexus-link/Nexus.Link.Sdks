@@ -31,7 +31,7 @@ namespace Nexus.Link.KeyTranslator.Sdk.RestClients.Facade.Clients
             InternalContract.RequireValidated(conceptValue, nameof(conceptValue));
 
             var relativeUrl = $"Instances";
-            await RestClient.SendRequestAsync(HttpMethod.Delete, relativeUrl, conceptValue, null, cancellationToken);
+            await RestClient.SendRequestAsync(HttpMethod.Delete, relativeUrl, conceptValue.ToPath(), null, cancellationToken);
         }
     }
 }
