@@ -27,15 +27,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         protected internal WorkflowCache WorkflowCache => _activityFlow.WorkflowCache;
 
-        public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
+        /// <inheritdoc />
+        public string WorkflowInstanceId => WorkflowInformation.InstanceId;
 
-        protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
-        public ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
-        public ActivityInstance Instance => WorkflowCache.GetActivityInstance(ActivityInstanceId);
-        public int? Iteration { get; protected set; }
-        public string NestedPosition { get; }
-        public string NestedPositionAndTitle => $"{NestedPosition} {_activityFlow.FormTitle}";
+        /// <inheritdoc />
+        public string ActivityInstanceId { get; internal set; }
 
+        /// <inheritdoc />
         public string ActivityTitle
         {
             get
@@ -47,13 +45,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
+        public int? Iteration { get; protected set; }
+
+        public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
+
+        protected internal ActivityForm Form => WorkflowCache.GetActivityForm(_activityFlow.ActivityFormId);
+        public ActivityVersion Version => WorkflowCache.GetActivityVersionByFormId(_activityFlow.ActivityFormId);
+        public ActivityInstance Instance => WorkflowCache.GetActivityInstance(ActivityInstanceId);
+        public string NestedPosition { get; }
+        public string NestedPositionAndTitle => $"{NestedPosition} {_activityFlow.FormTitle}";
+
+        /// <inheritdoc />
         public override string ToString() => ActivityTitle;
 
         public List<int> NestedIterations { get; } = new();
-
-        /// <inheritdoc />
-        public string WorkflowInstanceId => WorkflowInformation.InstanceId;
-        public string ActivityInstanceId { get; internal set; }
         public double AsyncRequestPriority => _activityFlow.AsyncRequestPriority;
         public ActivityExceptionAlertHandler ExceptionAlertHandler => _activityFlow.ExceptionAlertHandler;
 
@@ -82,6 +87,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             _activityExecutor = new ActivityExecutor(activityFlow.WorkflowInformation.WorkflowImplementation, this);
         }
 
+        /// <inheritdoc />
         public TParameter GetArgument<TParameter>(string parameterName)
         {
             return _activityFlow.MethodHandler.GetArgument<TParameter>(parameterName);
