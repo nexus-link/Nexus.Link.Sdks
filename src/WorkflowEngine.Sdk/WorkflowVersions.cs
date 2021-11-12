@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
@@ -60,6 +61,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, CancellationToken cancellationToken = default)
         {
             return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
+        }
+
+        [Obsolete("Use SelectWorkflowVersionAsync. Compilation warning since 2021-11-12. Will be Compilation error after 2021-12-01")]
+        public IWorkflowImplementation<TWorkflowResult> SelectWorkflowVersion<TWorkflowResult>(int minVersion, int maxVersion)
+        {
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion).Result;
+        }
+
+        [Obsolete("Use SelectWorkflowVersionAsync. Compilation warning since 2021-11-12. Will be Compilation error after 2021-12-01")]
+        public IWorkflowImplementation SelectWorkflowVersion(int minVersion, int maxVersion)
+        {
+            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion).Result;
         }
 
         /// <inheritdoc />
