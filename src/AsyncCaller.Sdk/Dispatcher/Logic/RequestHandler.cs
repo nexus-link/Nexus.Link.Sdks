@@ -269,15 +269,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
         {
             if (_envelope.Request?.CallOut?.Headers.Authorization == null) return null;
             var token = ReadToken(_envelope.Request?.CallOut?.Headers.Authorization.Parameter);
-            var name = token?.Claims.FirstOrDefault(x => x.Type == "unique_name")?.Value;
-            if (!string.IsNullOrWhiteSpace(name)) return name;
-            // TODO: take from configuration
-            /*
-             * {
-             *   "ClientNameClaim": "uniqe_name"
-             * }
-             */
-
+            return token?.Claims.FirstOrDefault(x => x.Type == "unique_name")?.Value;
         }
 
         private bool TokenIsExpired()
