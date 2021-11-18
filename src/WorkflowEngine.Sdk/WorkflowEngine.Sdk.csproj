@@ -38,7 +38,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>4.6.0</Version>
+    <Version>4.6.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +48,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      4.6.1 Added log for successful workflow
       4.6.0 Added support for logging
       4.5.0 Added support for activity context dictionary
       4.4.2 Added backward compatibility

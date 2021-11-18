@@ -134,6 +134,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
+                await WorkflowInformation.LogInformationAsync($"Workflow successful", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -162,6 +163,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
+                await WorkflowInformation.LogInformationAsync($"Workflow successful", null, cancellationToken);
             }
             catch (Exception e)
             {
