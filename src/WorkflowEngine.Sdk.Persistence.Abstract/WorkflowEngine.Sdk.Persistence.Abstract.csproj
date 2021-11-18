@@ -24,7 +24,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,6 +34,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.2.0 Added support for logging.
       2.1.0 Added ActivityInstanceRecordCreate.ContextAsJson
       2.0.4 Bump
       2.0.3 Support for IDistributedLock

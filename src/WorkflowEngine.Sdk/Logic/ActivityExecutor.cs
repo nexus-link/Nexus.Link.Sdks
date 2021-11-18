@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
@@ -10,8 +11,10 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
@@ -61,6 +64,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             try
             {
+                await Activity.LogInformationAsync($"Begin activity execution", Activity.Instance, cancellationToken);
                 return await SafeExecuteAsync2(method, ignoreReturnValue, getDefaultValueMethodAsync,
                     cancellationToken);
             }
@@ -73,8 +77,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             {
                 if (Activity.Instance.HasCompleted)
                 {
-                    Log.LogError(
-                        $"The workflow engine encountered an unexpected error. {CodeLocation.AsString()}:\r{e}");
+                    await Activity.LogErrorAsync(
+                        $"The workflow engine encountered an unexpected error. {CodeLocation.AsString()}:\r{e.Message}",
+                        e, cancellationToken);
                 }
                 else
                 {
@@ -89,7 +94,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                         "The workflow engine software encountered an internal error.";
                     await SafeAlertExceptionAsync(cancellationToken);
                 }
+
                 throw new ExceptionTransporter(new RequestPostponedException());
+            }
+            finally
+            {
+                await Activity.LogInformationAsync($"End activity execution", Activity.Instance, cancellationToken);
             }
         }
 
@@ -143,15 +153,40 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             var activityInstance = Activity.Instance;
             try
             {
+                var name = method.GetMethodInfo().Name;
                 if (ignoreReturnValue)
                 {
-                    await method(Activity, cancellationToken);
-                    activityInstance.ResultAsJson = "";
+                    try
+                    {
+                        await Activity.LogVerboseAsync($"Begin activity method {name}.", null, cancellationToken);
+                        await method(Activity, cancellationToken);
+                        activityInstance.ResultAsJson = "";
+                    }
+                    catch (Exception e)
+                    {
+                        await Activity.LogInformationAsync($"Activity method {name} threw exception.", e, cancellationToken);
+                        throw;
+                    }
+                    finally
+                    {
+                        await Activity.LogVerboseAsync($"End activity method {name}.", null, cancellationToken);
+                    }
                 }
                 else
                 {
-                    var result = await method(Activity, cancellationToken);
-                    activityInstance.ResultAsJson = result.ToJsonString();
+                    try
+                    {
+                        await Activity.LogVerboseAsync($"Begin activity method {name}.", null, cancellationToken);
+                        var result = await method(Activity, cancellationToken);
+                        activityInstance.ResultAsJson = result.ToJsonString();
+                        await Activity.LogVerboseAsync($"End activity method {name}.", result, cancellationToken);
+                    }
+                    catch (Exception e)
+                    {
+                        await Activity.LogInformationAsync($"Activity method {name} threw exception.", e, cancellationToken);
+                        await Activity.LogVerboseAsync($"End activity method {name}.", null, cancellationToken);
+                        throw;
+                    }
                 }
 
                 activityInstance.State = ActivityStateEnum.Success;
@@ -229,8 +264,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     }
                     catch (Exception e)
                     {
-                        Log.LogError($"The default value method for activity {Activity} threw an exception." +
-                                     $" The default value for {typeof(TMethodReturnType).Name} ({default(TMethodReturnType)}) is used instead. The exception:\r{e}");
+                        await Activity.LogErrorAsync($"The default value method for activity {Activity} threw an exception." +
+                                                     $" The default value for {typeof(TMethodReturnType).Name} ({default(TMethodReturnType)}) is used instead.",
+                            e, cancellationToken);
                         return default;
                     }
                 default:
@@ -245,7 +281,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             if (Activity.Instance.State != ActivityStateEnum.Failed) return;
             if (Activity.Instance.ExceptionCategory == null)
             {
-                Log.LogError($"Activity.Instance.ExceptionCategory was null. {CodeLocation.AsString()}");
+                await Activity.LogErrorAsync($"Activity.Instance.ExceptionCategory unexpectedly was null. {CodeLocation.AsString()}",
+                    Activity.Instance, cancellationToken);
                 return;
             }
 

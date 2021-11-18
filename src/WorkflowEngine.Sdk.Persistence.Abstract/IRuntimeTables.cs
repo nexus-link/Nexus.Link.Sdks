@@ -6,5 +6,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract
     {
         IWorkflowInstanceTable WorkflowInstance{ get; }
         IActivityInstanceTable ActivityInstance{ get; }
+        ILogTable Log { get; }
     }
 }

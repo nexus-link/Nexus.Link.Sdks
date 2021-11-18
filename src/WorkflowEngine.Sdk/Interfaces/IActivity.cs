@@ -1,4 +1,5 @@
-﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+﻿using System;
+using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
@@ -40,7 +41,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <typeparam name="T">The type of the data in the parameter.</typeparam>
         /// <param name="parameterName">The name of the parameter.</param>
         /// <returns>The argument value for this parameter.</returns>
+        [Obsolete("Please use GetActivityArgument(). Compilation warning since 2021-11-18.")]
         T GetArgument<T>(string parameterName);
+
+        /// <summary>
+        /// Access to the activity arguments
+        /// </summary>
+        /// <typeparam name="T">The type of the data in the parameter.</typeparam>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <returns>The argument value for this parameter.</returns>
+        T GetActivityArgument<T>(string parameterName);
 
         /// <summary>
         /// Set an activity context key-value.

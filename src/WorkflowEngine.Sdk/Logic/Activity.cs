@@ -7,8 +7,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
@@ -23,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         Activity activity,
         CancellationToken cancellationToken);
 
-    public abstract class Activity : IActivity
+    public abstract class Activity : IActivity, IWorkflowLogger
     {
         private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
@@ -65,6 +67,33 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         /// <inheritdoc />
         public override string ToString() => ActivityTitle;
 
+        /// <inheritdoc />
+        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data, CancellationToken cancellationToken)
+        {
+            try
+            {
+                FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
+                var jToken = WorkflowStatic.SafeConvertToJToken(data);
+                var log = new LogCreate
+                {
+                    WorkflowFormId = WorkflowInformation.FormId,
+                    WorkflowInstanceId = WorkflowInstanceId,
+                    ActivityFormId = _activityFlow?.ActivityFormId,
+                    SeverityLevel = severityLevel,
+                    Message = message,
+                    Data = jToken,
+                    TimeStamp = DateTimeOffset.UtcNow,
+                };
+                await WorkflowInformation.WorkflowCapability.Log.CreateAsync(log, cancellationToken);
+            }
+            catch (Exception)
+            {
+                if (FulcrumApplication.IsInDevelopment) throw;
+                // Ignore logging problems when not in development mode.
+            }
+        }
+
         public List<int> NestedIterations { get; } = new();
         public double AsyncRequestPriority => _activityFlow.AsyncRequestPriority;
         public ActivityExceptionAlertHandler ExceptionAlertHandler => _activityFlow.ExceptionAlertHandler;
@@ -95,9 +124,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use GetActivityArgument(). Compilation warning since 2021-11-18.")]
         public TParameter GetArgument<TParameter>(string parameterName)
         {
-            return _activityFlow.MethodHandler.GetArgument<TParameter>(parameterName);
+            return GetActivityArgument<TParameter>(parameterName);
+        }
+
+        /// <inheritdoc />
+        public T GetActivityArgument<T>(string parameterName)
+        {
+            return _activityFlow.MethodHandler.GetArgument<T>(parameterName);
         }
 
         /// <inheritdoc />

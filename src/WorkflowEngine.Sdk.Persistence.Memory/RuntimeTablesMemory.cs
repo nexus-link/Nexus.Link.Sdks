@@ -10,6 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         {
             WorkflowInstance = new WorkflowInstanceTableMemory();
             ActivityInstance = new ActivityInstanceTableMemory();
+            Log = new LogTableMemory();
         }
 
         /// <inheritdoc />
@@ -17,5 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
 
         /// <inheritdoc />
         public IActivityInstanceTable ActivityInstance { get; }
+
+        /// <inheritdoc />
+        public ILogTable Log { get; }
     }
 }

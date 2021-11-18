@@ -19,6 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
             ActivityForm= new ActivityFormRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityVersion= new ActivityVersionRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityInstance= new ActivityInstanceRestClient(httpSender.CreateHttpSender("State"));
+            Log= new LogRestClient(httpSender.CreateHttpSender("State"));
             Transition= new TransitionRestClient(httpSender.CreateHttpSender("Configuration"));
             ActivityParameter = new ActivityParameterRestClient(httpSender.CreateHttpSender("Configuration"));
             WorkflowInstance = new WorkflowInstanceRestClient(httpSender.CreateHttpSender("State"));
@@ -43,6 +44,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients
 
         /// <inheritdoc />
         public IActivityInstanceService ActivityInstance { get; }
+
+        /// <inheritdoc />
+        public ILogService Log { get; }
 
         /// <inheritdoc />
         public ITransitionService Transition { get; }

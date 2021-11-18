@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -130,17 +131,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
+                await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
                 return result;
             }
             catch (Exception e)
             {
-                throw HandleAndCreate(e);
+                throw await HandleAndCreateAsync(e, cancellationToken);
             }
             finally
             {
-                await AfterExecutionAsync(cancellationToken);
+                try
+                {
+                    await AfterExecutionAsync(cancellationToken);
+                }
+                finally
+                {
+                    await WorkflowInformation.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                }
             }
         }
 
@@ -150,24 +159,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
+                await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
             }
             catch (Exception e)
             {
-                throw HandleAndCreate(e);
+                throw await HandleAndCreateAsync(e, cancellationToken);
             }
             finally
             {
-                await AfterExecutionAsync(cancellationToken);
+                try
+                {
+                    await AfterExecutionAsync(cancellationToken);
+                }
+                finally
+                {
+                    await WorkflowInformation.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                }
             }
         }
 
-        private Exception HandleAndCreate(Exception exception)
+        private async Task<Exception> HandleAndCreateAsync(Exception exception, CancellationToken cancellationToken)
         {
             if (!(exception is ExceptionTransporter exceptionTransporter))
             {
-                UnexpectedException(exception);
+                await UnexpectedExceptionAsync(exception);
                 return new RequestPostponedException();
             }
 
@@ -192,15 +209,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                         TryAgain = true
                     };
                 default:
-                    UnexpectedException(innerException);
+                    await UnexpectedExceptionAsync(innerException);
                     return new RequestPostponedException();
             }
 
-            void UnexpectedException(Exception unexpected)
+            async Task UnexpectedExceptionAsync(Exception unexpected)
             {
+                var technicalMessage = $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected?.Message}";
+                await WorkflowInformation.LogCriticalAsync(technicalMessage, exception, cancellationToken);
                 WorkflowCache.Instance.State = WorkflowStateEnum.Halted;
                 WorkflowCache.Instance.ExceptionTechnicalMessage =
-                    $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected}";
+                    technicalMessage;
                 WorkflowCache.Instance.ExceptionFriendlyMessage =
                     $"The workflow engine failed; it encountered an unexpected exception";
             }

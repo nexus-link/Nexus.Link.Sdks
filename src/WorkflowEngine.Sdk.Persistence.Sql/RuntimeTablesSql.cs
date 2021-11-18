@@ -11,6 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         {
             WorkflowInstance = new WorkflowInstanceTableSql(options);
             ActivityInstance = new ActivityInstanceTableSql(options);
+            Log = new LogTableSql(options);
         }
 
         /// <inheritdoc />
@@ -18,5 +19,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 
         /// <inheritdoc />
         public IActivityInstanceTable ActivityInstance { get; }
+
+        /// <inheritdoc />
+        public ILogTable Log { get; }
     }
 }

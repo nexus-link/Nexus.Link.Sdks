@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
@@ -55,7 +56,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowExecutor.DefineParameter<T>(name);
         }
+
+        
+        [Obsolete("Please use GetWorkflowArgument(). Compilation warning since 2021-11-18.")]
         protected T GetArgument<T>(string name)
+        {
+            return GetWorkflowArgument<T>(name);
+        }
+        protected T GetWorkflowArgument<T>(string name)
         {
             return WorkflowExecutor.GetArgument<T>(name);
         }

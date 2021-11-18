@@ -13,6 +13,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.Libraries.Web.Serialization;
 
 namespace Nexus.Link.AsyncManager.Sdk.Extensions
 {
@@ -39,6 +40,33 @@ namespace Nexus.Link.AsyncManager.Sdk.Extensions
             }
 
             target.Content = source.Content == null ? null : new StringContent(source.Content, System.Text.Encoding.UTF8, "application/json");
+            return target;
+        }
+
+        /// <summary>
+        /// Deserialize to a <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        public static HttpRequestMessage ToHttpRequestMessage(this HttpRequestCreate source)
+        {
+            var requestData = new RequestData().From(source);
+            var target = requestData.ToHttpRequestMessage();
+            return target;
+        }
+
+        /// <summary>
+        /// Deserialize to a <see cref="HttpRequestMessage"/>.
+        /// </summary>
+        public static RequestData From(this RequestData target, HttpRequestCreate source, string contentType = "application/json")
+        {
+            InternalContract.RequireNotNull(target, nameof(target));
+            InternalContract.RequireNotNull(source, nameof(source));
+            InternalContract.RequireNotNullOrWhiteSpace(contentType, nameof(contentType));
+            target.Method = source.Method;
+            target.EncodedUrl = source.Url;
+            target.BodyAsString = source.Content;
+            target.ContentLength = source.Content?.Length ?? 0;
+            target.ContentType = contentType;
+            target.Headers = source.Headers;
             return target;
         }
 
