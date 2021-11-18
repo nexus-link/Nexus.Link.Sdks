@@ -25,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         Activity activity,
         CancellationToken cancellationToken);
 
-    public abstract class Activity : IActivity, IWorkflowLogger
+    public abstract class Activity : IActivity
     {
         private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
@@ -68,12 +68,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public override string ToString() => ActivityTitle;
 
         /// <inheritdoc />
-        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data, CancellationToken cancellationToken)
+        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null, CancellationToken cancellationToken = default)
         {
             try
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {

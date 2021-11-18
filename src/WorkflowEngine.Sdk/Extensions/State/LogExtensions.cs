@@ -33,7 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.ActivityFormId = source.ActivityFormId?.ToGuid();
             target.SeverityLevel = source.SeverityLevel.ToString();
             target.Message = source.Message;
-            target.DataAsJson = source.Data?.ToString();
+            target.DataAsJson = source.Data?.ToString(Formatting.Indented);
             target.TimeStamp = source.TimeStamp;
             return target;
         }

@@ -54,11 +54,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         }
 
         /// <inheritdoc />
-        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data, CancellationToken cancellationToken)
+        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null, CancellationToken cancellationToken = default)
         {
             try
             {
                 FulcrumAssert.IsNotNull(WorkflowCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {
