@@ -21,7 +21,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
-    public class WorkflowExecutor
+    public class WorkflowExecutor : IWorkflowLogger
     {
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;
@@ -34,6 +34,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 new WorkflowInformation(workflowImplementation);
             _methodHandler = new MethodHandler(workflowImplementation.WorkflowVersions.WorkflowFormTitle);
         }
+
+        public ActivityOptions DefaultActivityOptions => WorkflowInformation.DefaultActivityOptions;
 
         public T GetArgument<T>(string name)
         {
@@ -110,19 +112,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             _methodHandler.SetParameter(name, value);
         }
 
+        [Obsolete("Please use DefaultActivityOptions.FailUrgency. Compilation warning since 2021-11-19.")]
         public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            WorkflowInformation.DefaultFailUrgency = failUrgency;
+            WorkflowInformation.DefaultActivityOptions.FailUrgency = failUrgency;
         }
 
+        [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
         public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            WorkflowInformation.DefaultExceptionAlertHandler = alertHandler;
+            WorkflowInformation.DefaultActivityOptions.ExceptionAlertHandler = alertHandler;
         }
 
+        [Obsolete("Please use DefaultActivityOptions.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
         public void SetDefaultAsyncRequestPriority(double priority)
         {
-            WorkflowInformation.DefaultAsyncRequestPriority = priority;
+            WorkflowInformation.DefaultActivityOptions.AsyncRequestPriority = priority;
         }
 
         public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
@@ -246,6 +251,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
             return new ActivityFlow(WorkflowInformation, WorkflowCache, position, title, id.ToLowerInvariant());
+        }
+
+        /// <inheritdoc />
+        public Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
+            CancellationToken cancellationToken = default)
+        {
+            return WorkflowInformation.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
         }
     }
 }

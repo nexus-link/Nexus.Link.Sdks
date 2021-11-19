@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.WorkflowEngine.Sdk.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
@@ -18,9 +17,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         int Position { get; }
         string FormTitle { get; }
         string ActivityFormId { get; }
-        ActivityFailUrgencyEnum FailUrgency { get; }
-        double AsyncRequestPriority { get; }
-        ActivityExceptionAlertHandler ExceptionAlertHandler { get; }
+
+        ActivityOptions Options { get; }
     }
 
     public interface IActivityFlow
@@ -29,6 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetAsyncRequestPriority(double priority);
         IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
+        IActivityFlow SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
 
         IActivityAction Action();
         IActivityLoopUntilTrue LoopUntil();
@@ -42,6 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority);
         IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
+        IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
         
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);

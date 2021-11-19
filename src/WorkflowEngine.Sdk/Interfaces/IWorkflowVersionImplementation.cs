@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 { 
-    public interface IWorkflowImplementationBase
+    public interface IWorkflowImplementationBase : IWorkflowLogger
     {
         int MajorVersion { get; }
         int MinorVersion { get; }

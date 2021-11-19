@@ -30,9 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public int MinorVersion => WorkflowImplementation.MinorVersion;
         public string FormId { get; }
         public string InstanceId { get; set; }
-        public ActivityFailUrgencyEnum DefaultFailUrgency { get; set; } = ActivityFailUrgencyEnum.Stopping;
-        public ActivityExceptionAlertHandler DefaultExceptionAlertHandler { get; set; }
-        public double DefaultAsyncRequestPriority { get; set; } = 0.5;
+        public ActivityOptions DefaultActivityOptions { get; } = new();
 
         public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
         {
@@ -60,6 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             {
                 FulcrumAssert.IsNotNull(WorkflowCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
+                if ((int) severityLevel < (int) DefaultActivityOptions.LogSeverityLevelThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {

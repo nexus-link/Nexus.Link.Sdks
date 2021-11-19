@@ -54,7 +54,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public int? Iteration { get; protected set; }
 
         /// <inheritdoc />
-        public ActivityFailUrgencyEnum FailUrgency => _activityFlow.FailUrgency;
+        public ActivityOptions Options => _activityFlow.Options;
+
+        /// <inheritdoc />
+        [Obsolete("Please use Options.FailUrgency. Compilation warning since 2021-11-19.")]
+        public ActivityFailUrgencyEnum FailUrgency => Options.FailUrgency;
 
         public WorkflowInformation WorkflowInformation => _activityFlow.WorkflowInformation;
 
@@ -75,6 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
+                if ((int) severityLevel < (int) Options.LogSeverityLevelThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {
@@ -96,8 +101,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         public List<int> NestedIterations { get; } = new();
-        public double AsyncRequestPriority => _activityFlow.AsyncRequestPriority;
-        public ActivityExceptionAlertHandler ExceptionAlertHandler => _activityFlow.ExceptionAlertHandler;
+
+        [Obsolete("Please use Options.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
+        public double AsyncRequestPriority => Options.AsyncRequestPriority;
+
+        [Obsolete("Please use Options.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
+        public ActivityExceptionAlertHandler ExceptionAlertHandler => Options.ExceptionAlertHandler;
 
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow)
         {

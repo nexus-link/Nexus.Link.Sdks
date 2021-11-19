@@ -243,7 +243,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                         Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
                         WorkflowVersionId = _summary.Version.Id,
                         ActivityFormId = activityFlow.ActivityFormId,
-                        FailUrgency = activityFlow.FailUrgency,
+                        FailUrgency = activityFlow.Options.FailUrgency,
                         ParentActivityVersionId = parentActivity?.Version?.Id,
                         Position = activityFlow.Position
                     };

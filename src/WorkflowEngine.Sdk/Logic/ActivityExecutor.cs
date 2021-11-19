@@ -7,14 +7,12 @@ using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
-using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
@@ -289,7 +287,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             if (Activity.Instance.ExceptionAlertHandled.HasValue &&
                 Activity.Instance.ExceptionAlertHandled.Value) return;
 
-            if (Activity.ExceptionAlertHandler == null) return;
+            if (Activity.Options.ExceptionAlertHandler == null) return;
 
             var alert = new ActivityExceptionAlert
             {
@@ -303,7 +301,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             try
             {
                 var handled =
-                    await Activity.ExceptionAlertHandler(alert, cancellationToken);
+                    await Activity.Options.ExceptionAlertHandler(alert, cancellationToken);
                 Activity.Instance.ExceptionAlertHandled = handled;
             }
             catch (Exception)

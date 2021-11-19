@@ -31,8 +31,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         int? Iteration { get; }
 
         /// <summary>
+        /// The <see cref="ActivityOptions"/> for this activity.
+        /// </summary>
+        ActivityOptions Options { get; }
+
+        /// <summary>
         /// The fail urgency for this activity
         /// </summary>
+        [Obsolete("Please use Options.FailUrgency. Compilation warning since 2021-11-19.")]
         ActivityFailUrgencyEnum FailUrgency { get; }
 
         /// <summary>

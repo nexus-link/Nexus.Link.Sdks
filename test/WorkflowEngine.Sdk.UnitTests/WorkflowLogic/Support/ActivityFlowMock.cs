@@ -19,19 +19,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public string ActivityFormId { get; set; }
 
         /// <inheritdoc />
+        public ActivityOptions Options { get; } = new ActivityOptions();
+
+        /// <inheritdoc />
         public MethodHandler MethodHandler { get; set; }
 
         /// <inheritdoc />
         public string FormTitle { get; set; }
-
-        /// <inheritdoc />
-        public ActivityFailUrgencyEnum FailUrgency { get; set; }
-
-        /// <inheritdoc />
-        public double AsyncRequestPriority { get; set; }
-
-        /// <inheritdoc />
-        public ActivityExceptionAlertHandler ExceptionAlertHandler { get; set; }
 
         /// <inheritdoc />
         public int Position { get; set; }
@@ -47,9 +41,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
             Position = position;
-            FailUrgency = workflowInformation.DefaultFailUrgency;
-            AsyncRequestPriority = workflowInformation.DefaultAsyncRequestPriority;
-            ExceptionAlertHandler = workflowInformation.DefaultExceptionAlertHandler;
+           
+            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
+            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
+            Options.ExceptionAlertHandler = workflowInformation.DefaultActivityOptions.ExceptionAlertHandler;
         }
     }
 }

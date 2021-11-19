@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -26,7 +27,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public IWorkflowVersions WorkflowVersions { get; }
 
-        public WorkflowExecutor WorkflowExecutor { get; set; }
+        protected WorkflowExecutor WorkflowExecutor { get; }
+
+        public ActivityOptions DefaultActivityOptions => WorkflowExecutor.DefaultActivityOptions;
 
         protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
         {
@@ -68,16 +71,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return WorkflowExecutor.GetArgument<T>(name);
         }
 
+        [Obsolete("Please use DefaultActivityOptions.FailUrgency. Compilation warning since 2021-11-19.")]
         public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
             WorkflowExecutor.SetDefaultFailUrgency(failUrgency);
         }
 
+        [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
         public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
             WorkflowExecutor.SetDefaultExceptionAlertHandler(alertHandler);
         }
 
+        [Obsolete("Please use DefaultActivityOptions.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
         public void SetDefaultAsyncRequestPriority(double priority)
         {
             WorkflowExecutor.SetDefaultAsyncRequestPriority(priority);
@@ -86,6 +92,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public override string ToString() =>
             $"{WorkflowVersions} {MajorVersion}.{MinorVersion}";
+
+        /// <inheritdoc />
+        public Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
+            CancellationToken cancellationToken = default)
+        {
+            return WorkflowExecutor.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
+        }
     }
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
     {

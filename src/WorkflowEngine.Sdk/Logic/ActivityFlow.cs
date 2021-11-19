@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
@@ -28,13 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public string FormTitle { get; }
 
         /// <inheritdoc />
-        public ActivityFailUrgencyEnum FailUrgency { get; protected set; }
-
-        /// <inheritdoc />
-        public double AsyncRequestPriority { get; protected set; }
-
-        /// <inheritdoc />
-        public ActivityExceptionAlertHandler ExceptionAlertHandler { get; protected set; }
+        public ActivityOptions Options { get; } = new();
         
         /// <inheritdoc />
         public int Position { get; }
@@ -48,9 +42,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             FormTitle = formTitle;
             ActivityFormId = activityFormId;
             MethodHandler = new MethodHandler(formTitle);
-            FailUrgency = workflowInformation.DefaultFailUrgency;
-            AsyncRequestPriority = workflowInformation.DefaultAsyncRequestPriority;
-            ExceptionAlertHandler = workflowInformation.DefaultExceptionAlertHandler;
+            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
+            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
+            Options.ExceptionAlertHandler = workflowInformation.DefaultActivityOptions.ExceptionAlertHandler;
+            Options.LogSeverityLevelThreshold = workflowInformation.DefaultActivityOptions.LogSeverityLevelThreshold;
         }
     }
 
@@ -72,21 +67,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         /// <inheritdoc />
         public IActivityFlow SetAsyncRequestPriority(double priority)
         {
-            AsyncRequestPriority = priority;
+            Options.AsyncRequestPriority = priority;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            FailUrgency = failUrgency;
+            Options.FailUrgency = failUrgency;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            ExceptionAlertHandler = alertHandler;
+            Options.ExceptionAlertHandler = alertHandler;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel)
+        {
+            Options.LogSeverityLevelThreshold = severityLevel;
             return this;
         }
 
@@ -135,34 +137,41 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority)
         {
-            AsyncRequestPriority = priority;
+            Options.AsyncRequestPriority = priority;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            FailUrgency = failUrgency;
+            Options.FailUrgency = failUrgency;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            ExceptionAlertHandler = alertHandler;
+            Options.ExceptionAlertHandler = alertHandler;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel)
+        {
+            Options.LogSeverityLevelThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue)
         {
-            return SetDefaultValueForNotUrgentFail(ct => Task.FromResult(defaultValue));
+            return SetDefaultValueForNotUrgentFail(_ => Task.FromResult(defaultValue));
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod)
         {
-            return SetDefaultValueForNotUrgentFail(ct => Task.FromResult(getDefaultValueMethod()));
+            return SetDefaultValueForNotUrgentFail(_ => Task.FromResult(getDefaultValueMethod()));
         }
 
         /// <inheritdoc />
