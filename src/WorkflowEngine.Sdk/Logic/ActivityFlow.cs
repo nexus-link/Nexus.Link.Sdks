@@ -94,6 +94,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             return this;
         }
 
+        /// <inheritdoc />
+        public IActivityFlow SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy)
+        {
+            Options.PurgeLogStrategy = purgeLogStrategy;
+            return this;
+        }
+
         /// <inheritdoc/>
         public IActivityAction Action()
         {
@@ -161,6 +168,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel)
         {
             Options.LogSeverityLevelThreshold = severityLevel;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy)
+        {
+            Options.PurgeLogStrategy = purgeLogStrategy;
             return this;
         }
 

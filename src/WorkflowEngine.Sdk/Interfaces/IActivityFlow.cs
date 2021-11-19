@@ -28,6 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
         IActivityFlow SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
+        IActivityFlow SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy);
 
         IActivityAction Action();
         IActivityLoopUntilTrue LoopUntil();
@@ -42,6 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
         IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
+        IActivityFlow<TActivityReturns> SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy);
         
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);
