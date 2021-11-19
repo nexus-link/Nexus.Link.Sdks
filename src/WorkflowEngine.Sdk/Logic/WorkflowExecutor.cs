@@ -136,10 +136,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
-                await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
+                await this.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
-                await WorkflowInformation.LogInformationAsync($"Workflow successful", result, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -154,9 +154,41 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 }
                 finally
                 {
-                    await WorkflowInformation.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                    await PurgeLogsAsync(cancellationToken);
                 }
             }
+        }
+
+        public async Task PurgeLogsAsync(CancellationToken cancellationToken)
+        {
+            var purge = false;
+            var workflowInstance = WorkflowCache.Instance;
+            FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
+            switch (DefaultActivityOptions.PurgeLogStrategy)
+            {
+                case PurgeLogStrategyEnum.AfterActivitySuccess:
+                    purge = workflowInstance.IsComplete;
+                    break;
+                case PurgeLogStrategyEnum.AfterWorkflowSuccess:
+                    purge = workflowInstance.State == WorkflowStateEnum.Success;
+                    break;
+                case PurgeLogStrategyEnum.AfterWorkflowReturn:
+                    purge = workflowInstance.State == WorkflowStateEnum.Success || workflowInstance.State == WorkflowStateEnum.Failed;
+                    break;
+                case PurgeLogStrategyEnum.AfterWorkflowComplete:
+                    purge = workflowInstance.IsComplete;
+                    break;
+                case PurgeLogStrategyEnum.None:
+                    break;
+                default:
+                    throw new FulcrumAssertionFailedException(
+                        $"Unexpected {nameof(PurgeLogStrategyEnum)}: {DefaultActivityOptions.PurgeLogStrategy}", 
+                        CodeLocation.AsString());
+            }
+
+            if (!purge) return;
+            await WorkflowInformation.WorkflowCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, cancellationToken);
         }
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
@@ -165,10 +197,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
-                await WorkflowInformation.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
+                await this.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
-                await WorkflowInformation.LogInformationAsync($"Workflow successful", null, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful", null, cancellationToken);
             }
             catch (Exception e)
             {
@@ -182,7 +214,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 }
                 finally
                 {
-                    await WorkflowInformation.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
                 }
             }
         }
@@ -223,12 +255,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             async Task UnexpectedExceptionAsync(Exception unexpected)
             {
                 var technicalMessage = $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected?.Message}";
-                await WorkflowInformation.LogCriticalAsync(technicalMessage, exception, cancellationToken);
+                await this.LogCriticalAsync(technicalMessage, exception, cancellationToken);
                 WorkflowCache.Instance.State = WorkflowStateEnum.Halted;
                 WorkflowCache.Instance.ExceptionTechnicalMessage =
                     technicalMessage;
                 WorkflowCache.Instance.ExceptionFriendlyMessage =
-                    $"The workflow engine failed; it encountered an unexpected exception";
+                    "The workflow engine failed; it encountered an unexpected exception";
             }
         }
 
@@ -254,10 +286,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
+        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
             CancellationToken cancellationToken = default)
         {
-            return WorkflowInformation.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
+            try
+            {
+                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
+                if ((int) severityLevel < (int) DefaultActivityOptions.LogSeverityLevelThreshold) return;
+                var jToken = WorkflowStatic.SafeConvertToJToken(data);
+                var log = new LogCreate
+                {
+                    WorkflowFormId = WorkflowInformation.FormId,
+                    WorkflowInstanceId = WorkflowInformation.InstanceId,
+                    ActivityFormId = null,
+                    SeverityLevel = severityLevel,
+                    Message = message,
+                    Data = jToken,
+                    TimeStamp = DateTimeOffset.UtcNow,
+                };
+                await WorkflowInformation.WorkflowCapability.Log.CreateAsync(log, cancellationToken);
+            }
+            catch (Exception)
+            {
+                if (FulcrumApplication.IsInDevelopment) throw;
+                // Ignore logging problems when not in development mode.
+            }
         }
     }
 }

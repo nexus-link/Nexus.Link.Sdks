@@ -52,20 +52,38 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 new
                 {
                     WorkflowInstanceId = workflowInstanceId,
-                    ActivityInstanceId = (Guid?)null
+                    ActivityFormId = (Guid?)null
                 }), offset, limit, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityInstanceId, int offset, int? limit = null,
+        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityFormId, int offset, int? limit = null,
             CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotDefaultValue(activityInstanceId, nameof(activityInstanceId));
+            InternalContract.RequireNotDefaultValue(activityFormId, nameof(activityFormId));
             return SearchAsync(new SearchDetails<LogRecord>(
                 new
                 {
-                    ActivityInstanceId = activityInstanceId
+                    ActivityFormId = activityFormId
                 }), offset, limit, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, CancellationToken cancellationToken)
+        {
+            return DeleteWhereAsync(
+                "WorkflowInstanceId=@workflowInstanceId",
+                new { WorkflowInstanceId = workflowInstanceId }, 
+                cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task DeleteActivityChildrenAsync(Guid activityFormId, CancellationToken cancellationToken)
+        {
+            return DeleteWhereAsync(
+                "ActivityFormId=@activityFormId",
+                new { ActivityFormId = activityFormId }, 
+                cancellationToken);
         }
     }
 }

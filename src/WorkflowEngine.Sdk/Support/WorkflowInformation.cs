@@ -1,24 +1,15 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+﻿using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Logging;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
-    public class WorkflowInformation : IValidatable, IWorkflowLogger
+    public class WorkflowInformation : IValidatable
     {
         public IWorkflowImplementationBase WorkflowImplementation { get; set; }
 
-        public IWorkflowVersions WorkflowVersions =>
-            WorkflowImplementation.WorkflowVersions;
+        public IWorkflowVersions WorkflowVersions => WorkflowImplementation.WorkflowVersions;
 
         public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability => WorkflowVersions.AsyncRequestMgmtCapability;
 
@@ -49,34 +40,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             FulcrumValidate.IsGreaterThanOrEqualTo(0, MinorVersion, nameof(MinorVersion), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(InstanceId, nameof(InstanceId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(InstanceTitle, nameof(InstanceTitle), errorLocation);
-        }
-
-        /// <inheritdoc />
-        public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                FulcrumAssert.IsNotNull(WorkflowCapability, CodeLocation.AsString());
-                FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
-                if ((int) severityLevel < (int) DefaultActivityOptions.LogSeverityLevelThreshold) return;
-                var jToken = WorkflowStatic.SafeConvertToJToken(data);
-                var log = new LogCreate
-                {
-                    WorkflowFormId = FormId,
-                    WorkflowInstanceId = InstanceId,
-                    ActivityFormId = null,
-                    SeverityLevel = severityLevel,
-                    Message = message,
-                    Data = jToken,
-                    TimeStamp = DateTimeOffset.UtcNow,
-                };
-                await WorkflowCapability.Log.CreateAsync(log, cancellationToken);
-            }
-            catch (Exception)
-            {
-                if (FulcrumApplication.IsInDevelopment) throw;
-                // Ignore logging problems when not in development mode.
-            }
         }
     }
 }

@@ -56,5 +56,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 offset, limit, cancellationToken);
             return new PageEnvelope<Log>(page.PageInfo, page.Data.Select(i => new Log().From(i)));
         }
+
+        /// <inheritdoc />
+        public Task DeleteWorkflowChildrenAsync(string workflowInstanceId,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+            var idAsGuid = workflowInstanceId.ToGuid();
+            return _runtimeTables.Log.DeleteWorkflowChildrenAsync(idAsGuid, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task DeleteActivityChildrenAsync(string activityInstanceId,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
+            var idAsGuid = activityInstanceId.ToGuid();
+            return _runtimeTables.Log.DeleteActivityChildrenAsync(idAsGuid, cancellationToken);
+        }
     }
 }

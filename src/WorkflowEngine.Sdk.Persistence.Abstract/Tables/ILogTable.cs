@@ -13,8 +13,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
             bool alsoActivityChildren, int offset, int? limit = null,
             CancellationToken cancellationToken = default);
 
-        Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityInstanceId, int offset,
+        Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityFormId, int offset,
             int? limit = null,
             CancellationToken cancellationToken = default);
+
+        Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, CancellationToken cancellationToken);
+
+        Task DeleteActivityChildrenAsync(Guid activityFormId, CancellationToken cancellationToken);
     }
 }

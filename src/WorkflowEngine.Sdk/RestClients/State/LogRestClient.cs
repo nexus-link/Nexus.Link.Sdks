@@ -37,5 +37,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.State
             var relativeUrl = $"ActivityInstances/{WebUtility.UrlEncode(activityInstanceId)}/Logs";
             return GetAsync<PageEnvelope<Log>>(relativeUrl, null, cancellationToken);
         }
+
+        /// <inheritdoc />
+        public Task DeleteWorkflowChildrenAsync(string workflowInstanceId,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task DeleteActivityChildrenAsync(string activityInstanceId,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

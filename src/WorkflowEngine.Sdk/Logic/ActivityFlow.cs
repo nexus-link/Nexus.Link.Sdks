@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -42,10 +43,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             FormTitle = formTitle;
             ActivityFormId = activityFormId;
             MethodHandler = new MethodHandler(formTitle);
-            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
-            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
             Options.ExceptionAlertHandler = workflowInformation.DefaultActivityOptions.ExceptionAlertHandler;
             Options.LogSeverityLevelThreshold = workflowInformation.DefaultActivityOptions.LogSeverityLevelThreshold;
+            Options.PurgeLogStrategy = workflowInformation.DefaultActivityOptions.PurgeLogStrategy;
+            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
+            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
         }
     }
 

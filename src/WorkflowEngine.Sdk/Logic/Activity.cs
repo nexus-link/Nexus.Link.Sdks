@@ -85,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 {
                     WorkflowFormId = WorkflowInformation.FormId,
                     WorkflowInstanceId = WorkflowInstanceId,
-                    ActivityFormId = _activityFlow?.ActivityFormId,
+                    ActivityFormId = Form?.Id,
                     SeverityLevel = severityLevel,
                     Message = message,
                     Data = jToken,
@@ -193,6 +193,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             InternalContract.RequireNotNull(method, nameof(method));
             await _activityExecutor.ExecuteAsync(method, cancellationToken);
+        }
+
+        public async Task PurgeLogsAsync(CancellationToken cancellationToken)
+        {
+            var purge = false;
+            switch (Options.PurgeLogStrategy)
+            {
+                case PurgeLogStrategyEnum.AfterActivitySuccess:
+                    purge = Instance.State == ActivityStateEnum.Success;
+                    break;
+                case PurgeLogStrategyEnum.None:
+                case PurgeLogStrategyEnum.AfterWorkflowSuccess:
+                case PurgeLogStrategyEnum.AfterWorkflowReturn:
+                case PurgeLogStrategyEnum.AfterWorkflowComplete:
+                    break;
+                default:
+                    throw new FulcrumAssertionFailedException(
+                        $"Unexpected {nameof(PurgeLogStrategyEnum)}: {Options.PurgeLogStrategy}", 
+                        CodeLocation.AsString());
+            }
+
+            if (!purge) return;
+            await WorkflowInformation.WorkflowCapability.Log.DeleteActivityChildrenAsync(Form.Id, cancellationToken);
         }
     }
 }
