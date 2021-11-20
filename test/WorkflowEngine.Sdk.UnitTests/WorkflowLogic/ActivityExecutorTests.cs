@@ -118,12 +118,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var implementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
             var workflowInformation = new WorkflowInformation(implementation)
             {
-                DefaultActivityOptions = {
+                DefaultActivityOptions =
+                {
                     ExceptionAlertHandler = (alert, token) =>
-                    { 
+                    {
                         alertResult = true;
                         return Task.FromResult(true);
-                    },
+                    }
                 }
             };
             var activityFlowMock = new ActivityFlowMock(workflowInformation,

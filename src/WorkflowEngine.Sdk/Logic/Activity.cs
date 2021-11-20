@@ -79,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
-                if ((int) severityLevel < (int) Options.LogSeverityLevelThreshold) return;
+                if ((int) severityLevel < (int) Options.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {
@@ -198,24 +198,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public async Task PurgeLogsAsync(CancellationToken cancellationToken)
         {
             var purge = false;
-            switch (Options.PurgeLogStrategy)
+            switch (Options.LogPurgeStrategy)
             {
-                case PurgeLogStrategyEnum.AfterActivitySuccess:
+                case LogPurgeStrategyEnum.AfterActivitySuccess:
                     purge = Instance.State == ActivityStateEnum.Success;
                     break;
-                case PurgeLogStrategyEnum.None:
-                case PurgeLogStrategyEnum.AfterWorkflowSuccess:
-                case PurgeLogStrategyEnum.AfterWorkflowReturn:
-                case PurgeLogStrategyEnum.AfterWorkflowComplete:
+                case LogPurgeStrategyEnum.None:
+                case LogPurgeStrategyEnum.AfterWorkflowSuccess:
+                case LogPurgeStrategyEnum.AfterWorkflowReturn:
+                case LogPurgeStrategyEnum.AfterWorkflowComplete:
                     break;
                 default:
                     throw new FulcrumAssertionFailedException(
-                        $"Unexpected {nameof(PurgeLogStrategyEnum)}: {Options.PurgeLogStrategy}", 
+                        $"Unexpected {nameof(LogPurgeStrategyEnum)}: {Options.LogPurgeStrategy}", 
                         CodeLocation.AsString());
             }
 
             if (!purge) return;
-            await WorkflowInformation.WorkflowCapability.Log.DeleteActivityChildrenAsync(Form.Id, cancellationToken);
+            await WorkflowInformation.WorkflowCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
         }
     }
 }

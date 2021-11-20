@@ -26,6 +26,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(LogRecord.WorkflowInstanceId),
                 nameof(LogRecord.ActivityFormId),
                 nameof(LogRecord.SeverityLevel),
+                nameof(LogRecord.SeverityLevelNumber),
                 nameof(LogRecord.Message),
                 nameof(LogRecord.DataAsJson),
                 nameof(LogRecord.TimeStamp)
@@ -57,32 +58,45 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         }
 
         /// <inheritdoc />
-        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityFormId, int offset, int? limit = null,
+        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid workflowInstanceId, Guid activityFormId, int offset, int? limit = null,
             CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotDefaultValue(activityFormId, nameof(activityFormId));
             return SearchAsync(new SearchDetails<LogRecord>(
                 new
                 {
+                    WorkflowInstanceId = workflowInstanceId,
                     ActivityFormId = activityFormId
                 }), offset, limit, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, CancellationToken cancellationToken)
+        public Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, int? threshold = null,
+            CancellationToken cancellationToken = default)
         {
+            string @where = $"{nameof(LogRecord.WorkflowInstanceId)}=@workflowInstanceId";
+            if (threshold.HasValue)
+            {
+                @where += $" AND {nameof(LogRecord.SeverityLevelNumber)}<=@threshold";
+            }
             return DeleteWhereAsync(
-                "WorkflowInstanceId=@workflowInstanceId",
-                new { WorkflowInstanceId = workflowInstanceId }, 
+                @where,
+                new { WorkflowInstanceId = workflowInstanceId, Threshold = threshold},
                 cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task DeleteActivityChildrenAsync(Guid activityFormId, CancellationToken cancellationToken)
+        public Task DeleteActivityChildrenAsync(Guid workflowInstanceId, Guid activityFormId, int? threshold = null,
+            CancellationToken cancellationToken = default)
         {
+            string @where = $"{nameof(LogRecord.WorkflowInstanceId)}=@{nameof(LogRecord.WorkflowInstanceId)} AND {nameof(LogRecord.ActivityFormId)}=@{nameof(LogRecord.ActivityFormId)}";
+            if (threshold.HasValue)
+            {
+                @where += $" AND {nameof(LogRecord.SeverityLevelNumber)}<=@threshold";
+            }
             return DeleteWhereAsync(
-                "ActivityFormId=@activityFormId",
-                new { ActivityFormId = activityFormId }, 
+                @where,
+                new { WorkflowInstanceId = workflowInstanceId, ActivityFormId = activityFormId, Threshold = threshold },
                 cancellationToken);
         }
     }

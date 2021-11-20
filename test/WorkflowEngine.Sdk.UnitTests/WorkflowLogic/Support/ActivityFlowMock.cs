@@ -42,9 +42,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             MethodHandler = new MethodHandler(formTitle);
             Position = position;
            
-            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
-            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
-            Options.ExceptionAlertHandler = workflowInformation.DefaultActivityOptions.ExceptionAlertHandler;
+            Options.From(workflowInformation.DefaultActivityOptions);
         }
     }
 }

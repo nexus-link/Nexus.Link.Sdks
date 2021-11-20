@@ -43,11 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             FormTitle = formTitle;
             ActivityFormId = activityFormId;
             MethodHandler = new MethodHandler(formTitle);
-            Options.ExceptionAlertHandler = workflowInformation.DefaultActivityOptions.ExceptionAlertHandler;
-            Options.LogSeverityLevelThreshold = workflowInformation.DefaultActivityOptions.LogSeverityLevelThreshold;
-            Options.PurgeLogStrategy = workflowInformation.DefaultActivityOptions.PurgeLogStrategy;
-            Options.AsyncRequestPriority = workflowInformation.DefaultActivityOptions.AsyncRequestPriority;
-            Options.FailUrgency = workflowInformation.DefaultActivityOptions.FailUrgency;
+            Options.From(workflowInformation.DefaultActivityOptions);
         }
     }
 
@@ -88,16 +84,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel)
+        public IActivityFlow SetLogCreateThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogSeverityLevelThreshold = severityLevel;
+            Options.LogCreateThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc />
-        public IActivityFlow SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy)
+        public IActivityFlow SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy)
         {
-            Options.PurgeLogStrategy = purgeLogStrategy;
+            Options.LogPurgeStrategy = logPurgeStrategy;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel)
+        {
+            Options.LogPurgeThreshold = severityLevel;
             return this;
         }
 
@@ -165,16 +168,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel)
+        public IActivityFlow<TActivityReturns> SetLogCreateThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogSeverityLevelThreshold = severityLevel;
+            Options.LogCreateThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc />
-        public IActivityFlow<TActivityReturns> SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy)
+        public IActivityFlow<TActivityReturns> SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy)
         {
-            Options.PurgeLogStrategy = purgeLogStrategy;
+            Options.LogPurgeStrategy = logPurgeStrategy;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetLogPurgeThreshold(LogSeverityLevel severityLevel)
+        {
+            Options.LogPurgeThreshold = severityLevel;
             return this;
         }
 

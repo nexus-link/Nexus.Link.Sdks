@@ -27,8 +27,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetAsyncRequestPriority(double priority);
         IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
-        IActivityFlow SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
-        IActivityFlow SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy);
+        IActivityFlow SetLogCreateThreshold(LogSeverityLevel severityLevel);
+        IActivityFlow SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
+        IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel);
 
         IActivityAction Action();
         IActivityLoopUntilTrue LoopUntil();
@@ -42,8 +43,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority);
         IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
         IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
-        IActivityFlow<TActivityReturns> SetLogSeverityLevelThreshold(LogSeverityLevel severityLevel);
-        IActivityFlow<TActivityReturns> SetPurgeLogStrategy(PurgeLogStrategyEnum purgeLogStrategy);
+        IActivityFlow<TActivityReturns> SetLogCreateThreshold(LogSeverityLevel severityLevel);
+        IActivityFlow<TActivityReturns> SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
+        IActivityFlow<TActivityReturns> SetLogPurgeThreshold(LogSeverityLevel severityLevel);
         
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);

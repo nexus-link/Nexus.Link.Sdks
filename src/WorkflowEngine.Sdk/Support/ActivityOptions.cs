@@ -1,10 +1,10 @@
 ﻿using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Libraries.Core.Logging;
 
-namespace Nexus.Link.WorkflowEngine.Sdk
+namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
 
-    public enum PurgeLogStrategyEnum
+    public enum LogPurgeStrategyEnum
     {
         /// <summary>
         /// No purge of log messages
@@ -50,13 +50,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public double AsyncRequestPriority { get; set; } = 0.5;
 
         /// <summary>
-        /// This level of logs (and higher) will be saved to the Log table.
+        /// Logs with this level of severity level and higher will be saved to the Log table.
         /// </summary>
-        public LogSeverityLevel LogSeverityLevelThreshold { get; set; } = LogSeverityLevel.Warning;
+        public LogSeverityLevel LogCreateThreshold { get; set; } = LogSeverityLevel.Warning;
 
         /// <summary>
-        /// The strategy to be used after each activity. Purge the activity logs or not?
+        /// Log with this severity level or lower will be affected by the <see cref="LogPurgeStrategy"/>.
         /// </summary>
-        public PurgeLogStrategyEnum PurgeLogStrategy { get; set; } = PurgeLogStrategyEnum.AfterActivitySuccess;
+        public LogSeverityLevel LogPurgeThreshold { get; set; } = LogSeverityLevel.Information;
+
+        /// <summary>
+        /// The strategy to be used after each activity and workflow. Purge the activity logs or not?
+        /// </summary>
+        public LogPurgeStrategyEnum LogPurgeStrategy { get; set; } = LogPurgeStrategyEnum.AfterActivitySuccess;
+
+        public ActivityOptions From(ActivityOptions source)
+        {
+            FailUrgency = source.FailUrgency;
+            ExceptionAlertHandler = source.ExceptionAlertHandler;
+            AsyncRequestPriority = source.AsyncRequestPriority;
+            LogCreateThreshold = source.LogCreateThreshold;
+            LogPurgeThreshold = source.LogPurgeThreshold;
+            LogPurgeStrategy = source.LogPurgeStrategy;
+            return this;
+        }
     }
 }

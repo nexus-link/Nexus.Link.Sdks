@@ -5,11 +5,13 @@ using System.Transactions;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
+using Log = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 {
@@ -30,9 +32,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             var record = new LogRecordCreate().From(item);
             var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
             using var scope = new TransactionScope(TransactionScopeOption.Suppress, options, TransactionScopeAsyncFlowOption.Enabled);
-            var idAsGuid = await _runtimeTables.Log.CreateAsync(record, cancellationToken);
+            var workflowInstanceId = await _runtimeTables.Log.CreateAsync(record, cancellationToken);
             scope.Complete();
-            return idAsGuid.ToLowerCaseString();
+            return workflowInstanceId.ToLowerCaseString();
         }
 
         /// <inheritdoc />
@@ -47,32 +49,38 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         }
 
         /// <inheritdoc />
-        public async Task<PageEnvelope<Log>> ReadActivityChildrenWithPagingAsync(string activityInstanceId, int offset, int? limit = null,
-            CancellationToken cancellationToken = new CancellationToken())
+        public async Task<PageEnvelope<Log>> ReadActivityChildrenWithPagingAsync(string workflowInstanceId, string activityFormId, int offset,
+            int? limit = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
-            var idAsGuid = activityInstanceId.ToGuid();
-            var page = await _runtimeTables.Log.ReadActivityChildrenWithPagingAsync(idAsGuid,
+            InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+            InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
+            var page = await _runtimeTables.Log.ReadActivityChildrenWithPagingAsync(workflowInstanceId.ToGuid(),
+                activityFormId.ToGuid(), 
                 offset, limit, cancellationToken);
             return new PageEnvelope<Log>(page.PageInfo, page.Data.Select(i => new Log().From(i)));
         }
 
         /// <inheritdoc />
-        public Task DeleteWorkflowChildrenAsync(string workflowInstanceId,
+        public async Task DeleteWorkflowChildrenAsync(string workflowInstanceId, LogSeverityLevel? threshold = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
-            var idAsGuid = workflowInstanceId.ToGuid();
-            return _runtimeTables.Log.DeleteWorkflowChildrenAsync(idAsGuid, cancellationToken);
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Suppress, options, TransactionScopeAsyncFlowOption.Enabled);
+            await _runtimeTables.Log.DeleteWorkflowChildrenAsync(workflowInstanceId.ToGuid(), threshold == null ? null : (int) threshold, cancellationToken);
+            scope.Complete();
         }
 
         /// <inheritdoc />
-        public Task DeleteActivityChildrenAsync(string activityInstanceId,
+        public async Task DeleteActivityChildrenAsync(string workflowInstanceId, string activityFormId, LogSeverityLevel? threshold = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
-            var idAsGuid = activityInstanceId.ToGuid();
-            return _runtimeTables.Log.DeleteActivityChildrenAsync(idAsGuid, cancellationToken);
+            InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+            InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Suppress, options, TransactionScopeAsyncFlowOption.Enabled);
+            await _runtimeTables.Log.DeleteActivityChildrenAsync(workflowInstanceId.ToGuid(), activityFormId.ToGuid(), threshold == null ? null : (int) threshold, cancellationToken);
+            scope.Complete();
         }
     }
 }

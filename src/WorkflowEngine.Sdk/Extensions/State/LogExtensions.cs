@@ -28,6 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             target.WorkflowInstanceId = source.WorkflowInstanceId?.ToGuid();
             target.ActivityFormId = source.ActivityFormId?.ToGuid();
             target.SeverityLevel = source.SeverityLevel.ToString();
+            target.SeverityLevelNumber = (int) source.SeverityLevel;
             target.Message = source.Message;
             target.DataAsJson = source.Data?.ToString(Formatting.Indented);
             target.TimeStamp = source.TimeStamp;

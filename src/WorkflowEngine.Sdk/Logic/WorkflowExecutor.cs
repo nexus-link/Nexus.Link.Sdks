@@ -165,30 +165,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             var purge = false;
             var workflowInstance = WorkflowCache.Instance;
             FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
-            switch (DefaultActivityOptions.PurgeLogStrategy)
+            switch (DefaultActivityOptions.LogPurgeStrategy)
             {
-                case PurgeLogStrategyEnum.AfterActivitySuccess:
+                case LogPurgeStrategyEnum.AfterActivitySuccess:
                     purge = workflowInstance.IsComplete;
                     break;
-                case PurgeLogStrategyEnum.AfterWorkflowSuccess:
+                case LogPurgeStrategyEnum.AfterWorkflowSuccess:
                     purge = workflowInstance.State == WorkflowStateEnum.Success;
                     break;
-                case PurgeLogStrategyEnum.AfterWorkflowReturn:
+                case LogPurgeStrategyEnum.AfterWorkflowReturn:
                     purge = workflowInstance.State == WorkflowStateEnum.Success || workflowInstance.State == WorkflowStateEnum.Failed;
                     break;
-                case PurgeLogStrategyEnum.AfterWorkflowComplete:
+                case LogPurgeStrategyEnum.AfterWorkflowComplete:
                     purge = workflowInstance.IsComplete;
                     break;
-                case PurgeLogStrategyEnum.None:
+                case LogPurgeStrategyEnum.None:
                     break;
                 default:
                     throw new FulcrumAssertionFailedException(
-                        $"Unexpected {nameof(PurgeLogStrategyEnum)}: {DefaultActivityOptions.PurgeLogStrategy}", 
+                        $"Unexpected {nameof(LogPurgeStrategyEnum)}: {DefaultActivityOptions.LogPurgeStrategy}", 
                         CodeLocation.AsString());
             }
 
             if (!purge) return;
-            await WorkflowInformation.WorkflowCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, cancellationToken);
+            await WorkflowInformation.WorkflowCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
@@ -293,7 +293,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
-                if ((int) severityLevel < (int) DefaultActivityOptions.LogSeverityLevelThreshold) return;
+                if ((int) severityLevel < (int) DefaultActivityOptions.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {

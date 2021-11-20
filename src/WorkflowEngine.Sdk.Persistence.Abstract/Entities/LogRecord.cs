@@ -34,6 +34,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public string SeverityLevel { get; set; }
 
+        public int SeverityLevelNumber { get; set; }
+
         public string Message { get; set; }
 
         public string DataAsJson { get; set; }

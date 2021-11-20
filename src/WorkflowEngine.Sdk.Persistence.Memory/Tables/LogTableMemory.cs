@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.Libraries.Crud.Helpers;
@@ -10,6 +11,7 @@ using Nexus.Link.Libraries.Crud.MemoryStorage;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
+using LogRecord = Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities.LogRecord;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
@@ -41,31 +43,38 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
         }
 
         /// <inheritdoc />
-        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid activityFormId, int offset, int? limit = null,
+        public Task<PageEnvelope<LogRecord>> ReadActivityChildrenWithPagingAsync(Guid workflowInstanceId, Guid activityFormId, int offset, int? limit = null,
             CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotDefaultValue(activityFormId, nameof(activityFormId));
             return SearchAsync(new SearchDetails<LogRecord>(
                 new
                 {
+                    WorkflowInstanceId = workflowInstanceId,
                     ActivityFormId = activityFormId
                 }), offset, limit, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, CancellationToken cancellationToken)
+        public async Task DeleteWorkflowChildrenAsync(Guid workflowInstanceId, int? threshold = null,
+            CancellationToken cancellationToken = default)
         {
             var logs = await StorageHelper.ReadPagesAsync<LogRecord>(
                 (o, ct) => ReadWorkflowChildrenWithPagingAsync(workflowInstanceId, true, o, null, ct), int.MaxValue, cancellationToken);
-            await Task.WhenAll(logs.Select(l => DeleteAsync(l.Id, cancellationToken)));
+            await Task.WhenAll(logs
+                .Where(l => !threshold.HasValue || l.SeverityLevelNumber <= threshold.Value)
+                .Select(l => DeleteAsync(l.Id, cancellationToken)));
         }
 
         /// <inheritdoc />
-        public async Task DeleteActivityChildrenAsync(Guid activityFormId, CancellationToken cancellationToken)
+        public async Task DeleteActivityChildrenAsync(Guid workflowInstanceId, Guid activityFormId, int? threshold = null,
+            CancellationToken cancellationToken = default)
         {
             var logs = await StorageHelper.ReadPagesAsync<LogRecord>(
-                (o, ct) => ReadActivityChildrenWithPagingAsync(activityFormId, o, null, ct), int.MaxValue, cancellationToken);
-            await Task.WhenAll(logs.Select(l => DeleteAsync(l.Id, cancellationToken)));
+                (o, ct) => ReadActivityChildrenWithPagingAsync(workflowInstanceId, activityFormId, o, null, ct), int.MaxValue, cancellationToken);
+            await Task.WhenAll(logs
+                .Where(l => !threshold.HasValue || l.SeverityLevelNumber <= threshold.Value)
+                .Select(l => DeleteAsync(l.Id, cancellationToken)));
         }
     }
 }
