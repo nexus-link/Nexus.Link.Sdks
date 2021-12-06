@@ -8,22 +8,14 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
     public class TestWorkflowVersions : IWorkflowVersions
     {
-        public TestWorkflowVersions(IWorkflowConfigurationCapability workflowCapability, IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
+        public TestWorkflowVersions(IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
-            AsyncRequestMgmtCapability = asyncRequestMgmtCapability;
-            StateCapability = stateCapability;
-            ConfigurationCapability = workflowCapability;
+            WorkflowCapabilities = workflowCapabilities;
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
         }
 
         /// <inheritdoc />
-        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; }
-
-        /// <inheritdoc />
-        public IWorkflowConfigurationCapability ConfigurationCapability { get; }
-
-        /// <inheritdoc />
-        public IWorkflowStateCapability StateCapability { get; }
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities { get; }
 
         /// <inheritdoc />
         public string WorkflowCapabilityName => "Workflow capability name";

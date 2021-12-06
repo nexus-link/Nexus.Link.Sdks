@@ -12,11 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 
         public IWorkflowVersions WorkflowVersions => WorkflowImplementation.WorkflowVersions;
 
-        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability => WorkflowVersions.AsyncRequestMgmtCapability;
-
-        public IWorkflowConfigurationCapability ConfigurationCapability => WorkflowVersions.ConfigurationCapability;
-
-        public IWorkflowStateCapability StateCapability => WorkflowVersions.StateCapability;
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowVersions.WorkflowCapabilities;
         public string CapabilityName => WorkflowVersions.WorkflowCapabilityName;
         public string FormTitle => WorkflowVersions.WorkflowFormTitle;
         public string InstanceTitle => WorkflowImplementation.GetInstanceTitle();
@@ -35,8 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <inheritdoc />
         public void Validate(string errorLocation, string propertyPath = "")
         {
-            FulcrumValidate.IsNotNull(ConfigurationCapability, nameof(ConfigurationCapability), errorLocation);
-            FulcrumValidate.IsNotNull(StateCapability, nameof(StateCapability), errorLocation);
+            FulcrumValidate.IsNotNull(WorkflowCapabilities, nameof(WorkflowCapabilities), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(CapabilityName, nameof(CapabilityName), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(FormId, nameof(FormId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(FormTitle, nameof(FormTitle), errorLocation);

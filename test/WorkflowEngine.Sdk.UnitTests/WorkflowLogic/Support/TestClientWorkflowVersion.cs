@@ -10,16 +10,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
     public class TestWorkflowImplementation : WorkflowImplementation
     {
-        protected readonly IWorkflowConfigurationCapability ConfigurationCapability;
-        protected readonly IWorkflowStateCapability StateCapability;
-        protected readonly IAsyncRequestMgmtCapability AsyncRequestMgmtCapability;
+        protected readonly IWorkflowEngineRequiredCapabilities WorkflowCapabilities;
 
-        public TestWorkflowImplementation(IWorkflowConfigurationCapability configurationCapability, IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
-        :base(1, 2, new TestWorkflowVersions(configurationCapability, stateCapability, asyncRequestMgmtCapability))
+        public TestWorkflowImplementation(IWorkflowEngineRequiredCapabilities workflowCapabilities)
+        :base(1, 2, new TestWorkflowVersions(workflowCapabilities))
         {
-            ConfigurationCapability = configurationCapability;
-            StateCapability = stateCapability;
-            AsyncRequestMgmtCapability = asyncRequestMgmtCapability;
+            WorkflowCapabilities = workflowCapabilities;
         }
 
         /// <inheritdoc />

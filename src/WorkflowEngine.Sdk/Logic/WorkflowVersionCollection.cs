@@ -17,9 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
     public class WorkflowVersionCollection
     {
         public IWorkflowVersions WorkflowVersions { get; }
-        public IWorkflowConfigurationCapability ConfigurationCapability => WorkflowVersions.ConfigurationCapability;
-        public IWorkflowStateCapability StateCapability => WorkflowVersions.StateCapability;
-        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability => WorkflowVersions.AsyncRequestMgmtCapability;
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowVersions.WorkflowCapabilities;
 
         private readonly Dictionary<int, IWorkflowImplementationBase> _versions = new();
 
@@ -104,10 +102,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             var workflowInstanceId = FulcrumApplication.Context.ExecutionId;
             var workflowInstance =
-                await WorkflowVersions.StateCapability.WorkflowInstance.ReadAsync(workflowInstanceId,
+                await WorkflowVersions.WorkflowCapabilities.StateCapability.WorkflowInstance.ReadAsync(workflowInstanceId,
                     cancellationToken);
             if (workflowInstance == null) return null;
-            var workflowVersion = await WorkflowVersions.ConfigurationCapability.WorkflowVersion.ReadAsync(workflowInstance.WorkflowVersionId, cancellationToken);
+            var workflowVersion = await WorkflowVersions.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion.ReadAsync(workflowInstance.WorkflowVersionId, cancellationToken);
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
             return workflowVersion;
         }

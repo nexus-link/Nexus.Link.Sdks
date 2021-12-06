@@ -60,7 +60,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             await WorkflowCache.LoadAsync(cancellationToken);
             if (WorkflowCache.InstanceExists())
             {
-                _workflowDistributedLock = await WorkflowInformation.StateCapability.WorkflowInstance.ClaimDistributedLockAsync(
+                _workflowDistributedLock = await WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance.ClaimDistributedLockAsync(
                     WorkflowInformation.InstanceId, null, null, cancellationToken);
             }
             WorkflowCache.Form.CapabilityName = WorkflowInformation.CapabilityName;
@@ -97,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             await WorkflowCache.SaveAsync(cancellationToken);
             if (_workflowDistributedLock != null)
             {
-                await WorkflowInformation.StateCapability.WorkflowInstance.ReleaseDistributedLockAsync(
+                await WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance.ReleaseDistributedLockAsync(
                     _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, cancellationToken);
             }
         }
@@ -187,7 +187,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
 
             if (!purge) return;
-            await WorkflowInformation.StateCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
+            await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
@@ -290,7 +290,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             try
             {
-                FulcrumAssert.IsNotNull(WorkflowInformation.StateCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapabilities.StateCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 if ((int) severityLevel < (int) DefaultActivityOptions.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
@@ -304,7 +304,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await WorkflowInformation.StateCapability.Log.CreateAsync(log, cancellationToken);
+                await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.CreateAsync(log, cancellationToken);
             }
             catch (Exception)
             {

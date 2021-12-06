@@ -7,9 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     public interface IWorkflowVersions
     {
-        IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; }
-        IWorkflowConfigurationCapability ConfigurationCapability{ get; }
-        IWorkflowStateCapability StateCapability { get; }
+        IWorkflowEngineRequiredCapabilities WorkflowCapabilities { get; }
         string WorkflowCapabilityName { get; }
         string WorkflowFormId { get; }
         string WorkflowFormTitle { get; }

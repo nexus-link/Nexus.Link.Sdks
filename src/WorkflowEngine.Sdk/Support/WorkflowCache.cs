@@ -59,12 +59,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
             };
             
-            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(_workflowInformation.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
-            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(_workflowInformation.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
-            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(_workflowInformation.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
-            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(_workflowInformation.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
-            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(_workflowInformation.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
-            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(_workflowInformation.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
+            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
+            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
+            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
+            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
+            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(_workflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
+            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(_workflowInformation.WorkflowCapabilities.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
         }
 
         public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)
@@ -73,7 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
                 if (_summary != null) return _summary;
-                _summary = await _workflowInformation.StateCapability.WorkflowSummary.GetSummaryAsync(
+                _summary = await _workflowInformation.WorkflowCapabilities.StateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
                 RememberData(true);
                 if (_summary.Form == null)

@@ -13,13 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
 
         /// <inheritdoc />
-        public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; protected set; }
-
-        /// <inheritdoc />
-        public IWorkflowConfigurationCapability ConfigurationCapability { get; protected set;}
-
-        /// <inheritdoc />
-        public IWorkflowStateCapability StateCapability { get; protected set;}
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities { get; }
 
         /// <inheritdoc />
         public string WorkflowCapabilityName { get; }
@@ -33,12 +27,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public WorkflowVersionCollection WorkflowVersionCollection { get; }
         
-        protected WorkflowVersions(string capabilityName, string workflowTitle, string workflowId)
+        protected WorkflowVersions(string capabilityName, string workflowTitle, string workflowId, IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowCapabilityName = capabilityName;
             WorkflowFormTitle = workflowTitle;
             WorkflowFormId = workflowId.ToLowerInvariant();
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
+            WorkflowCapabilities = workflowCapabilities;
         }
 
         protected void AddWorkflowVersion(IWorkflowImplementationBase workflowImplementation)

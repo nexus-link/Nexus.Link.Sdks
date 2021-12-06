@@ -44,7 +44,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _asyncRequestMgmtCapabilityMock = new AsyncRequestMgmtMock();
             _workflowConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
             _workflowStateCapability = new WorkflowStateCapability(configurationTables, _runtimeTables, _asyncRequestMgmtCapabilityMock);
-            _workflowImplementation = new TestWorkflowImplementation(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowCapabilities = new WorkflowCapabilities(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            _workflowImplementation = new TestWorkflowImplementation(workflowCapabilities);
             var workflowInfo = new WorkflowInformation(_workflowImplementation)
             {
                 InstanceId = Guid.NewGuid().ToLowerCaseString()
@@ -114,7 +115,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             bool? alertResult = null;
-            var implementation = new TestWorkflowImplementation(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowCapabilities = new WorkflowCapabilities(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            var implementation = new TestWorkflowImplementation(workflowCapabilities);
             var workflowInformation = new WorkflowInformation(implementation)
             {
                 DefaultActivityOptions =

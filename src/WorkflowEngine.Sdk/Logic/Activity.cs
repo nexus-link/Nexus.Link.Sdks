@@ -75,7 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             try
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
-                FulcrumAssert.IsNotNull(WorkflowInformation.StateCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapabilities.StateCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 if ((int) severityLevel < (int) Options.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
@@ -89,7 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await WorkflowInformation.StateCapability.Log.CreateAsync(log, cancellationToken);
+                await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.CreateAsync(log, cancellationToken);
             }
             catch (Exception)
             {
@@ -213,7 +213,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
 
             if (!purge) return;
-            await WorkflowInformation.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
+            await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
         }
     }
 }
