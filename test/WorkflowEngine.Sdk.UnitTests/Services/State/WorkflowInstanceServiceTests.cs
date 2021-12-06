@@ -1,7 +1,7 @@
+using Nexus.Link.Capabilities.WorkflowState.UnitTests.Services;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
-using WorkflowEngine.Sdk.UnitTests.Abstract.Services;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.State
 {

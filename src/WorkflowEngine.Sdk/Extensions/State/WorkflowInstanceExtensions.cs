@@ -1,5 +1,4 @@
-﻿using System;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+﻿using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;

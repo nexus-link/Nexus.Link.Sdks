@@ -1,5 +1,4 @@
-﻿using System;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+﻿using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -20,7 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             target.WorkflowVersionId = source.WorkflowVersionId.ToGuid();
             target.Position = source.Position;
             target.ActivityFormId = source.ActivityFormId.ToGuid();
-            target.ParentActivityVersionId = source.ParentActivityVersionId.ToNullableGuid();
+            target.ParentActivityVersionId = source.ParentActivityVersionId?.ToGuid();
             target.FailUrgency = source.FailUrgency.ToString();
             return target;
         }

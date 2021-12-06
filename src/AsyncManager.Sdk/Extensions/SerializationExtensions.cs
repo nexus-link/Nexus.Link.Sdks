@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,11 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Rest;
-using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Libraries.Web.Serialization;
 
 namespace Nexus.Link.AsyncManager.Sdk.Extensions

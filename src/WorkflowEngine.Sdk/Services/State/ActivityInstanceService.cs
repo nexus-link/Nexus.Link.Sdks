@@ -1,10 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -37,46 +36,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             var result = await _runtimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(idAsGuid, recordCreate, cancellationToken);
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return new ActivityInstance().From(result);
-        }
-
-        /// <inheritdoc />
-        public async Task SuccessAsync(string id, ActivityInstanceSuccessResult result, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-
-            var idAsGuid = id.ToGuid();
-
-            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
-            if (record == null) return;
-
-            record.State = ActivityStateEnum.Success.ToString();
-            record.ResultAsJson = result.ResultAsJson;
-            record.FinishedAt = DateTimeOffset.UtcNow;
-
-            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
-            // TODO: Audit log?
-        }
-
-        /// <inheritdoc />
-        public async Task FailedAsync(string id, ActivityInstanceFailedResult result, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-
-            var idAsGuid = id.ToGuid();
-
-            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
-            if (record == null) return;
-
-            record.State = ActivityStateEnum.Failed.ToString();
-            record.ExceptionCategory = result.ExceptionCategory.ToString();
-            record.ExceptionTechnicalMessage = result.ExceptionTechnicalMessage;
-            record.ExceptionFriendlyMessage = result.ExceptionFriendlyMessage;
-            record.FinishedAt = DateTimeOffset.UtcNow;
-
-            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
-            // TODO: Audit log?
         }
 
         /// <inheritdoc />

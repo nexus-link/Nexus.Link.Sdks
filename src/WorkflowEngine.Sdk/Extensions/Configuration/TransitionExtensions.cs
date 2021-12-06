@@ -1,5 +1,4 @@
-﻿using System;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
+﻿using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -18,8 +17,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireValidated(source, nameof(source));
             
             target.WorkflowVersionId = source.WorkflowVersionId.ToGuid();
-            target.FromActivityVersionId = source.FromActivityVersionId.ToNullableGuid();
-            target.ToActivityVersionId = source.ToActivityVersionId.ToNullableGuid();
+            target.FromActivityVersionId = source.FromActivityVersionId?.ToGuid();
+            target.ToActivityVersionId = source.ToActivityVersionId?.ToGuid();
             return target;
         }
 

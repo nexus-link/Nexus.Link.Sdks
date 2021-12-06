@@ -1,12 +1,9 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.RestClientHelper;
-using Nexus.Link.Libraries.Web.Serialization;
 
 namespace Nexus.Link.AsyncManager.Sdk.RestClients
 {

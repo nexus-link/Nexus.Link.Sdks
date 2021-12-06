@@ -1,7 +1,6 @@
-using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.WorkflowEngine.Sdk;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
+using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
@@ -9,10 +8,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
     public class TestWorkflowVersions : IWorkflowVersions
     {
-        public TestWorkflowVersions(IWorkflowMgmtCapability workflowCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
+        public TestWorkflowVersions(IWorkflowConfigurationCapability workflowCapability, IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
             AsyncRequestMgmtCapability = asyncRequestMgmtCapability;
-            WorkflowCapability = workflowCapability;
+            StateCapability = stateCapability;
+            ConfigurationCapability = workflowCapability;
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
         }
 
@@ -20,7 +20,10 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; }
 
         /// <inheritdoc />
-        public IWorkflowMgmtCapability WorkflowCapability { get; }
+        public IWorkflowConfigurationCapability ConfigurationCapability { get; }
+
+        /// <inheritdoc />
+        public IWorkflowStateCapability StateCapability { get; }
 
         /// <inheritdoc />
         public string WorkflowCapabilityName => "Workflow capability name";

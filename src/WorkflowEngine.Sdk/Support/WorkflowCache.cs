@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
-using WorkflowVersion = Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration.WorkflowVersion;
+using WorkflowVersion = Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities.WorkflowVersion;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
@@ -58,13 +58,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             {
                 ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
             };
-            var capability = _workflowInformation.WorkflowCapability;
-            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(capability.WorkflowForm, crudPersistenceHelperOptions);
-            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(capability.WorkflowVersion, crudPersistenceHelperOptions);
-            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(capability.WorkflowInstance, crudPersistenceHelperOptions);
-            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(capability.ActivityForm, crudPersistenceHelperOptions);
-            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(capability.ActivityVersion, crudPersistenceHelperOptions);
-            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(capability.ActivityInstance, crudPersistenceHelperOptions);
+            
+            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(_workflowInformation.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
+            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(_workflowInformation.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
+            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(_workflowInformation.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
+            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(_workflowInformation.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
+            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(_workflowInformation.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
+            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(_workflowInformation.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
         }
 
         public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)
@@ -73,7 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
                 if (_summary != null) return _summary;
-                _summary = await _workflowInformation.WorkflowCapability.WorkflowSummary.GetSummaryAsync(
+                _summary = await _workflowInformation.StateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
                 RememberData(true);
                 if (_summary.Form == null)

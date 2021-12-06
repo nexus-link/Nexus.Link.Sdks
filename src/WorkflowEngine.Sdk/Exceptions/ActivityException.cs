@@ -1,5 +1,5 @@
 ﻿using System;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {

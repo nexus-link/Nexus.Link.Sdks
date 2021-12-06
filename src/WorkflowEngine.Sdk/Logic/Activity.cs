@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
@@ -77,7 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             try
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation, CodeLocation.AsString());
-                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(WorkflowInformation.StateCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 if ((int) severityLevel < (int) Options.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
@@ -91,7 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await WorkflowInformation.WorkflowCapability.Log.CreateAsync(log, cancellationToken);
+                await WorkflowInformation.StateCapability.Log.CreateAsync(log, cancellationToken);
             }
             catch (Exception)
             {
@@ -215,7 +213,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
 
             if (!purge) return;
-            await WorkflowInformation.WorkflowCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
+            await WorkflowInformation.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
         }
     }
 }

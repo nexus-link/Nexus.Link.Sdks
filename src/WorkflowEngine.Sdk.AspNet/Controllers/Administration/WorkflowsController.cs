@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Components.WorkflowMgmt.Abstract;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
+using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
@@ -16,7 +16,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public IAsyncRequestMgmtCapability AsyncRequestMgmtCapability { get; protected set; }
 
         /// <inheritdoc />
-        public IWorkflowMgmtCapability WorkflowCapability { get; protected set;}
+        public IWorkflowConfigurationCapability ConfigurationCapability { get; protected set;}
+
+        /// <inheritdoc />
+        public IWorkflowStateCapability StateCapability { get; protected set;}
 
         /// <inheritdoc />
         public string WorkflowCapabilityName { get; }

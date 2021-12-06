@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Administration;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc.Models;
@@ -15,12 +15,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
     public class WorkflowService : IWorkflowService
     {
-        private readonly IWorkflowMgmtCapability _workflowCapability;
+        private readonly IWorkflowStateCapability _stateCapability;
         private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowService(IWorkflowMgmtCapability workflowCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
-            _workflowCapability = workflowCapability;
+            _stateCapability = stateCapability;
             _requestMgmtCapability = requestMgmtCapability;
         }
 
@@ -29,7 +29,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var workflowRecord = await _workflowCapability.WorkflowSummary.GetSummaryAsync(id, cancellationToken);
+            var workflowRecord = await _stateCapability.WorkflowSummary.GetSummaryAsync(id, cancellationToken);
             if (workflowRecord == null) return null;
 
             var workflow = new Workflow
@@ -53,12 +53,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
-            var item = await _workflowCapability.WorkflowInstance.ReadAsync(workflowInstanceId, cancellationToken);
+            var item = await _stateCapability.WorkflowInstance.ReadAsync(workflowInstanceId, cancellationToken);
             if (item == null) throw new FulcrumNotFoundException(workflowInstanceId);
 
             item.CancelledAt = DateTimeOffset.Now;
 
-            await _workflowCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
+            await _stateCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
             await _requestMgmtCapability.Execution.ReadyForExecutionAsync(workflowInstanceId, cancellationToken);
         }
 
@@ -67,7 +67,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
 
-            var item = await _workflowCapability.ActivityInstance.ReadAsync(activityInstanceId, cancellationToken);
+            var item = await _stateCapability.ActivityInstance.ReadAsync(activityInstanceId, cancellationToken);
             if (item == null) throw new FulcrumNotFoundException(activityInstanceId);
 
             item.State = ActivityStateEnum.Waiting;
@@ -78,7 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             item.AsyncRequestId = null;
             // TODO: item.ExceptionAlertHandled = null
 
-            await _workflowCapability.ActivityInstance.UpdateAndReturnAsync(activityInstanceId, item, cancellationToken);
+            await _stateCapability.ActivityInstance.UpdateAndReturnAsync(activityInstanceId, item, cancellationToken);
             await _requestMgmtCapability.Execution.ReadyForExecutionAsync(item.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log

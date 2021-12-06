@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Administration;
+using Nexus.Link.Components.WorkflowMgmt.Abstract;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.IntegrationApi.Administration
 {

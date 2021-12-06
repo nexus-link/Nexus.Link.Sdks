@@ -1,13 +1,12 @@
 using System;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
@@ -15,14 +14,12 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Shouldly;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
-using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
@@ -33,7 +30,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         private readonly Mock<IWorkflowImplementation> _workflowVersionMock;
         private readonly IInternalActivityFlow _activityFlowMock;
         private readonly WorkflowCache _workflowCache;
-        private readonly WorkflowMgmtCapability _workflowMgmtCapability;
+        private readonly IWorkflowConfigurationCapability _workflowConfigurationCapability;
+        private readonly IWorkflowStateCapability _workflowStateCapability;
         private readonly IWorkflowImplementationBase _workflowImplementation;
 
         public ActivityExecutorTests()
@@ -44,8 +42,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
             _asyncRequestMgmtCapabilityMock = new AsyncRequestMgmtMock();
-            _workflowMgmtCapability = new WorkflowMgmtCapability(configurationTables, _runtimeTables, asyncRequestMgmtCapabilityMock.Object);
-            _workflowImplementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
+            _workflowConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
+            _workflowStateCapability = new WorkflowStateCapability(configurationTables, _runtimeTables, _asyncRequestMgmtCapabilityMock);
+            _workflowImplementation = new TestWorkflowImplementation(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
             var workflowInfo = new WorkflowInformation(_workflowImplementation)
             {
                 InstanceId = Guid.NewGuid().ToLowerCaseString()
@@ -57,7 +56,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Execute_Given_MethodReturns_Gives_Success()
         {
             // Arrange
@@ -81,7 +80,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.FinishedAt.Value.ShouldBeInRange(minTime, maxTime);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_Postponed()
         {
             // Arrange
@@ -110,12 +109,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_AlertHandlerCalled()
         {
             // Arrange
             bool? alertResult = null;
-            var implementation = new TestWorkflowImplementation(_workflowMgmtCapability, _asyncRequestMgmtCapabilityMock);
+            var implementation = new TestWorkflowImplementation(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
             var workflowInformation = new WorkflowInformation(implementation)
             {
                 DefaultActivityOptions =
@@ -134,7 +133,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<ExceptionTransporter>(() => executor.ExecuteAsync(
+            await Should.ThrowAsync<ExceptionTransporter>(() => executor.ExecuteAsync(
                    (a, t) => throw new Exception("Fail")));
             await _workflowCache.SaveAsync();
 
@@ -146,9 +145,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.ExceptionAlertHandled.ShouldBe(true);
         }
 
-        [Theory]
-        [InlineData(ActivityFailUrgencyEnum.HandleLater)]
-        [InlineData(ActivityFailUrgencyEnum.Ignore)]
+        [DataTestMethod]
+        [DataRow(ActivityFailUrgencyEnum.HandleLater)]
+        [DataRow(ActivityFailUrgencyEnum.Ignore)]
         public async Task Execute_Given_MethodThrowsAndNotStopping_Gives_Default(ActivityFailUrgencyEnum failUrgency)
         {
             // Arrange
@@ -171,7 +170,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.ExceptionTechnicalMessage.ShouldNotBeNullOrWhiteSpace();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Execute_Given_MethodThrowsRequestPostponed_Gives_RequestIdSet()
         {
             // Arrange
@@ -180,7 +179,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
 
             // Act & Assert
-            await Assert.ThrowsAnyAsync<ExceptionTransporter>(
+            await Should.ThrowAsync<ExceptionTransporter>(
                 () => executor.ExecuteAsync<int>(
                     (a, t) => throw new RequestPostponedException(expectedRequestId), null));
             await _workflowCache.SaveAsync();
@@ -191,7 +190,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Execute_Given_FulcrumTryAgainException_Gives_PostponeTryAgain()
         {
             // Arrange

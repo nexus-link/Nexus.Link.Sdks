@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -10,11 +11,9 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 using Nexus.Link.WorkflowEngine.Sdk.Temporary;
@@ -61,7 +60,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             await WorkflowCache.LoadAsync(cancellationToken);
             if (WorkflowCache.InstanceExists())
             {
-                _workflowDistributedLock = await WorkflowInformation.WorkflowCapability.WorkflowInstance.ClaimDistributedLockAsync(
+                _workflowDistributedLock = await WorkflowInformation.StateCapability.WorkflowInstance.ClaimDistributedLockAsync(
                     WorkflowInformation.InstanceId, null, null, cancellationToken);
             }
             WorkflowCache.Form.CapabilityName = WorkflowInformation.CapabilityName;
@@ -98,7 +97,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             await WorkflowCache.SaveAsync(cancellationToken);
             if (_workflowDistributedLock != null)
             {
-                await WorkflowInformation.WorkflowCapability.WorkflowInstance.ReleaseDistributedLockAsync(
+                await WorkflowInformation.StateCapability.WorkflowInstance.ReleaseDistributedLockAsync(
                     _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, cancellationToken);
             }
         }
@@ -188,7 +187,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
 
             if (!purge) return;
-            await WorkflowInformation.WorkflowCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
+            await WorkflowInformation.StateCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
@@ -291,7 +290,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             try
             {
-                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapability, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(WorkflowInformation.StateCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 if ((int) severityLevel < (int) DefaultActivityOptions.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
@@ -305,7 +304,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await WorkflowInformation.WorkflowCapability.Log.CreateAsync(log, cancellationToken);
+                await WorkflowInformation.StateCapability.Log.CreateAsync(log, cancellationToken);
             }
             catch (Exception)
             {

@@ -1,6 +1,6 @@
+using Nexus.Link.Capabilities.WorkflowConfiguration.UnitTests.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Configuration;
-using WorkflowEngine.Sdk.UnitTests.Abstract.Services;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.Configuration
 {

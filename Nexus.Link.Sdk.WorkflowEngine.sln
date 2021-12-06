@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{53B4D6AE-E58A-438E-88E6-1219C6B95229}"
 EndProject
@@ -31,8 +31,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests", "test\WorkflowEngine.Sdk.Persistence.Sql.UnitTests\WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.csproj", "{77353A1E-2091-444C-8F5B-F6671CADE804}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTests", "test\WorkflowEngine.Sdk.UnitTests\WorkflowEngine.Sdk.UnitTests.csproj", "{0794EB3C-8F3D-4F38-A16E-B840E89014E1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTests.Abstract", "test\WorkflowEngine.Sdk.UnitTests.Abstract\WorkflowEngine.Sdk.UnitTests.Abstract.csproj", "{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.AspNet", "src\WorkflowEngine.Sdk.AspNet\WorkflowEngine.Sdk.AspNet.csproj", "{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}"
 EndProject
@@ -162,22 +160,6 @@ Global
 		{0794EB3C-8F3D-4F38-A16E-B840E89014E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0794EB3C-8F3D-4F38-A16E-B840E89014E1}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{0794EB3C-8F3D-4F38-A16E-B840E89014E1}.ver|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ci|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ci|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.int|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.int|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prd|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prd|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prdsim|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D}.ver|Any CPU.Build.0 = Debug|Any CPU
 		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ci|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.ci|Any CPU.Build.0 = Debug|Any CPU
 		{0E8DFF53-796D-4C26-8DD1-388D2CC036EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -217,7 +199,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{77353A1E-2091-444C-8F5B-F6671CADE804} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 		{0794EB3C-8F3D-4F38-A16E-B840E89014E1} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
-		{2D607E9E-0CD5-42DB-BB9A-E1C9CB85504D} = {53B4D6AE-E58A-438E-88E6-1219C6B95229}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {929016C1-D948-4CB9-AD95-8115E93A6B9E}

@@ -1,20 +1,14 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Core.Misc;
 using Shouldly;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.State
 {
     public class WorkflowServiceSummaryTests : WorkflowServiceTestsBases
     {
-        public WorkflowServiceSummaryTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
-        {
-        }
-
-
-        [Fact]
+        [TestMethod]
         public async Task The_Convenience_Workflow_Contains_All_Information_And_Hierarchy()
         {
             // Arrange
@@ -22,7 +16,6 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.State
 
             // Act
             var workflow = await WorkflowSummaryService.GetSummaryAsync(id);
-            TestOutputHelper.WriteLine(JsonConvert.SerializeObject(workflow, Formatting.Indented));
 
             // Assert
             workflow.Form.Id.ShouldBe(WorkflowFormRecord.Id.ToLowerCaseString());

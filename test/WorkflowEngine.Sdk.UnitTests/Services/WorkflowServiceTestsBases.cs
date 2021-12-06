@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.State;
-using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.State;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
-using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services
 {
@@ -22,8 +21,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
         protected static WorkflowVersionRecord WorkflowVersionRecord;
         protected static WorkflowInstanceRecord WorkflowInstanceRecord;
         protected static ActivityInstanceRecord GrandChildActivity;
-
-        protected readonly ITestOutputHelper TestOutputHelper;
+        
         protected static readonly IConfigurationTables ConfigurationTables = new ConfigurationTablesMemory();
         protected static readonly IRuntimeTables RuntimeTables = new RuntimeTablesMemory();
 
@@ -33,11 +31,6 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             WorkflowSummaryService = new WorkflowSummaryService(ConfigurationTables, RuntimeTables, asyncRequestMgmtCapabilityMock.Object);
 
             SetupWorkflowMockStructureAsync().Wait();
-        }
-
-        protected WorkflowServiceTestsBases(ITestOutputHelper testOutputHelper)
-        {
-            TestOutputHelper = testOutputHelper;
         }
 
         private static async Task SetupWorkflowMockStructureAsync()

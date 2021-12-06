@@ -24,11 +24,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.4.2" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.3" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.9.2" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.2" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.4" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.0.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.0.0" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +40,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>4.8.4</Version>
+    <Version>5.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -48,6 +50,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.0.0 New Contract repo
       4.8.4 Bump
       4.8.2 Added LogPurgeSeverityLevelThreshold
       4.8.1 Option for PurgeLogStrategy
