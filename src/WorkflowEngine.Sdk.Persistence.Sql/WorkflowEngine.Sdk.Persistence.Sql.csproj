@@ -41,7 +41,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.6.2</Version>
+    <Version>1.6.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -51,7 +51,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.6.2 Bump
+      1.6.3 Bump
       1.6.1 Added purge threshold, changed method signatures
       1.6.0 Purge for logs
       1.5.0 Added support for logging

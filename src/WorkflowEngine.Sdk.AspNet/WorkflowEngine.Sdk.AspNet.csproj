@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.AspNet</PackageId>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -39,6 +39,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.1 Bump
       2.0.0 Moved some middleware here.
       1.5.1 Removed obsolete dependency
       1.5.0 Moved inbound filter here.
