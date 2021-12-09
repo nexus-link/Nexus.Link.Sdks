@@ -1,6 +1,4 @@
-﻿#if NETCOREAPP
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Web.AspNet.Pipe.Support.Options;
+﻿using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound.Options;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
@@ -16,4 +14,3 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
         }
     }
 }
-#endif
