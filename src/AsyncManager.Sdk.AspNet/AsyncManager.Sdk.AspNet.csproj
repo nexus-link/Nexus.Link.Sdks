@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Nexus.Link.AsyncManager.Sdk.AspNet</AssemblyName>
     <RootNamespace>Nexus.Link.AsyncManager.Sdk.AspNet</RootNamespace>
   </PropertyGroup>
@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk.AspNet</PackageId>
-    <Version>0.0.1</Version>
+    <Version>1.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
