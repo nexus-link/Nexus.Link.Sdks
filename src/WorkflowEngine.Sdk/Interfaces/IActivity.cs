@@ -102,4 +102,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </remarks>
         bool TryGetContext<T>(string key, out T value);
     }
+
+    /// <summary>
+    /// Information about a workflow activity that returns a value
+    /// </summary>
+    public interface IActivity<TResult> : IActivity
+    {
+    }
 }

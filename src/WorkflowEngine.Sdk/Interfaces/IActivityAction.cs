@@ -9,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         Task ExecuteAsync(Func<IActivityAction, CancellationToken, Task> method, CancellationToken cancellationToken = default);
     }
 
-    public interface IActivityAction<TActivityReturns> : IActivity
+    public interface IActivityAction<TActivityReturns> : IActivity<TActivityReturns>
     {
         Task<TActivityReturns> ExecuteAsync(
             Func<IActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,

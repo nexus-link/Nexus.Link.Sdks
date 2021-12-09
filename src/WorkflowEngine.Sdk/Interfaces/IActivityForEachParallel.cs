@@ -12,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         Task ExecuteAsync(Func<TItem, IActivityForEachParallel<TItem>, CancellationToken, Task> method, CancellationToken cancellationToken = default);
     }
 
-    public interface IActivityForEachParallel<TActivityReturns, out TItem, TKey> : IActivity
+    public interface IActivityForEachParallel<TActivityReturns, out TItem, TKey> : IActivity<TActivityReturns>
     {
         IEnumerable<TItem> Items { get; }
 

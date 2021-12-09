@@ -216,4 +216,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
         }
     }
+
+    public abstract class Activity<TResult> : Activity, IActivity<TResult>
+    {
+        protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow) 
+            : base(activityType, activityFlow)
+        {
+        }
+    }
 }

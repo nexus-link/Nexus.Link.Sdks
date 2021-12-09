@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.1.0</Version>
+    <Version>5.1.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -44,6 +44,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.1.1 Introduced IActivity{T}
       5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
       5.0.2 Introduced IWorkflowEngineRequiredCapabilities
       5.0.1 Bump

@@ -18,10 +18,10 @@ public static class WorkflowFastForwardExtensions
         activityImplementation!.InternalExecuteAsync((_, _) => Task.CompletedTask).Wait();
     }
 
-    public static T Success<T>(this IActivity activity, T value)
+    public static T Success<T>(this IActivity<T> activity, T value)
     {
-        var activityImplementation = activity as Activity;
+        var activityImplementation = activity as Activity<T>;
         FulcrumAssert.IsNotNull(activityImplementation, CodeLocation.AsString());
-        return activityImplementation!.InternalExecuteAsync<T>((_, _) => Task.FromResult(value), null).Result;
+        return activityImplementation!.InternalExecuteAsync((_, _) => Task.FromResult(value), null).Result;
     }
 }
