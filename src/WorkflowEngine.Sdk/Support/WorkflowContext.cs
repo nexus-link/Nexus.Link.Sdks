@@ -1,4 +1,6 @@
-﻿using Nexus.Link.Libraries.Core.Context;
+﻿using System;
+using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support

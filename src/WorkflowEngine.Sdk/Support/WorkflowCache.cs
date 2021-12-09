@@ -58,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             {
                 ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
             };
-            
+
             _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
             _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
             _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
@@ -213,6 +213,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             var success = _activities.TryGetValue(activityId, out var activity);
             FulcrumAssert.IsTrue(success, CodeLocation.AsString());
             return activity;
+        }
+
+        public Activity GetCurrentParentActivity()
+        {
+            if (WorkflowStatic.Context.ParentActivityInstanceId == null) return null;
+            var parentActivity = GetActivity(WorkflowStatic.Context.ParentActivityInstanceId);
+            FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
+            return parentActivity;
         }
 
         public string GetOrCreateInstanceId(ActivityTypeEnum activityTypeEnum, IInternalActivityFlow activityFlow,

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Nexus.Link.WorkflowEngine.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.WorkflowEngine.Sdk</RootNamespace>
 
@@ -15,12 +15,6 @@
     <DebugType>embedded</DebugType>
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Extensions\Administration\**" />
-    <EmbeddedResource Remove="Extensions\Administration\**" />
-    <None Remove="Extensions\Administration\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -40,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.0.2</Version>
+    <Version>5.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -50,6 +44,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
       5.0.2 Introduced IWorkflowEngineRequiredCapabilities
       5.0.1 Bump
       5.0.0 New Contract repo

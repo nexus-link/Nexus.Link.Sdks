@@ -12,5 +12,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string WorkflowFormId { get; }
         string WorkflowFormTitle { get; }
         WorkflowVersionCollection WorkflowVersionCollection { get; }
+        ActivityDefinition GetActivityDefinition(string activityFormId);
     }
 }

@@ -20,6 +20,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string ActivityInstanceId { get; }
 
         /// <summary>
+        /// The form id of the activity
+        /// </summary>
+        string ActivityFormId { get; }
+
+        /// <summary>
         /// The title of this activity
         /// </summary>
         /// 

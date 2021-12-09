@@ -37,6 +37,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         /// <inheritdoc />
         public string ActivityInstanceId { get; internal set; }
 
+        public string ActivityFormId => Form.Id;
+
         /// <inheritdoc />
         public string ActivityTitle
         {
@@ -49,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public int? Iteration { get; protected set; }
+        public int? Iteration { get; set; }
 
         /// <inheritdoc />
         public ActivityOptions Options => _activityFlow.Options;
@@ -110,11 +112,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             InternalContract.RequireNotNull(activityFlow, nameof(activityFlow));
             _activityFlow = activityFlow;
-            Activity parentActivity = null;
-            if (WorkflowStatic.Context.ParentActivityInstanceId != null)
+            var parentActivity = WorkflowCache.GetCurrentParentActivity();
+            if (parentActivity != null)
             {
-                parentActivity = WorkflowCache.GetActivity(WorkflowStatic.Context.ParentActivityInstanceId);
-                FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
                 NestedIterations.AddRange(parentActivity.NestedIterations);
                 if (parentActivity.Iteration is > 0)
                 {
@@ -176,7 +176,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             return true;
         }
 
-        internal Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
+        public Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
             ActivityMethod<TMethodReturnType> method,
             Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
             CancellationToken cancellationToken = default)
@@ -185,7 +185,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             return _activityExecutor.ExecuteAsync(method, getDefaultValueMethodAsync, cancellationToken);
         }
 
-        internal async Task InternalExecuteAsync(
+        public async Task InternalExecuteAsync(
             ActivityMethod method,
             CancellationToken cancellationToken = default)
         {

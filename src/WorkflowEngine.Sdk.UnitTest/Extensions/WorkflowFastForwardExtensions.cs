@@ -1,0 +1,27 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
+
+namespace Nexus.Link.WorkflowEngine.Sdk.UnitTest.Extensions;
+
+public static class WorkflowFastForwardExtensions
+{
+    public static void Success(this IActivity activity)
+    {
+        var activityImplementation = activity as Activity;
+        FulcrumAssert.IsNotNull(activityImplementation, CodeLocation.AsString());
+        activityImplementation!.InternalExecuteAsync((_, _) => Task.CompletedTask).Wait();
+    }
+
+    public static T Success<T>(this IActivity activity, T value)
+    {
+        var activityImplementation = activity as Activity;
+        FulcrumAssert.IsNotNull(activityImplementation, CodeLocation.AsString());
+        return activityImplementation!.InternalExecuteAsync<T>((_, _) => Task.FromResult(value), null).Result;
+    }
+}

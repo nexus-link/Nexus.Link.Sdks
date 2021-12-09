@@ -41,6 +41,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             return _methodHandler.GetArgument<T>(name);
         }
 
+        public IActivity GetCurrentParentActivity()
+        {
+            return WorkflowCache.GetCurrentParentActivity();
+        }
+
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
@@ -241,6 +246,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                     };
                 case RequestPostponedException:
                     return innerException;
+                case WorkflowFastForwardBreakException:
+                    return innerException;
                 case FulcrumTryAgainException:
                     return new RequestPostponedException
                     {
@@ -263,25 +270,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             }
         }
 
-        public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
+        public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
             return new ActivityFlow<TActivityReturns>(WorkflowInformation, WorkflowCache,
-                position, title, id.ToLowerInvariant());
+                position, id.ToLowerInvariant());
         }
 
-        public IActivityFlow CreateActivity(int position, string title, string id)
+        public IActivityFlow CreateActivity(int position, string id)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
-            return new ActivityFlow(WorkflowInformation, WorkflowCache, position, title, id.ToLowerInvariant());
+            return new ActivityFlow(WorkflowInformation, WorkflowCache, position, id.ToLowerInvariant());
         }
 
         /// <inheritdoc />

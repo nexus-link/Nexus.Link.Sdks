@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</AssemblyName>
     <RootNamespace>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</RootNamespace>
 
@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.3" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.2" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.12.2" />
   </ItemGroup>

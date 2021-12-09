@@ -34,14 +34,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public int Position { get; }
 
         protected ActivityFlowBase(WorkflowInformation workflowInformation,
-            WorkflowCache workflowCache, int position, string formTitle, string activityFormId)
+            WorkflowCache workflowCache, int position, string activityFormId)
         {
             WorkflowCache = workflowCache;
             WorkflowInformation = workflowInformation;
             Position = position;
-            FormTitle = formTitle;
+            var activityDefinition = WorkflowInformation.WorkflowVersions.GetActivityDefinition(activityFormId);
             ActivityFormId = activityFormId;
-            MethodHandler = new MethodHandler(formTitle);
+            FormTitle = activityDefinition.Title;
+            MethodHandler = new MethodHandler(FormTitle);
             Options.From(workflowInformation.DefaultActivityOptions);
         }
     }
@@ -49,8 +50,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
     internal class ActivityFlow : ActivityFlowBase, IActivityFlow
     {
         public ActivityFlow(WorkflowInformation workflowInformation, WorkflowCache workflowCache,
-            int position, string formTitle, string activityFormId)
-        : base(workflowInformation, workflowCache, position, formTitle, activityFormId)
+            int position, string activityFormId)
+        : base(workflowInformation, workflowCache, position, activityFormId)
         {
         }
 
@@ -133,8 +134,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         public Func<CancellationToken, Task<TActivityReturns>> GetDefaultValueForNotUrgentFail { get; private set; }
 
         public ActivityFlow(WorkflowInformation workflowInformation,
-            WorkflowCache workflowCache, int position, string formTitle, string activityFormId)
-        : base(workflowInformation, workflowCache, position, formTitle, activityFormId)
+            WorkflowCache workflowCache, int position, string activityFormId)
+        : base(workflowInformation, workflowCache, position, activityFormId)
         {
         }
 

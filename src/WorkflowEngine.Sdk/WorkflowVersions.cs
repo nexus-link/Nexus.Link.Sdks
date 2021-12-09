@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
@@ -26,7 +29,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         /// <inheritdoc />
         public WorkflowVersionCollection WorkflowVersionCollection { get; }
-        
+
+        private Dictionary<string, ActivityDefinition> _activityDefinitions = new();
+
         protected WorkflowVersions(string capabilityName, string workflowTitle, string workflowId, IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowCapabilityName = capabilityName;
@@ -59,6 +64,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, CancellationToken cancellationToken = default)
         {
             return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
+        }
+
+        public void DefineActivity(string activityFormId, string title, ActivityTypeEnum type)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            var id = activityFormId.ToLowerInvariant();
+            _activityDefinitions.Add(id, new ActivityDefinition
+            {
+                ActivityFormId = id,
+                Title = title,
+                Type = type
+            });
+        }
+
+        public ActivityDefinition GetActivityDefinition(string activityFormId)
+        {
+            var id = activityFormId.ToLowerInvariant();
+            if (!_activityDefinitions.ContainsKey(id)) return null;
+            return _activityDefinitions[id];
         }
 
         [Obsolete("Use SelectWorkflowVersionAsync. Compilation warning since 2021-11-12. Will be Compilation error after 2021-12-01")]

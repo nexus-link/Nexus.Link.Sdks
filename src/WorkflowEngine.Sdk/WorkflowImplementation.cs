@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -39,20 +40,44 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowExecutor = new WorkflowExecutor(this);
         }
         
-        public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
+        public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            return WorkflowExecutor.CreateActivity<TActivityReturns>(position, title, id);
+            return WorkflowExecutor.CreateActivity<TActivityReturns>(position, id);
         }
         
-        public IActivityFlow CreateActivity(int position, string title, string id)
+        public IActivityFlow CreateActivity(int position, string id)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            return WorkflowExecutor.CreateActivity(position, title, id);
+            return WorkflowExecutor.CreateActivity(position, id);
+        }
+
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 20+21-12-07.")]
+        public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
+        {
+            var tmp = WorkflowVersions as WorkflowVersions;
+            FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
+            if (tmp!.GetActivityDefinition(id) == null)
+            {
+                tmp.DefineActivity(id, title, ActivityTypeEnum.Action);
+            }
+
+            return CreateActivity<TActivityReturns>(position, id);
+        }
+
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 20+21-12-07.")]
+        public IActivityFlow CreateActivity(int position, string title, string id)
+        {
+            var tmp = WorkflowVersions as WorkflowVersions;
+            FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
+            if (tmp!.GetActivityDefinition(id) == null)
+            {
+                tmp.DefineActivity(id, title, ActivityTypeEnum.Action);
+            }
+
+            return CreateActivity(position, id);
         }
 
         public void DefineParameter<T>(string name)
@@ -112,12 +137,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public abstract IWorkflowImplementation CreateWorkflowInstance();
 
         /// <inheritdoc />
-        public Task ExecuteAsync(CancellationToken cancellationToken)
+        public virtual Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
             return WorkflowExecutor.ExecuteAsync(this, cancellationToken);
         }
 
-        public abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken);
+        public abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken = default);
 
         /// <inheritdoc />
         public IWorkflowImplementation SetParameter<TParameter>(string name, TParameter value)
@@ -137,7 +162,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         public abstract IWorkflowImplementation<TWorkflowResult> CreateWorkflowInstance();
 
-        public Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken)
+        public virtual Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             return WorkflowExecutor.ExecuteAsync(this, cancellationToken);
         }

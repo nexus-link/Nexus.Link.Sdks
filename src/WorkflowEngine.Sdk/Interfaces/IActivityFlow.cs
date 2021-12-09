@@ -21,7 +21,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         ActivityOptions Options { get; }
     }
 
-    public interface IActivityFlow
+    public interface IActivityFlowBase
+    {
+        string ActivityFormId { get; }
+    }
+
+    public interface IActivityFlow : IActivityFlowBase
     {
         IActivityFlow SetParameter<T>(string name, T value);
         IActivityFlow SetAsyncRequestPriority(double priority);
@@ -37,7 +42,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }
 
-    public interface IActivityFlow<TActivityReturns>
+    public interface IActivityFlow<TActivityReturns> : IActivityFlowBase
     {
         IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value);
         IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority);
