@@ -1,4 +1,5 @@
 ﻿using Nexus.Link.Libraries.SqlServer;
+using Nexus.Link.Libraries.SqlServer.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
@@ -9,6 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
     {
         public ConfigurationTablesSql(IDatabaseOptions options)
         {
+            options.DistributedLockTable = new DistributedLockTable(options);
             WorkflowForm = new WorkflowFormTableSql(options);
             WorkflowVersion = new WorkflowVersionTableSql(options);
             WorkflowVersionParameter = new WorkflowVersionParameterTableSql(options);
