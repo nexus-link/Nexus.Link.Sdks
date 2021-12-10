@@ -71,6 +71,30 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         }
 
         [Fact]
+        public async Task Can_Create_Activity_Version_With_Long_Enum_Names()
+        {
+            // Arrange
+            var workflowVersion = await CreateStandardWorkflowVersionAsync();
+            var activityForm = await CreateStandardActivityFormAsync();
+            const string longEnum = "1234567890123456789012345678901234567890";
+
+            var item = new ActivityVersionRecordCreate
+            {
+                WorkflowVersionId = workflowVersion.Id,
+                ActivityFormId = activityForm.Id,
+                FailUrgency = longEnum,
+                Position = 1
+            };
+
+            // Act
+            var record = await CreateActivityVersionAsync(item);
+
+            // Assert
+            Assert.NotNull(record);
+            Assert.Equal(longEnum, record.FailUrgency);
+        }
+
+        [Fact]
         public async Task Cant_Create_Activity_Version_With_Same_Position_On_ActivityForm_And_WorkflowVersion()
         {
             // Arrange

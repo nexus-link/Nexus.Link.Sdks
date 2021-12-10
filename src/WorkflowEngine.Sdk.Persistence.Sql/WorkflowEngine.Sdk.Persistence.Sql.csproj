@@ -96,6 +96,8 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch04_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch05 - SeverityLevelNumber.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch05_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch06 - enum sizes.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch06_rollback.sql" />
   </ItemGroup>
 
 </Project>

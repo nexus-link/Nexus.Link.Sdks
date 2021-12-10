@@ -127,5 +127,30 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
                 }
             });
         }
+
+        [Fact]
+        public async Task Can_Create_Workflow_Instance_With_Long_Enum_Names()
+        {
+            // Arrange
+            var id = Guid.Parse("8BEFB757-03AD-43F3-BD90-0A8E1C0BE6FE");
+            var workflowVersion = await CreateStandardWorkflowVersionAsync();
+            const string longEnum = "1234567890123456789012345678901234567890";
+
+            var item = new WorkflowInstanceRecordCreate
+            {
+                WorkflowVersionId = workflowVersion.Id,
+                Title = "Flying to Deimos",
+                StartedAt = DateTimeOffset.Now,
+                InitialVersion = "1.0",
+                State = longEnum
+            };
+
+            // Act
+            var record = await CreateWorkflowInstanceAsync(id, item);
+
+            // Assert
+            Assert.NotNull(record);
+            Assert.Equal(longEnum, record.State);
+        }
     }
 }

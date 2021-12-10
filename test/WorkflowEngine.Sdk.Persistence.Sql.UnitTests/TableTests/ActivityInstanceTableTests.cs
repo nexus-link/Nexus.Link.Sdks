@@ -66,6 +66,32 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.TableTests
         }
 
         [Fact]
+        public async Task Can_Create_Activity_Instance_With_Long_Enum_Names()
+        {
+            // Arrange
+            var activityVersion = await CreateStandardActivityVersionAsync();
+            var workflowInstance = await CreateStandardWorkflowInstanceAsync();
+            const string longEnum = "1234567890123456789012345678901234567890";
+
+            // Act
+            var item = new ActivityInstanceRecordCreate
+            {
+                ActivityVersionId = activityVersion.Id,
+                WorkflowInstanceId = workflowInstance.Id,
+                StartedAt = DateTimeOffset.Now,
+                State = longEnum,
+                ExceptionCategory = longEnum,
+                ParentIteration = 1
+            };
+            var record = await CreateActivityInstanceAsync(item);
+
+            // Assert
+            Assert.NotNull(record);
+            Assert.Equal(longEnum, record.State);
+            Assert.Equal(longEnum, record.ExceptionCategory);
+        }
+
+        [Fact]
         public async Task Can_Update_Activity_Instance()
         {
             // Arrange
