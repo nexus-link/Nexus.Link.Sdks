@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public class ActivityAction<TActivityReturns> : Activity, IActivityAction<TActivityReturns>
+    public class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
