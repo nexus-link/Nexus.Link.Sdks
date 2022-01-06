@@ -8,7 +8,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
-    public class ActivityCondition<TActivityReturns> : Activity, IActivityCondition<TActivityReturns>
+    public class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>, IActivityCondition<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
