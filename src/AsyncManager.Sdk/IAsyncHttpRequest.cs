@@ -54,28 +54,56 @@ namespace Nexus.Link.AsyncManager.Sdk
         AsyncHttpRequest SetContentAsJson(object content);
 
         /// <summary>
-        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.ExecuteBefore"/> property.
+        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.SendBefore"/> property.
         /// </summary>
         /// <param name="before">The absolute time the request must have been sent to the server.</param>
+        [Obsolete("Please use SetSendBefore. Obsolete since 2021-01-07.")]
         AsyncHttpRequest SetExecuteBefore(DateTimeOffset before);
 
         /// <summary>
-        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.ExecuteBefore"/> property.
+        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.SendBefore"/> property.
         /// </summary>
         /// <param name="before">A relative time from now when the request must have been sent to the server.</param>
+        [Obsolete("Please use SetSendBefore. Obsolete since 2021-01-07.")]
         AsyncHttpRequest SetExecuteBefore(TimeSpan before);
 
         /// <summary>
-        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.ExecuteAfter"/> property.
+        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.SendAfter"/> property.
         /// </summary>
         /// <param name="after">Time limit as absolute time.</param>
+        [Obsolete("Please use SetSendAfter. Obsolete since 2021-01-07.")]
         AsyncHttpRequest SetExecuteAfter(DateTimeOffset after);
 
         /// <summary>
-        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.ExecuteAfter"/> property.
+        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.SendAfter"/> property.
         /// </summary>
         /// <param name="after">A relative time from now.</param>
+        [Obsolete("Please use SetSendAfter. Obsolete since 2021-01-07.")]
         AsyncHttpRequest SetExecuteAfter(TimeSpan after);
+
+        /// <summary>
+        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.SendBefore"/> property.
+        /// </summary>
+        /// <param name="before">The absolute time the request must have been sent to the server.</param>
+        AsyncHttpRequest SetSendBefore(DateTimeOffset before);
+
+        /// <summary>
+        /// Set a limit for when the request must have been sent to the server in the <see cref="RequestMetadata.SendBefore"/> property.
+        /// </summary>
+        /// <param name="before">A relative time from now when the request must have been sent to the server.</param>
+        AsyncHttpRequest SetSendBefore(TimeSpan before);
+
+        /// <summary>
+        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.SendAfter"/> property.
+        /// </summary>
+        /// <param name="after">Time limit as absolute time.</param>
+        AsyncHttpRequest SetSendAfter(DateTimeOffset after);
+
+        /// <summary>
+        /// Set the earliest time that the request can be sent to the server in the <see cref="RequestMetadata.SendAfter"/> property.
+        /// </summary>
+        /// <param name="after">A relative time from now.</param>
+        AsyncHttpRequest SetSendAfter(TimeSpan after);
 
         /// <summary>
         /// Set the callback URL to <paramref name="url"/>.

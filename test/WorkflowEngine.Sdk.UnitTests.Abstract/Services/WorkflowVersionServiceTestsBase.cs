@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
@@ -22,8 +23,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var majorVersion = 1;
             var itemToCreate = new WorkflowVersionCreate
             {
@@ -49,8 +50,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Create_Given_SameVersion_Gives_Exception()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var majorVersion = 1;
             var itemToCreate = new WorkflowVersionCreate
             {
@@ -69,8 +70,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task UpdateAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var majorVersion = 1;
             var itemToCreate = new WorkflowVersionCreate
             {
@@ -99,8 +100,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Update_Given_WrongEtag_Gives_Exception()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var majorVersion = 1;
             var itemToCreate = new WorkflowVersionCreate
             {
@@ -113,7 +114,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 
             // Act & Assert
             itemToUpdate.MinorVersion =itemToCreate.MinorVersion+1;
-            itemToUpdate.Etag = Guid.NewGuid().ToLowerCaseString();
+            itemToUpdate.Etag = Guid.NewGuid().ToGuidString();
             await Assert.ThrowsAsync<FulcrumConflictException>(() =>
                 _workflowVersionService.UpdateAndReturnAsync(id, itemToUpdate));
         }

@@ -7,6 +7,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Logic;
 
@@ -36,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowCapabilityName = capabilityName;
             WorkflowFormTitle = workflowTitle;
-            WorkflowFormId = workflowId.ToLowerInvariant();
+            WorkflowFormId = workflowId.ToGuidString();
             WorkflowVersionCollection = new WorkflowVersionCollection(this);
             WorkflowCapabilities = workflowCapabilities;
         }
@@ -70,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             InternalContract.RequireNotNullOrWhiteSpace(activityFormId, nameof(activityFormId));
             InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
-            var id = activityFormId.ToLowerInvariant();
+            var id = activityFormId.ToGuidString();
             _activityDefinitions.Add(id, new ActivityDefinition
             {
                 ActivityFormId = id,
@@ -81,7 +82,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         public ActivityDefinition GetActivityDefinition(string activityFormId)
         {
-            var id = activityFormId.ToLowerInvariant();
+            var id = activityFormId.ToGuidString();
             if (!_activityDefinitions.ContainsKey(id)) return null;
             return _activityDefinitions[id];
         }

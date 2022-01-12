@@ -33,5 +33,13 @@ namespace Nexus.Link.AsyncManager.Sdk
         /// <param name="cancellationToken">Token for cancelling a call</param>
         /// <returns>The request id for the posted request.</returns>
         Task<string> SendRequestAsync(AsyncHttpRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Send one asynchronous request to the async request manager.
+        /// </summary>
+        /// <param name="request">The request to send.</param>
+        /// <param name="cancellationToken">Token for cancelling a call</param>
+        /// <returns>The request id for the posted request.</returns>
+        Task<string> SendRequestAsync(IAsyncHttpRequest request, CancellationToken cancellationToken = default);
     }
 }

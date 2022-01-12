@@ -71,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 }
             }
 
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(record.WorkflowInstanceId.ToGuidString(), cancellationToken);
         }
 
         /// <inheritdoc />

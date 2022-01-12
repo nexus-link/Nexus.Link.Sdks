@@ -20,26 +20,19 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var workflowInstanceId = Guid.NewGuid().ToLowerCaseString();
-            var activityVersionId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var workflowInstanceId = Guid.NewGuid().ToGuidString();
+            var activityVersionId = Guid.NewGuid().ToGuidString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
                 ActivityVersionId = activityVersionId,
-                ParentActivityInstanceId = Guid.NewGuid().ToLowerCaseString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ParentIteration = 1, 
             };
 
             // Act
             var createdItem = await _service.CreateWithSpecifiedIdAndReturnAsync(id, itemToCreate);
-            var findUnique = new ActivityInstanceUnique
-            {
-                WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
-                ActivityVersionId = itemToCreate.ActivityVersionId,
-                ParentActivityInstanceId = itemToCreate.ParentActivityInstanceId,
-                ParentIteration = itemToCreate.ParentIteration
-            };
             var readItem = await _service.ReadAsync(id);
 
             // Assert
@@ -55,32 +48,25 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task UpdateAsync()
         {
             // Arrange
-            var id = Guid.NewGuid().ToLowerCaseString();
-            var workflowInstanceId = Guid.NewGuid().ToLowerCaseString();
-            var activityVersionId = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
+            var workflowInstanceId = Guid.NewGuid().ToGuidString();
+            var activityVersionId = Guid.NewGuid().ToGuidString();
             var itemToCreate = new ActivityInstanceCreate
             {
                 WorkflowInstanceId = workflowInstanceId,
                 ActivityVersionId = activityVersionId,
-                ParentActivityInstanceId = Guid.NewGuid().ToLowerCaseString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ParentIteration = 1, 
             };
             var createdItem = await _service.CreateWithSpecifiedIdAndReturnAsync(id, itemToCreate);
-            var findUnique = new ActivityInstanceUnique
-            {
-                WorkflowInstanceId = itemToCreate.WorkflowInstanceId,
-                ActivityVersionId = itemToCreate.ActivityVersionId,
-                ParentActivityInstanceId = itemToCreate.ParentActivityInstanceId,
-                ParentIteration = itemToCreate.ParentIteration
-            };
             var itemToUpdate = await _service.ReadAsync(id);
 
             // Act
             itemToUpdate.FinishedAt = DateTimeOffset.Now;
             itemToUpdate.State = ActivityStateEnum.Failed;
             itemToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.TechnicalError;
-            itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToLowerCaseString();
-            itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToLowerCaseString();
+            itemToUpdate.ExceptionFriendlyMessage =  Guid.NewGuid().ToGuidString();
+            itemToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToGuidString();
             var updatedItem = await _service.UpdateAndReturnAsync(createdItem.Id, itemToUpdate);
 
             // Assert
@@ -149,7 +135,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
 
         private async Task<ActivityInstance> CreateActivityInstance()
         {
-            var id = Guid.NewGuid().ToLowerCaseString();
+            var id = Guid.NewGuid().ToGuidString();
             var workflowInstanceId = Guid.NewGuid().ToString();
             var activityVersionId = Guid.NewGuid().ToString();
             var itemToCreate = new ActivityInstanceCreate

@@ -277,7 +277,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
             WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
             return new ActivityFlow<TActivityReturns>(WorkflowInformation, WorkflowCache,
-                position, id.ToLowerInvariant());
+                position, id.ToGuidString());
         }
 
         public IActivityFlow CreateActivity(int position, string id)
@@ -286,7 +286,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
             WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
 
-            return new ActivityFlow(WorkflowInformation, WorkflowCache, position, id.ToLowerInvariant());
+            return new ActivityFlow(WorkflowInformation, WorkflowCache, position, id.ToGuidString());
         }
 
         /// <inheritdoc />

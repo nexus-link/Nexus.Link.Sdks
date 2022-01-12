@@ -21,7 +21,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             _subscriptionHandler = subscriptionHandler;
         }
         /// <inheritdoc />
-        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken token = new CancellationToken())
+        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken cancellationToken = new CancellationToken())
         {
             Log.LogOnLevel(
                 FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
@@ -33,13 +33,13 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             InternalContract.RequireNotNull(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
             InternalContract.RequireValidated(publishableEvent?.Metadata, nameof(publishableEvent.Metadata));
 
-            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, token);
+            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, cancellationToken);
         }
 
         /// <inheritdoc />
         public async Task ReceiveEventExplicitlyAsync(string entityName, string eventName, int majorVersion,
             JToken eventAsJson,
-            CancellationToken token = new CancellationToken())
+            CancellationToken cancellationToken = new CancellationToken())
         {
             Log.LogOnLevel(
                 FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
@@ -75,7 +75,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
                     + $" Will trust the event {nameof(publishableEvent.Metadata)}.");
             }
 
-            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, token);
+            await _subscriptionHandler.CallEventReceiverAsync(eventAsJson as JObject, cancellationToken);
         }
     }
 }

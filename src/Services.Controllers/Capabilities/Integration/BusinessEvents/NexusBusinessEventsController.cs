@@ -17,6 +17,9 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.BusinessEvent
     [Route("api/Integration/v1/[area]/v1/Events")]
     public class NexusBusinessEventsController : ControllerBase, IBusinessEventService
     {
+        /// <summary>
+        /// The business events capability
+        /// </summary>
         protected readonly IBusinessEventsCapability Capability;
 
         /// <summary>

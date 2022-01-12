@@ -7,6 +7,9 @@ namespace Nexus.Link.Services.Contracts.Events
     /// </summary>
     public interface IPublishableEvent : IValidatable
     {
+        /// <summary>
+        /// Metadata for the event, e.g. name and version.
+        /// </summary>
         EventMetadata Metadata { get; }
     }
 }

@@ -37,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             record.FinishedAt = DateTimeOffset.UtcNow;
 
             await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(record.WorkflowInstanceId.ToGuidString(), cancellationToken);
             // TODO: Audit log?
         }
 
@@ -58,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             record.FinishedAt = DateTimeOffset.UtcNow;
 
             await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(record.WorkflowInstanceId.ToString(), cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(record.WorkflowInstanceId.ToGuidString(), cancellationToken);
             // TODO: Audit log?
         }
     }

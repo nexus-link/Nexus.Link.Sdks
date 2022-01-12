@@ -31,6 +31,8 @@ namespace AsyncManager.Sdk.UnitTests
             _httpSenderMock = new Mock<IHttpSender>();
             FulcrumApplicationHelper.UnitTestSetup(nameof(AsyncRequestClientTests));
             // TODO: Split tests for AsyncRequestMgmtRestClients and AsyncRequestClient
+            _httpSenderMock.Setup(sender => sender.CreateHttpSender(It.IsAny<string>()))
+                .Returns(_httpSenderMock.Object);
             _restClients = new AsyncRequestMgmtRestClients(_httpSenderMock.Object);
         }
 

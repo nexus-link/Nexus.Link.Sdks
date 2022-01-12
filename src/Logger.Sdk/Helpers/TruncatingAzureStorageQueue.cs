@@ -18,6 +18,8 @@ namespace Nexus.Link.Logger.Sdk.Helpers
 
         public TruncatingAzureStorageQueue(string connectionString, string name)
         {
+            // TODO: If we are going to move to V12, then we probably need to use the constructor with queue options and set Base64 encoding.
+            // https://stackoverflow.com/questions/63023481/azure-functions-queue-trigger-is-expecting-base-64-messages-and-doesnt-process
             _baseQueue = new AzureStorageQueue<T>(connectionString, name);
         }
 

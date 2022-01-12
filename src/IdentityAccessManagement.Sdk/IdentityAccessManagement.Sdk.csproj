@@ -21,15 +21,15 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.6.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.1" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.6" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.9.3" />
+		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.10.0" />
 	</ItemGroup>
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.IdentityAccessManagement.Sdk</PackageId>
-		<Version>0.4.6</Version>
+		<Version>0.4.7</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -39,7 +39,7 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-			0.4.6 Bump
+			0.4.7 Bump
       0.4.5 Fix symbols
       0.4.4 Skip validation of options.TokenValidationParameters.ValidTypes
       0.4.3 Bump

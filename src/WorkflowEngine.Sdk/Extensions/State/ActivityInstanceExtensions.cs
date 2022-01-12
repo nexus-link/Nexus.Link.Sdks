@@ -61,12 +61,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            target.Id = source.Id.ToLowerCaseString();
+            target.Id = source.Id.ToGuidString();
             target.Etag = source.Etag;
-            target.WorkflowInstanceId = source.WorkflowInstanceId.ToLowerCaseString();
+            target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuidString();
             target.ParentIteration = source.ParentIteration;
-            target.ActivityVersionId = source.ActivityVersionId.ToLowerCaseString();
-            target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToLowerCaseString();
+            target.ActivityVersionId = source.ActivityVersionId.ToGuidString();
+            target.ParentActivityInstanceId = source.ParentActivityInstanceId.ToGuidString();
             target.ResultAsJson = source.ResultAsJson;
             target.ContextDictionary = source.ContextAsJson == null 
                 ? new Dictionary<string, JToken>() 

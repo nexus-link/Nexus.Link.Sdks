@@ -36,20 +36,20 @@ namespace Nexus.Link.Services.Controllers.Events
 
         /// <inheritdoc />
         [HttpPost("")]
-        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken token = default)
+        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             var @event = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson.ToString(Formatting.None));
             FulcrumAssert.IsNull(@event, CodeLocation.AsString());
             ServiceContract.RequireNotNull(@event?.Metadata, nameof(@event.Metadata));
             ServiceContract.RequireValidated(@event?.Metadata, nameof(@event.Metadata));
-            await Logic.ReceiveEventAsync(eventAsJson, token);
+            await Logic.ReceiveEventAsync(eventAsJson, cancellationToken);
         }
 
         /// <inheritdoc />
         [HttpPost("Entities/{entityName}/Events/{eventName}/Versions/{majorVersion}")]
         public async Task ReceiveEventExplicitlyAsync(string entityName, string eventName, int majorVersion,
-            JToken eventAsJson, CancellationToken token = default)
+            JToken eventAsJson, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNull(eventAsJson, nameof(eventAsJson));
             var @event = JsonHelper.SafeDeserializeObject<PublishableEvent>(eventAsJson.ToString(Formatting.None));
@@ -67,7 +67,7 @@ namespace Nexus.Link.Services.Controllers.Events
                     Log.LogWarning($"REST parameters ({entityName}.{eventName} ({majorVersion}) did not match the event {nameof(@event.Metadata)} ({@event.Metadata}). Will trust the event {nameof(@event.Metadata)}.");
                 }
             }
-            await Logic.ReceiveEventExplicitlyAsync(entityName, eventName, majorVersion, eventAsJson, token);
+            await Logic.ReceiveEventExplicitlyAsync(entityName, eventName, majorVersion, eventAsJson, cancellationToken);
         }
     }
 }

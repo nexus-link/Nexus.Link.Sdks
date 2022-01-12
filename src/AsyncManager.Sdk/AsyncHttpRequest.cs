@@ -95,33 +95,68 @@ namespace Nexus.Link.AsyncManager.Sdk
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use SetSendBefore. Obsolete since 2021-01-07.")]
         public AsyncHttpRequest SetExecuteBefore(DateTimeOffset before)
         {
             InternalContract.RequireGreaterThanOrEqualTo(DateTimeOffset.UtcNow, before, nameof(before));
-            Metadata.ExecuteBefore = before;
+            Metadata.SendBefore = before;
             return this;
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use SetSendBefore. Obsolete since 2021-01-07.")]
         public AsyncHttpRequest SetExecuteBefore(TimeSpan before)
         {
             InternalContract.RequireGreaterThanOrEqualTo(TimeSpan.Zero, before, nameof(before));
-            Metadata.ExecuteBefore = DateTimeOffset.UtcNow + before;
+            Metadata.SendBefore = DateTimeOffset.UtcNow + before;
             return this;
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use SetSendAfter. Obsolete since 2021-01-07.")]
         public AsyncHttpRequest SetExecuteAfter(DateTimeOffset after)
         {
-            Metadata.ExecuteAfter = after;
+            Metadata.SendAfter = after;
             return this;
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use SetSendAfter. Obsolete since 2021-01-07.")]
         public AsyncHttpRequest SetExecuteAfter(TimeSpan after)
         {
             InternalContract.RequireGreaterThanOrEqualTo(TimeSpan.Zero, after, nameof(after));
-            Metadata.ExecuteBefore = DateTimeOffset.UtcNow + after;
+            Metadata.SendBefore = DateTimeOffset.UtcNow + after;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest SetSendBefore(DateTimeOffset before)
+        {
+            InternalContract.RequireGreaterThanOrEqualTo(DateTimeOffset.UtcNow, before, nameof(before));
+            Metadata.SendBefore = before;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest SetSendBefore(TimeSpan before)
+        {
+            InternalContract.RequireGreaterThanOrEqualTo(TimeSpan.Zero, before, nameof(before));
+            Metadata.SendBefore = DateTimeOffset.UtcNow + before;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest SetSendAfter(DateTimeOffset after)
+        {
+            Metadata.SendAfter = after;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public AsyncHttpRequest SetSendAfter(TimeSpan after)
+        {
+            InternalContract.RequireGreaterThanOrEqualTo(TimeSpan.Zero, after, nameof(after));
+            Metadata.SendBefore = DateTimeOffset.UtcNow + after;
             return this;
         }
 

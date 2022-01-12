@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.12.2" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.13.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.7.2</Version>
+    <Version>1.7.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -51,7 +51,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-			1.7.2 Support for larger enum values in database
+      1.7.3 Bump
+      1.7.2 Support for larger enum values in database
 			1.7.1 Now sets DistributedLockTable
 			1.7.0 netstandard2.1
 			1.6.3 Bump

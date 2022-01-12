@@ -168,7 +168,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 var activityFormsList = await _configurationTables.ActivityForm.SearchAsync(
                     new SearchDetails<ActivityFormRecord>(new ActivityFormRecordSearch { WorkflowFormId = formId.Value }), 0,
                     int.MaxValue, cancellationToken);
-                activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToLowerCaseString(), x => new ActivityForm().From(x));
+                activityForms = activityFormsList.Data.ToDictionary(x => x.Id.ToGuidString(), x => new ActivityForm().From(x));
             }
             // ActivityVersions
             Dictionary<string, ActivityVersion> activityVersions;
@@ -181,7 +181,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 var activityVersionsList = await _configurationTables.ActivityVersion.SearchAsync(
                     new SearchDetails<ActivityVersionRecord>(new ActivityVersionRecordSearch
                     { WorkflowVersionId = versionId.Value }), 0, int.MaxValue, cancellationToken);
-                activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToLowerCaseString(), x => new ActivityVersion().From(x));
+                activityVersions = activityVersionsList.Data.ToDictionary(x => x.Id.ToGuidString(), x => new ActivityVersion().From(x));
             }
 
             // ActivityInstances
@@ -198,7 +198,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                     { WorkflowInstanceId = instanceId.Value }), 0, int.MaxValue, cancellationToken);
 
                 activityInstances = activityInstancesList.Data
-                    .ToDictionary(x => x.Id.ToLowerCaseString(), x => new ActivityInstance().From(x));
+                    .ToDictionary(x => x.Id.ToGuidString(), x => new ActivityInstance().From(x));
             }
 
             return (activityForms, activityVersions, activityInstances);

@@ -48,7 +48,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             _workflowImplementation = new TestWorkflowImplementation(workflowCapabilities);
             var workflowInfo = new WorkflowInformation(_workflowImplementation)
             {
-                InstanceId = Guid.NewGuid().ToLowerCaseString()
+                InstanceId = Guid.NewGuid().ToGuidString()
             };
             _workflowCache = new WorkflowCache(workflowInfo);
             _workflowCache.LoadAsync(default).Wait();
@@ -178,7 +178,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             // Arrange
             var activity = new ActivityAction<int>(_activityFlowMock, null);
             var executor = new ActivityExecutor(_workflowImplementation, activity);
-            var expectedRequestId = Guid.NewGuid().ToLowerCaseString();
+            var expectedRequestId = Guid.NewGuid().ToGuidString();
 
             // Act & Assert
             await Should.ThrowAsync<ExceptionTransporter>(

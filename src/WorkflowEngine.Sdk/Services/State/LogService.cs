@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             using var scope = new TransactionScope(TransactionScopeOption.Suppress, options, TransactionScopeAsyncFlowOption.Enabled);
             var workflowInstanceId = await _runtimeTables.Log.CreateAsync(record, cancellationToken);
             scope.Complete();
-            return workflowInstanceId.ToLowerCaseString();
+            return workflowInstanceId.ToGuidString();
         }
 
         /// <inheritdoc />

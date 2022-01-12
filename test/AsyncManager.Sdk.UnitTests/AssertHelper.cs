@@ -32,8 +32,8 @@ namespace AsyncManager.Sdk.UnitTests
             Assert.Equal(expected.Priority, actual.Priority);
 
             var precision = TimeSpan.FromSeconds(1);
-            AssertEqual(expected.ExecuteAfter, actual.ExecuteAfter, precision);
-            AssertEqual(expected.ExecuteBefore, actual.ExecuteBefore, precision);
+            AssertEqual(expected.SendAfter, actual.SendAfter, precision);
+            AssertEqual(expected.SendBefore, actual.SendBefore, precision);
         }
 
         public static void AssertEqual(DateTimeOffset? expected, DateTimeOffset? actual, TimeSpan precision)

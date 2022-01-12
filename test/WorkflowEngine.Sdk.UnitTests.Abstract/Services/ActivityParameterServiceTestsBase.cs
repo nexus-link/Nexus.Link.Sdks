@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndReadAsync()
         {
             // Arrange
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var name = "Name1";
             var itemToCreate = new ActivityParameterCreate
             {
@@ -44,7 +45,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Create_Given_SameParameter_Gives_Exception()
         {
             // Arrange
-            var masterId = Guid.NewGuid().ToLowerCaseString();
+            var masterId = Guid.NewGuid().ToGuidString();
             var name = "Name1";
             var itemToCreate = new ActivityParameterCreate
             {

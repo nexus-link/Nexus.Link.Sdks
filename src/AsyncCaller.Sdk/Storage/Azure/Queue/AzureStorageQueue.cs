@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Core.Threads;
 
 namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
 {
+    // TODO: We should probably use our Libraries variant rather than this one. The one in Libraries are based on Storage.V12, this is based on Storage.V11
     public class AzureStorageQueue : IQueue
     {
         private static readonly string Namespace = typeof(AzureStorageQueue).Namespace;

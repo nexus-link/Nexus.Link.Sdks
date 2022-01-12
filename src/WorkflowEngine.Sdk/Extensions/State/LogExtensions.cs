@@ -59,11 +59,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            target.Id = source.Id.ToLowerCaseString();
+            target.Id = source.Id.ToGuidString();
             target.Etag = source.Etag;
-            target.WorkflowFormId = source.WorkflowFormId.ToLowerCaseString();
-            target.WorkflowInstanceId = source.WorkflowInstanceId?.ToLowerCaseString();
-            target.ActivityFormId = source.ActivityFormId?.ToLowerCaseString();
+            target.WorkflowFormId = source.WorkflowFormId.ToGuidString();
+            target.WorkflowInstanceId = source.WorkflowInstanceId?.ToGuidString();
+            target.ActivityFormId = source.ActivityFormId?.ToGuidString();
             target.SeverityLevel = source.SeverityLevel.ToEnum<LogSeverityLevel>();
             target.Message = source.Message;
             target.Data = source.DataAsJson == null ? null : JToken.Parse(source.DataAsJson);

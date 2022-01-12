@@ -43,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             try
             {
                 var codeBase = Assembly.GetExecutingAssembly().Location;
-                if (codeBase.ToLower().StartsWith("file:///")) codeBase = codeBase.Substring("file:///".Length);
+                if (codeBase.ToLowerInvariant().StartsWith("file:///")) codeBase = codeBase.Substring("file:///".Length);
                 var binDirectory = new FileInfo(codeBase).Directory ?? new DirectoryInfo("");
                 var dir = new DirectoryInfo(Path.Combine(binDirectory.FullName, relativeUrl));
                 if (!dir.Exists) return new DirectoryInfo(@$"contentFiles\any\any\{relativeUrl}"); // For unit tests

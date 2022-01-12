@@ -46,8 +46,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = source.Id.ToLowerCaseString();
-            target.WorkflowFormId = source.WorkflowFormId.ToLowerCaseString();
+            target.Id = source.Id.ToGuidString();
+            target.WorkflowFormId = source.WorkflowFormId.ToGuidString();
             target.Type = source.Type.ToEnum<ActivityTypeEnum>();
             target.Title = source.Title;
             target.Etag = source.Etag;

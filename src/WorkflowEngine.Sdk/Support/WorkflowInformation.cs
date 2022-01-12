@@ -2,6 +2,7 @@
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
@@ -25,7 +26,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
         {
             WorkflowImplementation = workflowImplementation;
-            FormId = WorkflowVersions.WorkflowFormId.ToLowerInvariant();
+            FormId = WorkflowVersions.WorkflowFormId.ToGuidString();
         }
 
         /// <inheritdoc />

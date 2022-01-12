@@ -89,7 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 {
                     _summary.Version = new WorkflowVersion
                     {
-                        Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
+                        Id = Guid.NewGuid().ToGuidString(),
                         WorkflowFormId = _workflowInformation.FormId,
                         MajorVersion = _workflowInformation.MajorVersion,
                         MinorVersion = _workflowInformation.MinorVersion,
@@ -248,7 +248,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 {
                     version = new ActivityVersion
                     {
-                        Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
+                        Id = Guid.NewGuid().ToGuidString(),
                         WorkflowVersionId = _summary.Version.Id,
                         ActivityFormId = activityFlow.ActivityFormId,
                         FailUrgency = activityFlow.Options.FailUrgency,
@@ -266,7 +266,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                 if (instance != null) return instance.Id;
                 instance = new ActivityInstance
                 {
-                    Id = TypeConversionExtensions.ToLowerCaseString(Guid.NewGuid()),
+                    Id = Guid.NewGuid().ToGuidString(),
                     WorkflowInstanceId = _workflowInformation.InstanceId,
                     ActivityVersionId = version.Id,
                     ParentActivityInstanceId = parentActivity?.ActivityInstanceId,

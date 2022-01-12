@@ -15,6 +15,9 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.Authenticatio
     [Route("api/Integration/v1/[area]/v1/Tokens")]
     public class NexusTokensController : ControllerBase, ITokenService
     {
+        /// <summary>
+        /// The authentication capability.
+        /// </summary>
         protected readonly IAuthenticationCapability Capability;
 
         /// <summary>

@@ -3,6 +3,9 @@ using Nexus.Link.Services.Contracts.Events;
 
 namespace Nexus.Link.Services.Contracts
 {
+    /// <summary>
+    /// Extensions methods 
+    /// </summary>
     public static class ContractExtensions
     {
         /// <summary>

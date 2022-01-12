@@ -60,7 +60,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
         public async Task The_Convenience_Workflow_Contains_All_Information_And_Hierarchy()
         {
             // Arrange
-            var id = WorkflowInstanceRecord.Id.ToLowerCaseString();
+            var id = WorkflowInstanceRecord.Id.ToGuidString();
 
             // Act
             var workflow = await _service.ReadAsync(id);
@@ -83,7 +83,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
         public async Task Cancelling_A_Workflow_Sets_CancelledAt()
         {
             // Arrange
-            var id = WorkflowInstanceRecord.Id.ToLowerCaseString();
+            var id = WorkflowInstanceRecord.Id.ToGuidString();
 
             // Act
             await _service.CancelWorkflowAsync(id);

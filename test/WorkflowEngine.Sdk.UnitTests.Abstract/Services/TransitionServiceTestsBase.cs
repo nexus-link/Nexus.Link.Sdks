@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Entities.Configuration;
 using Nexus.Link.Capabilities.WorkflowMgmt.Abstract.Services.Configuration;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Xunit;
 
@@ -21,9 +22,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task CreateAndFindAsync()
         {
             // Arrange
-            var workflowVersionId = Guid.NewGuid().ToLowerCaseString();
-            var fromActivityVersionId = Guid.NewGuid().ToLowerCaseString();
-            var toActivityVersionId = Guid.NewGuid().ToLowerCaseString();
+            var workflowVersionId = Guid.NewGuid().ToGuidString();
+            var fromActivityVersionId = Guid.NewGuid().ToGuidString();
+            var toActivityVersionId = Guid.NewGuid().ToGuidString();
             var itemToCreate = new TransitionCreate
             {
                 WorkflowVersionId = workflowVersionId,
@@ -47,9 +48,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Abstract.Services
         public async Task Create_Given_SameActivities_Gives_Exception()
         {
             // Arrange
-            var workflowVersionId = Guid.NewGuid().ToLowerCaseString();
-            var fromActivityVersionId = Guid.NewGuid().ToLowerCaseString();
-            var toActivityVersionId = Guid.NewGuid().ToLowerCaseString();
+            var workflowVersionId = Guid.NewGuid().ToGuidString();
+            var fromActivityVersionId = Guid.NewGuid().ToGuidString();
+            var toActivityVersionId = Guid.NewGuid().ToGuidString();
             var itemToCreate = new TransitionCreate
             {
                 WorkflowVersionId = workflowVersionId,

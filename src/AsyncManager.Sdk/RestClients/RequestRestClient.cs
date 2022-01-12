@@ -12,38 +12,35 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.AsyncManager.Sdk.RestClients
 {
-    /// <inheritdoc />
-    public class RequestRestClient : IRequestService
+    /// <inheritdoc cref="IRequestService" />
+    public class RequestRestClient : RestClient, IRequestService
     {
         private readonly IHttpSender _httpSender;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public RequestRestClient(IHttpSender httpSender)
+        public RequestRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("Requests"))
         {
             _httpSender = httpSender;
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateAsync(HttpRequestCreate request, CancellationToken cancellationToken = default)
+        public Task<string> CreateAsync(HttpRequestCreate request, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(request, nameof(request));
             InternalContract.RequireValidated(request, nameof(request));
 
-            const string relativeUrl = "Requests";
-            var result = await _httpSender.SendRequestAsync<string, HttpRequestCreate>(HttpMethod.Post, relativeUrl, request, null, cancellationToken);
-            //Should we really do asserts here? If result.IsSuccessStatusCode is false we'll throw a FulcrumAssertionFailedException with the message 'Expected value to be true'. Feels bad man.
+            return PostAsync<string, HttpRequestCreate>("", request, null, cancellationToken);
+        }
 
-            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
-            FulcrumAssert.IsNotNull(result.Response, CodeLocation.AsString());
-            if (result!.Response.IsSuccessStatusCode != true)
-            {
-                throw new FulcrumResourceException($"Expected successful statusCode or the httpSender to throw an exception, but received HTTP status {result.Response.StatusCode}.\r" +
-                                                   $"We recommend that you use {typeof(ThrowFulcrumExceptionOnFail).FullName} as a handler in your {nameof(IHttpSender)}; it will convert failed HTTP requests to exceptions.");
-            }
+        /// <inheritdoc />
+        public Task RetryAsync(string requestId, CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
-            return result.Body;
+            var relativeUrl = $"Requests/{WebUtility.UrlEncode(requestId)}/Ready";
+            return PostNoResponseContentAsync(relativeUrl, null, cancellationToken);
         }
 
         /// <inheritdoc />

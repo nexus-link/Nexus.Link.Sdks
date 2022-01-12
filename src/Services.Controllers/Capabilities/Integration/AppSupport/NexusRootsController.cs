@@ -14,10 +14,10 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.AppSupport
     [ApiExplorerSettings(IgnoreApi = true)]
     public class NexusRootsController : IRootService
     {
-        // The default
+        /// <inheritdoc />
         [HttpGet("")]
         [Produces("text/html")]
-        public virtual Task<ContentResult> Welcome(CancellationToken token = default)
+        public virtual Task<ContentResult> Welcome(CancellationToken cancellationToken = default)
         {
             var result = new ContentResult {
                 ContentType = "text/html",

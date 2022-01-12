@@ -59,7 +59,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             item.CancelledAt = DateTimeOffset.Now;
 
             await _stateCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(workflowInstanceId, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(workflowInstanceId, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -79,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             // TODO: item.ExceptionAlertHandled = null
 
             await _stateCapability.ActivityInstance.UpdateAndReturnAsync(activityInstanceId, item, cancellationToken);
-            await _requestMgmtCapability.Execution.ReadyForExecutionAsync(item.WorkflowInstanceId, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(item.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log
         }

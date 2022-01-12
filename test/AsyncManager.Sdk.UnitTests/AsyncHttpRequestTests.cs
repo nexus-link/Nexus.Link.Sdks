@@ -119,35 +119,35 @@ namespace AsyncManager.Sdk.UnitTests
         }
 
         [Fact]
-        public void SetExecuteBeforeAbsolute()
+        public void SetSendBeforeAbsolute()
         {
             // arrange
             var expectedTime = DateTimeOffset.UtcNow + TimeSpan.FromMinutes(1);
             var request = TestDataGenerator.DefaultAsyncHttpRequest;
 
             // act
-            request.SetExecuteBefore(expectedTime);
+            request.SetSendBefore(expectedTime);
 
             // assert
-            Assert.Equal(expectedTime, request.Metadata.ExecuteBefore);
+            Assert.Equal(expectedTime, request.Metadata.SendBefore);
         }
 
         [Fact]
-        public void SetExecuteAfterAbsolute()
+        public void SetSendAfterAbsolute()
         {
             // arrange
             var expectedTime = DateTimeOffset.UtcNow + TimeSpan.FromMinutes(1);
             var request = TestDataGenerator.DefaultAsyncHttpRequest;
 
             // act
-            request.SetExecuteAfter(expectedTime);
+            request.SetSendAfter(expectedTime);
 
             // assert
-            Assert.Equal(expectedTime, request.Metadata.ExecuteAfter);
+            Assert.Equal(expectedTime, request.Metadata.SendAfter);
         }
 
         [Fact]
-        public void SetExecuteBeforeRelative()
+        public void SetSendBeforeRelative()
         {
             // arrange
             var relative = TimeSpan.FromMinutes(1);
@@ -155,14 +155,14 @@ namespace AsyncManager.Sdk.UnitTests
             var request = TestDataGenerator.DefaultAsyncHttpRequest;
 
             // act
-            request.SetExecuteBefore(relative);
+            request.SetSendBefore(relative);
 
             // assert
-            AssertHelper.AssertEqual(expectedTime, request.Metadata.ExecuteBefore, TimeSpan.FromSeconds(3));
+            AssertHelper.AssertEqual(expectedTime, request.Metadata.SendBefore, TimeSpan.FromSeconds(3));
         }
 
         [Fact]
-        public void SetExecuteAfterRelative()
+        public void SetSendAfterRelative()
         {
             // arrange
             var relative = TimeSpan.FromMinutes(1);
@@ -170,10 +170,10 @@ namespace AsyncManager.Sdk.UnitTests
             var request = TestDataGenerator.DefaultAsyncHttpRequest;
 
             // act
-            request.SetExecuteAfter(relative);
+            request.SetSendAfter(relative);
 
             // assert
-            AssertHelper.AssertEqual(expectedTime, request.Metadata.ExecuteBefore, TimeSpan.FromSeconds(3));
+            AssertHelper.AssertEqual(expectedTime, request.Metadata.SendBefore, TimeSpan.FromSeconds(3));
         }
 
         [Fact]

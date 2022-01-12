@@ -2,6 +2,7 @@
 
 namespace Nexus.Link.Services.Contracts.Events
 {
+    /// <inheritdoc />
     public class PublishableEvent : IPublishableEvent
     {
         /// <inheritdoc />

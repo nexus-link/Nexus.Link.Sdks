@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
 
             var recordCreate = new TransitionRecordCreate().From(item);
             var idAsGuid = await _configurationTables.Transition.CreateAsync(recordCreate, cancellationToken);
-            var id = idAsGuid.ToLowerCaseString();
+            var id = idAsGuid.ToGuidString();
             return id;
         }
 

@@ -15,6 +15,9 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.ValueTranslat
     [Route("api/Integration/v1/[area]/v1/Associations")]
     public class NexusAssociationsController : ControllerBase, IAssociationService
     {
+        /// <summary>
+        /// The value translation capability
+        /// </summary>
         protected readonly IValueTranslationCapability Capability;
 
         /// <summary>

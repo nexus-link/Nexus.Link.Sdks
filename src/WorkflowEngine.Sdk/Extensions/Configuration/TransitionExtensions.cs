@@ -59,11 +59,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = source.Id.ToLowerCaseString();
+            target.Id = source.Id.ToGuidString();
             target.Etag = source.Etag;
-            target.WorkflowVersionId = source.WorkflowVersionId.ToLowerCaseString();
-            target.FromActivityVersionId = source.FromActivityVersionId.ToLowerCaseString();
-            target.ToActivityVersionId = source.ToActivityVersionId.ToLowerCaseString();
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuidString();
+            target.FromActivityVersionId = source.FromActivityVersionId.ToGuidString();
+            target.ToActivityVersionId = source.ToActivityVersionId.ToGuidString();
             return target;
         }
         

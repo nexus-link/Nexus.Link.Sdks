@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 
@@ -49,6 +50,21 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             InternalContract.RequireValidated(request, nameof(request));
 
             return _capability.Request.CreateAsync(request, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task<string> SendRequestAsync(IAsyncHttpRequest request, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(request, nameof(request));
+            InternalContract.RequireValidated(request, nameof(request));
+            if (!(request is AsyncHttpRequest implementation))
+            {
+                throw new FulcrumContractException(
+                    $"The {nameof(request)} parameter was expected to be implemented as a {nameof(AsyncHttpRequest)}" + 
+                    $", but the type was {request.GetType().Name}");
+            }
+
+            return _capability.Request.CreateAsync(implementation, cancellationToken);
         }
 
         /// <summary>

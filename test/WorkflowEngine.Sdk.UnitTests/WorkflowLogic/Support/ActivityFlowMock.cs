@@ -1,4 +1,5 @@
-﻿using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+﻿using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
@@ -34,7 +35,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             WorkflowInformation = workflowInformation;
             WorkflowCache = workflowCache;
 
-            ActivityFormId = activityFormId.ToLowerInvariant();
+            ActivityFormId = activityFormId.ToGuidString();
             FormTitle = formTitle;
             MethodHandler = new MethodHandler(formTitle);
             Position = position;

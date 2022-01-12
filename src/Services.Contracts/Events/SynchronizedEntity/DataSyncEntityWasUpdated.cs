@@ -12,7 +12,10 @@ namespace Nexus.Link.Services.Contracts.Events.SynchronizedEntity
         /// <inheritdoc />
         public EventMetadata Metadata { get; set; } = 
             new EventMetadata("DataSyncEntity", "Updated", 1, 0);
-
+        
+        /// <summary>
+        /// The entity key that the update was for
+        /// </summary>
         public SyncKey Key { get; } = new SyncKey();
 
         /// <summary>

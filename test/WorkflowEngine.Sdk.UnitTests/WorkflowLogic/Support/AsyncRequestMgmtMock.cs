@@ -8,7 +8,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
     {
         public Mock<IRequestService> RequestServiceMock { get; }
         public Mock<IRequestResponseService> RequestResponseServiceMock { get; }
-        public Mock<IExecutionService> ExecutionServiceMock { get; }
 
         public AsyncRequestMgmtMock()
         {
@@ -16,16 +15,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
             Request = RequestServiceMock.Object;
             RequestResponseServiceMock = new Mock<IRequestResponseService>();
             RequestResponse = RequestResponseServiceMock.Object;
-            ExecutionServiceMock = new Mock<IExecutionService>();
-            Execution = ExecutionServiceMock.Object;
         }
         /// <inheritdoc />
         public IRequestService Request { get; }
 
         /// <inheritdoc />
         public IRequestResponseService RequestResponse { get; }
-
-        /// <inheritdoc />
-        public IExecutionService Execution { get; }
     }
 }

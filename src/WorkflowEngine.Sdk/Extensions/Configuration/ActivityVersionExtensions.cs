@@ -48,11 +48,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.Id = source.Id.ToLowerCaseString();
-            target.WorkflowVersionId = source.WorkflowVersionId.ToLowerCaseString();
+            target.Id = source.Id.ToGuidString();
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuidString();
             target.Position = source.Position;
-            target.ActivityFormId = source.ActivityFormId.ToLowerCaseString();
-            target.ParentActivityVersionId = source.ParentActivityVersionId.ToLowerCaseString();
+            target.ActivityFormId = source.ActivityFormId.ToGuidString();
+            target.ParentActivityVersionId = source.ParentActivityVersionId.ToGuidString();
             target.FailUrgency = source.FailUrgency.ToEnum<ActivityFailUrgencyEnum>();
             target.Etag = source.Etag;
             return target;

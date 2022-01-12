@@ -9,15 +9,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.5" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.5" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.UnitTests" Version="1.0.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.UnitTests" Version="1.0.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.4" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.0.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.0.0" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="1.0.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.UnitTests" Version="1.0.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.UnitTests" Version="1.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.6" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.0.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.0.1" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
