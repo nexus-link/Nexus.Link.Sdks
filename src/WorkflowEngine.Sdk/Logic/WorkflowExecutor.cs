@@ -16,7 +16,6 @@ using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
-using Nexus.Link.WorkflowEngine.Sdk.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 {
@@ -50,14 +49,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId;
-
-            // If service runs directly with database connection, make sure we're on correct database version
-#pragma warning disable CS0618
-            if (DatabasePatchSettings.DatabasePatchLevelVerifier != null)
-            {
-                await DatabasePatchSettings.DatabasePatchLevelVerifier.VerifyDatabasePatchLevel(DatabasePatchSettings.DatabasePatchVersion, cancellationToken);
-            }
-#pragma warning restore CS0618
 
             WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
 

@@ -88,16 +88,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
                             }
                         }
 
-                        try
-                        {
-                            connection.Execute("DELETE FROM SeedOnce");
-                            ClearCacheAndPatch();
-                        }
-                        catch (Exception e)
-                        {
-                            //Assert.Fail(e.ToLogString());
-                            throw;
-                        }
+                        connection.Execute("DELETE FROM SeedOnce");
+                        ClearCacheAndPatch();
                     }
 
                     connection.Close();
@@ -170,7 +162,8 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
 
                         connection.Close();
 
-                    }                }
+                    }
+                }
                 finally
                 {
                     foreach (var file in _patchesDir.EnumerateFiles("extra-patch-*"))
@@ -183,7 +176,9 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
             private static void ClearCacheAndPatch()
             {
                 //DatabasePatcherHandler.ClearCache();
-                DatabasePatcherHandler.PatchIfNecessary(ConnectionStringForRollback, MasterConnectionString);
+
+                var handler = new DatabasePatcherHandler(ConnectionStringForRollback, MasterConnectionString);
+                handler.PatchOrThrowAsync();
             }
 
             private void WriteExtraPatch1Files(long initialPatchLevel)
