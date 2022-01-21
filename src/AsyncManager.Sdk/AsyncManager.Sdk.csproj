@@ -32,15 +32,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.0.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.10.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.11.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.3" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.6" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -50,6 +50,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.0.1 Bump
       3.0.0 New breaking contract
       2.0.1 Bump
       2.0.0 Contracts in new repo

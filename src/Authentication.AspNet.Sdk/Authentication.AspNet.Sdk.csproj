@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.0.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.10.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.11.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
@@ -35,7 +35,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.0.5</Version>
+      <Version>3.0.6</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -45,7 +45,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.0.5 Bump
+        3.0.6 Bump
         3.0.2 Symbols
         3.0.1 Added CancellationToken where missing for async methods.
         2.2.27 Bump

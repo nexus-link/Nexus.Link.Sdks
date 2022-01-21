@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.13.2" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.13.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +41,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.7.4</Version>
+    <Version>1.7.5</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -51,6 +51,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.7.5 Bump
       1.7.4 New logic for patching DB
       1.7.3 Bump
       1.7.2 Support for larger enum values in database
