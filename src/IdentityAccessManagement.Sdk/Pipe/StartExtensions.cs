@@ -102,6 +102,13 @@ namespace IdentityAccessManagement.Sdk.Pipe
         {
             FulcrumApplication.Context.ClientPrincipal = context.User;
             FulcrumApplication.Context.CallingClientName = context.User?.GetClaimValue("aud") ?? context.User?.GetClientName();
+
+            var sub = context.User?.GetClaimValue(ClaimTypes.NameIdentifier);
+            if (sub != null)
+            {
+                FulcrumApplication.Context.ValueProvider.SetValue("UserId", sub);
+            }
+
             SaveUserAuthorizationToExecutionContext(context);
             SaveUserAuthorizationHeaderToExecutionContext(context);
 
@@ -140,6 +147,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
         {
             var headerValue = context.Request.Headers[Constants.NexusUserAuthorizationHeaderName];
             if (string.IsNullOrWhiteSpace(headerValue)) return;
+            FulcrumApplication.Context.ValueProvider.SetValue(Constants.NexusUserAuthorizationKeyName, headerValue);
 
             var bearerToken = headerValue.FirstOrDefault();
             if (bearerToken == null || !bearerToken.StartsWith("Bearer "))
@@ -168,12 +176,6 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 {
                     var principal = validator.ValidateToken(token, validationParameters, out _);
                     FulcrumApplication.Context.UserPrincipal = principal;
-
-                    var sub = principal.GetClaimValue(ClaimTypes.NameIdentifier);
-                    if (sub != null)
-                    {
-                        FulcrumApplication.Context.ValueProvider.SetValue("UserId", sub);
-                    }
                 }
                 catch (Exception e)
                 {

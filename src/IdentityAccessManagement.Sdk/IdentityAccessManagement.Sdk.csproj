@@ -39,6 +39,7 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
+			0.4.11 Fixed an issue where UserId used for translating userId was set in the wrong place.
 			0.4.10 Now sets UserId to context (for translatedUserId)
 			0.4.9 Now removes the bearer part of the token when trying to extract user principal from Nexus-User-Authorization
 			0.4.8 Bump
