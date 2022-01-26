@@ -43,7 +43,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
             var clientJwt = CreateJwt(ClientName, signingCredentials);
             AuthorizationHeader = new AuthenticationHeaderValue("Bearer", clientJwt);
             var userJwt = CreateJwt(UserName, signingCredentials);
-            UserAuthorizationHeader = userJwt;
+            UserAuthorizationHeader = $"Bearer {userJwt}";
 
             services.AddNexusIdentityAccessManagement(Authority, Audience, SetupMockedJwtBearerOptions);
             services.AddMvc(options => options.EnableEndpointRouting = false);

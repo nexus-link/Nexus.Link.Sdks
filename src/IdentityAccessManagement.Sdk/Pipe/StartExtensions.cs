@@ -147,7 +147,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
         {
             var headerValue = context.Request.Headers[Constants.NexusUserAuthorizationHeaderName];
             if (string.IsNullOrWhiteSpace(headerValue)) return;
-            FulcrumApplication.Context.ValueProvider.SetValue(Constants.NexusUserAuthorizationKeyName, headerValue);
+            FulcrumApplication.Context.ValueProvider.SetValue(Constants.NexusUserAuthorizationKeyName, headerValue.FirstOrDefault());
 
             var bearerToken = headerValue.FirstOrDefault();
             if (bearerToken == null || !bearerToken.StartsWith("Bearer "))
