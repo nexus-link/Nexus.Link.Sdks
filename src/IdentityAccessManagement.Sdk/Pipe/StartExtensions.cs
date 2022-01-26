@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -60,7 +61,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
                     // options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                     // options.TokenValidationParameters.ValidTypes = new[] { "at+jwt", "application/at+jwt", "jwt" };
 
-                    options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Name;
+                    options.TokenValidationParameters.NameClaimType = ClaimTypes.NameIdentifier;
                     options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
 
                     //TODO: Add support for introspection (Reference tokens) (https://irmdevdocs.z16.web.core.windows.net/articles/CIAM/satta-upp-nytt-projekt-som-anvander-ciam/skydda-ett-api.html)
@@ -100,7 +101,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
         public async Task InvokeAsync(HttpContext context)
         {
             FulcrumApplication.Context.ClientPrincipal = context.User;
-            FulcrumApplication.Context.CallingClientName = FulcrumApplication.Context.ClientPrincipal?.Identity?.Name;
+            FulcrumApplication.Context.CallingClientName = context.User?.GetClaimValue("aud") ?? context.User?.GetClientName();
             SaveUserAuthorizationToExecutionContext(context);
             SaveUserAuthorizationHeaderToExecutionContext(context);
 
@@ -157,7 +158,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 ValidateLifetime = false,
                 ValidateTokenReplay = false,
                 SignatureValidator = (t, parameters) => new JwtSecurityToken(t),
-                NameClaimType = JwtClaimTypes.Name
+                NameClaimType = ClaimTypes.NameIdentifier
             };
 
             var validator = new JwtSecurityTokenHandler();
@@ -167,6 +168,12 @@ namespace IdentityAccessManagement.Sdk.Pipe
                 {
                     var principal = validator.ValidateToken(token, validationParameters, out _);
                     FulcrumApplication.Context.UserPrincipal = principal;
+
+                    var sub = principal.GetClaimValue(ClaimTypes.NameIdentifier);
+                    if (sub != null)
+                    {
+                        FulcrumApplication.Context.ValueProvider.SetValue("UserId", sub);
+                    }
                 }
                 catch (Exception e)
                 {

@@ -63,7 +63,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
                 Expires = DateTime.UtcNow.AddHours(1),
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
-                    new Claim(JwtClaimTypes.Name, clientName),
+                    new Claim(ClaimTypes.NameIdentifier, clientName),
                     new Claim(JwtClaimTypes.Scope, "consumer")
                 }),
                 Issuer = Issuer,
