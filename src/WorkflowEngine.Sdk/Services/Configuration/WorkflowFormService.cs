@@ -67,7 +67,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             
             var idAsGuid = id.ToGuid();
             var record = new WorkflowFormRecord().From(item);
-            await _configurationTables.WorkflowForm.UpdateAsync(idAsGuid, record, cancellationToken);
+            await _configurationTables.WorkflowForm.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
         }
     }
 }

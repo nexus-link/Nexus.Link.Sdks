@@ -32,10 +32,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// <summary>
     /// Information about a workflow.
     /// </summary>
-    /// <remarks>
-    /// <see cref="CapabilityName"/> and <see cref="Title"/> in combination must be unique.
-    /// </remarks>
-    public class WorkflowFormRecordCreate : IValidatable
+    public class WorkflowFormRecordCreate : WorkflowFormRecordUnique
+    {
+    }
+
+    /// <summary>
+    /// Information about a workflow.
+    /// </summary>
+    public class WorkflowFormRecordUnique : IValidatable
     {
         public string CapabilityName { get; set; }
         public string Title { get; set; }

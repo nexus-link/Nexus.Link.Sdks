@@ -26,7 +26,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory</PackageId>
-    <Version>1.4.3</Version>
+    <Version>1.4.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -36,6 +36,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.4.4 Removed obsolete tables, corrections due to new test cases
       1.4.3 Bump
       1.4.2 Changed how we deal with database patching. No need for memory any more to support patching.
       1.4.1 Bump

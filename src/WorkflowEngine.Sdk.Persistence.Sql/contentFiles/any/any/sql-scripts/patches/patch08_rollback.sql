@@ -1,0 +1,10 @@
+﻿-- ROLLBACK: 8
+
+
+ALTER TABLE WorkflowForm DROP CONSTRAINT UQ_WorkflowForm_1
+
+DROP TRIGGER TR_WorkflowVersion_UnchangeableColumns
+DROP TRIGGER TR_WorkflowInstance_UnchangeableColumns
+DROP TRIGGER TR_ActivityForm_UnchangeableColumns
+DROP TRIGGER TR_ActivityVersion_UnchangeableColumns
+DROP TRIGGER TR_ActivityInstance_UnchangeableColumns

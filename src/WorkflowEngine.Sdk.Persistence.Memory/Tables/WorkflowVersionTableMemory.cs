@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
 using Nexus.Link.Libraries.Crud.Model;
@@ -17,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
         }
 
         /// <inheritdoc />
-        public Task<WorkflowVersionRecord> ReadByFormAndMajorAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
+        public Task<WorkflowVersionRecord> FindByFormAndMajorAsync(Guid workflowFormId, int majorVersion, CancellationToken cancellationToken = default)
         {
             return FindUniqueAsync(
                 new SearchDetails<WorkflowVersionRecord>(
@@ -33,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
         public async Task UpdateByFormAndMajorAsync(Guid workflowFormId, int majorVersion, WorkflowVersionRecord record,
             CancellationToken cancellationToken = default)
         {
-            var item = await ReadByFormAndMajorAsync(workflowFormId, majorVersion, cancellationToken);
+            var item = await FindByFormAndMajorAsync(workflowFormId, majorVersion, cancellationToken);
             if (item == null)
             {
                 throw new FulcrumNotFoundException(
@@ -42,6 +43,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
             }
 
             await UpdateAsync(item.Id, record, cancellationToken);
+        }
+
+        public override async Task<WorkflowVersionRecord> UpdateAndReturnAsync(Guid id, WorkflowVersionRecord item,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var oldItem = await ReadAsync(id, cancellationToken);
+            if (oldItem != null)
+            {
+                InternalContract.RequireAreEqual(oldItem.WorkflowFormId, item.WorkflowFormId,
+                    $"{nameof(item)}.{nameof(item.WorkflowFormId)}");
+                InternalContract.RequireAreEqual(oldItem.MajorVersion, item.MajorVersion,
+                    $"{nameof(item)}.{nameof(item.MajorVersion)}");
+            }
+
+            return await base.UpdateAndReturnAsync(id, item, cancellationToken);
         }
     }
 }

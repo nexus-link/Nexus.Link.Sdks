@@ -32,10 +32,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.11.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.6" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.0.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.11.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
   </ItemGroup>
 
   <PropertyGroup>

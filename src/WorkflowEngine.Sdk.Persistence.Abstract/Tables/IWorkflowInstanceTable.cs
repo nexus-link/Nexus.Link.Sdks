@@ -5,9 +5,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
     public interface IWorkflowInstanceTable: 
-        ICreateWithSpecifiedId<WorkflowInstanceRecordCreate, WorkflowInstanceRecord, Guid>,
+        ICreateWithSpecifiedIdAndReturn<WorkflowInstanceRecordCreate, WorkflowInstanceRecord, Guid>,
         IRead<WorkflowInstanceRecord, Guid>, 
-        IUpdate<WorkflowInstanceRecord, Guid>,
+        IUpdateAndReturn<WorkflowInstanceRecord, Guid>,
         IDistributedLock<Guid>
     {
     }

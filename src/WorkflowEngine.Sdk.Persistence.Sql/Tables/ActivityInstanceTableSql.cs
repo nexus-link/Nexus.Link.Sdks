@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Storage.Logic;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -25,6 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.ResultAsJson),
                 nameof(ActivityInstanceRecord.ContextAsJson),
                 nameof(ActivityInstanceRecord.State),
+                nameof(ActivityInstanceRecord.ExceptionAlertHandled),
                 nameof(ActivityInstanceRecord.ExceptionCategory),
                 nameof(ActivityInstanceRecord.ExceptionFriendlyMessage),
                 nameof(ActivityInstanceRecord.ExceptionTechnicalMessage),
@@ -33,6 +39,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             OrderBy = new List<string> { nameof(ActivityInstanceRecord.RecordCreatedAt) }
         })
         {
+        }
+
+        /// <inheritdoc />
+        public Task<IEnumerable<ActivityInstanceRecord>> SearchByWorkflowInstanceIdAsync(Guid workflowInstanceId, int limit = Int32.MaxValue,
+            CancellationToken cancellationToken = default)
+        {
+            return StorageHelper.ReadPagesAsync(
+                (o, ct) =>
+                    SearchAsync(new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch() { WorkflowInstanceId = workflowInstanceId }), o, null, ct),
+                limit, cancellationToken);
         }
     }
 }

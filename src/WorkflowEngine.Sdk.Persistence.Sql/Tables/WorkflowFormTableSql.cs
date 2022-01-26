@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -22,6 +26,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             OrderBy = new List<string> { nameof(WorkflowFormRecord.RecordCreatedAt) }
         })
         {
+        }
+
+        public Task<WorkflowFormRecord> FindByCapabilityNameAndTitleAsync(string capabilityName, string title,
+            CancellationToken cancellationToken = default)
+        {
+            var search = new WorkflowFormRecordCreate
+            {
+                CapabilityName = capabilityName,
+                Title = title
+            };
+            return FindUniqueAsync(new SearchDetails<WorkflowFormRecord>(search), cancellationToken);
         }
     }
 }

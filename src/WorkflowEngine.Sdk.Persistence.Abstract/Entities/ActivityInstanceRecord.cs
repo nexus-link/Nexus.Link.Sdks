@@ -1,4 +1,5 @@
 ﻿using System;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
@@ -52,7 +53,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         {
             FulcrumValidate.IsNotDefaultValue(WorkflowInstanceId, nameof(WorkflowInstanceId), errorLocation);
             FulcrumValidate.IsNotDefaultValue(ActivityVersionId, nameof(ActivityVersionId), errorLocation);
+            if (ParentActivityInstanceId.HasValue)
+            {
+                FulcrumValidate.IsNotDefaultValue(ParentActivityInstanceId.Value, nameof(ParentActivityInstanceId), errorLocation);
+            }
             FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, StartedAt, nameof(StartedAt), errorLocation);
+            FulcrumValidate.IsNotDefaultValue(StartedAt, nameof(StartedAt), errorLocation);
+            if (FinishedAt.HasValue)
+            {
+                FulcrumValidate.IsNotDefaultValue(FinishedAt.Value, nameof(FinishedAt), errorLocation);
+            }
+            FulcrumValidate.IsInEnumeration(typeof(ActivityExceptionCategoryEnum), ExceptionCategory, nameof(ExceptionCategory), errorLocation);
+
+            FulcrumValidate.IsJson(ResultAsJson, nameof(ResultAsJson), errorLocation);
+            FulcrumValidate.IsJson(ContextAsJson, nameof(ResultAsJson), errorLocation);
             if (ParentIteration.HasValue) FulcrumValidate.IsGreaterThanOrEqualTo(1, ParentIteration.Value, nameof(ParentIteration), errorLocation);
             if (FinishedAt != null)
             {

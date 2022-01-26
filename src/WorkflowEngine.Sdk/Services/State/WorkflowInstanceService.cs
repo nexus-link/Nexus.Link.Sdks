@@ -65,7 +65,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             InternalContract.RequireValidated(item, nameof(item));
 
             var record = new WorkflowInstanceRecord().From(item);
-            await _runtimeTables.WorkflowInstance.UpdateAsync(record.Id, record, cancellationToken);
+            await _runtimeTables.WorkflowInstance.UpdateAndReturnAsync(record.Id, record, cancellationToken);
         }
 
         /// <inheritdoc />

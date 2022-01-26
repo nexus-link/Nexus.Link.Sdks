@@ -1,5 +1,7 @@
 ﻿using System;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.ServiceAuthentication;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Temporary;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
@@ -38,6 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotDefaultValue(WorkflowFormId, nameof(WorkflowFormId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(Title, nameof(Title), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(Type, nameof(Type), errorLocation);
+            FulcrumValidate.IsInEnumeration(typeof(ActivityTypeEnum), Type, nameof(Type), errorLocation);
         }
     }
 

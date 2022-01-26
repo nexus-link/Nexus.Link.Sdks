@@ -11,11 +11,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             WorkflowForm = new WorkflowFormService(configurationTables);
             WorkflowVersion = new WorkflowVersionService(configurationTables);
-            WorkflowParameter = new WorkflowParameterService(configurationTables);
-            Transition = new TransitionService(configurationTables);
             ActivityForm = new ActivityFormService(configurationTables);
             ActivityVersion = new ActivityVersionService(configurationTables);
-            ActivityParameter= new ActivityParameterService(configurationTables);
         }
 
         /// <inheritdoc />
@@ -25,18 +22,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public IWorkflowVersionService WorkflowVersion { get; }
 
         /// <inheritdoc />
-        public IWorkflowParameterService WorkflowParameter { get; }
-
-        /// <inheritdoc />
         public IActivityFormService ActivityForm { get; }
 
         /// <inheritdoc />
         public IActivityVersionService ActivityVersion { get; }
-
-        /// <inheritdoc />
-        public ITransitionService Transition { get; }
-
-        /// <inheritdoc />
-        public IActivityParameterService ActivityParameter { get; }
     }
 }

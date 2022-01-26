@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.13.3" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.13.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +51,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.4.4 Removed obsolete tables, corrections due to new test cases
+      1.7.6
       1.7.5 Bump
       1.7.4 New logic for patching DB
       1.7.3 Bump
@@ -102,6 +104,10 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch05_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch06 - enum sizes.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch06_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch07 - drop tables.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch07_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch08 - triggers.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch08_rollback.sql" />
   </ItemGroup>
 
 </Project>

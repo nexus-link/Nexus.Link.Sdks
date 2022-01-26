@@ -65,12 +65,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             FulcrumValidate.IsNotDefaultValue(WorkflowVersionId, nameof(WorkflowVersionId), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(Title, nameof(Title), errorLocation);
             FulcrumValidate.IsNotNullOrWhiteSpace(InitialVersion, nameof(InitialVersion), errorLocation);
+            FulcrumValidate.IsNotDefaultValue(StartedAt, nameof(StartedAt), errorLocation);
             FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, StartedAt, nameof(StartedAt), errorLocation);
-            if (FinishedAt != null)
+            if (FinishedAt.HasValue)
             {
+                FulcrumValidate.IsNotDefaultValue(FinishedAt.Value, nameof(FinishedAt), errorLocation);
                 FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, FinishedAt.Value, nameof(FinishedAt), errorLocation);
                 FulcrumValidate.IsGreaterThanOrEqualTo(StartedAt, FinishedAt.Value, nameof(FinishedAt), errorLocation);
             }
+            if (CancelledAt.HasValue)
+            {
+                FulcrumValidate.IsNotDefaultValue(CancelledAt.Value, nameof(CancelledAt), errorLocation);
+                FulcrumValidate.IsLessThanOrEqualTo(DateTimeOffset.Now, CancelledAt.Value, nameof(CancelledAt), errorLocation);
+                FulcrumValidate.IsGreaterThanOrEqualTo(StartedAt, CancelledAt.Value, nameof(CancelledAt), errorLocation);
+            }
+            FulcrumValidate.IsJson(ResultAsJson, nameof(ResultAsJson), errorLocation);
         }
     }
 }
