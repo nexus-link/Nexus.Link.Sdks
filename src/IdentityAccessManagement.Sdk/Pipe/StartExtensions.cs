@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -82,6 +83,11 @@ namespace IdentityAccessManagement.Sdk.Pipe
         }
     }
 
+    public class AddNexusUserAuthorization : DelegatingHandler
+    {
+
+    }
+
     public class SaveNexusAuthorizationToExecutionContext
     {
         private readonly RequestDelegate _next;
@@ -131,8 +137,14 @@ namespace IdentityAccessManagement.Sdk.Pipe
 
         private static void SaveUserAuthorizationHeaderToExecutionContext(HttpContext context)
         {
-            var token = context.Request.Headers[Constants.NexusUserAuthorizationHeaderName];
-            if (string.IsNullOrWhiteSpace(token)) return;
+            var headerValue = context.Request.Headers[Constants.NexusUserAuthorizationHeaderName];
+            if (string.IsNullOrWhiteSpace(headerValue)) return;
+
+            var bearerToken = headerValue.FirstOrDefault();
+            if (bearerToken == null || !bearerToken.StartsWith("Bearer "))
+                return;
+
+            var token = bearerToken.Replace("Bearer ", "");
 
             // Note! This middleware is used in adapters where we trust that the Business API has validated the user token
             //TODO: Should we do this? How to handle it?

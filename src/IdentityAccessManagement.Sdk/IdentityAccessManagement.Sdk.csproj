@@ -29,7 +29,7 @@
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.IdentityAccessManagement.Sdk</PackageId>
-		<Version>0.4.8</Version>
+		<Version>0.4.9</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -39,16 +39,17 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
+			0.4.9 Now removes the bearer part of the token when trying to extract user principal from Nexus-User-Authorization
 			0.4.8 Bump
-      0.4.5 Fix symbols
-      0.4.4 Skip validation of options.TokenValidationParameters.ValidTypes
-      0.4.3 Bump
-      0.4.2 Setup FulcrumApplication.Context.CallingClientName in SaveNexusAuthorizationToExecutionContext
-      0.4.1 Added ScopeRequirementAttribute. Audience is no longer required in startup extension. Claim names sorted out.
-      0.3.0 azure-pipelines.yml
-      0.2.0 Added TokenRefresher
-      0.1.0 Initial release
-    </PackageReleaseNotes>
+			0.4.5 Fix symbols
+			0.4.4 Skip validation of options.TokenValidationParameters.ValidTypes
+			0.4.3 Bump
+			0.4.2 Setup FulcrumApplication.Context.CallingClientName in SaveNexusAuthorizationToExecutionContext
+			0.4.1 Added ScopeRequirementAttribute. Audience is no longer required in startup extension. Claim names sorted out.
+			0.3.0 azure-pipelines.yml
+			0.2.0 Added TokenRefresher
+			0.1.0 Initial release
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 </Project>

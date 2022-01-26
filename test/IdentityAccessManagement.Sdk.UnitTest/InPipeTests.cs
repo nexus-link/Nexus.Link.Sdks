@@ -56,7 +56,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
         {
             using var httpClient = _factory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = TestStartup.AuthorizationHeader;
-            httpClient.DefaultRequestHeaders.Add(Constants.NexusUserAuthorizationHeaderName, TestStartup.UserAuthorizationHeader);
+            httpClient.DefaultRequestHeaders.Add(Constants.NexusUserAuthorizationHeaderName, $"Bearer {TestStartup.UserAuthorizationHeader}");
 
             var response = await httpClient.GetAsync("api/home/information");
             var result = await response.Content.ReadAsStringAsync();
