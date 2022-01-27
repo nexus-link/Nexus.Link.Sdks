@@ -2,12 +2,12 @@
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Context;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
     /// <summary>
     /// Help class to setup your application
     /// </summary>
-    public static class WorkflowStatic
+    internal static class WorkflowStatic
     {
         /// <summary>
         /// The context value provider that will be used all over the application.

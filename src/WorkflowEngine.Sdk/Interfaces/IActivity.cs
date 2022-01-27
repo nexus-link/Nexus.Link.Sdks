@@ -1,11 +1,33 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     /// <summary>
-    /// Information about a workflow activity
+    /// The implementation method for an activity.
+    /// </summary>
+    /// <param name="activity">Access to information about the current activity.</param>
+    /// <param name="cancellationToken"></param>
+    /// <typeparam name="TMethodReturnType">The type of the returned value from the method</typeparam>
+    public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
+        IActivity activity,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The implementation method for an activity with no return value.
+    /// </summary>
+    /// <param name="activity">Access to information about the current activity.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public delegate Task ActivityMethod(
+        IActivity activity,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Basic information about a workflow activity, this is the base information for all types of activities.
     /// </summary>
     public interface IActivity : IWorkflowLogger
     {

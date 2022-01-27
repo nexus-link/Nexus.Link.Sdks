@@ -4,12 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
-    public interface IInternalActivityFlow
+    internal interface IInternalActivityFlow
     {
         WorkflowCache WorkflowCache { get; }
         WorkflowInformation WorkflowInformation { get; }

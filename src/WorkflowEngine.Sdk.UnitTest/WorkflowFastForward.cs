@@ -113,7 +113,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         {
             if (BreakAtIteration.HasValue)
             {
-                var parentActivity = WorkflowExecutor.GetCurrentParentActivity();
+                var parentActivity = CurrentParentActivity;
                 if (parentActivity == null)
                 {
                     throw new WorkflowUnitTestFailedException(

@@ -6,11 +6,11 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public class ActivityForEachSequential<TItem> : Activity, IActivityForEachSequential<TItem>
+    internal class ActivityForEachSequential<TItem> : Activity, IActivityForEachSequential<TItem>
     {
         public IEnumerable<TItem> Items { get; }
 
@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 cancellationToken);
         }
 
-        private async Task ForEachMethod(Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
+        private async Task ForEachMethod(Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method, IActivity activity, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -48,7 +48,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         private Task MapMethodAsync(
             TItem item,
             Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var loop = instance as IActivityForEachSequential<TItem>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
@@ -56,7 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public class ActivityForEachSequential<TActivityReturns, TItemType> : Activity, IActivityForEachSequential<TActivityReturns, TItemType>
+    internal class ActivityForEachSequential<TActivityReturns, TItemType> : Activity, IActivityForEachSequential<TActivityReturns, TItemType>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
         public IEnumerable<TItemType> Items { get; }
@@ -80,7 +80,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 (ct) => null, cancellationToken);
         }
 
-        private async Task<IList<TActivityReturns>> ForEachMethod(Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
+        private async Task<IList<TActivityReturns>> ForEachMethod(Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method, IActivity activity, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -100,7 +100,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         private Task<TActivityReturns> MapMethodAsync(
             TItemType item,
             Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var loop = instance as IActivityForEachSequential<TActivityReturns, TItemType>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());

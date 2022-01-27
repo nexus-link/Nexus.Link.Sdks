@@ -1,7 +1,7 @@
 ﻿using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {

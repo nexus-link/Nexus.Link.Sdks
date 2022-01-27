@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support.Method
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
     internal class MethodParameter
     {

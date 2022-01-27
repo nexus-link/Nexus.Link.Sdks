@@ -6,11 +6,11 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntilTrueBase
+    internal abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntilTrueBase
     {
         private readonly Dictionary<string, object> _loopArguments = new();
 
@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue
+    internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue
     {
         public ActivityLoopUntilTrue(IInternalActivityFlow activityFlow)
             : base(activityFlow)
@@ -49,7 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 (a, ct) => LoopUntilMethod(method, a, ct), cancellationToken);
         }
 
-        private async Task LoopUntilMethod(Func<IActivityLoopUntilTrue, CancellationToken, Task> method, Activity activity, CancellationToken cancellationToken)
+        private async Task LoopUntilMethod(Func<IActivityLoopUntilTrue, CancellationToken, Task> method, IActivity activity, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -67,7 +67,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private Task MapMethodAsync(
             Func<IActivityLoopUntilTrue, CancellationToken, Task> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var loop = instance as IActivityLoopUntilTrue;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
@@ -75,7 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue<TActivityReturns>
+    internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
@@ -94,7 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
                 _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task<TActivityReturns> LoopUntilMethod(Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, Activity activity, CancellationToken cancellationToken)
+        private async Task<TActivityReturns> LoopUntilMethod(Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, IActivity activity, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -115,7 +115,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private Task<TActivityReturns> MapMethodAsync(
             Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var loop = instance as IActivityLoopUntilTrue<TActivityReturns>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());

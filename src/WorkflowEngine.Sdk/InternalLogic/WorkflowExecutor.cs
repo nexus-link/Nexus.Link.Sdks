@@ -14,12 +14,15 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Support.Method;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public class WorkflowExecutor : IWorkflowLogger
+    /// <summary>
+    /// Handles the execution of a workflow. This is only on the top level, it is <see cref="ActivityExecutor"/> that handles the actual activity execution.
+    /// </summary>
+    internal class WorkflowExecutor : IWorkflowLogger
     {
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;

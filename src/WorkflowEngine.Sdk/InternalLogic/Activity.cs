@@ -12,18 +12,13 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
-        Activity activity,
-        CancellationToken cancellationToken);
-    public delegate Task ActivityMethod(
-        Activity activity,
-        CancellationToken cancellationToken);
-
-    public abstract class Activity : IActivity
+    /// <inheritdoc />
+    internal abstract class Activity : IActivity
     {
         private readonly IInternalActivityFlow _activityFlow;
         private readonly ActivityExecutor _activityExecutor;
@@ -217,7 +212,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public abstract class Activity<TResult> : Activity, IActivity<TResult>
+    internal abstract class Activity<TResult> : Activity, IActivity<TResult>
     {
         protected Activity(ActivityTypeEnum activityType, IInternalActivityFlow activityFlow) 
             : base(activityType, activityFlow)

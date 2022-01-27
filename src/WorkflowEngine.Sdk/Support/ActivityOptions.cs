@@ -28,6 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// </summary>
         AfterWorkflowComplete,
     }
+
     /// <summary>
     /// Options for running a workflow instance.
     /// </summary>

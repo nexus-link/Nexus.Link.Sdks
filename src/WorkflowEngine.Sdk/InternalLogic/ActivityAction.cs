@@ -6,9 +6,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public class ActivityAction : Activity, IActivityAction
+    internal class ActivityAction : Activity, IActivityAction
     {
         public ActivityAction(IInternalActivityFlow activityFlow)
             : base(ActivityTypeEnum.Action, activityFlow)
@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private Task MapMethodAsync(
             Func<IActivityAction, CancellationToken, Task> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var action = instance as IActivityAction;
             FulcrumAssert.IsNotNull(action, CodeLocation.AsString());
@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
         }
     }
 
-    public class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
+    internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
@@ -51,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private Task<TActivityReturns> MapMethodAsync(
             Func<IActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var action = instance as IActivityAction<TActivityReturns>;
             FulcrumAssert.IsNotNull(action, CodeLocation.AsString());

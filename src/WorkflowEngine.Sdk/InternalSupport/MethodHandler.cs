@@ -1,17 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Core.Storage.Logic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support.Method
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
-    public class MethodHandler
+    internal class MethodHandler
     {
 
         private Dictionary<int, MethodParameter> _parameters = new();

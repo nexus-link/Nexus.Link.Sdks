@@ -1,11 +1,9 @@
-﻿using System;
-using Nexus.Link.Libraries.Core.Context;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Logic;
+﻿using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.WorkflowEngine.Sdk.InternalLogic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
-    public class WorkflowContext
+    internal class WorkflowContext
     {
         public IContextValueProvider ValueProvider { get; }
 

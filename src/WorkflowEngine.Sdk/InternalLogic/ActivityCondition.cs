@@ -6,9 +6,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
 {
-    public class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>, IActivityCondition<TActivityReturns>
+    internal class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>, IActivityCondition<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Logic
 
         private static Task<TActivityReturns> MapMethodAsync(
             Func<IActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
-            Activity instance, CancellationToken cancellationToken)
+            IActivity instance, CancellationToken cancellationToken)
         {
             var condition = instance as IActivityCondition<TActivityReturns>;
             FulcrumAssert.IsNotNull(condition, CodeLocation.AsString());

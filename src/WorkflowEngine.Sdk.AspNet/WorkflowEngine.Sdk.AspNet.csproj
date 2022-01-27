@@ -7,17 +7,22 @@
     <RootNamespace>Nexus.Link.WorkflowEngine.Sdk.AspNet</RootNamespace>
   </PropertyGroup>
 
+  <!-- Publish symbols -->
   <PropertyGroup>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-
     <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
     <DebugType>embedded</DebugType>
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
+
+  <!-- Publish symbols -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.0.2" />

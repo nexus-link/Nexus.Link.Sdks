@@ -1,13 +1,11 @@
-﻿using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Libraries.Core.Assert;
+﻿using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
-    public class WorkflowInformation : IValidatable
+    internal class WorkflowInformation : IValidatable
     {
         public IWorkflowImplementationBase WorkflowImplementation { get; set; }
 

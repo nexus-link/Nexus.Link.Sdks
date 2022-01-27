@@ -4,10 +4,13 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>Nexus.Link.WorkflowEngine.Sdk</AssemblyName>
     <RootNamespace>Nexus.Link.WorkflowEngine.Sdk</RootNamespace>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- Publish symbols -->
   <PropertyGroup>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
@@ -37,9 +40,22 @@
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
   </ItemGroup>
 
+  <!--
+ https://stackoverflow.com/questions/358196/c-sharp-internal-access-modifier-when-doing-unit-testing 
+ https://stackoverflow.com/questions/42810705/visual-studio-2017-and-the-new-csproj-internalsvisibleto/49978185#49978185
+-->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(AssemblyName).UnitTests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(AssemblyName).UnitTest</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.1.8</Version>
+    <Version>5.1.9</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -49,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.1.9 Made all classes that not need to be visible internal instead of public
       5.1.8 Bump
       5.1.6 Changed how we deal with database patching.
       5.1.5 Now uses ToGuidString()

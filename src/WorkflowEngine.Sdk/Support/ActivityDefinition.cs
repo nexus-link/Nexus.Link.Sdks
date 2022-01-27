@@ -1,6 +1,6 @@
 ﻿using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Logic;
+namespace Nexus.Link.WorkflowEngine.Sdk.Support;
 
 public class ActivityDefinition
 {

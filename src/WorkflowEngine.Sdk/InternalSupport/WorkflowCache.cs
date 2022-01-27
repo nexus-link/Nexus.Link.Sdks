@@ -10,12 +10,12 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.InternalLogic;
 using WorkflowVersion = Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities.WorkflowVersion;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Support
+namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
 {
-    public class WorkflowCache
+    internal class WorkflowCache
     {
         private readonly WorkflowInformation _workflowInformation;
 
@@ -202,9 +202,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             return _summary.ActivityInstances[instanceId];
         }
 
-        public void AddActivity(string activityInstanceId, Activity activity)
+        public void AddActivity(string activityInstanceId, IActivity activity)
         {
-            _activities[activityInstanceId] = activity;
+            var internalActivity = activity as Activity;
+            FulcrumAssert.IsNotNull(internalActivity, CodeLocation.AsString());
+            _activities[activityInstanceId] = internalActivity;
         }
 
         public Activity GetActivity(string activityId)
@@ -224,8 +226,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         }
 
         public string GetOrCreateInstanceId(ActivityTypeEnum activityTypeEnum, IInternalActivityFlow activityFlow,
-            Activity parentActivity)
+            IActivity parentActivity)
         {
+            var internalParentActivity = parentActivity as Activity;
+            FulcrumAssert.IsNotNull(internalParentActivity, CodeLocation.AsString());
             lock (_summary)
             {
                 var form = GetActivityForm(activityFlow.ActivityFormId);
@@ -252,7 +256,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
                         WorkflowVersionId = _summary.Version.Id,
                         ActivityFormId = activityFlow.ActivityFormId,
                         FailUrgency = activityFlow.Options.FailUrgency,
-                        ParentActivityVersionId = parentActivity?.Version?.Id,
+                        ParentActivityVersionId = internalParentActivity?.Version?.Id,
                         Position = activityFlow.Position
                     };
                     _summary.ActivityVersions.Add(version.Id, version);
@@ -261,7 +265,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 
                 var instance = _summary.ActivityInstances.Values.FirstOrDefault(i =>
                     i.ActivityVersionId == version.Id
-                    && i.ParentActivityInstanceId == parentActivity?.Instance.Id
+                    && i.ParentActivityInstanceId == internalParentActivity?.Instance.Id
                     && i.ParentIteration == parentActivity?.Iteration);
                 if (instance != null) return instance.Id;
                 instance = new ActivityInstance

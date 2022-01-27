@@ -6,7 +6,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.InternalLogic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
@@ -16,6 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
+        private readonly WorkflowExecutor WorkflowExecutor;
+
         /// <inheritdoc />
         public int MajorVersion { get; }
 
@@ -28,9 +30,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public IWorkflowVersions WorkflowVersions { get; }
 
-        protected WorkflowExecutor WorkflowExecutor { get; }
-
         public ActivityOptions DefaultActivityOptions => WorkflowExecutor.DefaultActivityOptions;
+
+        public IActivity CurrentParentActivity => WorkflowExecutor.GetCurrentParentActivity();
 
         protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
         {
@@ -54,7 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return WorkflowExecutor.CreateActivity(position, id);
         }
 
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 20+21-12-07.")]
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 2021-12-07.")]
         public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
         {
             var tmp = WorkflowVersions as WorkflowVersions;
@@ -67,7 +69,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return CreateActivity<TActivityReturns>(position, id);
         }
 
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 20+21-12-07.")]
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 2021-12-07.")]
         public IActivityFlow CreateActivity(int position, string title, string id)
         {
             var tmp = WorkflowVersions as WorkflowVersions;
@@ -91,6 +93,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             return GetWorkflowArgument<T>(name);
         }
+
         protected T GetWorkflowArgument<T>(string name)
         {
             return WorkflowExecutor.GetArgument<T>(name);
@@ -124,7 +127,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         {
             return WorkflowExecutor.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
         }
+
+        internal void InternalSetParameter<TParameter>(string name, TParameter value)
+        {
+            WorkflowExecutor.SetParameter(name, value);
+        }
+
+        internal Task<TWorkflowResult> InternalExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
+        {
+            return WorkflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
+        }
+
+        internal Task InternalExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
+        {
+            return WorkflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
+        }
     }
+
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
     {
 
@@ -139,7 +158,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public virtual Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            return WorkflowExecutor.ExecuteAsync(this, cancellationToken);
+            return InternalExecuteAsync(this, cancellationToken);
         }
 
         public abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken = default);
@@ -147,7 +166,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public IWorkflowImplementation SetParameter<TParameter>(string name, TParameter value)
         {
-            WorkflowExecutor.SetParameter(name, value);
+            InternalSetParameter(name, value);
             return this;
         }
     }
@@ -164,7 +183,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         public virtual Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            return WorkflowExecutor.ExecuteAsync(this, cancellationToken);
+            return InternalExecuteAsync(this, cancellationToken);
         }
 
         public abstract Task<TWorkflowResult> ExecuteWorkflowAsync(CancellationToken cancellationToken);
@@ -172,7 +191,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public IWorkflowImplementation<TWorkflowResult> SetParameter<TParameter>(string name, TParameter value)
         {
-            WorkflowExecutor.SetParameter(name, value);
+            InternalSetParameter(name, value);
             return this;
         }
     }
