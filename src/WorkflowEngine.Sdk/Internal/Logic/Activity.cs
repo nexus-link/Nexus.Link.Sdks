@@ -12,10 +12,11 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     /// <inheritdoc />
     internal abstract class Activity : IActivity

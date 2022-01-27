@@ -1,7 +1,7 @@
 ﻿using Nexus.Link.Libraries.Core.Context;
-using Nexus.Link.WorkflowEngine.Sdk.InternalLogic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
     internal class WorkflowContext
     {

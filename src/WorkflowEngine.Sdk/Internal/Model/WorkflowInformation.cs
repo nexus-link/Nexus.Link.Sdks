@@ -3,7 +3,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
     internal class WorkflowInformation : IValidatable
     {

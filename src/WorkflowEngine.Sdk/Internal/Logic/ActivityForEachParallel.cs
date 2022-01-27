@@ -8,9 +8,9 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.InternalSupport;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal class ActivityForEachParallel<TItemType> : Activity, IActivityForEachParallel<TItemType>
     {

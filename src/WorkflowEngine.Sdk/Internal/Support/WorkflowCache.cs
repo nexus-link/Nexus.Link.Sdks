@@ -10,10 +10,11 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.InternalLogic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 using WorkflowVersion = Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities.WorkflowVersion;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
     internal class WorkflowCache
     {

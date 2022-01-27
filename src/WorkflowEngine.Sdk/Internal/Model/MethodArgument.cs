@@ -1,4 +1,6 @@
-﻿namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
+﻿using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
     internal class MethodArgument
     {

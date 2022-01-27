@@ -6,7 +6,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalLogic
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>, IActivityCondition<TActivityReturns>
     {

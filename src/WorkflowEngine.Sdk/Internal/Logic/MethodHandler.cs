@@ -2,8 +2,9 @@
 using System.Linq;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.InternalSupport
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal class MethodHandler
     {
