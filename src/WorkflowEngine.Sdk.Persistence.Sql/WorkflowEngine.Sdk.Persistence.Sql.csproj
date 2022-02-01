@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.7.5</Version>
+    <Version>1.7.6</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,7 +57,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.4.4 Removed obsolete tables, corrections due to new test cases
+      1.7.6 Bump
+	    1.4.4 Removed obsolete tables, corrections due to new test cases
       1.7.6
       1.7.5 Bump
       1.7.4 New logic for patching DB
