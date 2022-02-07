@@ -25,7 +25,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityFormRecord.Type),
                 nameof(ActivityFormRecord.Title),
             },
-            OrderBy = new List<string> { nameof(ActivityFormRecord.RecordCreatedAt) }
+            OrderBy = new List<string> { nameof(ActivityFormRecord.RecordCreatedAt) },
+            HasUpdateTrigger = true
         })
         {
         }

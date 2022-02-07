@@ -184,6 +184,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var recordToCreate = DataGenerator.DefaultWorkflowFormCreate;
             var recordToUpdate = await ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
             recordToUpdate.Etag = Guid.NewGuid().ToGuidString();
+            recordToUpdate.RecordVersion = null;
 
             // Act & assert
             await ConfigurationTables.WorkflowForm.UpdateAndReturnAsync(id, recordToUpdate)
