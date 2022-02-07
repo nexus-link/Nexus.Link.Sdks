@@ -57,9 +57,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.4.4 Removed obsolete tables, corrections due to new test cases
-      1.7.6
       1.7.5 Bump
+      1.7.4 Removed obsolete tables, corrections due to new test cases
       1.7.4 New logic for patching DB
       1.7.3 Bump
       1.7.2 Support for larger enum values in database
