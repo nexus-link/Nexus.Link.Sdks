@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support;
 using Shouldly;
@@ -109,7 +110,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
             var recordToCreate = DataGenerator.DefaultWorkflowInstanceCreate;
             var recordToUpdate =
                 await RuntimeTables.WorkflowInstance.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Etag = Guid.NewGuid().ToString();
+            recordToUpdate.Etag = Guid.NewGuid().ToGuidString();
 
             // Act & assert
             await RuntimeTables.WorkflowInstance.UpdateAndReturnAsync(id, recordToUpdate)
@@ -127,10 +128,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
             recordToUpdate.StartedAt = DateTimeOffset.UtcNow;
             recordToUpdate.CancelledAt = DateTimeOffset.UtcNow;
             recordToUpdate.FinishedAt = DateTimeOffset.UtcNow;
-            recordToUpdate.Title = Guid.NewGuid().ToString();
-            recordToUpdate.InitialVersion = Guid.NewGuid().ToString();
-            recordToUpdate.ExceptionFriendlyMessage = Guid.NewGuid().ToString();
-            recordToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
+            recordToUpdate.Title = Guid.NewGuid().ToGuidString();
+            recordToUpdate.InitialVersion = Guid.NewGuid().ToGuidString();
+            recordToUpdate.ExceptionFriendlyMessage = Guid.NewGuid().ToGuidString();
+            recordToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToGuidString();
             recordToUpdate.IsComplete = !recordToUpdate.IsComplete;
             recordToUpdate.ResultAsJson = JsonConvert.SerializeObject(Guid.NewGuid());
             recordToUpdate.State = WorkflowStateEnum.Failed.ToString();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
@@ -13,8 +14,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
 
         public static WorkflowFormRecordCreate DefaultWorkflowFormCreate => new WorkflowFormRecordCreate
         {
-            CapabilityName = Guid.NewGuid().ToString(),
-            Title = Guid.NewGuid().ToString()
+            CapabilityName = Guid.NewGuid().ToGuidString(),
+            Title = Guid.NewGuid().ToGuidString()
         };
 
         public static IEnumerable<object[]> BadWorkflowFormCreate()
@@ -70,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
         public static WorkflowInstanceRecordCreate DefaultWorkflowInstanceCreate => new WorkflowInstanceRecordCreate
         {
             WorkflowVersionId = WorkflowVersionId,
-            Title = Guid.NewGuid().ToString(),
+            Title = Guid.NewGuid().ToGuidString(),
             InitialVersion = "1.1",
             StartedAt = DateTimeOffset.UtcNow,
             State = WorkflowStateEnum.Waiting.ToString(),
@@ -135,7 +136,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
         public static ActivityFormRecordCreate DefaultActivityFormCreate => new ActivityFormRecordCreate
         {
             WorkflowFormId = WorkflowFormId,
-            Title = Guid.NewGuid().ToString(),
+            Title = Guid.NewGuid().ToGuidString(),
             Type = ActivityTypeEnum.Action.ToString()
         };
 

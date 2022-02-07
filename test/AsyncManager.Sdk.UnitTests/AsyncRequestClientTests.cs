@@ -14,6 +14,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Xunit;
@@ -51,7 +52,7 @@ namespace AsyncManager.Sdk.UnitTests
         public async Task SendRequestCallsHttpSender()
         {
             // arrange
-            SetupSenderMockResponse(Guid.NewGuid().ToString())
+            SetupSenderMockResponse(Guid.NewGuid().ToGuidString())
                 .Verifiable();
             var client = new AsyncRequestClient(_restClients);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
@@ -67,7 +68,7 @@ namespace AsyncManager.Sdk.UnitTests
         public async Task SendRequestReturnsExpectedRequestId()
         {
             // arrange
-            var expectedRequestId = Guid.NewGuid().ToString();
+            var expectedRequestId = Guid.NewGuid().ToGuidString();
             var actualRequest = TestDataGenerator.DefaultAsyncHttpRequest;
             var client = new AsyncRequestClient(_restClients);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
@@ -86,7 +87,7 @@ namespace AsyncManager.Sdk.UnitTests
         public async Task CorrectHttpRequest(AsyncHttpRequest expectedRequest)
         {
             // arrange
-            var expectedRequestId = Guid.NewGuid().ToString();
+            var expectedRequestId = Guid.NewGuid().ToGuidString();
             var client = new AsyncRequestClient(_restClients);
             SetupSenderMockResponse(expectedRequestId)
                 .Callback((HttpMethod method, string url, HttpRequestCreate body, Dictionary<string, List<string>> headers,

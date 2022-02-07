@@ -52,7 +52,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
-            WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId;
+            WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId.ToGuidString();
 
             WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
 

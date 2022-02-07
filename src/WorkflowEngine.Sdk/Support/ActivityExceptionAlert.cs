@@ -7,6 +7,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
     {
         public IActivity Activity { get; set; }
 
+        /// <summary>
+        /// The category for this exception, e.g. Business
+        /// </summary>
         public ActivityExceptionCategoryEnum ExceptionCategory { get; set; }
 
         public string ExceptionTechnicalMessage { get; set; }

@@ -230,7 +230,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             IActivity parentActivity)
         {
             var internalParentActivity = parentActivity as Activity;
-            FulcrumAssert.IsNotNull(internalParentActivity, CodeLocation.AsString());
+            if (parentActivity != null)
+            {
+                FulcrumAssert.IsNotNull(internalParentActivity, CodeLocation.AsString());
+            }
             lock (_summary)
             {
                 var form = GetActivityForm(activityFlow.ActivityFormId);

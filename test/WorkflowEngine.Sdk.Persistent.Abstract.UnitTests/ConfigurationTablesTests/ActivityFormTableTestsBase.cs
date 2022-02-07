@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support;
 using Shouldly;
@@ -156,7 +157,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var recordToCreate = DataGenerator.DefaultActivityFormCreate;
             var recordToUpdate =
                 await ConfigurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Title = Guid.NewGuid().ToString();
+            recordToUpdate.Title = Guid.NewGuid().ToGuidString();
 
             // Act
             var record = await ConfigurationTables.ActivityForm.UpdateAndReturnAsync(id, recordToUpdate);
@@ -177,7 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var recordToCreate = DataGenerator.DefaultActivityFormCreate;
             var recordToUpdate =
                 await ConfigurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Etag = Guid.NewGuid().ToString();
+            recordToUpdate.Etag = Guid.NewGuid().ToGuidString();
 
             // Act & assert
             await ConfigurationTables.ActivityForm.UpdateAndReturnAsync(id, recordToUpdate)

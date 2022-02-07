@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support;
 using Shouldly;
@@ -161,8 +162,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var id = Guid.NewGuid();
             var recordToCreate = DataGenerator.DefaultWorkflowFormCreate;
             var recordToUpdate = await ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.CapabilityName = Guid.NewGuid().ToString();
-            recordToUpdate.Title = Guid.NewGuid().ToString();
+            recordToUpdate.CapabilityName = Guid.NewGuid().ToGuidString();
+            recordToUpdate.Title = Guid.NewGuid().ToGuidString();
 
             // Act
             var record = await ConfigurationTables.WorkflowForm.UpdateAndReturnAsync(id, recordToUpdate);
@@ -182,7 +183,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var id = Guid.NewGuid();
             var recordToCreate = DataGenerator.DefaultWorkflowFormCreate;
             var recordToUpdate = await ConfigurationTables.WorkflowForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Etag = Guid.NewGuid().ToString();
+            recordToUpdate.Etag = Guid.NewGuid().ToGuidString();
 
             // Act & assert
             await ConfigurationTables.WorkflowForm.UpdateAndReturnAsync(id, recordToUpdate)

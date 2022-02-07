@@ -6,6 +6,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support;
 using Shouldly;
@@ -188,7 +189,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
             var recordToCreate = DataGenerator.DefaultActivityInstanceCreate;
             var recordToUpdate =
                 await RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Etag = Guid.NewGuid().ToString();
+            recordToUpdate.Etag = Guid.NewGuid().ToGuidString();
 
             // Act & assert
             await RuntimeTables.ActivityInstance.UpdateAndReturnAsync(id, recordToUpdate)
@@ -206,10 +207,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
             recordToUpdate.ContextAsJson = JsonConvert.SerializeObject(Guid.NewGuid());
             recordToUpdate.ResultAsJson = JsonConvert.SerializeObject(Guid.NewGuid());
             recordToUpdate.FinishedAt = DateTimeOffset.UtcNow;
-            recordToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToString();
-            recordToUpdate.ExceptionFriendlyMessage = Guid.NewGuid().ToString();
+            recordToUpdate.ExceptionTechnicalMessage = Guid.NewGuid().ToGuidString();
+            recordToUpdate.ExceptionFriendlyMessage = Guid.NewGuid().ToGuidString();
             recordToUpdate.State = ActivityStateEnum.Failed.ToString();
-            recordToUpdate.AsyncRequestId = Guid.NewGuid().ToString();
+            recordToUpdate.AsyncRequestId = Guid.NewGuid().ToGuidString();
             recordToUpdate.ExceptionAlertHandled = true;
             recordToUpdate.ExceptionCategory = ActivityExceptionCategoryEnum.TechnicalError.ToString();
 
@@ -250,7 +251,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
                 await RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
 
             var activityFormCreate = DataGenerator.DefaultActivityFormCreate;
-            activityFormCreate.Title = Guid.NewGuid().ToString();
+            activityFormCreate.Title = Guid.NewGuid().ToGuidString();
             var activityForm = await ConfigurationTables.ActivityForm
                 .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), activityFormCreate);
 
@@ -271,7 +272,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
                 await RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
 
             var activityFormCreate = DataGenerator.DefaultActivityFormCreate;
-            activityFormCreate.Title = Guid.NewGuid().ToString();
+            activityFormCreate.Title = Guid.NewGuid().ToGuidString();
             var activityForm = await ConfigurationTables.ActivityForm
                 .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), activityFormCreate);
 
@@ -297,7 +298,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
             var expectedRecord = await RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id1, recordToCreate1);
 
             var activityFormCreate = DataGenerator.DefaultActivityFormCreate;
-            activityFormCreate.Title = Guid.NewGuid().ToString();
+            activityFormCreate.Title = Guid.NewGuid().ToGuidString();
             var activityForm = await ConfigurationTables.ActivityForm
                 .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), activityFormCreate);
 
@@ -328,7 +329,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
                 await RuntimeTables.ActivityInstance.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
 
             var activityFormCreate = DataGenerator.DefaultActivityFormCreate;
-            activityFormCreate.Title = Guid.NewGuid().ToString();
+            activityFormCreate.Title = Guid.NewGuid().ToGuidString();
             var activityForm = await ConfigurationTables.ActivityForm
                 .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), activityFormCreate);
 

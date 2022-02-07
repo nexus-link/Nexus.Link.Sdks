@@ -161,7 +161,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     {
                         await Activity.LogVerboseAsync($"Begin activity method {name}.", null, cancellationToken);
                         await method(Activity, cancellationToken);
-                        activityInstance.ResultAsJson = "";
+                        activityInstance.ResultAsJson = null;
                     }
                     catch (Exception e)
                     {

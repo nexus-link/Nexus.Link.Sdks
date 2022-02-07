@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.1.9</Version>
+    <Version>5.1.10</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
       5.1.9 Made all classes that not need to be visible internal instead of public
       5.1.8 Bump
       5.1.6 Changed how we deal with database patching.
