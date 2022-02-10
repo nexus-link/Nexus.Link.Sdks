@@ -16,7 +16,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
     protected int? BreakAtIteration { get; private set; }
     protected string BreakAtActivityFormId { get; private set; }
 
-    protected WorkflowFastForward(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions) : base(majorVersion, minorVersion, workflowVersions)
+    protected WorkflowFastForward(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer) : base(majorVersion, minorVersion, workflowContainer)
     {
     }
 
@@ -92,7 +92,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
 
     private void MaybeBreak(string activityFormId)
     {
-        var activity = WorkflowVersions.GetActivityDefinition(activityFormId);
+        var activity = WorkflowContainer.GetActivityDefinition(activityFormId);
         FulcrumAssert.IsNotNull(activity);
         
         // Don't break at this point for loops

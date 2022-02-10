@@ -3,10 +3,15 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Configuration;
 
-namespace Nexus.Link.WorkflowEngine.Sdk
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
+    // TODO: Make this class internal when Privatmegleren no longer uses it
+    /// <inheritdoc />
     public class WorkflowConfigurationCapability : IWorkflowConfigurationCapability
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public WorkflowConfigurationCapability(IConfigurationTables configurationTables)
         {
             WorkflowForm = new WorkflowFormService(configurationTables);

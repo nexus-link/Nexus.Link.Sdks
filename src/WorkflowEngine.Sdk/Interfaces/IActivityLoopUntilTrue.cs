@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
+    /// <summary>
+    /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
+    /// </summary>
     public interface IActivityLoopUntilTrueBase : IActivity
     {
         bool? EndLoop { get; set; }

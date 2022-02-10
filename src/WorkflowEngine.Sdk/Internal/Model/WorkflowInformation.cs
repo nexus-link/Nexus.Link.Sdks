@@ -9,11 +9,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
     {
         public IWorkflowImplementationBase WorkflowImplementation { get; set; }
 
-        public IWorkflowVersions WorkflowVersions => WorkflowImplementation.WorkflowVersions;
+        public IWorkflowContainer WorkflowContainer => WorkflowImplementation.WorkflowContainer;
 
-        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowVersions.WorkflowCapabilities;
-        public string CapabilityName => WorkflowVersions.WorkflowCapabilityName;
-        public string FormTitle => WorkflowVersions.WorkflowFormTitle;
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowContainer.WorkflowCapabilities;
+        public string CapabilityName => WorkflowContainer.WorkflowCapabilityName;
+        public string FormTitle => WorkflowContainer.WorkflowFormTitle;
         public string InstanceTitle => WorkflowImplementation.GetInstanceTitle();
         public int MajorVersion => WorkflowImplementation.MajorVersion;
         public int MinorVersion => WorkflowImplementation.MinorVersion;
@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
         {
             WorkflowImplementation = workflowImplementation;
-            FormId = WorkflowVersions.WorkflowFormId.ToGuidString();
+            FormId = WorkflowContainer.WorkflowFormId.ToGuidString();
         }
 
         /// <inheritdoc />

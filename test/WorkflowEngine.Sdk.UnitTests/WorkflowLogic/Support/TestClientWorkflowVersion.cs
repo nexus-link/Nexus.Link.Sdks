@@ -13,7 +13,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         protected readonly IWorkflowEngineRequiredCapabilities WorkflowCapabilities;
 
         public TestWorkflowImplementation(IWorkflowEngineRequiredCapabilities workflowCapabilities)
-        :base(1, 2, new TestWorkflowVersions(workflowCapabilities))
+        :base(1, 2, new TestWorkflowContainer(workflowCapabilities))
         {
             WorkflowCapabilities = workflowCapabilities;
         }

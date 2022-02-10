@@ -37,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.AsyncRequestId),
             },
             OrderBy = new List<string> { nameof(ActivityInstanceRecord.RecordCreatedAt) },
-            HasUpdateTrigger = true
+            UpdateCanUseOutput = false
         })
         {
         }

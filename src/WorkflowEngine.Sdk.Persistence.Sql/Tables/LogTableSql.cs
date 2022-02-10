@@ -31,7 +31,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(LogRecord.DataAsJson),
                 nameof(LogRecord.TimeStamp)
             },
-            OrderBy = new List<string> { nameof(LogRecord.RecordCreatedAt) }
+            OrderBy = new List<string> { nameof(LogRecord.RecordCreatedAt) },
+            UpdateCanUseOutput = true
         })
         {
         }

@@ -28,7 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityVersionRecord.FailUrgency),
             },
             OrderBy = new List<string> { nameof(ActivityVersionRecord.RecordCreatedAt) },
-            HasUpdateTrigger = true
+            UpdateCanUseOutput = false
         })
         {
         }

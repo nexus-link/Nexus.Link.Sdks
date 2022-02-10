@@ -32,21 +32,18 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         private readonly Mock<IWorkflowImplementation> _workflowVersionMock;
         private readonly IInternalActivityFlow _activityFlowMock;
         private readonly WorkflowCache _workflowCache;
-        private readonly IWorkflowConfigurationCapability _workflowConfigurationCapability;
-        private readonly IWorkflowStateCapability _workflowStateCapability;
         private readonly IWorkflowImplementationBase _workflowImplementation;
+        private readonly IConfigurationTables _configurationTables;
 
         public ActivityExecutorTests()
         {
             FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
-            var configurationTables = new ConfigurationTablesMemory();
+            _configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
 
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
             _asyncRequestMgmtCapabilityMock = new AsyncRequestMgmtMock();
-            _workflowConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
-            _workflowStateCapability = new WorkflowStateCapability(configurationTables, _runtimeTables, _asyncRequestMgmtCapabilityMock);
-            var workflowCapabilities = new WorkflowCapabilities(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowCapabilities = new WorkflowCapabilities(_configurationTables, _runtimeTables, _asyncRequestMgmtCapabilityMock);
             _workflowImplementation = new TestWorkflowImplementation(workflowCapabilities);
             var workflowInfo = new WorkflowInformation(_workflowImplementation)
             {
@@ -117,7 +114,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
         {
             // Arrange
             bool? alertResult = null;
-            var workflowCapabilities = new WorkflowCapabilities(_workflowConfigurationCapability, _workflowStateCapability, _asyncRequestMgmtCapabilityMock);
+            var workflowCapabilities = new WorkflowCapabilities(_configurationTables, _runtimeTables, _asyncRequestMgmtCapabilityMock);
             var implementation = new TestWorkflowImplementation(workflowCapabilities);
             var workflowInformation = new WorkflowInformation(implementation)
             {

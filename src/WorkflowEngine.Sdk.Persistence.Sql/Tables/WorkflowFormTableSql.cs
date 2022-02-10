@@ -23,7 +23,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(WorkflowFormRecord.CapabilityName),
                 nameof(WorkflowFormRecord.Title),
             },
-            OrderBy = new List<string> { nameof(WorkflowFormRecord.RecordCreatedAt) }
+            OrderBy = new List<string> { nameof(WorkflowFormRecord.RecordCreatedAt) },
+            UpdateCanUseOutput = true
         })
         {
         }

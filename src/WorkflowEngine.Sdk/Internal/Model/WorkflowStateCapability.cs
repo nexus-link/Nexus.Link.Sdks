@@ -4,10 +4,15 @@ using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
-namespace Nexus.Link.WorkflowEngine.Sdk
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
+    // TODO: Make this class internal when Privatmegleren no longer uses it
+    /// <inheritdoc />
     public class WorkflowStateCapability : IWorkflowStateCapability
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
             WorkflowInstance = new WorkflowInstanceService(runtimeTables);

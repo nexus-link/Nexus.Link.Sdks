@@ -11,12 +11,15 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
-    public delegate Task<bool> ActivityExceptionAlertHandler(ActivityExceptionAlert alert,
-        CancellationToken cancellationToken = default);
+    /// <summary>
+    /// The signature for a method that will be called whenever an activity fails.
+    /// </summary>
+    public delegate Task<bool> ActivityExceptionAlertHandler(ActivityExceptionAlert alert, CancellationToken cancellationToken = default);
 
+    /// <inheritdoc />
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
-        private readonly WorkflowExecutor WorkflowExecutor;
+        private readonly WorkflowExecutor _workflowExecutor;
 
         /// <inheritdoc />
         public int MajorVersion { get; }
@@ -28,38 +31,65 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public abstract string GetInstanceTitle();
 
         /// <inheritdoc />
-        public IWorkflowVersions WorkflowVersions { get; }
+        [Obsolete("Please use WorkflowContainer. Obsolete since 2022-02-10")]
+        public IWorkflowVersions WorkflowVersions => (IWorkflowVersions) WorkflowContainer;
 
-        public ActivityOptions DefaultActivityOptions => WorkflowExecutor.DefaultActivityOptions;
+        /// <inheritdoc />
+        public IWorkflowContainer WorkflowContainer { get; }
 
-        public IActivity CurrentParentActivity => WorkflowExecutor.GetCurrentParentActivity();
+        /// <summary>
+        /// The default options for all created activities.
+        /// </summary>
+        public ActivityOptions DefaultActivityOptions => _workflowExecutor.DefaultActivityOptions;
 
-        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
+        internal IActivity CurrentParentActivity => _workflowExecutor.GetCurrentParentActivity();
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
         {
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
-            WorkflowVersions = workflowVersions;
-            WorkflowExecutor = new WorkflowExecutor(this);
+            WorkflowContainer = workflowContainer;
+            _workflowExecutor = new WorkflowExecutor(this);
         }
         
+        /// <summary>
+        /// Create one activity for the workflow implementation.
+        /// </summary>
+        /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="id">The key for the activity form</param>
+        /// <typeparam name="TActivityReturns">The type that this activity returns.</typeparam>
         public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            return WorkflowExecutor.CreateActivity<TActivityReturns>(position, id);
+            return _workflowExecutor.CreateActivity<TActivityReturns>(position, id);
         }
-        
+
+        /// <summary>
+        /// Create one activity for the workflow implementation.
+        /// </summary>
+        /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="id">The key for the activity form</param>
         public IActivityFlow CreateActivity(int position, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            return WorkflowExecutor.CreateActivity(position, id);
+            return _workflowExecutor.CreateActivity(position, id);
         }
 
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 2021-12-07.")]
+        /// <summary>
+        /// Create one activity for the workflow implementation.
+        /// </summary>
+        /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="id">The key for the activity form</param>
+        /// <typeparam name="TActivityReturns">The type that this activity returns.</typeparam>
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
         public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
         {
-            var tmp = WorkflowVersions as WorkflowVersions;
+            var tmp = WorkflowContainer as WorkflowContainer;
             FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
             if (tmp!.GetActivityDefinition(id) == null)
             {
@@ -69,10 +99,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return CreateActivity<TActivityReturns>(position, id);
         }
 
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowVersions. Warning since 2021-12-07.")]
+        /// <summary>
+        /// Create one activity for the workflow implementation.
+        /// </summary>
+        /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="id">The key for the activity form</param>
+        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
         public IActivityFlow CreateActivity(int position, string title, string id)
         {
-            var tmp = WorkflowVersions as WorkflowVersions;
+            var tmp = WorkflowContainer as WorkflowContainer;
             FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
             if (tmp!.GetActivityDefinition(id) == null)
             {
@@ -82,77 +117,105 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return CreateActivity(position, id);
         }
 
+        /// <summary>
+        /// Define one parameter for this workflow
+        /// </summary>
+        /// <typeparam name="T">The type of this parameter</typeparam>
+        /// <param name="name">The name of the parameter</param>
         public void DefineParameter<T>(string name)
         {
-            WorkflowExecutor.DefineParameter<T>(name);
+            _workflowExecutor.DefineParameter<T>(name);
         }
 
-        
+        /// <summary>
+        /// Get the value of a workflow parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of this parameter</typeparam>
+        /// <param name="name">The name of the parameter</param>
         [Obsolete("Please use GetWorkflowArgument(). Compilation warning since 2021-11-18.")]
         protected T GetArgument<T>(string name)
         {
             return GetWorkflowArgument<T>(name);
         }
 
+        /// <summary>
+        /// Get the value of a workflow parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of this parameter</typeparam>
+        /// <param name="name">The name of the parameter</param>
         protected T GetWorkflowArgument<T>(string name)
         {
-            return WorkflowExecutor.GetArgument<T>(name);
+            return _workflowExecutor.GetArgument<T>(name);
         }
 
+        /// <summary>
+        /// Obsolete
+        /// </summary>
         [Obsolete("Please use DefaultActivityOptions.FailUrgency. Compilation warning since 2021-11-19.")]
         public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            WorkflowExecutor.SetDefaultFailUrgency(failUrgency);
+            _workflowExecutor.SetDefaultFailUrgency(failUrgency);
         }
 
+        /// <summary>
+        /// Obsolete
+        /// </summary>
         [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
         public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            WorkflowExecutor.SetDefaultExceptionAlertHandler(alertHandler);
+            _workflowExecutor.SetDefaultExceptionAlertHandler(alertHandler);
         }
 
+        /// <summary>
+        /// Obsolete
+        /// </summary>
         [Obsolete("Please use DefaultActivityOptions.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
         public void SetDefaultAsyncRequestPriority(double priority)
         {
-            WorkflowExecutor.SetDefaultAsyncRequestPriority(priority);
+            _workflowExecutor.SetDefaultAsyncRequestPriority(priority);
         }
 
         /// <inheritdoc />
         public override string ToString() =>
-            $"{WorkflowVersions} {MajorVersion}.{MinorVersion}";
+            $"{WorkflowContainer} {MajorVersion}.{MinorVersion}";
 
         /// <inheritdoc />
         public Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
             CancellationToken cancellationToken = default)
         {
-            return WorkflowExecutor.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
+            return _workflowExecutor.LogAtLevelAsync(severityLevel, message, data, cancellationToken);
         }
 
         internal void InternalSetParameter<TParameter>(string name, TParameter value)
         {
-            WorkflowExecutor.SetParameter(name, value);
+            _workflowExecutor.SetParameter(name, value);
         }
 
         internal Task<TWorkflowResult> InternalExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
         {
-            return WorkflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
+            return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
 
         internal Task InternalExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
         {
-            return WorkflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
+            return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
     }
 
+    /// <inheritdoc cref="IWorkflowImplementation" />
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
     {
 
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
-            : base(majorVersion, minorVersion, workflowVersions)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
+            : base(majorVersion, minorVersion, workflowContainer)
         {
         }
 
+        /// <summary>
+        /// This is the factory method that will be used whenever we need to create a new instance of the implementation.
+        /// You are expected to call your own constructor and return that instance.
+        /// </summary>
         public abstract IWorkflowImplementation CreateWorkflowInstance();
 
         /// <inheritdoc />
@@ -161,6 +224,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             return InternalExecuteAsync(this, cancellationToken);
         }
 
+        /// <summary>
+        /// This is the main method for the implementation. This is where you put all the logic for your workflow implementation.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
         public abstract Task ExecuteWorkflowAsync(CancellationToken cancellationToken = default);
 
         /// <inheritdoc />
@@ -174,18 +241,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     public abstract class WorkflowImplementation<TWorkflowResult> : WorkflowImplementationBase, IWorkflowImplementation<TWorkflowResult>
     {
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowVersions workflowVersions)
-            : base(majorVersion, minorVersion, workflowVersions)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
+            : base(majorVersion, minorVersion, workflowContainer)
         {
         }
 
+        /// <summary>
+        /// This is the factory method that will be used whenever we need to create a new instance of the implementation.
+        /// You are expected to call your own constructor and return that instance.
+        /// </summary>
         public abstract IWorkflowImplementation<TWorkflowResult> CreateWorkflowInstance();
 
+        /// <inheritdoc />
         public virtual Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             return InternalExecuteAsync(this, cancellationToken);
         }
 
+        /// <summary>
+        /// This is the main method for the implementation. This is where you put all the logic for your workflow implementation.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
         public abstract Task<TWorkflowResult> ExecuteWorkflowAsync(CancellationToken cancellationToken);
 
         /// <inheritdoc />

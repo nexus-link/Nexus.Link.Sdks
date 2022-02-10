@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(WorkflowVersionRecord.DynamicCreate),
             },
             OrderBy = new List<string> { nameof(WorkflowVersionRecord.RecordCreatedAt) },
-            HasUpdateTrigger = true
+            UpdateCanUseOutput = false
         })
         {
         }

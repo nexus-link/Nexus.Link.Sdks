@@ -25,6 +25,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return InternalExecuteAsync((instance, ct) => MapMethodAsync(conditionMethodAsync, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
         }
 
+        public Task<TActivityReturns> ExecuteAsync(Func<IActivityCondition<TActivityReturns>, TActivityReturns> conditionMethod,
+            CancellationToken cancellationToken = default)
+        {
+            return InternalExecuteAsync((instance, ct) => MapMethodAsync(conditionMethod, instance, ct), _getDefaultValueMethodAsync, cancellationToken);
+        }
+
         private static Task<TActivityReturns> MapMethodAsync(
             Func<IActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             IActivity instance, CancellationToken cancellationToken)
@@ -32,6 +38,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             var condition = instance as IActivityCondition<TActivityReturns>;
             FulcrumAssert.IsNotNull(condition, CodeLocation.AsString());
             return method(condition, cancellationToken);
+        }
+
+        private static Task<TActivityReturns> MapMethodAsync(
+            Func<IActivityCondition<TActivityReturns>, TActivityReturns> method,
+            IActivity instance, CancellationToken cancellationToken)
+        {
+            var condition = instance as IActivityCondition<TActivityReturns>;
+            FulcrumAssert.IsNotNull(condition, CodeLocation.AsString());
+            return Task.FromResult(method(condition));
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowCache = workflowCache;
             WorkflowInformation = workflowInformation;
             Position = position;
-            var activityDefinition = WorkflowInformation.WorkflowVersions.GetActivityDefinition(activityFormId);
+            var activityDefinition = WorkflowInformation.WorkflowContainer.GetActivityDefinition(activityFormId);
             ActivityFormId = activityFormId;
             FormTitle = activityDefinition.Title;
             MethodHandler = new MethodHandler(FormTitle);

@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowInformation =
                 new WorkflowInformation(workflowImplementation);
-            _methodHandler = new MethodHandler(workflowImplementation.WorkflowVersions.WorkflowFormTitle);
+            _methodHandler = new MethodHandler(workflowImplementation.WorkflowContainer.WorkflowFormTitle);
         }
 
         public ActivityOptions DefaultActivityOptions => WorkflowInformation.DefaultActivityOptions;

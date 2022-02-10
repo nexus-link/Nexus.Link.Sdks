@@ -9,9 +9,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 {
-    public class TestWorkflowVersions : IWorkflowVersions
+    public class TestWorkflowContainer : IWorkflowContainer
     {
-        public TestWorkflowVersions(IWorkflowEngineRequiredCapabilities workflowCapabilities)
+        public TestWorkflowContainer(IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowCapabilities = workflowCapabilities;
             WorkflowVersionCollection = new WorkflowVersionCollection(this);

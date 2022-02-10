@@ -1,17 +1,11 @@
-﻿using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
+﻿using System;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
-    public interface IWorkflowVersions
+    /// <inheritdoc />
+    [Obsolete("Please use IWorkflowContainer. Obsolete since 2022-02-10")]
+    public interface IWorkflowVersions : IWorkflowContainer
     {
-        IWorkflowEngineRequiredCapabilities WorkflowCapabilities { get; }
-        string WorkflowCapabilityName { get; }
-        string WorkflowFormId { get; }
-        string WorkflowFormTitle { get; }
-        WorkflowVersionCollection WorkflowVersionCollection { get; }
-        ActivityDefinition GetActivityDefinition(string activityFormId);
     }
 }

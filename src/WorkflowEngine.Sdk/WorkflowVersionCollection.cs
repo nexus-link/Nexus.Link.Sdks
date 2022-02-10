@@ -13,14 +13,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 {
     public class WorkflowVersionCollection
     {
-        public IWorkflowVersions WorkflowVersions { get; }
-        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowVersions.WorkflowCapabilities;
+        public IWorkflowContainer WorkflowContainer { get; }
+        public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowContainer.WorkflowCapabilities;
 
         private readonly Dictionary<int, IWorkflowImplementationBase> _versions = new();
 
-        public WorkflowVersionCollection(IWorkflowVersions workflowVersions)
+        public WorkflowVersionCollection(IWorkflowContainer workflowContainer)
         {
-            WorkflowVersions = workflowVersions;
+            WorkflowContainer = workflowContainer;
         }
 
         public async Task<IWorkflowImplementation<TResponse>> SelectWorkflowVersionAsync<TResponse>(int minVersion, int? maxVersion = null, CancellationToken cancellationToken = default)
@@ -99,10 +99,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             var workflowInstanceId = FulcrumApplication.Context.ExecutionId;
             var workflowInstance =
-                await WorkflowVersions.WorkflowCapabilities.StateCapability.WorkflowInstance.ReadAsync(workflowInstanceId,
+                await WorkflowContainer.WorkflowCapabilities.StateCapability.WorkflowInstance.ReadAsync(workflowInstanceId,
                     cancellationToken);
             if (workflowInstance == null) return null;
-            var workflowVersion = await WorkflowVersions.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion.ReadAsync(workflowInstance.WorkflowVersionId, cancellationToken);
+            var workflowVersion = await WorkflowContainer.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion.ReadAsync(workflowInstance.WorkflowVersionId, cancellationToken);
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
             return workflowVersion;
         }
