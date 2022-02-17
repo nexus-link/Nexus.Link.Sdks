@@ -262,7 +262,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// This is the main method for the implementation. This is where you put all the logic for your workflow implementation.
         /// </summary>
         /// <param name="cancellationToken"></param>
-        public abstract Task<TWorkflowResult> ExecuteWorkflowAsync(CancellationToken cancellationToken);
+        public abstract Task<TWorkflowResult> ExecuteWorkflowAsync(CancellationToken cancellationToken = default);
 
         /// <inheritdoc />
         public IWorkflowImplementation<TWorkflowResult> SetParameter<TParameter>(string name, TParameter value)

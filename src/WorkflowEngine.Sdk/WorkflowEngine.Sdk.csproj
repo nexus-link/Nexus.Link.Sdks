@@ -26,9 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.13.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.15.2" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.11.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.1.0" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.0.3" />
@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.2.0</Version>
+    <Version>5.2.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.2.2 Minor changes.
       5.2.0 Changes inspired by writing the public documentation 
       5.1.11 Bump
       5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
