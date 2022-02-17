@@ -9,6 +9,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -49,35 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowCache.LatestActivity = this;
 
-            await AggregatePostponeExceptions(taskList);
-        }
-
-        private static async Task AggregatePostponeExceptions(IList<Task> taskList)
-        {
-            RequestPostponedException outException = null;
-            var current = 0;
-            while (taskList.Count > current)
-            {
-                try
-                {
-                    await taskList[current];
-                    current++;
-                }
-                catch (ExceptionTransporter et)
-                {
-                    if (et.InnerException is RequestPostponedException rpe)
-                    {
-                        outException ??= new RequestPostponedException();
-                        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-                        if (!outException.TryAgain) outException.TryAgain = rpe.TryAgain;
-                        taskList.RemoveAt(current);
-                    }
-                    else current++;
-                }
-            }
-
-            if (outException != null) throw outException;
-            await Task.WhenAll(taskList);
+            await WorkflowHelper.WhenAllActivities(taskList);
         }
 
         private Task MapMethodAsync(
