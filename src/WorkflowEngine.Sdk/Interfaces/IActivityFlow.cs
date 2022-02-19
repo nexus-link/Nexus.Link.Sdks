@@ -42,7 +42,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
-        IActivitySemaphore Semaphore();
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
+        /// <returns></returns>
+        IActivitySemaphore Semaphore(string resourceIdentifier);
     }
 
     public interface 

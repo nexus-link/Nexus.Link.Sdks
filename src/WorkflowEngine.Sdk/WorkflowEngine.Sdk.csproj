@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.4.2</Version>
+    <Version>5.4.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,7 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      5.4.2 Corrected ActivitySemaphore interface
+      5.4.3 Corrected ActivitySemaphore interface
       5.4.0 Added ActititySemaphore
       5.3.0 Added WorkflowHelper.WhenAllActivities
       5.2.2 Minor changes.

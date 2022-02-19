@@ -13,18 +13,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <summary>
         /// Raise a semaphore
         /// </summary>
-        /// <param name="resourceIdentifier">A string that uniquely identifies the resource that needs to be protected.</param>
         /// <param name="expiresAfter">How long time can we hold the semaphore?</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The id for the semaphore; please use this id when you lower the semaphore.</returns>
-        Task RaiseAsync(string resourceIdentifier, TimeSpan expiresAfter, CancellationToken cancellationToken = default);
+        Task RaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Lower a semaphore
         /// </summary>
-        /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The id for the semaphore; please use this id when you lower the semaphore.</returns>
-        Task LowerAsync(string resourceIdentifier, CancellationToken cancellationToken = default);
+        Task LowerAsync(CancellationToken cancellationToken = default);
     }
 }

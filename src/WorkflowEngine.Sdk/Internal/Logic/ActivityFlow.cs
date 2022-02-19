@@ -130,9 +130,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivitySemaphore Semaphore()
+        public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
-            return new ActivitySemaphore(this);
+            return new ActivitySemaphore(this, resourceIdentifier);
         }
     }
 
