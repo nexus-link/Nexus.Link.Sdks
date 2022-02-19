@@ -11,9 +11,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Log = Nexus.Link.Capabilities.WorkflowState.Abstract.Entities.Log;
 using LogRecord = Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities.LogRecord;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
 {
-    public static class LogExtensions
+    internal static class LogExtensions
     {
         /// <summary>
         /// LogRecord.From(Log)

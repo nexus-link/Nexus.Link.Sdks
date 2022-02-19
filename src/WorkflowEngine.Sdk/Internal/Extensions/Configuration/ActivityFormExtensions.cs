@@ -3,9 +3,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration
 {
-    public static class ActivityFormExtensions
+    internal static class ActivityFormExtensions
     {
         /// <summary>
         /// WorkflowRecord.From(Workflow)

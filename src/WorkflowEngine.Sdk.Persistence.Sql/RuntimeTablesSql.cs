@@ -10,8 +10,12 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
+    /// <inheritdoc />
     public class RuntimeTablesSql : IRuntimeTables
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public RuntimeTablesSql(IDatabaseOptions options)
         {
             options.DistributedLockTable = new DistributedLockTable(options);
@@ -20,6 +24,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             WorkflowInstance = new WorkflowInstanceTableSql(options);
             ActivityInstance = new ActivityInstanceTableSql(options);
             Log = new LogTableSql(options);
+            WorkflowSemaphore = new WorkflowSemaphoreTableSql(options);
+            WorkflowSemaphoreQueue = new WorkflowSemaphoreQueueTableSql(options);
         }
 
         /// <inheritdoc />
@@ -30,6 +36,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 
         /// <inheritdoc />
         public ILogTable Log { get; }
+
+        /// <inheritdoc />
+        public IWorkflowSemaphoreTable WorkflowSemaphore { get; }
+
+        /// <inheritdoc />
+        public IWorkflowSemaphoreQueueTable WorkflowSemaphoreQueue { get; }
 
         /// <inheritdoc />
         public async Task DeleteAllAsync()

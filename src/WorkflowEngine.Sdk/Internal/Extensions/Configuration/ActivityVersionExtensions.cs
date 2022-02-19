@@ -3,34 +3,37 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration
 {
-    public static class WorkflowFormExtensions
+    internal static class ActivityVersionExtensions
     {
         /// <summary>
         /// WorkflowRecord.From(Workflow)
         /// </summary>
-        public static WorkflowFormRecordCreate From(this WorkflowFormRecordCreate target, WorkflowFormCreate source)
+        public static ActivityVersionRecordCreate From(this ActivityVersionRecordCreate target, ActivityVersionCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
-            target.CapabilityName = source.CapabilityName;
-            target.Title = source.Title;
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuid();
+            target.Position = source.Position;
+            target.ActivityFormId = source.ActivityFormId.ToGuid();
+            target.ParentActivityVersionId = source.ParentActivityVersionId?.ToGuid();
+            target.FailUrgency = source.FailUrgency.ToString();
             return target;
         }
 
         /// <summary>
         /// WorkflowRecord.From(Workflow)
         /// </summary>
-        public static WorkflowFormRecord From(this WorkflowFormRecord target, WorkflowForm source)
+        public static ActivityVersionRecord From(this ActivityVersionRecord target, ActivityVersion source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
 
-            ((WorkflowFormRecordCreate) target).From(source);
+            ((ActivityVersionRecordCreate) target).From(source);
             target.Id = source.Id.ToGuid();
             target.Etag = source.Etag;
             return target;
@@ -39,15 +42,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.Configuration
         /// <summary>
         /// Workflow.From(WorkflowRecord)
         /// </summary>
-        public static WorkflowForm From(this WorkflowForm target, WorkflowFormRecord source)
+        public static ActivityVersion From(this ActivityVersion target, ActivityVersionRecord source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             
             target.Id = source.Id.ToGuidString();
-            target.Title = source.Title;
-            target.CapabilityName = source.CapabilityName;
+            target.WorkflowVersionId = source.WorkflowVersionId.ToGuidString();
+            target.Position = source.Position;
+            target.ActivityFormId = source.ActivityFormId.ToGuidString();
+            target.ParentActivityVersionId = source.ParentActivityVersionId.ToGuidString();
+            target.FailUrgency = source.FailUrgency.ToEnum<ActivityFailUrgencyEnum>();
             target.Etag = source.Etag;
             return target;
         }

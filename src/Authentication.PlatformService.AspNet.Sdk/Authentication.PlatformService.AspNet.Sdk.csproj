@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.0.2" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.11.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.15.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
@@ -36,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <Version>1.0.54</Version>
+      <Version>1.0.55</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -46,7 +46,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        1.0.54 Bump
+        1.0.56 Bump
         1.0.50 Symbols
         1.0.49 Bump
         1.0.46 Fix: Avoid argument null exception.

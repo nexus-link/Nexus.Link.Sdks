@@ -30,8 +30,8 @@
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.1.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.0.3" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.2.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.0" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="1.0.3" />
   </ItemGroup>
 
@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.3.0</Version>
+    <Version>5.4.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,9 +65,10 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.4.0 Added ActititySemaphore
       5.3.0 Added WorkflowHelper.WhenAllActivities
       5.2.2 Minor changes.
-      5.2.0 Changes inspired by writing the public documentation 
+      5.2.0 Changes inspired by writing the public documentation
       5.1.11 Bump
       5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
       5.1.9 Made all classes that not need to be visible internal instead of public

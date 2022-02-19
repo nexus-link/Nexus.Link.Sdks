@@ -19,6 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
             ActivityInstance = new ActivityInstanceService(runtimeTables, requestMgmtCapability);
             Log = new LogService(runtimeTables);
             WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables, requestMgmtCapability);
+            WorkflowSemaphore = new WorkflowSemaphoreService(runtimeTables);
         }
 
         /// <inheritdoc />
@@ -32,5 +33,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 
         /// <inheritdoc />
         public IWorkflowSummaryService WorkflowSummary { get; }
+
+        /// <inheritdoc />
+        public IWorkflowSemaphoreService WorkflowSemaphore { get; }
     }
 }

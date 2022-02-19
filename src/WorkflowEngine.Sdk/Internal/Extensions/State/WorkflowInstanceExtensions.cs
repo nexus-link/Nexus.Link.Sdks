@@ -3,9 +3,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
 {
-    public static class WorkflowInstanceExtensions
+    internal static class WorkflowInstanceExtensions
     {
         /// <summary>
         /// WorkflowInstanceRecordCreate.From(WorkflowInstanceCreate)

@@ -3,9 +3,9 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Serialization;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Extensions.State
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
 {
-    public static class AsyncManagerExtensions
+    internal static class AsyncManagerExtensions
     {
         public static ResponseData From(this ResponseData target, HttpResponse source)
         {

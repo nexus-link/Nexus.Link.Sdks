@@ -10,13 +10,19 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
 {
+    /// <inheritdoc />
     public class RuntimeTablesMemory : IRuntimeTables
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public RuntimeTablesMemory()
         {
             WorkflowInstance = new WorkflowInstanceTableMemory();
             ActivityInstance = new ActivityInstanceTableMemory();
             Log = new LogTableMemory();
+            WorkflowSemaphore = new WorkflowSemaphoreTableMemory();
+            WorkflowSemaphoreQueue = new WorkflowSemaphoreQueueTableMemory();
         }
 
         /// <inheritdoc />
@@ -28,8 +34,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         /// <inheritdoc />
         public ILogTable Log { get; }
 
+        /// <inheritdoc />
+        public IWorkflowSemaphoreTable WorkflowSemaphore { get; }
+
+        /// <inheritdoc />
+        public IWorkflowSemaphoreQueueTable WorkflowSemaphoreQueue { get; }
+
+        /// <summary>
+        /// Use this for testing purposes to delete all runtime table records.
+        /// </summary>
         public async Task DeleteAllAsync()
         {
+            // Log
+            var log = Log as CrudMemory<LogRecordCreate, LogRecord, Guid>;
+            FulcrumAssert.IsNotNull(log, CodeLocation.AsString());
+            await log!.DeleteAllAsync();
+
+            // WorkflowSemaphore
+            var workflowSemaphore = WorkflowSemaphore as CrudMemory<WorkflowSemaphoreRecordCreate, WorkflowSemaphoreRecord, Guid>;
+            FulcrumAssert.IsNotNull(workflowSemaphore, CodeLocation.AsString());
+            await workflowSemaphore!.DeleteAllAsync();
+
             // ActivityInstance
             var activityInstance = ActivityInstance as CrudMemory<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>;
             FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
