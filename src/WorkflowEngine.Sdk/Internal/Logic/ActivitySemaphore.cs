@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public async Task<string> RaiseAsync(string resourceIdentifier, TimeSpan expiresAfter, CancellationToken cancellationToken = default)
+        public async Task RaiseAsync(string resourceIdentifier, TimeSpan expiresAfter, CancellationToken cancellationToken = default)
         {
             if (Instance.HasCompleted && Instance.State == ActivityStateEnum.Success)
             {
@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 // Extend the expiration time
                 await ExtendExpirationAsync(semaphoreId, expiresAfter, cancellationToken);
             }
-            return await InternalExecuteAsync((a, ct) => InternalRaiseAsync(resourceIdentifier, expiresAfter, ct), null, cancellationToken);
+            await InternalExecuteAsync((a, ct) => InternalRaiseAsync(resourceIdentifier, expiresAfter, ct), cancellationToken);
         }
 
         private async Task ExtendExpirationAsync(string semaphoreId, TimeSpan expiresAfter, CancellationToken cancellationToken)
@@ -58,7 +58,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return InternalExecuteAsync((a, ct) => InternalLowerAsync(semaphoreId, ct), cancellationToken);
         }
 
-        private async Task<string> InternalRaiseAsync(string resourceIdentifier, TimeSpan expiresAfter, CancellationToken cancellationToken)
+        private async Task InternalRaiseAsync(string resourceIdentifier, TimeSpan expiresAfter, CancellationToken cancellationToken)
         {
             var semaphoreCreate = new WorkflowSemaphoreCreate
             {
@@ -68,22 +68,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 ExpiresAt = DateTimeOffset.UtcNow.Add(expiresAfter),
                 Raised = true
             };
-            var semaphoreId = await _semaphoreService.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate, cancellationToken);
-            return semaphoreId;
+            await _semaphoreService.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate, cancellationToken);
         }
 
-        private async Task InternalLowerAsync(string semaphoreId, CancellationToken cancellationToken)
+        private async Task InternalLowerAsync(string resourceIdentifier, CancellationToken cancellationToken)
         {
             string nextWorkflowInstanceId;
             try
             {
-                nextWorkflowInstanceId = await _semaphoreService.LowerAndReturnNextWorkflowInstanceAsync(semaphoreId, WorkflowInstanceId, cancellationToken);
+                nextWorkflowInstanceId = await _semaphoreService.LowerAndReturnNextWorkflowInstanceAsync(WorkflowInformation.FormId, resourceIdentifier, WorkflowInstanceId, cancellationToken);
             }
             catch (Exception e) when
                 (e is FulcrumConflictException or FulcrumNotFoundException)
             {
                 throw new ActivityException(ActivityExceptionCategoryEnum.TechnicalError,
-                    $"The semaphore {semaphoreId} was lost for workflow instance {WorkflowInstanceId}.",
+                    $"The semaphore {resourceIdentifier} has expired for workflow instance {WorkflowInstanceId}.",
                     $"The workflow state has been jeopardized, due to a conflict with another workflow.");
             }
 

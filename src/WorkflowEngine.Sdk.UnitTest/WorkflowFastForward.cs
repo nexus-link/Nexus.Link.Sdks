@@ -102,6 +102,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
             case ActivityTypeEnum.Condition:
             case ActivityTypeEnum.ForEachParallel:
             case ActivityTypeEnum.ForEachSequential:
+            case ActivityTypeEnum.Semaphore:
                 break;
             case ActivityTypeEnum.LoopUntilTrue:
                 return;

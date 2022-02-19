@@ -42,6 +42,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
+        IActivitySemaphore Semaphore();
     }
 
     public interface 

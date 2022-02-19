@@ -128,6 +128,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             return new ActivityForEachSequential<TItem>(this, items);
         }
+
+        /// <inheritdoc />
+        public IActivitySemaphore Semaphore()
+        {
+            return new ActivitySemaphore(this);
+        }
     }
 
     internal class ActivityFlow<TActivityReturns> : ActivityFlowBase, IActivityFlow<TActivityReturns>
