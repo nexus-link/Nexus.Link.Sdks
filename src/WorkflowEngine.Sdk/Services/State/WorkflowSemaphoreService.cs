@@ -111,16 +111,23 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
     }
 
     /// <inheritdoc />
-    public async Task UpdateExpirationAsync(string id, string workflowInstanceId, DateTimeOffset expireAt,
+    public async Task UpdateExpirationAsync(string workflowFormId, string resourceIdentifier, string workflowInstanceId, DateTimeOffset expireAt,
         CancellationToken cancellationToken)
     {
-        InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+        InternalContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
+        InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
         InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
         InternalContract.RequireGreaterThan(DateTimeOffset.UtcNow, expireAt, nameof(expireAt));
-        var record = await _runtimeTables.WorkflowSemaphore.ReadAsync(id.ToGuid(), cancellationToken);
+        var unique = new WorkflowSemaphoreRecordUnique
+        {
+            WorkflowFormId = workflowFormId.ToGuid(),
+            ResourceIdentifier = resourceIdentifier,
+        };
+        var searchDetails = new SearchDetails<WorkflowSemaphoreRecord>(unique);
+        var record = await _runtimeTables.WorkflowSemaphore.FindUniqueAsync(searchDetails, cancellationToken);
         if (record == null)
         {
-            throw new FulcrumNotFoundException($"Could not find a semaphore with id {id}.");
+            throw new FulcrumNotFoundException($"Could not find semaphore {unique}.");
         }
         if (record.WorkflowInstanceId == workflowInstanceId.ToGuid())
         {
@@ -144,8 +151,8 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
     /// <inheritdoc />
     public async Task<string> LowerAndReturnNextWorkflowInstanceAsync(string workflowFormId, string resourceIdentifier, string workflowInstanceId, CancellationToken cancellationToken)
     {
-        InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
         InternalContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
+        InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
         InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
         var unique = new WorkflowSemaphoreRecordUnique
         {

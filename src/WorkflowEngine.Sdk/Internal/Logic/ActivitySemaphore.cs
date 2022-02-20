@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
-using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -15,6 +18,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     /// <inheritdoc cref="IActivitySemaphore" />
     internal class ActivitySemaphore : Activity, IActivitySemaphore
     {
+        private readonly Dictionary<string, ActivitySemaphore> _raisedActivitySemaphores = new();
+
         public string ResourceIdentifier { get; }
         private readonly IWorkflowSemaphoreService _semaphoreService;
 
@@ -35,26 +40,39 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             if (Instance.HasCompleted && Instance.State == ActivityStateEnum.Success)
             {
-                var semaphoreId = JsonHelper.SafeDeserializeObject<string>(Instance.ResultAsJson);
-                // Extend the expiration time
-                await ExtendExpirationAsync(semaphoreId, expiresAfter, cancellationToken);
+                var raised = Instance.ResultAsJson != null && JsonHelper.SafeDeserializeObject<bool>(Instance.ResultAsJson);
+                if (raised)
+                {
+                    // Extend the expiration time
+                    await ExtendExpirationAsync(expiresAfter, cancellationToken);
+                }
             }
             await InternalExecuteAsync((a, ct) => InternalRaiseAsync(expiresAfter, ct), cancellationToken);
+            _raisedActivitySemaphores[CalculatedKey] = this;
         }
 
-        private async Task ExtendExpirationAsync(string semaphoreId, TimeSpan expiresAfter, CancellationToken cancellationToken)
+        private string CalculatedKey => $"{WorkflowInformation.InstanceId}.{ResourceIdentifier}";
+
+        private async Task ExtendExpirationAsync(TimeSpan expiresAfter, CancellationToken cancellationToken)
         {
+            var semaphore = new WorkflowSemaphoreCreate
+            {
+                WorkflowFormId = WorkflowInformation.FormId,
+                ResourceIdentifier = ResourceIdentifier,
+                WorkflowInstanceId = WorkflowInstanceId,
+                ExpiresAt = DateTimeOffset.UtcNow.Add(expiresAfter),
+                Raised = true
+            };
             try
             {
-                await _semaphoreService.UpdateExpirationAsync(semaphoreId, WorkflowInstanceId,
-                    DateTimeOffset.UtcNow.Add(expiresAfter),
-                    cancellationToken);
+                await _semaphoreService.UpdateExpirationAsync(semaphore.WorkflowFormId, semaphore.ResourceIdentifier, semaphore.WorkflowInstanceId,
+                    semaphore.ExpiresAt, cancellationToken);
             }
             catch (Exception e) when
                 (e is FulcrumConflictException or FulcrumNotFoundException)
             {
                 throw new ActivityException(ActivityExceptionCategoryEnum.TechnicalError,
-                    $"The semaphore {semaphoreId} was lost for workflow instance {WorkflowInstanceId}.",
+                    $"The semaphore {semaphore} was lost for workflow instance {WorkflowInstanceId}.",
                     $"The workflow state has been jeopardized, due to a conflict with another workflow.");
             }
         }
@@ -76,6 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 Raised = true
             };
             await _semaphoreService.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate, cancellationToken);
+            Instance.ResultAsJson = JsonConvert.SerializeObject(true);
         }
 
         private async Task InternalLowerAsync(CancellationToken cancellationToken)
@@ -95,6 +114,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
             // Trigger the next workflow instance
             await WorkflowInformation.WorkflowCapabilities.RequestMgmtCapability.Request.RetryAsync(nextWorkflowInstanceId, cancellationToken);
+            var success = _raisedActivitySemaphores.TryGetValue(CalculatedKey, out var activity);
+            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
+            FulcrumAssert.IsNotNull(activity, CodeLocation.AsString());
+            activity!.Instance.ResultAsJson = JsonConvert.SerializeObject(false);
+            _raisedActivitySemaphores.Remove(CalculatedKey);
         }
     }
 }
