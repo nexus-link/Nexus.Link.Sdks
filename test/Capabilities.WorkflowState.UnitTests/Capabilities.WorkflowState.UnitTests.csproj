@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Nexus.Link.Capabilities.WorkflowState.UnitTests</RootNamespace>
+    <AssemblyName>Nexus.Link.Capabilities.WorkflowState.UnitTests</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Configurations>Debug;Release;ci;prdsim;prd</Configurations>
+  </PropertyGroup>
+
+  <!-- Publish symbols -->
+  <PropertyGroup>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Recommended: Embed symbols containing Source Link in the main file (exe/dll) -->
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+  </PropertyGroup>
+
+  <!-- Publish symbols -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.2.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.4" />
+  </ItemGroup>
+  
+  <PropertyGroup>
+    <PackageId>Nexus.Link.Capabilities.WorkflowState.UnitTests</PackageId>
+    <Version>2.0.0-alfa02</Version>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>nexus;link;fulcrum;lever</PackageTags>
+    <Authors>XLENT Link</Authors>
+    <PackageProjectUrl>https://dev.azure.com/nexuslink/Nexus%20Libs/_git/Nexus.Link.Contracts</PackageProjectUrl>
+    <PackageLanguage>en-US</PackageLanguage>
+    <Description>Workflow management capability unit tests</Description>
+    <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageReleaseNotes>
+      2.0.0 Changed from MSTest to XUnit
+      1.1.1 Bump
+      1.1.0 Added tests for IWorkflowSemaphoreService
+      1.0.3 Bump
+      1.0.0 First release
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+
+</Project>

@@ -18,6 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.From((WorkflowSemaphoreUnique) source);
             target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuid();
             target.Raised = source.Raised;
+            target.ExpiresAt = source.ExpiresAt;
             return target;
         }
 

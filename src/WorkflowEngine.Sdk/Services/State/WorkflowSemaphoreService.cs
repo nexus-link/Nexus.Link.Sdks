@@ -59,7 +59,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                     || !record.Raised
                     || record.ExpiresAt <= DateTimeOffset.UtcNow)
                 {
-                    record.WorkflowFormId = recordCreate.WorkflowInstanceId;
+                    record.WorkflowInstanceId = recordCreate.WorkflowInstanceId;
                     record.Raised = true;
                     record.ExpiresAt = recordCreate.ExpiresAt;
                     try

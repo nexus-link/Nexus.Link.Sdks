@@ -19,7 +19,6 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.State
         {
             get
             {
-
                 if (_httpSenderMock != null) return _httpSenderMock.Object;
                 _httpSenderMock = new Mock<IHttpSender>();
                 _httpSenderMock.Setup(sender => sender.SendRequestAsync(
@@ -27,12 +26,15 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.State
                         It.IsAny<string>(), null,
                         It.IsAny<CancellationToken>()))
                     .ReturnsAsync((HttpMethod method, string relativeUrl,
-                            Dictionary<string, List<string>> customHeaders,
+                        Dictionary<string, List<string>> customHeaders,
                         CancellationToken cancellationToken) =>
                     {
-                        
+
                         return new HttpResponseMessage(HttpStatusCode.OK);
                     });
+                _httpSenderMock.Setup(sender => sender.CreateHttpSender(
+                        It.IsAny<string>()))
+                    .Returns((string relativeUrl) => _httpSenderMock.Object);
                 return _httpSenderMock.Object;
             }
         }
