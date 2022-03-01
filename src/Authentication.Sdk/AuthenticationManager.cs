@@ -242,18 +242,21 @@ namespace Nexus.Link.Authentication.Sdk
 
         public static RsaSecurityKey CreateRsaSecurityKeyFromXmlString(string publicKeyXml)
         {
-            var provider = new RSACryptoServiceProvider(RsaKeySizeInBits);
-            try
+            using (var provider = new RSACryptoServiceProvider(RsaKeySizeInBits))
             {
-                provider.FromXmlString(publicKeyXml);
+                try
+                {
+                    provider.FromXmlString(publicKeyXml);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    // Support in .NET Core is not planned until .NET Core 3.0, so we use a workaround
+                    // https://github.com/dotnet/core/issues/874
+                    FromXmlString(provider, publicKeyXml);
+                }
+
+                return new RsaSecurityKey(provider.ExportParameters(false));
             }
-            catch (PlatformNotSupportedException)
-            {
-                // Support in .NET Core is not planned until .NET Core 3.0, so we use a workaround
-                // https://github.com/dotnet/core/issues/874
-                FromXmlString(provider, publicKeyXml);
-            }
-            return new RsaSecurityKey(provider.ExportParameters(false));
         }
 
         /// <summary>
