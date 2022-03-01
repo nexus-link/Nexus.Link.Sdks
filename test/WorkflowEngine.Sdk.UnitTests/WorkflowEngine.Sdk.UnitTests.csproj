@@ -23,7 +23,7 @@
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.2.0" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.4" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="1.0.3" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

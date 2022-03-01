@@ -49,7 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         }
 
         /// <inheritdoc />
-        public async Task CancelWorkflowAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        public async Task CancelAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
@@ -60,28 +60,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 
             await _stateCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
             await _requestMgmtCapability.Request.RetryAsync(workflowInstanceId, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public async Task RetryActivityAsync(string activityInstanceId, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
-
-            var item = await _stateCapability.ActivityInstance.ReadAsync(activityInstanceId, cancellationToken);
-            if (item == null) throw new FulcrumNotFoundException(activityInstanceId);
-
-            item.State = ActivityStateEnum.Waiting;
-            item.ResultAsJson = null;
-            item.ExceptionCategory = null;
-            item.ExceptionTechnicalMessage = null;
-            item.ExceptionFriendlyMessage = null;
-            item.AsyncRequestId = null;
-            // TODO: item.ExceptionAlertHandled = null
-
-            await _stateCapability.ActivityInstance.UpdateAndReturnAsync(activityInstanceId, item, cancellationToken);
-            await _requestMgmtCapability.Request.RetryAsync(item.WorkflowInstanceId, cancellationToken);
-
-            // TODO: Audit log
         }
 
         private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, IReadOnlyList<ActivitySummary> workflowRecordActivities)

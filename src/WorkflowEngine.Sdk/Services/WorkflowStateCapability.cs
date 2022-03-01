@@ -4,7 +4,7 @@ using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
+namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
     // TODO: Make this class internal when Privatmegleren no longer uses it
     /// <inheritdoc />

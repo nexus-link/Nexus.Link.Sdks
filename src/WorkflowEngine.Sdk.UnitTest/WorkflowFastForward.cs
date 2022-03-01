@@ -55,6 +55,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         }
     }
 
+    /// <inheritdoc />
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(HasSetContext, $"You must call {nameof(SetBreakCondition)}.");

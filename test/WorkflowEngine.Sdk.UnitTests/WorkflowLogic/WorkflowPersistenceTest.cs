@@ -6,6 +6,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
+using Nexus.Link.WorkflowEngine.Sdk.Services;
 using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic

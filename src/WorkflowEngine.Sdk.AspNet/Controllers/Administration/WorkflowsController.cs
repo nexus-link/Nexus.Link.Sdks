@@ -13,38 +13,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
     {
         private readonly IWorkflowMgmtCapability _capability;
 
+        /// <summary>
+        /// Controller
+        /// </summary>
         protected WorkflowsController(IWorkflowMgmtCapability capability)
         {
             _capability = capability;
         }
 
         /// <inheritdoc />
-        [HttpGet("Workflows/{workflowInstanceId}")]
-        public async Task<Workflow> ReadAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        [HttpGet("Workflows/{id}")]
+        public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var workflow = await _capability.Workflow.ReadAsync(workflowInstanceId, cancellationToken);
+            var workflow = await _capability.Workflow.ReadAsync(id, cancellationToken);
             return workflow;
         }
 
         /// <inheritdoc />
-        [HttpPost("Workflows/{workflowInstanceId}/Cancel")]
-        public async Task CancelWorkflowAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+        [HttpPost("Workflows/{id}/Cancel")]
+        public async Task CancelAsync(string id, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            await _capability.Workflow.CancelWorkflowAsync(workflowInstanceId, cancellationToken);
-        }
-
-
-        /// <inheritdoc />
-        [HttpPost("Activities/{activityInstanceId}/Retry")]
-        public async Task RetryActivityAsync(string activityInstanceId, CancellationToken cancellationToken = default)
-        {
-            ServiceContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
-
-            await _capability.Workflow.RetryActivityAsync(activityInstanceId, cancellationToken);
+            await _capability.Workflow.CancelAsync(id, cancellationToken);
         }
     }
 }

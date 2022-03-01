@@ -86,7 +86,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
             var id = WorkflowInstanceRecord.Id.ToGuidString();
 
             // Act
-            await _service.CancelWorkflowAsync(id);
+            await _service.CancelAsync(id);
 
             // Assert
             var workflow = await _service.ReadAsync(id);
