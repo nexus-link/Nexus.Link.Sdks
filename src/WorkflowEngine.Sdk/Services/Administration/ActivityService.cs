@@ -9,23 +9,23 @@ using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
+    /// <inheritdoc />
     public class ActivityService : IActivityService
     {
-        private readonly IRuntimeTables _runtimeTables;
-        private readonly IWorkflowStateCapability _stateCapability;
+        private readonly IWorkflowStateCapability _workflowStateCapability;
         private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
         /// <summary>
         /// Controller
         /// </summary>
-        public ActivityService(IRuntimeTables runtimeTables, IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public ActivityService(IWorkflowStateCapability workflowStateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
         {
-            _runtimeTables = runtimeTables;
-            _stateCapability = stateCapability;
+            _workflowStateCapability = workflowStateCapability;
             _requestMgmtCapability = requestMgmtCapability;
         }
 
@@ -34,17 +34,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var idAsGuid = id.ToGuid();
+            var activityInstanceService = _workflowStateCapability.ActivityInstance;
+            FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
+            var activityInstance = await activityInstanceService.ReadAsync(id, cancellationToken);
+            if (activityInstance == null) return;
 
-            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
-            if (record == null) return;
+            activityInstance.State = ActivityStateEnum.Success;
+            activityInstance.ResultAsJson = result.ResultAsJson;
+            activityInstance.FinishedAt = DateTimeOffset.UtcNow;
 
-            record.State = ActivityStateEnum.Success.ToString();
-            record.ResultAsJson = result.ResultAsJson;
-            record.FinishedAt = DateTimeOffset.UtcNow;
-
-            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Request.RetryAsync(record.WorkflowInstanceId.ToGuidString(), cancellationToken);
+            await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId.ToGuidString(), cancellationToken);
             // TODO: Audit log?
         }
 
@@ -52,20 +52,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         public async Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNull(result, nameof(result));
 
-            var idAsGuid = id.ToGuid();
+            var activityInstanceService = _workflowStateCapability.ActivityInstance;
+            FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
 
-            var record = await _runtimeTables.ActivityInstance.ReadAsync(idAsGuid, cancellationToken);
-            if (record == null) return;
+            var activityInstance = await activityInstanceService.ReadAsync(id, cancellationToken);
+            if (activityInstance == null) return;
 
-            record.State = ActivityStateEnum.Failed.ToString();
-            record.ExceptionCategory = result.ExceptionCategory.ToString();
-            record.ExceptionTechnicalMessage = result.ExceptionTechnicalMessage;
-            record.ExceptionFriendlyMessage = result.ExceptionFriendlyMessage;
-            record.FinishedAt = DateTimeOffset.UtcNow;
+            activityInstance.State = ActivityStateEnum.Failed;
+            activityInstance.ExceptionCategory = result.ExceptionCategory;
+            activityInstance.ExceptionTechnicalMessage = result.ExceptionTechnicalMessage;
+            activityInstance.ExceptionFriendlyMessage = result.ExceptionFriendlyMessage;
+            activityInstance.FinishedAt = DateTimeOffset.UtcNow;
 
-            await _runtimeTables.ActivityInstance.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
-            await _requestMgmtCapability.Request.RetryAsync(record.WorkflowInstanceId.ToGuidString(), cancellationToken);
+            await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId.ToGuidString(), cancellationToken);
             // TODO: Audit log?
         }
 
@@ -74,19 +76,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var item = await _stateCapability.ActivityInstance.ReadAsync(id, cancellationToken);
-            if (item == null) throw new FulcrumNotFoundException(id);
+            var activityInstanceService = _workflowStateCapability.ActivityInstance;
+            FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
 
-            item.State = ActivityStateEnum.Waiting;
-            item.ResultAsJson = null;
-            item.ExceptionCategory = null;
-            item.ExceptionTechnicalMessage = null;
-            item.ExceptionFriendlyMessage = null;
-            item.AsyncRequestId = null;
+            var activityInstance = await activityInstanceService.ReadAsync(id, cancellationToken);
+            if (activityInstance == null) throw new FulcrumNotFoundException(id);
+
+            activityInstance.State = ActivityStateEnum.Waiting;
+            activityInstance.ResultAsJson = null;
+            activityInstance.ExceptionCategory = null;
+            activityInstance.ExceptionTechnicalMessage = null;
+            activityInstance.ExceptionFriendlyMessage = null;
+            activityInstance.AsyncRequestId = null;
             // TODO: item.ExceptionAlertHandled = null
 
-            await _stateCapability.ActivityInstance.UpdateAndReturnAsync(id, item, cancellationToken);
-            await _requestMgmtCapability.Request.RetryAsync(item.WorkflowInstanceId, cancellationToken);
+            await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log
         }

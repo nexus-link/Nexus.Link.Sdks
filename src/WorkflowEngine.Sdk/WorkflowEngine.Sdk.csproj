@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.5.0</Version>
+    <Version>5.5.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.5.1 Consolidated service contracts
       5.5.0 Implemented IWorkflowMgmtCapability
       5.4.6 Corrected bugs found when unit testing
       5.4.5 When the semaphore has been lowered, we no longer try to extend the expiration time
