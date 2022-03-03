@@ -73,6 +73,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 Activity.Instance.State = ActivityStateEnum.Waiting;
                 throw;
             }
+            catch (WorkflowFailedException e)
+            {
+                throw new ExceptionTransporter(e);
+            }
             catch (Exception e)
             {
                 if (Activity.Instance.HasCompleted)

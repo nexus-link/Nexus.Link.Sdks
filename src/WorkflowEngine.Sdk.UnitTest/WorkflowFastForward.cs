@@ -27,7 +27,24 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         throw new NotImplementedException();
     }
 
+    [Obsolete("Please use BreakBeforeActivity or BreakBeforeActivityIteration")]
     public IWorkflowImplementation SetBreakCondition(string activityFormId, int? iteration = null)
+    {
+        BreakAtActivityFormId = activityFormId;
+        BreakAtIteration = iteration;
+        HasSetContext = true;
+        return this;
+    }
+
+    public IWorkflowImplementation BreakBeforeActivity(string activityFormId)
+    {
+        BreakAtActivityFormId = activityFormId;
+        BreakAtIteration = null;
+        HasSetContext = true;
+        return this;
+    }
+
+    public IWorkflowImplementation BreakBeforeActivityIteration(string activityFormId, int iteration)
     {
         BreakAtActivityFormId = activityFormId;
         BreakAtIteration = iteration;
@@ -58,7 +75,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
     /// <inheritdoc />
     public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        InternalContract.Require(HasSetContext, $"You must call {nameof(SetBreakCondition)}.");
+        InternalContract.Require(HasSetContext, $"You must call {nameof(BreakBeforeActivity)} or {nameof(BreakBeforeActivityIteration)}.");
         try
         {
             await base.ExecuteAsync(cancellationToken);
