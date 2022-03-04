@@ -69,8 +69,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityAction<TActivityReturns> Action();
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
         IActivityCondition<TActivityReturns> Condition();
-        IActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items);
-        IActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);
         IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }
 }

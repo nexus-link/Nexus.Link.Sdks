@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
@@ -120,12 +121,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc/>
         public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
+            InternalContract.RequireNotNull(items, nameof(items));
             return new ActivityForEachParallel<TItem>(this, items);
         }
         
         /// <inheritdoc/>
         public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
+            InternalContract.RequireNotNull(items, nameof(items));
             return new ActivityForEachSequential<TItem>(this, items);
         }
 
@@ -233,20 +236,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc/>
-        public IActivityForEachParallel<TActivityReturns, TItem, TKey> ForEachParallel<TItem, TKey>(IEnumerable<TItem> items)
+        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod)
         {
-            return new ActivityForEachParallel<TActivityReturns, TItem, TKey>(this, items, GetDefaultValueForNotUrgentFail);
-        }
-        
-        /// <inheritdoc/>
-        public IActivityForEachParallel<TActivityReturns, TItem, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
-        {
-            return new ActivityForEachParallel<TActivityReturns, TItem, TItem>(this, items, GetDefaultValueForNotUrgentFail);
+            InternalContract.RequireNotNull(items, nameof(items));
+            InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
+            return new ActivityForEachParallel<TActivityReturns, TItem>(this, items, getKeyMethod, GetDefaultValueForNotUrgentFail);
         }
         
         /// <inheritdoc/>
         public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
+            InternalContract.RequireNotNull(items, nameof(items));
             return new ActivityForEachSequential<TActivityReturns, TItem>(this, items, GetDefaultValueForNotUrgentFail);
         }
     }

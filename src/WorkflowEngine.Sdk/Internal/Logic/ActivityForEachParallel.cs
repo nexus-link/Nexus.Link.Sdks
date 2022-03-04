@@ -64,36 +64,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
     }
 
-    internal class ActivityForEachParallel<TActivityReturns, TItem, TKey> : Activity, IActivityForEachParallel<TActivityReturns, TItem, TKey>
+    internal class ActivityForEachParallel<TActivityReturns, TItem> : Activity, IActivityForEachParallel<TActivityReturns, TItem>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        private Func<TItem, TKey> _getKeyMethod;
+        private Func<TItem, string> _getKeyMethod;
 
         public IEnumerable<TItem> Items { get; }
 
         public ActivityForEachParallel(
-            IInternalActivityFlow activityFlow, IEnumerable<TItem> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            IInternalActivityFlow activityFlow,
+            IEnumerable<TItem> items,
+            Func<TItem, string> getKeyMethod,
+            Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(ActivityTypeEnum.ForEachParallel, activityFlow)
         {
             InternalContract.RequireNotNull(items, nameof(items));
+            InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;
-            if (typeof(TKey).IsAssignableFrom(typeof(TItem)))
-            {
-                _getKeyMethod = item => (TKey)(object)item;
-            }
+            _getKeyMethod = getKeyMethod;
         }
 
-        public IActivityForEachParallel<TActivityReturns, TItem, TKey> SetGetKeyMethod(Func<TItem, TKey> method)
-        {
-            _getKeyMethod = method;
-            return this;
-        }
-
-        public Task<IDictionary<TKey, TActivityReturns>> ExecuteAsync(
-            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
+        public Task<IDictionary<string, TActivityReturns>> ExecuteAsync(
+            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
             return InternalExecuteAsync(
@@ -101,18 +96,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 (ct) => null, cancellationToken);
         }
 
-        private Task<IDictionary<TKey, TActivityReturns>> ForEachMethod(Func<TItem,
-                IActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
+        private Task<IDictionary<string, TActivityReturns>> ForEachMethod(Func<TItem,
+                IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
             IActivity activity, CancellationToken cancellationToken)
         {
-            InternalContract.Require(_getKeyMethod != null, $"You must call {nameof(SetGetKeyMethod)} before you call the {nameof(ExecuteAsync)} method.");
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-            var taskDictionary = new Dictionary<TKey, Task<TActivityReturns>>();
+            var taskDictionary = new Dictionary<string, Task<TActivityReturns>>();
             foreach (var item in Items)
             {
                 Iteration++;
-                TKey key = default;
+                string key = default;
                 try
                 {
                     key = _getKeyMethod!(item);
@@ -134,18 +128,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private Task<TActivityReturns> MapMethodAsync(
             TItem item,
-            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method,
+            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
             IActivity instance, CancellationToken cancellationToken)
         {
-            var loop = instance as IActivityForEachParallel<TActivityReturns, TItem, TKey>;
+            var loop = instance as IActivityForEachParallel<TActivityReturns, TItem>;
             FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
             return method(item, loop, cancellationToken);
         }
 
-        private static async Task<IDictionary<TKey, TActivityReturns>> AggregatePostponeExceptions(IDictionary<TKey, Task<TActivityReturns>> taskDictionary)
+        private static async Task<IDictionary<string, TActivityReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TActivityReturns>> taskDictionary)
         {
             RequestPostponedException outException = null;
-            var resultDictionary = new Dictionary<TKey, TActivityReturns>();
+            var resultDictionary = new Dictionary<string, TActivityReturns>();
             foreach (var (key, task) in taskDictionary)
             {
                 try

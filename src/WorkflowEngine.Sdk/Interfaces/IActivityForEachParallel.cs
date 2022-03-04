@@ -11,16 +11,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// </summary>
     public interface IActivityForEachParallel<out TItem> : IActivity
     {
+        /// <summary>
+        /// The items to loop over
+        /// </summary>
         IEnumerable<TItem> Items { get; }
 
+        /// <summary>
+        /// Execute the <paramref name="method"/> for all items.
+        /// </summary>
         Task ExecuteAsync(Func<TItem, IActivityForEachParallel<TItem>, CancellationToken, Task> method, CancellationToken cancellationToken = default);
     }
-
-    public interface IActivityForEachParallel<TActivityReturns, out TItem, TKey> : IActivity<TActivityReturns>
+    /// <summary>
+    /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
+    /// </summary>
+    public interface IActivityForEachParallel<TActivityReturns, out TItem> : IActivity<TActivityReturns>
     {
+        /// <summary>
+        /// The items to loop over
+        /// </summary>
         IEnumerable<TItem> Items { get; }
 
-        Task<IDictionary<TKey, TActivityReturns>> ExecuteAsync(Func<TItem, IActivityForEachParallel<TActivityReturns, TItem, TKey>, CancellationToken, Task<TActivityReturns>> method, CancellationToken cancellationToken = default);
-        IActivityForEachParallel<TActivityReturns, TItem, TKey> SetGetKeyMethod(Func<TItem, TKey> method);
+        /// <summary>
+        /// Execute the <paramref name="method"/> for all items.
+        /// </summary>
+        /// <returns>A dictionary that associates each item with a result</returns>
+        Task<IDictionary<string, TActivityReturns>> ExecuteAsync(
+            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method, 
+            CancellationToken cancellationToken = default);
     }
 }
