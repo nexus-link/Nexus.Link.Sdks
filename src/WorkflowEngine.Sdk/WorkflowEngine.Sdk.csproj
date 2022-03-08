@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.5.3</Version>
+    <Version>5.5.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      5.5.4 Added logging in CallAsyncManagerForAsynchronousRequests
       5.5.3 Now enfore IActivityForEachParallel to have a key method
       5.5.2 Fixed bug for WorkflowFailedException
       5.5.1 Consolidated service contracts

@@ -8,29 +8,36 @@ using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
+    /// <summary>
+    /// If the request is in an asynchronous context, the request will be sent over an <see cref="IAsyncRequestMgmtCapability"/>.
+    /// </summary>
     public class CallAsyncManagerForAsynchronousRequests : DelegatingHandler
     {
         private readonly IAsyncRequestMgmtCapability _asyncRequestMgmtCapability;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public CallAsyncManagerForAsynchronousRequests(IAsyncRequestMgmtCapability asyncRequestMgmtCapability)
         {
             _asyncRequestMgmtCapability = asyncRequestMgmtCapability;
         }
 
         /// <summary>
-        /// Adds a Fulcrum CorrelationId to the requests before sending it.
+        /// If the request is in an asynchronous context, the request will be sent over an <see cref="IAsyncRequestMgmtCapability"/>.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <exception cref="RequestPostponedException"></exception>
-        /// <returns></returns>
+        /// <exception cref="RequestPostponedException">
+        /// Thrown after the request has been sent for asynchronous handling and when a response is not available.
+        /// </exception>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
@@ -46,17 +53,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             if (activity.Instance.AsyncRequestId != null)
             {
                 var response = await TryGetResponseAsync(request, activity, cancellationToken);
-                if (response != null) return response;
+                if (response != null)
+                {
+                    Log.LogInformation($"Activity {ToLogString(activity)} received a response"+
+                                       $" on request {request.ToLogString()}");
+                    return response;
+                }
+                Log.LogVerbose($"Activity {ToLogString(activity)} polled for a response" +
+                               $" to request {request.ToLogString()}");
                 throw new RequestPostponedException(activity.Instance.AsyncRequestId);
             }
 
             // Send the request to AM
             var asyncRequest = await new HttpRequestCreate().FromAsync(request, activity.Options.AsyncRequestPriority, cancellationToken);
             var requestId = await _asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
+            Log.LogInformation($"Activity {ToLogString(activity)} received a response" +
+                               $" on request {request.ToLogString()}");
 
             // Remember the request id and postpone the activity.
             throw new RequestPostponedException(requestId);
         }
+
+        private string ToLogString(Activity activity) =>
+            $"{activity} in workflow instance {WorkflowStatic.Context.WorkflowInstanceId}";
 
         private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, Activity activity, CancellationToken cancellationToken)
         {
