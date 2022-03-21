@@ -9,8 +9,8 @@
   <!-- Nugets for the test framework -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.2.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.4" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.3.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.5-alfa01" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
   </ItemGroup>

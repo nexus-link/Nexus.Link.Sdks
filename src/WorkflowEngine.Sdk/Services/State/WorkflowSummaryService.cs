@@ -43,8 +43,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
             var version = await _configurationTables.WorkflowVersion.ReadAsync(instance.WorkflowVersionId, cancellationToken);
             FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
+            FulcrumAssert.AreEqual(version.Id, instance.WorkflowVersionId, CodeLocation.AsString());
             var form = await _configurationTables.WorkflowForm.ReadAsync(version.WorkflowFormId, cancellationToken);
             FulcrumAssert.IsNotNull(form, CodeLocation.AsString());
+            FulcrumAssert.AreEqual(form.Id, version.WorkflowFormId, CodeLocation.AsString());
 
             return await GetSummaryAsync(form, version, instance, cancellationToken);
         }
@@ -71,6 +73,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             // Instance
             var instanceIdAsGuid = instanceId.ToGuid();
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(instanceIdAsGuid, cancellationToken);
+            if (instance != null)
+            {
+                FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
+                FulcrumAssert.AreEqual(version!.Id, instance.WorkflowVersionId, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(form, CodeLocation.AsString());
+                FulcrumAssert.AreEqual(form!.Id, version.WorkflowFormId, CodeLocation.AsString());
+            }
 
             return await GetSummaryAsync(form, version, instance, cancellationToken);
         }
@@ -97,6 +106,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 ActivityTree = activityTree
             };
 
+            FulcrumAssert.IsValidated(workflowSummary);
             return workflowSummary;
         }
 
