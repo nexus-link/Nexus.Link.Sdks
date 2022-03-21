@@ -45,6 +45,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.1 Bump
       2.0.0 Changed from MSTest to XUnit
       1.1.1 Bump
       1.1.0 Added tests for IWorkflowSemaphoreService
