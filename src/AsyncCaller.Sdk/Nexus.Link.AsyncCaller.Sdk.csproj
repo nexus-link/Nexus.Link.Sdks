@@ -30,7 +30,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.0.9</Version>
+    <Version>3.0.10-rk-beta-01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -40,6 +40,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.0.10 RequestHandler updates related to HttpStatusCode 423 (Locked)
       3.0.9 Bump
       3.0.4 Fix: Catch exception if could not access Azure queue
       3.0.3 Symbols
