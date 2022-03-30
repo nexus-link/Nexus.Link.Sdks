@@ -26,10 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.16.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.17.0-alpha-01" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.25.0-alpha-01" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.3.0" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.1.6" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.0" />
