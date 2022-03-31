@@ -60,6 +60,10 @@ namespace Nexus.Link.Authentication.Sdk
         }
 
         protected AuthenticationManager(string type, Tenant tenant, string serviceBaseUrl, string path)
+        : this(type, tenant, serviceBaseUrl, path, false)
+        { }
+
+        protected AuthenticationManager(string type, Tenant tenant, string serviceBaseUrl, string path, bool resetCache)
         {
             InternalContract.RequireNotNullOrWhiteSpace(type, nameof(type));
             InternalContract.RequireNotNull(tenant, nameof(tenant));
@@ -71,7 +75,7 @@ namespace Nexus.Link.Authentication.Sdk
             _type = type;
             Tenant = tenant;
             var cacheKey = path;
-            if (!TokenCaches.TryGetValue(cacheKey, out _tokenCache))
+            if (!TokenCaches.TryGetValue(cacheKey, out _tokenCache) || resetCache)
             {
                 _tokenCache = new TokenCache();
                 TokenCaches[cacheKey] = _tokenCache;

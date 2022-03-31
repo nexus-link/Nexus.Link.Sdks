@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.0.3" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.1.0-alpha04-mw" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.16.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.3" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="2.24.7" />
@@ -45,7 +45,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>3.0.2</Version>
+    <Version>3.1.0-alpha06-mw</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -55,19 +55,20 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.0.2 Bump
-      3.0.0 New breaking contract
-      2.0.1 Bump
-      2.0.0 Contracts in new repo
-      1.4.2 Bump
-      1.4.0 Added extensions
-      1.3.1 Bump
-      1.3.0 Moved AspNet code to separate library
-      1.2.0 IExecutionService, IExecutionResponseService; don't use Tenant in rest clients
-      1.1.1 Support for setting up rest clients with your own tenant
-      1.1.0 Refactored AsyncRequestClient. Now accepts RequestPostponedException.
-      1.0.2 First release
-	</PackageReleaseNotes>
+			3.1.0 UpdateRequestAuthenticationAsync
+			3.0.2 Bump
+			3.0.0 New breaking contract
+			2.0.1 Bump
+			2.0.0 Contracts in new repo
+			1.4.2 Bump
+			1.4.0 Added extensions
+			1.3.1 Bump
+			1.3.0 Moved AspNet code to separate library
+			1.2.0 IExecutionService, IExecutionResponseService; don't use Tenant in rest clients
+			1.1.1 Support for setting up rest clients with your own tenant
+			1.1.0 Refactored AsyncRequestClient. Now accepts RequestPostponedException.
+			1.0.2 First release
+		</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 </Project>

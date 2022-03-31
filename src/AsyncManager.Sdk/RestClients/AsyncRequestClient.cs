@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
@@ -65,6 +66,14 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
             }
 
             return _capability.Request.CreateAsync(implementation, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
+
+            return _capability.Request.RetryRequestWithNewAuthenticationAsync(requestId, input, cancellationToken);
         }
 
         /// <summary>
