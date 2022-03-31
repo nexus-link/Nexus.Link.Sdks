@@ -56,6 +56,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
 			3.1.0 UpdateRequestAuthenticationAsync
+			3.0.3 Corrected the URL path for the REST client for IRequestService.RetryAsync
 			3.0.2 Bump
 			3.0.0 New breaking contract
 			2.0.1 Bump
