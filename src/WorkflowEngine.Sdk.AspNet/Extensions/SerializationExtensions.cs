@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.AspNet.Serialization;
 using Nexus.Link.Libraries.Web.Serialization;
 using HttpRequest = Microsoft.AspNetCore.Http.HttpRequest;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Extensions
 {
+    /// <summary>
+    /// Extensions for serializing Http stuff.
+    /// </summary>
     public static class SerializationExtensions
     {
         /// <summary>
