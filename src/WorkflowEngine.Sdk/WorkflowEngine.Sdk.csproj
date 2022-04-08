@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.7.0</Version>
+    <Version>5.7.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,7 +65,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      5.7.0 Added the Sleep activity.
+      5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
+      5.7.0 Added the Sleep activity
       5.6.0 IActivity now has WorkflowStartedAt and ActivityStartedAt properties
       5.5.10 Bump
       5.5.6 Now validates WorkflowSummary before returning it

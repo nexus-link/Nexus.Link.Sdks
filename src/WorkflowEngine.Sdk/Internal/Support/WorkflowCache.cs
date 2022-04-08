@@ -51,6 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         private readonly CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string> _workflowInstanceCache;
 
         private readonly Dictionary<string, Activity> _activities = new();
+        internal ICollection<string> ActivitiesToPurge = new List<string>();
 
         public WorkflowCache(WorkflowInformation workflowInformation)
         {

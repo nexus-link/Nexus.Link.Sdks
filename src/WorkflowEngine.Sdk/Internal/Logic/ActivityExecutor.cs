@@ -104,7 +104,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             finally
             {
                 await Activity.LogInformationAsync($"End activity execution", Activity.Instance, cancellationToken);
-                await Activity.PurgeLogsAsync(cancellationToken);
+                Activity.PrepareForLogPurge(cancellationToken);
             }
         }
 

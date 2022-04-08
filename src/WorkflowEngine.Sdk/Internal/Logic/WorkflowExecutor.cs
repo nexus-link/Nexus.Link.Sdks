@@ -187,6 +187,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             if (!purge) return;
+            foreach (var activityInstanceId in WorkflowCache.ActivitiesToPurge)
+            {
+                var activity = WorkflowCache.GetActivity(activityInstanceId);
+                await activity.PurgeLogsAsync(cancellationToken);
+            }
             await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
