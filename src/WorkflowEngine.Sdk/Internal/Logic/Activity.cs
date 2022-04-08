@@ -31,6 +31,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public string WorkflowInstanceId => WorkflowInformation.InstanceId;
 
         /// <inheritdoc />
+        public DateTimeOffset WorkflowStartedAt => WorkflowCache.Instance.StartedAt;
+
+        /// <inheritdoc />
         public string ActivityInstanceId { get; internal set; }
 
         public string ActivityFormId => Form.Id;
@@ -45,6 +48,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 return $"{NestedPositionAndTitle} [{iterations}]";
             }
         }
+
+        /// <inheritdoc />
+        public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
 
         /// <inheritdoc />
         public int? Iteration { get; set; }

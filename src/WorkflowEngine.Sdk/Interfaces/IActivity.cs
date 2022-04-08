@@ -37,6 +37,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string WorkflowInstanceId { get; }
 
         /// <summary>
+        /// The date and time when the workflow started
+        /// </summary>
+        DateTimeOffset WorkflowStartedAt { get; }
+
+        /// <summary>
         /// The instance id of the activity
         /// </summary>
         string ActivityInstanceId { get; }
@@ -51,6 +56,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// 
         string ActivityTitle { get; }
+
+        /// <summary>
+        /// The date and time when the activity started
+        /// </summary>
+        DateTimeOffset ActivityStartedAt { get; }
 
         /// <summary>
         /// If the activity is part of a loop, this is the iteration count for that loop
