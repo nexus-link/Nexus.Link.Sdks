@@ -55,7 +55,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-			3.1.0 UpdateRequestAuthenticationAsync
+      3.1.1 Changed URL path to /Retry instead of /Ready
+      3.1.0 UpdateRequestAuthenticationAsync
 			3.0.3 Corrected the URL path for the REST client for IRequestService.RetryAsync
 			3.0.2 Bump
 			3.0.0 New breaking contract

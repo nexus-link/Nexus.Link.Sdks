@@ -35,7 +35,7 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
-            var relativeUrl = $"{WebUtility.UrlEncode(requestId)}/Ready";
+            var relativeUrl = $"{WebUtility.UrlEncode(requestId)}/Retry";
             return PostNoResponseContentAsync(relativeUrl, null, cancellationToken);
         }
 
