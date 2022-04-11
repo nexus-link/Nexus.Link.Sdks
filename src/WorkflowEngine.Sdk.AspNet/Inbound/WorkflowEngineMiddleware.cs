@@ -10,7 +10,6 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.AspNet.Serialization;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.WorkflowEngine.Sdk.AspNet.Extensions;
@@ -21,6 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
     /// This middleware is a collection of all the middleware features that are provided by Nexus Link. Use <see name="INexusLinkMiddlewareOptions"/>
     /// to specify exactly how they should behave.
     /// </summary>
+    [Obsolete("Please use AsyncManagerMiddleware. Obsolete since 2022-04-07.")]
     public class WorkflowEngineMiddleware
     {
         protected readonly RequestDelegate Next;
@@ -142,6 +142,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
     /// <summary>
     /// Convenience class for middleware
     /// </summary>
+    [Obsolete("Please use AsyncManagerMiddlewareExtension. Obsolete since 2022-04-07.")]
     public static class WorkflowEngineMiddlewareExtension
     {
         /// <summary>
@@ -150,6 +151,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
         /// </summary>
         /// <param name="builder">"this"</param>
         /// <param name="options">Options that controls which features to use and how they should behave.</param>
+        [Obsolete("Please use UseAsyncManagerMiddleware. Obsolete since 2022-04-07.")]
         public static IApplicationBuilder UseWorkflowEngineMiddleware(this IApplicationBuilder builder, IOptions<WorkflowEngineMiddlewareOptions> options)
         {
             return builder.UseMiddleware<WorkflowEngineMiddleware>(options);
@@ -161,6 +163,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
         /// </summary>
         /// <param name="builder">"this"</param>
         /// <param name="options">Options that controls which features to use and how they should behave.</param>
+        [Obsolete("Please use UseAsyncManagerMiddleware. Obsolete since 2022-04-07.")]
         public static IApplicationBuilder UseWorkflowEngineMiddleware(this IApplicationBuilder builder, WorkflowEngineMiddlewareOptions options)
         {
             return builder.UseMiddleware<WorkflowEngineMiddleware>(options);

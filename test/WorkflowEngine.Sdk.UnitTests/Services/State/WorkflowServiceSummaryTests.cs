@@ -1,14 +1,13 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Shouldly;
+using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.State
 {
     public class WorkflowServiceSummaryTests : WorkflowServiceTestsBases
     {
-        [TestMethod]
+        [Fact]
         public async Task The_Convenience_Workflow_Contains_All_Information_And_Hierarchy()
         {
             // Arrange

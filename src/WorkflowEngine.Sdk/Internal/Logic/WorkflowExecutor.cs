@@ -228,7 +228,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             if (exception is not ExceptionTransporter exceptionTransporter)
             {
                 await UnexpectedExceptionAsync(exception);
-                return new RequestPostponedException();
+                return new RequestPostponedException
+                {
+                    ReentryAuthentication = WorkflowCache.Instance.ReentryAuthentication
+                };
             }
 
             var innerException = exceptionTransporter.InnerException;
@@ -244,18 +247,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     {
                         FriendlyMessage = wfe.FriendlyMessage
                     };
-                case RequestPostponedException:
-                    return innerException;
+                case RequestPostponedException requestPostponedException:
+                    requestPostponedException.ReentryAuthentication = WorkflowCache.Instance.ReentryAuthentication;
+                    return requestPostponedException;
                 case WorkflowFastForwardBreakException:
                     return innerException;
                 case FulcrumTryAgainException:
                     return new RequestPostponedException
                     {
-                        TryAgain = true
+                        TryAgain = true,
+                        ReentryAuthentication = WorkflowCache.Instance.ReentryAuthentication
                     };
                 default:
                     await UnexpectedExceptionAsync(innerException);
-                    return new RequestPostponedException();
+                    return new RequestPostponedException
+                    {
+                        ReentryAuthentication = WorkflowCache.Instance.ReentryAuthentication
+                    };
             }
 
             async Task UnexpectedExceptionAsync(Exception unexpected)

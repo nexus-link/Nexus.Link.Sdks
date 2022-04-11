@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.16.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.17.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +35,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.UnitTest</PackageId>
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -45,7 +45,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.2.2 Bump
+      1.2.3 Bump
       1.2.1 Renamed SetBreakCondition to BreakBeforeActivity
       1.2.0 Added WorkflowSemaphore
       1.1.1 Bump

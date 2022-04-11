@@ -186,7 +186,15 @@ namespace Nexus.Link.Authentication.Sdk
             InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
-            return Validation.ValidateToken(token, publicKey, issuer);
+            return ValidateToken(token, publicKey, issuer, false);
+        }
+
+        public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer, bool ignoreExpiration)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
+
+            return Validation.ValidateToken(token, publicKey, issuer, ignoreExpiration);
         }
 
         /// <summary>

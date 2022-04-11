@@ -16,17 +16,25 @@ namespace Nexus.Link.Authentication.Sdk.Logic
 
         public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer)
         {
+            return ValidateToken(token, publicKey, issuer, false);
+        }
+
+        public static ClaimsPrincipal ValidateToken(string token, RsaSecurityKey publicKey, string issuer, bool ignoreExpiration)
+        {
             try
             {
+                var validateLifetime = !ignoreExpiration;
                 var securityTokenHandler = new JwtSecurityTokenHandler();
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = publicKey,
-                    ValidIssuer = issuer
+                    ValidIssuer = issuer,
+                    ValidateLifetime = validateLifetime
                 };
-                return securityTokenHandler.ValidateToken(token, validationParameters, out _);
+                var claimsPrincipal = securityTokenHandler.ValidateToken(token, validationParameters, out var securityToken);
+                return claimsPrincipal;
             }
             catch (Exception e) when (e is SecurityTokenException || e is ArgumentException)
             {
@@ -45,6 +53,5 @@ namespace Nexus.Link.Authentication.Sdk.Logic
             var claim = principal.Identities.First().Claims.FirstOrDefault(c => c.Type == type);
             return claim?.Value;
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 #if NETCOREAPP
 using Microsoft.AspNetCore.Authorization;
 #else
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using Nexus.Link.Libraries.Core.Logging;
 #endif
 
 namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Attributes

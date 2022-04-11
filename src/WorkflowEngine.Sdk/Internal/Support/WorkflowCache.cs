@@ -108,6 +108,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                         InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
                         Title = _workflowInformation.InstanceTitle,
                         State = WorkflowStateEnum.Executing,
+                        ReentryAuthentication = Guid.NewGuid().ToGuidString()
                     };
                 }
                 return _summary;

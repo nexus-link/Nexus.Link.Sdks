@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
 
 namespace IdentityAccessManagement.Sdk.Authorization

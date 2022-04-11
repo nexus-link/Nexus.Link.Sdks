@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 using Nexus.Link.KeyTranslator.Sdk.Models;
 using Nexus.Link.KeyTranslator.Sdk.RestClients.Base;
 using Nexus.Link.Libraries.Core.Assert;

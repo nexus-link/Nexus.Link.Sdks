@@ -3,9 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -14,7 +12,6 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
@@ -22,6 +19,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
+using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
 {
@@ -56,7 +54,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
                 _workflowCache, "Form title", "0D759290-9F93-4B3A-8333-76019DE227CF", 1);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Execute_Given_MethodReturns_Gives_Success()
         {
             // Arrange
@@ -80,7 +78,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.FinishedAt.Value.ShouldBeInRange(minTime, maxTime);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_Postponed()
         {
             // Arrange
@@ -109,7 +107,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Execute_Given_MethodThrowsAndStopping_Gives_AlertHandlerCalled()
         {
             // Arrange
@@ -171,7 +169,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.ExceptionTechnicalMessage.ShouldNotBeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Execute_Given_MethodThrowsRequestPostponed_Gives_RequestIdSet()
         {
             // Arrange
@@ -191,7 +189,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             instance.AsyncRequestId.ShouldBe(expectedRequestId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Execute_Given_FulcrumTryAgainException_Gives_PostponeTryAgain()
         {
             // Arrange

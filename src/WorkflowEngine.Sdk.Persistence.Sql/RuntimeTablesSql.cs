@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Nexus.Link.Contracts.Misc.Sdk.Authentication;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.SqlServer;
@@ -26,6 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             Log = new LogTableSql(options);
             WorkflowSemaphore = new WorkflowSemaphoreTableSql(options);
             WorkflowSemaphoreQueue = new WorkflowSemaphoreQueueTableSql(options);
+            Hash = new HashTableSql(options);
         }
 
         /// <inheritdoc />
@@ -42,6 +44,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 
         /// <inheritdoc />
         public IWorkflowSemaphoreQueueTable WorkflowSemaphoreQueue { get; }
+
+        /// <inheritdoc />
+        public IHashTable Hash { get; }
 
         /// <inheritdoc />
         public async Task DeleteAllAsync()
