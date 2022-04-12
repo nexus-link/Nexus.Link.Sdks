@@ -1,13 +1,9 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.AsyncManager.Sdk.RestClients
@@ -39,7 +35,7 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
-            var relativeUrl = $"Requests/{WebUtility.UrlEncode(requestId)}/Ready";
+            var relativeUrl = $"{WebUtility.UrlEncode(requestId)}/Retry";
             return PostNoResponseContentAsync(relativeUrl, null, cancellationToken);
         }
 
@@ -48,9 +44,20 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         {
             return new RequestResponseEndpoints
             {
-                PollingUrl = $"/Requests/{WebUtility.UrlEncode(requestId)}/Response",
+                PollingUrl = $"{WebUtility.UrlEncode(requestId)}/Response",
                 RegisterCallbackUrl = null
             };
+        }
+
+        /// <inheritdoc />
+        public Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
+            InternalContract.RequireNotNull(input, nameof(input));
+            InternalContract.RequireValidated(input, nameof(input));
+
+            var relativeUrl = $"{WebUtility.UrlEncode(requestId)}/Authentication";
+            return PostNoResponseContentAsync(relativeUrl, input, cancellationToken: cancellationToken);
         }
     }
 }

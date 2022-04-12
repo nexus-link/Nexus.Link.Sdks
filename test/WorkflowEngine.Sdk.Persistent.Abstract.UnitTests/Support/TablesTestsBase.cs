@@ -1,5 +1,4 @@
 using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.ConfigurationTablesTests;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
 {

@@ -3,9 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json;
 using Nexus.Link.AsyncManager.Sdk.RestClients;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
@@ -14,6 +12,7 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 using Shouldly;
+using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
 {
@@ -35,11 +34,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
                         It.IsAny<CancellationToken>()))
                     .ReturnsAsync((HttpMethod method, string relativeUrl,
                         Dictionary<string, List<string>> customHeaders,
-                        CancellationToken cancellationToken) =>
-                    {
-                        
-                        return new HttpResponseMessage(HttpStatusCode.OK);
-                    });
+                        CancellationToken cancellationToken) => new HttpResponseMessage(HttpStatusCode.OK));
+                _httpSenderMock.Setup(sender => sender.CreateHttpSender(It.IsAny<string>()))
+                    .Returns(_httpSenderMock.Object);
                 return _httpSenderMock.Object;
             }
         }
@@ -56,7 +53,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task The_Convenience_Workflow_Contains_All_Information_And_Hierarchy()
         {
             // Arrange
@@ -79,7 +76,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
             workflow.Activities[0].Children[0].Children[0].Position.ShouldBe("1.1.1");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Cancelling_A_Workflow_Sets_CancelledAt()
         {
             // Arrange

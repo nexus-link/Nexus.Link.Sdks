@@ -18,12 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.25.0-alpha-01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.DatasyncEngine.Sdk</PackageId>
-    <Version>2.0.6</Version>
+    <Version>2.0.7</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -33,7 +33,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.6 Bump
+      2.0.7 Bump
       2.0.2 Symbols
       2.0.1 Added CancellationToken where missing.
       1.0.2 First release

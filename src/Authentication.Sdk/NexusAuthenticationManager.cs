@@ -19,7 +19,11 @@ namespace Nexus.Link.Authentication.Sdk
         {
         }
 
-        public NexusAuthenticationManager(Tenant tenant, string serviceBaseUrl) : base("Nexus", tenant, serviceBaseUrl, $"api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/")
+        public NexusAuthenticationManager(Tenant tenant, string serviceBaseUrl) : this(tenant, serviceBaseUrl, false)
+        {
+        }
+
+        public NexusAuthenticationManager(Tenant tenant, string serviceBaseUrl, bool resetCache) : base("Nexus", tenant, serviceBaseUrl, $"api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/", resetCache)
         {
         }
 

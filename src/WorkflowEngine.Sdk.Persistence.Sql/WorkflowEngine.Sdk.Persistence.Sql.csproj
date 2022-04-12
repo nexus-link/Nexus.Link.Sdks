@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.15.1" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.15.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.8.0</Version>
+    <Version>1.9.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,6 +57,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.9.0 Added HashTable
+      1.8.1 Bump
       1.8.0 Added WorkflowSemaphore
       1.7.8 Changed Has*Trigger to *CanUseOutput
       1.7.4 Removed obsolete tables, corrections due to new test cases
@@ -114,6 +116,8 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch07_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch08 - triggers.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch08_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch09 - HashRecord.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch09_rollback.sql" />
   </ItemGroup>
 
 </Project>

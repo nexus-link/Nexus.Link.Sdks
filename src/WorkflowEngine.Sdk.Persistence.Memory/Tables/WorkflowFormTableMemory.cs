@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;

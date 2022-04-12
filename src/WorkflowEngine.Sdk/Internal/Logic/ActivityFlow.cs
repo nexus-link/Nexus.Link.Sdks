@@ -111,7 +111,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             return new ActivityAction(this);
         }
-        
+
+        /// <inheritdoc />
+        public IActivitySleep Sleep()
+        {
+            return new ActivitySleep(this);
+        }
+
         /// <inheritdoc/>
         public IActivityLoopUntilTrue LoopUntil()
         {

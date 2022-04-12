@@ -18,13 +18,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.17.0-alpha-01" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.4" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Contracts</PackageId>
-    <Version>3.4.10</Version>
+    <Version>3.4.11</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.4.10 Bump
+      3.4.11 Bump
       3.4.4 Symbols
       3.4.3 Bump
       3.4.0 Support for Value Translator Concept service

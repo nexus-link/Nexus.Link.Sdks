@@ -8,8 +8,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 #if NETCOREAPP
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Nexus.Link.Contracts.Misc.AspNet.Sdk;
 #else
 
 #endif
@@ -23,14 +24,28 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
 #if NETCOREAPP
         public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey)
-            : base(next, AuthenticationManager.AuthServiceIssuer)
+            : base(next, AuthenticationManager.AuthServiceIssuer, null)
         {
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
             _publicKey = publicKey;
             FulcrumAssert.IsNotNull(_publicKey);
         }
         public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString)
-            : base(next, AuthenticationManager.AuthServiceIssuer)
+            : base(next, AuthenticationManager.AuthServiceIssuer, null)
+        {
+            InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
+            _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);
+            FulcrumAssert.IsNotNull(_publicKey);
+        }
+        public TokenValidationHandler(RequestDelegate next, RsaSecurityKey publicKey, IReentryAuthenticationService reentryAuthenticationService)
+            : base(next, AuthenticationManager.AuthServiceIssuer, reentryAuthenticationService)
+        {
+            InternalContract.RequireNotNull(publicKey, nameof(publicKey));
+            _publicKey = publicKey;
+            FulcrumAssert.IsNotNull(_publicKey);
+        }
+        public TokenValidationHandler(RequestDelegate next, string publicKeyAsXmlString, IReentryAuthenticationService reentryAuthenticationService)
+            : base(next, AuthenticationManager.AuthServiceIssuer, reentryAuthenticationService)
         {
             InternalContract.RequireNotNull(publicKeyAsXmlString, nameof(publicKeyAsXmlString));
             _publicKey = AuthenticationManager.CreateRsaSecurityKeyFromXmlString(publicKeyAsXmlString);

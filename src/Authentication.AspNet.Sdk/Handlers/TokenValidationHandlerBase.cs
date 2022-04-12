@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -10,11 +9,14 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
-using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
 using AuthenticationManager = Nexus.Link.Authentication.Sdk.AuthenticationManager;
 using Microsoft.IdentityModel.Tokens;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Web.AspNet.Pipe.Inbound;
+
 #if NETCOREAPP
+using Nexus.Link.Libraries.Web.AspNet.Logging;
+using Nexus.Link.Contracts.Misc.AspNet.Sdk;
 using Microsoft.AspNetCore.Http;
 #else
 using System.Net.Http;
@@ -28,10 +30,12 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         protected string Issuer;
 
 #if NETCOREAPP
-        protected TokenValidationHandlerBase(RequestDelegate next, string issuer) : base(next)
+        private readonly IReentryAuthenticationService _reentryAuthenticationService;
+        protected TokenValidationHandlerBase(RequestDelegate next, string issuer, IReentryAuthenticationService reentryAuthenticationService) : base(next)
         {
             InternalContract.RequireNotNullOrWhiteSpace(issuer, nameof(issuer));
             Issuer = issuer;
+            _reentryAuthenticationService = reentryAuthenticationService;
         }
 #else
         protected TokenValidationHandlerBase(string issuer)
@@ -44,7 +48,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         protected override async Task InvokeAsync(CompabilityInvocationContext context, CancellationToken cancellationToken)
         {
-            var token = GetToken(context);
+            var token = RequestHelper.GetAuthorizationBearerTokenOrApiKey(context);
             if (token != null)
             {
                 var tenant = FulcrumApplication.Context.ClientTenant ?? FulcrumApplication.Setup.Tenant;
@@ -61,7 +65,12 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
                     throw new FulcrumUnauthorizedException("See log for more information");
                 }
 
-                VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context);
+#if NETCOREAPP
+                var ignoreExpiration = await ShouldWeIgnoreExpirationAsync(tenant, context.Context, cancellationToken);
+#else
+                var ignoreExpiration = false;
+#endif
+                VerifyTokenAndSetClaimsPrincipal(token, publicKey, tenant, context, ignoreExpiration);
             }
             else
             {
@@ -71,7 +80,7 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             // Plan B: At least set the calling client name to the calling user agent
             if (FulcrumApplication.Context.CallingClientName == null)
             {
-                FulcrumApplication.Context.CallingClientName = GetRequestUserAgent(context);
+                FulcrumApplication.Context.CallingClientName = RequestHelper.GetRequestUserAgent(context);
             }
 
             await CallNextDelegateAsync(context, cancellationToken);
@@ -95,30 +104,45 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
 
         protected abstract bool ClaimHasCorrectTenant(ClaimsPrincipal principal, Tenant tenant);
 
-        private void VerifyTokenAndSetClaimsPrincipal(string token, RsaSecurityKey publicKey, Tenant tenant, CompabilityInvocationContext context)
+#if NETCOREAPP
+
+        private bool _hasWarnedAboutMissingReentryTokenService;
+        private async Task<bool> ShouldWeIgnoreExpirationAsync(Tenant tenant,
+            HttpContext context, CancellationToken cancellationToken)
         {
-            InternalContract.RequireNotNull(token, nameof(token));
+            InternalContract.RequireNotNull(tenant, nameof(tenant));
+            InternalContract.RequireNotNull(context, nameof(context));
+
+            if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ReentryAuthentication)) return false;
+            if (_reentryAuthenticationService != null)
+            {
+                return await _reentryAuthenticationService.ValidateAsync(FulcrumApplication.Context.ReentryAuthentication, context, cancellationToken);
+            }
+
+            var request = context.Request;
+            var message = $"The request {request.ToLogString()} for tenant {tenant.ToLogString()} had a" +
+                          $" {nameof(FulcrumApplication.Context.ReentryAuthentication)}, but no {nameof(IReentryAuthenticationService)}" +
+                          $" was configured for the {nameof(TokenValidationHandler)}.";
+            var severityLevel = LogSeverityLevel.Verbose;
+            if (!_hasWarnedAboutMissingReentryTokenService)
+            {
+                severityLevel = LogSeverityLevel.Warning;
+                _hasWarnedAboutMissingReentryTokenService = true;
+            }
+
+            Log.LogOnLevel(severityLevel, message);
+            return await Task.FromResult(false);
+        }
+#endif
+
+        private void VerifyTokenAndSetClaimsPrincipal(string token, RsaSecurityKey publicKey, Tenant tenant, CompabilityInvocationContext context, bool ignoreExpiration = false)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(token, nameof(token));
+            InternalContract.RequireNotNull(tenant, nameof(tenant));
+            InternalContract.RequireNotNull(context, nameof(context));
             InternalContract.RequireNotNull(publicKey, nameof(publicKey));
 
-            ClaimsPrincipal claimsPrincipal = null;
-            try
-            {
-                claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer);
-            }
-            catch (Exception e1)
-            {
-                Log.LogVerbose($"Failed to validate token with issuer {Issuer}. Error message: {e1.Message}");
-
-                // For a while, support legacy tokens as well
-                try
-                {
-                    claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
-                }
-                catch (Exception e2)
-                {
-                    Log.LogVerbose($"Failed to validate token with legacy issuer {AuthenticationManager.LegacyIssuer}. Error message: {e2.Message}");
-                }
-            }
+            var claimsPrincipal = TryGetClaimsPrincipal(token, publicKey, ignoreExpiration);
             if (claimsPrincipal == null)
             {
                 Log.LogInformation($"Invalid token: {token}. Issuer: {Issuer}.");
@@ -129,6 +153,32 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
             if (ClaimHasCorrectTenant(claimsPrincipal, tenant))
             {
                 SetClaimsPrincipal(claimsPrincipal, context);
+            }
+        }
+
+        private ClaimsPrincipal TryGetClaimsPrincipal(string token, RsaSecurityKey publicKey, bool ignoreExpiration = false)
+        {
+            try
+            {
+                var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, Issuer, ignoreExpiration);
+                return claimsPrincipal;
+            }
+            catch (Exception e1)
+            {
+                Log.LogVerbose($"Failed to validate token with issuer {Issuer}. Error message: {e1.Message}");
+
+                // For a while, support legacy tokens as well
+                try
+                {
+                    var claimsPrincipal = AuthenticationManager.ValidateToken(token, publicKey, AuthenticationManager.LegacyIssuer);
+                    return claimsPrincipal;
+                }
+                catch (Exception e2)
+                {
+                    Log.LogVerbose(
+                        $"Failed to validate token with legacy issuer {AuthenticationManager.LegacyIssuer}. Error message: {e2.Message}");
+                    return null;
+                }
             }
         }
 
@@ -149,57 +199,5 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Handlers
         }
 
         protected abstract Task<RsaSecurityKey> GetPublicKeyAsync(Tenant tenant, CancellationToken cancellationToken = default);
-
-        private static string GetRequestUserAgent(CompabilityInvocationContext context)
-        {
-            return GetRequestHeaderValues("User-Agent", context)?.FirstOrDefault();
-        }
-
-        // Reads the token from the authorization header on the inbound request
-        private static string GetToken(CompabilityInvocationContext context)
-        {
-            string token;
-
-            var headerValue = GetRequestHeaderValues("Authorization", context)?.FirstOrDefault();
-            if (headerValue != null)
-            {
-                // Verify Authorization header contains 'Bearer' scheme
-                token = headerValue.ToLowerInvariant().StartsWith("bearer ") ? headerValue.Split(' ')[1] : null;
-                if (token != null) return token;
-            }
-
-            token = GetRequestQueryValues("api_key", context)?.FirstOrDefault();
-            return token;
-        }
-
-        private static IEnumerable<string> GetRequestHeaderValues(string headerName,
-            CompabilityInvocationContext context)
-        {
-#if NETCOREAPP
-            var request = context?.Context?.Request;
-            if (request == null) return null;
-            if (!request.Headers.TryGetValue(headerName, out var headerValues)) return null;
-            return headerValues;
-#else
-            var request = context?.RequestMessage;
-            if (request == null) return null;
-
-            return !request.Headers.Contains(headerName) ? null : request.Headers.GetValues(headerName);
-#endif
-        }
-
-        private static IEnumerable<string> GetRequestQueryValues(string name, CompabilityInvocationContext context)
-        {
-#if NETCOREAPP
-            var request = context?.Context?.Request;
-            if (request == null) return null;
-            if (!request.Query.TryGetValue(name, out var values)) return null;
-            return values;
-#else
-            var request = context?.RequestMessage;
-            return request?.GetQueryNameValuePairs().Where(x => x.Key == name).Select(x => x.Value);
-#endif
-        }
-
     }
 }

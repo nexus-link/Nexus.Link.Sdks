@@ -13,14 +13,14 @@ trigger:
     - dev
   paths:
     include:
-    - 'src/AsyncManager.Sdk.AspNet/*'
+    - 'src/Misc.AspNet.Sdk/*'
 
 jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
-    jobName: 'AsyncManager_Sdk_AspNet'
+    jobName: 'Misc_AspNet_Sdk'
     testProjectsPath: ''
-    nugetProjectsPath: 'src/AsyncManager.Sdk.AspNet/*.csproj'
+    nugetProjectsPath: 'src/Misc.AspNet.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
     publishVstsFeed: 'Nexus Libs/nexus-nugets'

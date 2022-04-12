@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support

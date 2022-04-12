@@ -41,5 +41,15 @@ namespace Nexus.Link.AsyncManager.Sdk
         /// <param name="cancellationToken">Token for cancelling a call</param>
         /// <returns>The request id for the posted request.</returns>
         Task<string> SendRequestAsync(IAsyncHttpRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the authentication of a <see cref="HttpRequest"/>,
+        /// typically used by the calling client when receving AM callback with 401 response.
+        /// </summary>
+        /// <param name="requestId">The identification of <see cref="HttpRequest"/></param>
+        /// <param name="input">The new authentication</param>
+        /// <param name="cancellationToken">Token for cancelling a call</param>
+        /// <returns></returns>
+        Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default);
     }
 }

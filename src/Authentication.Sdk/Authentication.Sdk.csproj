@@ -17,10 +17,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.25.0-alpha-01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.17.0-alpha-01" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
@@ -30,7 +33,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>3.3.9</Version>
+      <Version>3.4.0</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -40,8 +43,10 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.3.9 Bump
-        3.3.8 Fix: Use dispose on RSACryptoServiceProvider
+        3.4.0 Support for IHashService
+        3.3.10 Support for reset cache when creating NexusAuthenticationManager
+				3.3.9 Bump
+				3.3.8 Fix: Use dispose on RSACryptoServiceProvider
 				3.3.7 Bump
 				3.3.2 Symbols
 				3.3.1 Added missing CancellationToken for async methods.

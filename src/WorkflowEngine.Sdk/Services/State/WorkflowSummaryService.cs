@@ -9,7 +9,6 @@ using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;

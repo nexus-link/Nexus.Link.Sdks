@@ -1,8 +1,6 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -11,11 +9,13 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
     public class TestWorkflowImplementation : WorkflowImplementation
     {
         protected readonly IWorkflowEngineRequiredCapabilities WorkflowCapabilities;
+        private readonly Func<CancellationToken, Task> _onExecuteAsync;
 
-        public TestWorkflowImplementation(IWorkflowEngineRequiredCapabilities workflowCapabilities)
+        public TestWorkflowImplementation(IWorkflowEngineRequiredCapabilities workflowCapabilities, Func<CancellationToken, Task> onExecuteAsync = null)
         :base(1, 2, new TestWorkflowContainer(workflowCapabilities))
         {
             WorkflowCapabilities = workflowCapabilities;
+            _onExecuteAsync = onExecuteAsync;
         }
 
         /// <inheritdoc />
@@ -30,7 +30,14 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         /// <inheritdoc />
         public override Task ExecuteWorkflowAsync(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (_onExecuteAsync != null)
+            {
+                return _onExecuteAsync(cancellationToken);
+            }
+            else
+            {
+                throw new System.NotImplementedException();
+            }
         }
     }
 }

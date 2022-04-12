@@ -31,6 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
+        /// <inheritdoc />
         public async Task<WorkflowInstance> CreateWithSpecifiedIdAndReturnAsync(string id, WorkflowInstanceCreate item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));

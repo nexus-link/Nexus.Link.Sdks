@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Nexus.Link.Contracts.Misc.Sdk.Authentication;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
@@ -23,6 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
             Log = new LogTableMemory();
             WorkflowSemaphore = new WorkflowSemaphoreTableMemory();
             WorkflowSemaphoreQueue = new WorkflowSemaphoreQueueTableMemory();
+            Hash = new HashTableMemory();
         }
 
         /// <inheritdoc />
@@ -39,6 +41,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
 
         /// <inheritdoc />
         public IWorkflowSemaphoreQueueTable WorkflowSemaphoreQueue { get; }
+
+        /// <inheritdoc />
+        public IHashTable Hash { get; }
 
         /// <summary>
         /// Use this for testing purposes to delete all runtime table records.

@@ -8,6 +8,7 @@ using Nexus.Link.Authentication.Sdk.Extensions;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
+
 #if NETCOREAPP
 using Microsoft.AspNetCore.Http;
 #else
@@ -23,7 +24,7 @@ namespace Nexus.Link.Authentication.PlatformService.AspNet.Sdk.Handlers
 
 #if NETCOREAPP
         /// <inheritdoc />
-        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl = null) : base(next, AuthenticationManager.NexusIssuer)
+        public NexusTokenValidationHandler(RequestDelegate next, string fundamentalsServiceBaseUrl = null) : base(next, AuthenticationManager.NexusIssuer, null)
         {
             _fundamentalsServiceBaseUrl = fundamentalsServiceBaseUrl;
         }

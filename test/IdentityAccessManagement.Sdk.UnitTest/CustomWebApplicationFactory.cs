@@ -1,5 +1,4 @@
 using System.IO;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

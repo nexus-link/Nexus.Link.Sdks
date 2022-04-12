@@ -31,6 +31,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public string WorkflowInstanceId => WorkflowInformation.InstanceId;
 
         /// <inheritdoc />
+        public DateTimeOffset WorkflowStartedAt => WorkflowCache.Instance.StartedAt;
+
+        /// <inheritdoc />
         public string ActivityInstanceId { get; internal set; }
 
         public string ActivityFormId => Form.Id;
@@ -45,6 +48,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 return $"{NestedPositionAndTitle} [{iterations}]";
             }
         }
+
+        /// <inheritdoc />
+        public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
 
         /// <inheritdoc />
         public int? Iteration { get; set; }
@@ -189,7 +195,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             await _activityExecutor.ExecuteAsync(method, cancellationToken);
         }
 
-        public async Task PurgeLogsAsync(CancellationToken cancellationToken)
+        public void PrepareForLogPurge(CancellationToken cancellationToken)
         {
             var purge = false;
             switch (Options.LogPurgeStrategy)
@@ -209,8 +215,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             if (!purge) return;
-            await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
+            WorkflowCache.ActivitiesToPurge.Add(ActivityInstanceId);
         }
+
+        public Task PurgeLogsAsync(CancellationToken cancellationToken)
+        {
+            return WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
+        }
+
+
     }
 
     internal abstract class Activity<TResult> : Activity, IActivity<TResult>

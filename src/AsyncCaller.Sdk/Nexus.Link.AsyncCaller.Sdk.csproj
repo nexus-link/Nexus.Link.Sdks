@@ -19,8 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.25.0-alpha-01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.17.0-alpha-01" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
@@ -41,7 +41,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       3.1.0 RequestHandler updates related to HttpStatusCode 423 (Locked)
-      3.0.10 Bump
+      3.0.11 Bump
       3.0.4 Fix: Catch exception if could not access Azure queue
       3.0.3 Symbols
       3.0.2 Added CancellationToken where missing.

@@ -1,4 +1,3 @@
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.ConfigurationTablesTests;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTablesTests;
 using WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support;
 using Xunit;

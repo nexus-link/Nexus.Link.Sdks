@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using Nexus.Link.Contracts.Misc.Sdk.Authentication;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract
@@ -32,5 +32,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract
         /// Service for <see cref="IWorkflowSemaphoreQueueTable"/>.
         /// </summary>
         IWorkflowSemaphoreQueueTable WorkflowSemaphoreQueue { get; }
+
+        /// <summary>
+        /// Service for handling reentry authentication tokens
+        /// </summary>
+        IHashTable Hash { get; }
     }
 }
