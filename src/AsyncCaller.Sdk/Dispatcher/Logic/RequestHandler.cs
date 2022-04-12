@@ -131,7 +131,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
         /// <summary>
         /// Check if response message is considered temporary.
         /// 
-        /// Strategy for resend based on FulcrumError.sRetryMeaningful and otherwise the http status codes. Http status codes that will trigger a resend are 404, 408, 425, 429, 500 and above, except 510 and 526.
+        /// Strategy for resend based on FulcrumError.sRetryMeaningful and otherwise the http status codes. Http status codes that will trigger a resend are 404, 408, 423, 425, 429, 500 and above, except 510 and 526.
         /// </summary>
         /// <param name="responseMessage"></param>
         /// <param name="cancellationToken"></param>
@@ -162,6 +162,9 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
 
             // Handle 408: Request Timeout
             if (statusCode == HttpStatusCode.RequestTimeout) return true;
+
+            // Handle 423: Locked
+            if (statusCode == (HttpStatusCode)423) return true;
 
             // Handle 425: Too Early
             if (statusCode == (HttpStatusCode)425) return true;
