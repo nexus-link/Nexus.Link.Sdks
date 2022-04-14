@@ -11,8 +11,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     public interface IActivitySleep : IActivity
     {
         /// <summary>
-        /// Make the workflow sleep for <paramref name="timeToSleep"/> time span.
+        /// Make the workflow sleep
         /// </summary>
-        Task ExecuteAsync(TimeSpan timeToSleep, CancellationToken cancellationToken = default);
+        Task ExecuteAsync(CancellationToken cancellationToken = default);
     }
 }

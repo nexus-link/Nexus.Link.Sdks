@@ -21,7 +21,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             CustomColumnNames = new List<string>
             {
                 nameof(WorkflowSemaphoreQueueRecord.WorkflowSemaphoreId),
-                nameof(WorkflowSemaphoreQueueRecord.WorkflowInstanceId)
+                nameof(WorkflowSemaphoreQueueRecord.WorkflowInstanceId),
+                nameof(WorkflowSemaphoreQueueRecord.Raised),
+                nameof(WorkflowSemaphoreQueueRecord.ExpiresAt),
+                nameof(WorkflowSemaphoreQueueRecord.ExpirationAfterSeconds)
             },
             OrderBy = new List<string> { nameof(WorkflowSemaphoreQueueRecord.RecordCreatedAt) },
             UpdateCanUseOutput = false

@@ -26,12 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.3" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.5.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="1.2.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.5.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.0.0" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.1" />
   </ItemGroup>
 
@@ -55,7 +55,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>5.7.2</Version>
+    <Version>6.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -65,6 +65,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.0.0 Refactored Semaphores and modified Sleep. Semaphore is not backwards compatible
       5.7.2 Bump
       5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
       5.7.0 Added the Sleep activity

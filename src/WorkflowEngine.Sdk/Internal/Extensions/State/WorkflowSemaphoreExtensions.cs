@@ -1,4 +1,5 @@
-﻿using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+﻿using System;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -15,24 +16,55 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.From((WorkflowSemaphoreUnique) source);
-            target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuid();
-            target.Raised = source.Raised;
-            target.ExpiresAt = source.ExpiresAt;
+
+            ((WorkflowSemaphoreRecordUnique)target).From(source);
+            target.Limit = source.Limit;
             return target;
         }
-
 
         /// <summary>
         /// WorkflowSemaphoreRecordCreate.From(WorkflowSemaphoreCreate)
         /// </summary>
-        public static WorkflowSemaphoreRecordUnique From(this WorkflowSemaphoreRecordUnique target, WorkflowSemaphoreUnique source)
+        public static WorkflowSemaphoreRecordUnique From(this WorkflowSemaphoreRecordUnique target, WorkflowSemaphoreCreate source)
         {
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
             target.WorkflowFormId = source.WorkflowFormId.ToGuid();
             target.ResourceIdentifier = source.ResourceIdentifier;
+            return target;
+        }
+
+        /// <summary>
+        /// WorkflowSemaphoreRecordCreate.From(WorkflowSemaphoreCreate)
+        /// </summary>
+        public static WorkflowSemaphoreQueueRecordCreate From(this WorkflowSemaphoreQueueRecordCreate target, WorkflowSemaphoreRecord semaphore, WorkflowSemaphoreCreate source)
+        {
+            InternalContract.RequireNotNull(target, nameof(target));
+            InternalContract.RequireNotNull(semaphore, nameof(semaphore));
+            InternalContract.RequireValidated(semaphore, nameof(semaphore));
+            InternalContract.RequireNotNull(source, nameof(source));
+            InternalContract.RequireValidated(source, nameof(source));
+
+            ((WorkflowSemaphoreQueueRecordUnique)target).From(semaphore, source);
+            target.Raised = false;
+            target.ExpirationAfterSeconds = source.ExpirationTime.TotalSeconds;
+            target.ExpiresAt = null;
+
+            return target;
+        }
+
+        /// <summary>
+        /// WorkflowSemaphoreRecordCreate.From(WorkflowSemaphoreCreate)
+        /// </summary>
+        public static WorkflowSemaphoreQueueRecordUnique From(this WorkflowSemaphoreQueueRecordUnique target, WorkflowSemaphoreRecord semaphore, WorkflowSemaphoreCreate source)
+        {
+            InternalContract.RequireNotNull(target, nameof(target));
+            InternalContract.RequireNotNull(semaphore, nameof(semaphore));
+            InternalContract.RequireValidated(semaphore, nameof(semaphore));
+
+            target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuid();
+            target.WorkflowSemaphoreId = semaphore.Id;
             return target;
         }
     }

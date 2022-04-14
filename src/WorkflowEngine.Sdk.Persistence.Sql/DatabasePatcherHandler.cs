@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         /// <summary>
         /// Note! Keep this in sync with patch scripts.
         /// </summary>
-        public const int DatabasePatchVersion = 9;
+        public const int DatabasePatchVersion = 10;
 
         private readonly string _connectionString;
         private readonly string _masterConnectionString;

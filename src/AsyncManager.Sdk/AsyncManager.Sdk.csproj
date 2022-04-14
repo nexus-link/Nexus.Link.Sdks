@@ -37,10 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.1.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.1.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.0" />
   </ItemGroup>
 
   <PropertyGroup>

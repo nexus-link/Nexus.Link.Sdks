@@ -7,10 +7,8 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
@@ -18,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     /// <inheritdoc cref="IActivitySemaphore" />
     internal class ActivitySemaphore : Activity, IActivitySemaphore
     {
-        private readonly Dictionary<string, ActivitySemaphore> _raisedActivitySemaphores = new();
+        private static readonly Dictionary<string, ActivitySemaphore> RaisedActivitySemaphores = new();
 
         public string ResourceIdentifier { get; }
         private readonly IWorkflowSemaphoreService _semaphoreService;
@@ -32,49 +30,62 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             : base(ActivityTypeEnum.Semaphore, activityFlow)
         {
             ResourceIdentifier = resourceIdentifier;
+            if (string.IsNullOrWhiteSpace(ResourceIdentifier)) ResourceIdentifier = "";
             _semaphoreService = WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowSemaphore;
         }
 
         /// <inheritdoc />
-        public async Task RaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken = default)
+        public Task RaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken = default)
         {
+            return RaiseWithLimitAsync(1, expiresAfter, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task RaiseWithLimitAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
             if (Instance.HasCompleted && Instance.State == ActivityStateEnum.Success)
             {
-                var raised = Instance.ResultAsJson != null && JsonHelper.SafeDeserializeObject<bool>(Instance.ResultAsJson);
-                if (raised)
+                if (Instance.ResultAsJson == null)
                 {
-                    // Extend the expiration time
-                    await ExtendExpirationAsync(expiresAfter, cancellationToken);
+                    // The workflow has reached the point where the semaphore has been lowered.
+                    return;
+                }
+                var semaphoreHolderId = JsonHelper.SafeDeserializeObject<string>(Instance.ResultAsJson);
+                if (semaphoreHolderId == null)
+                {
+                    // The semaphore has been lowered
+                    return;
+                }
+                await _semaphoreService.ExtendAsync(semaphoreHolderId, null, cancellationToken);
+                lock (RaisedActivitySemaphores)
+                {
+                    RaisedActivitySemaphores[CalculatedKey] = this;
                 }
             }
-            await InternalExecuteAsync((a, ct) => InternalRaiseAsync(expiresAfter, ct), cancellationToken);
-            _raisedActivitySemaphores[CalculatedKey] = this;
+            await InternalExecuteAsync((a, ct) => InternalRaiseAsync(limit, expiresAfter, ct), _ => Task.FromResult((string)null), cancellationToken);
         }
 
         private string CalculatedKey => $"{WorkflowInformation.InstanceId}.{ResourceIdentifier}";
 
-        private async Task ExtendExpirationAsync(TimeSpan expiresAfter, CancellationToken cancellationToken)
+        private async Task<string> InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
         {
-            var semaphore = new WorkflowSemaphoreCreate
+            InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
+            var semaphoreCreate = new WorkflowSemaphoreCreate
             {
                 WorkflowFormId = WorkflowInformation.FormId,
-                ResourceIdentifier = ResourceIdentifier,
                 WorkflowInstanceId = WorkflowInstanceId,
-                ExpiresAt = DateTimeOffset.UtcNow.Add(expiresAfter),
-                Raised = true
+                ResourceIdentifier = ResourceIdentifier,
+                Limit = limit,
+                ExpirationTime = expiresAfter
             };
-            try
+            var semaphoreHolderId = await _semaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
+            lock (RaisedActivitySemaphores)
             {
-                await _semaphoreService.UpdateExpirationAsync(semaphore.WorkflowFormId, semaphore.ResourceIdentifier, semaphore.WorkflowInstanceId,
-                    semaphore.ExpiresAt, cancellationToken);
+                RaisedActivitySemaphores[CalculatedKey] = this;
             }
-            catch (Exception e) when
-                (e is FulcrumConflictException or FulcrumNotFoundException)
-            {
-                throw new ActivityException(ActivityExceptionCategoryEnum.TechnicalError,
-                    $"The semaphore {semaphore} was lost for workflow instance {WorkflowInstanceId}.",
-                    $"The workflow state has been jeopardized, due to a conflict with another workflow.");
-            }
+
+            return semaphoreHolderId;
         }
 
         /// <inheritdoc />
@@ -83,42 +94,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return InternalExecuteAsync((a, ct) => InternalLowerAsync(ct), cancellationToken);
         }
 
-        private async Task InternalRaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken)
+        private Task InternalLowerAsync(CancellationToken cancellationToken)
         {
-            var semaphoreCreate = new WorkflowSemaphoreCreate
+            string semaphoreHolderId;
+            lock (RaisedActivitySemaphores)
             {
-                WorkflowFormId = WorkflowInformation.FormId,
-                WorkflowInstanceId = WorkflowInstanceId,
-                ResourceIdentifier = ResourceIdentifier,
-                ExpiresAt = DateTimeOffset.UtcNow.Add(expiresAfter),
-                Raised = true
-            };
-            await _semaphoreService.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate, cancellationToken);
-            Instance.ResultAsJson = JsonConvert.SerializeObject(true);
-        }
-
-        private async Task InternalLowerAsync(CancellationToken cancellationToken)
-        {
-            string nextWorkflowInstanceId;
-            try
-            {
-                nextWorkflowInstanceId = await _semaphoreService.LowerAndReturnNextWorkflowInstanceAsync(WorkflowInformation.FormId, ResourceIdentifier, WorkflowInstanceId, cancellationToken);
+                var found = RaisedActivitySemaphores.TryGetValue(CalculatedKey, out var activity);
+                FulcrumAssert.IsTrue(found, CodeLocation.AsString());
+                FulcrumAssert.IsNotNull(activity!.Instance.ResultAsJson, CodeLocation.AsString());
+                semaphoreHolderId = JsonHelper.SafeDeserializeObject<string>(activity!.Instance.ResultAsJson);
+                FulcrumAssert.IsNotNullOrWhiteSpace(semaphoreHolderId, CodeLocation.AsString());
+                activity!.Instance.ResultAsJson = JsonConvert.SerializeObject(null);
+                RaisedActivitySemaphores.Remove(CalculatedKey);
             }
-            catch (Exception e) when
-                (e is FulcrumConflictException or FulcrumNotFoundException)
-            {
-                throw new ActivityException(ActivityExceptionCategoryEnum.TechnicalError,
-                    $"The semaphore {ResourceIdentifier} has expired for workflow instance {WorkflowInstanceId}.",
-                    $"The workflow state has been jeopardized, due to a conflict with another workflow.");
-            }
-
-            // Trigger the next workflow instance
-            await WorkflowInformation.WorkflowCapabilities.RequestMgmtCapability.Request.RetryAsync(nextWorkflowInstanceId, cancellationToken);
-            var success = _raisedActivitySemaphores.TryGetValue(CalculatedKey, out var activity);
-            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
-            FulcrumAssert.IsNotNull(activity, CodeLocation.AsString());
-            activity!.Instance.ResultAsJson = JsonConvert.SerializeObject(false);
-            _raisedActivitySemaphores.Remove(CalculatedKey);
+            return _semaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);
         }
     }
 }

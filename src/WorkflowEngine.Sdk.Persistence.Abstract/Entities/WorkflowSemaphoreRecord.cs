@@ -45,21 +45,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// </summary>
     public class WorkflowSemaphoreRecordCreate : WorkflowSemaphoreRecordUnique
     {
-        /// <summary>
-        /// The workflow instance that raised this semaphore
-        /// </summary>
-        [Validation.NotDefault]
-        public Guid WorkflowInstanceId { get; set; }
 
         /// <summary>
-        /// If this is true, then the semaphore is raised
+        /// The maximum number of concurrent holders for this semaphore
         /// </summary>
-        public bool Raised { get; set; }
-
-        /// <summary>
-        /// When does this semaphore expire
-        /// </summary>
-        public DateTimeOffset ExpiresAt { get; set; }
+        [Validation.GreaterThanOrEqualTo(1)]
+        public int Limit { get; set; }
     }
 
     /// <summary>
@@ -76,7 +67,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// <summary>
         /// This value is used to distinguish different semaphores for the same workflow
         /// </summary>
-        [Validation.NotNullOrWhitespace]
+        [Validation.NotNull]
         public string ResourceIdentifier { get; set; }
 
         /// <inheritdoc />

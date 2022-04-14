@@ -2,24 +2,34 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
+    /// <summary>
+    /// Make the workflow sleep for a time span of <see cref="TimeToSleep"/>.
+    /// </summary>
     internal class ActivitySleep: Activity, IActivitySleep
     {
-        public ActivitySleep(IInternalActivityFlow activityFlow)
+        public TimeSpan TimeToSleep { get; }
+
+        public ActivitySleep(IInternalActivityFlow activityFlow, TimeSpan timeToSleep)
             : base(ActivityTypeEnum.Action, activityFlow)
         {
+            TimeToSleep = timeToSleep;
         }
 
-        public Task ExecuteAsync(TimeSpan timeToSleep, CancellationToken cancellationToken = default)
+        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync((_, _) => Task.FromException(new FulcrumTryAgainException
+            if (Instance.HasCompleted) return;
+            await InternalExecuteAsync((_, _) => Task.CompletedTask, cancellationToken);
+            throw new ExceptionTransporter(new RequestPostponedException
             {
-                RecommendedWaitTimeInSeconds = timeToSleep.TotalSeconds
-            }), cancellationToken);
+                TryAgain = true,
+                TryAgainAfterMinimumTimeSpan = TimeToSleep
+            });
         }
     }
 }

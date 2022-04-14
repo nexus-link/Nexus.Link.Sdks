@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Web.Error.Logic;
@@ -34,7 +35,16 @@ public class WorkflowHelper
                 {
                     outException ??= new RequestPostponedException();
                     outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-                    if (!outException.TryAgain) outException.TryAgain = rpe.TryAgain;
+                    if (!outException.TryAgain)
+                    {
+                        outException.TryAgain = rpe.TryAgain;
+                        var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
+                                       || rpe.TryAgainAfterMinimumTimeSpan.HasValue && rpe.TryAgainAfterMinimumTimeSpan < outException.TryAgainAfterMinimumTimeSpan;
+                        if (replaceCurrentValue)
+                        {
+                            outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
+                        }
+                    }
                     taskList.RemoveAt(current);
                 }
                 else current++;

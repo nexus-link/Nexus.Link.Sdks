@@ -11,7 +11,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
         ICreate<WorkflowSemaphoreRecordCreate, WorkflowSemaphoreRecord, Guid>,
         IRead<WorkflowSemaphoreRecord, Guid>,
         IUpdate<WorkflowSemaphoreRecord, Guid>,
-        ISearch<WorkflowSemaphoreRecord, Guid>
+        ISearch<WorkflowSemaphoreRecord, Guid>,
+        ITransactionLock<WorkflowSemaphoreRecord, Guid>,
+        IDelete<Guid>
     {
     }
 }

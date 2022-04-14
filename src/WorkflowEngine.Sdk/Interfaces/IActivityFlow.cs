@@ -44,7 +44,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// 
         /// </summary>
         /// <returns></returns>
-        IActivitySleep Sleep();
+        IActivitySleep Sleep(TimeSpan timeToSleep);
 
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);

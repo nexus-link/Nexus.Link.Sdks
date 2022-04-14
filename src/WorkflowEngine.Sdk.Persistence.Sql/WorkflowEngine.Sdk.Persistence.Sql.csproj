@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>1.9.0</Version>
+    <Version>2.0.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,6 +57,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.0.0 Refactored Semaphores. Not backwards compatible
       1.9.0 Added HashTable
       1.8.1 Bump
       1.8.0 Added WorkflowSemaphore
@@ -118,6 +119,8 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch08_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch09 - HashRecord.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch09_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch10 - Semaphore.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch10_rollback.sql" />
   </ItemGroup>
 
 </Project>

@@ -113,9 +113,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivitySleep Sleep()
+        public IActivitySleep Sleep(TimeSpan timeToSleep)
         {
-            return new ActivitySleep(this);
+            return new ActivitySleep(this, timeToSleep);
         }
 
         /// <inheritdoc/>

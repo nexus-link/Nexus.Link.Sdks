@@ -12,14 +12,16 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
     public abstract class WorkflowSemaphoreTestBase
     {
         private readonly IWorkflowSemaphoreService _service;
+        private readonly ITestVerify _testVerify;
 
-        protected WorkflowSemaphoreTestBase(IWorkflowSemaphoreService service)
+        protected WorkflowSemaphoreTestBase(IWorkflowSemaphoreService service, ITestVerify testVerify)
         {
             _service = service;
+            _testVerify = testVerify;
         }
 
         [Fact]
-        public async Task CreateOrTakeOverOrEnqueue_01_Given_New_Gives_Id()
+        public async Task Raise_01_Given_New_Gives_Id()
         {
             // Arrange
             var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -27,19 +29,19 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
 
             // Act
-            var id = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var id = await _service.RaiseAsync(semaphoreCreate);
 
             // Assert
             id.ShouldNotBeNullOrWhiteSpace();
         }
 
         [Fact]
-        public async Task CreateOrTakeOverOrEnqueue_02_Given_ExistingAndSame_Gives_SameId()
+        public async Task Raise_02_Given_ExistingAndSame_Gives_SameId()
         {
             // Arrange
             var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -47,20 +49,20 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            var expectedId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var expectedId = await _service.RaiseAsync(semaphoreCreate);
 
             // Act
-            var actualId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var actualId = await _service.RaiseAsync(semaphoreCreate);
 
             // Assert
             actualId.ShouldBe(expectedId);
         }
 
         [Fact]
-        public async Task CreateOrTakeOverOrEnqueue_03_Given_ExistingAndOtherInstanceAndLowered_Gives_SameId()
+        public async Task Raise_03_Given_ExistingAndOtherInstanceAndLowered_Gives_NewId()
         {
             // Arrange
             var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -68,21 +70,23 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = false
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            var expectedId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var initialId = await _service.RaiseAsync(semaphoreCreate);
+            await _service.LowerAsync(initialId);
             semaphoreCreate.WorkflowInstanceId = Guid.NewGuid().ToGuidString();
 
             // Act
-            var actualId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var actualId = await _service.RaiseAsync(semaphoreCreate);
 
             // Assert
-            actualId.ShouldBe(expectedId);
+            actualId.ShouldNotBeNull();
+            actualId.ShouldNotBe(initialId);
         }
 
         [Fact]
-        public async Task CreateOrTakeOverOrEnqueue_04_Given_ExistingAndOtherInstanceAndRaisedAndExpired_Gives_SameId()
+        public async Task Raise_04_Given_ExistingAndOtherInstanceAndRaisedAndExpired_Gives_NewId()
         {
             // Arrange
             var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -90,21 +94,22 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromSeconds(1)),
-                Raised = true
+                ExpirationTime = TimeSpan.FromSeconds(-1), // Expired
+                Limit = 1
             };
-            var expectedId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var initialId = await _service.RaiseAsync(semaphoreCreate);
             semaphoreCreate.WorkflowInstanceId = Guid.NewGuid().ToGuidString();
 
             // Act
-            var actualId = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var actualId = await _service.RaiseAsync(semaphoreCreate);
 
             // Assert
-            actualId.ShouldBe(expectedId);
+            actualId.ShouldNotBeNull();
+            actualId.ShouldNotBe(initialId);
         }
 
         [Fact]
-        public async Task CreateOrTakeOverOrEnqueue_05_Given_ExistingAndOtherInstanceAndRaisedAndNotExpired_Gives_Exception()
+        public async Task Raise_05_Given_ExistingAndOtherInstanceAndRaisedAndNotExpired_Gives_Exception()
         {
             // Arrange
             var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -112,40 +117,19 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(60),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(60),
+                Limit = 1
             };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            await _service.RaiseAsync(semaphoreCreate);
 
             semaphoreCreate.WorkflowInstanceId = Guid.NewGuid().ToGuidString();
 
             // Act and assert
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
         }
 
         [Fact]
-        public async Task LowerAndReturnNextWorkflowInstance_01_Given_NoQueue_Gives_Null()
-        {
-            // Arrange
-            var semaphoreCreate = new WorkflowSemaphoreCreate
-            {
-                WorkflowFormId = Guid.NewGuid().ToGuidString(),
-                ResourceIdentifier = Guid.NewGuid().ToGuidString(),
-                WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
-            };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
-
-            // Act
-            var nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, semaphoreCreate.WorkflowInstanceId);
-
-            // Assert
-            nextInstanceId.ShouldBeNull();
-        }
-
-        [Fact]
-        public async Task LowerAndReturnNextWorkflowInstance_02_Given_OneInQueue_Gives_Id()
+        public async Task Lower_01_Given_OneInQueue_Gives_NextIsActivated()
         {
             // Arrange
             var initialInstanceId = Guid.NewGuid().ToGuidString();
@@ -154,24 +138,28 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var id1 = await _service.RaiseAsync(semaphoreCreate);
 
             var expectedInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = expectedInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Act
-            var nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, initialInstanceId);
+            await _service.LowerAsync(id1);
 
             // Assert
-            nextInstanceId.ShouldBe(expectedInstanceId);
+            var currentWorkflowInstanceId = await _testVerify.GetRaisedWorkflowInstanceIdsAsync();
+            currentWorkflowInstanceId.ShouldNotBeNull();
+            currentWorkflowInstanceId.ShouldHaveSingleItem();
+            currentWorkflowInstanceId.ShouldContain(expectedInstanceId);
         }
 
         [Fact]
-        public async Task LowerAndReturnNextWorkflowInstance_03_Given_TwoInQueue_Gives_FirstId()
+        public async Task Lower_02_Given_TwoInQueue_Gives_FirstId()
         {
             // Arrange
             var initialInstanceId = Guid.NewGuid().ToGuidString();
@@ -180,29 +168,30 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var id1 = await _service.RaiseAsync(semaphoreCreate);
 
             // First in queue
             var expectedInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = expectedInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
 
             // Second in queue
             semaphoreCreate.WorkflowInstanceId = Guid.NewGuid().ToGuidString();
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
 
             // Act
-            var nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, initialInstanceId);
+            await _service.LowerAsync(id1);
 
             // Assert
-            nextInstanceId.ShouldBe(expectedInstanceId);
+            semaphoreCreate.WorkflowInstanceId = expectedInstanceId;
+            await _service.RaiseAsync(semaphoreCreate); ;
         }
 
         [Fact]
-        public async Task LowerAndReturnNextWorkflowInstance_04_Given_FirstInQueueActive_Gives_SecondThrows()
+        public async Task Lower_04_Given_FirstInQueueActive_Gives_SecondThrows()
         {
             // Arrange
             var initialInstanceId = Guid.NewGuid().ToGuidString();
@@ -211,38 +200,39 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var id1 = await _service.RaiseAsync(semaphoreCreate);
 
             // First in queue
             var firstInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = firstInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Second in queue
             var secondInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = secondInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Deactivate initial
-            var nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, initialInstanceId);
-            nextInstanceId.ShouldBe(firstInstanceId);
+            await _service.LowerAsync(id1);
 
             // Activate first
             semaphoreCreate.WorkflowInstanceId = firstInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            await _service.RaiseAsync(semaphoreCreate);
 
             // Try second
             semaphoreCreate.WorkflowInstanceId = secondInstanceId;
 
             // Act & Assert
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
         }
 
         [Fact]
-        public async Task LowerAndReturnNextWorkflowInstance_05_Given_FirstInQueueDone_Gives_SecondActivated()
+        public async Task Lower_05_Given_FirstInQueueDone_Gives_SecondActivated()
         {
             // Arrange
             var initialInstanceId = Guid.NewGuid().ToGuidString();
@@ -251,39 +241,39 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
-                ExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1),
-                Raised = true
+                ExpirationTime = TimeSpan.FromMinutes(1),
+                Limit = 1
             };
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            var raisedHandlerId = await _service.RaiseAsync(semaphoreCreate);
 
             // First in queue
             var firstInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = firstInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Second in queue
             var secondInstanceId = Guid.NewGuid().ToGuidString();
             semaphoreCreate.WorkflowInstanceId = secondInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate).ShouldThrowAsync<RequestPostponedException>();
+            await _service.RaiseAsync(semaphoreCreate)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Deactivate initial
-            var nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, initialInstanceId);
-            nextInstanceId.ShouldBe(firstInstanceId);
+            await _service.LowerAsync(raisedHandlerId);
 
             // Activate first
             semaphoreCreate.WorkflowInstanceId = firstInstanceId;
-            await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
+            raisedHandlerId = await _service.RaiseAsync(semaphoreCreate);
 
             // Deactivate first
-            nextInstanceId = await _service.LowerAndReturnNextWorkflowInstanceAsync(semaphoreCreate.WorkflowFormId, semaphoreCreate.ResourceIdentifier, firstInstanceId);
-            nextInstanceId.ShouldBe(secondInstanceId);
+            await _service.LowerAsync(raisedHandlerId);
 
             // Try second
             semaphoreCreate.WorkflowInstanceId = secondInstanceId;
 
             // Act & Assert
-            var id = await _service.CreateOrTakeOverOrEnqueueAsync(semaphoreCreate);
-            id.ShouldNotBeNullOrWhiteSpace();
+            raisedHandlerId = await _service.RaiseAsync(semaphoreCreate);
+            raisedHandlerId.ShouldNotBeNullOrWhiteSpace();
         }
     }
 }

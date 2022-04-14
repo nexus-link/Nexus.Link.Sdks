@@ -153,7 +153,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     {
                         outException ??= new RequestPostponedException();
                         outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-                        if (!outException.TryAgain) outException.TryAgain = rpe.TryAgain;
+                        if (!outException.TryAgain)
+                        {
+                            outException.TryAgain = rpe.TryAgain;
+                            var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
+                                                      || rpe.TryAgainAfterMinimumTimeSpan.HasValue && rpe.TryAgainAfterMinimumTimeSpan < outException.TryAgainAfterMinimumTimeSpan;
+                            if (replaceCurrentValue)
+                            {
+                                outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
+                            }
+                        }
                     }
                 }
             }

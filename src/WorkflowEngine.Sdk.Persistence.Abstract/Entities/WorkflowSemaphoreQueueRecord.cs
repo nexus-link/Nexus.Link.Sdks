@@ -45,6 +45,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// </summary>
     public class WorkflowSemaphoreQueueRecordCreate : WorkflowSemaphoreQueueRecordUnique
     {
+        /// <summary>
+        /// When does this semaphore expire. Only set if <see cref="Raised"/> == true
+        /// </summary>
+        [Validation.NotNull(TriggerPropertyName = nameof(Raised))]
+        public DateTimeOffset? ExpiresAt { get; set; }
+
+        /// <summary>
+        /// After how many seconds should this semaphore expire (from the time it was raised or extended).
+        /// </summary>
+        public double ExpirationAfterSeconds { get; set; }
+
+        /// <summary>
+        /// True if the semaphore is raised for this workflow instance, false if it is in queue.
+        /// </summary>
+        public bool Raised { get; set; }
     }
 
     /// <summary>
@@ -59,7 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         public Guid WorkflowInstanceId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{WorkflowInstanceId} waiting for semaphore {WorkflowSemaphoreId}";
+        public override string ToString() => $"{WorkflowSemaphoreId} for workflow {WorkflowInstanceId}";
     }
 
     /// <summary>

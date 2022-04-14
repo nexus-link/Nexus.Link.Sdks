@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net461;net472;netcoreapp2.1</TargetFrameworks>
     <RootNamespace>Nexus.Link.Authentication.AspNet.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Authentication.AspNet.Sdk</AssemblyName>
 
@@ -19,10 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.0.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.29.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.2.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.2.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.3" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
