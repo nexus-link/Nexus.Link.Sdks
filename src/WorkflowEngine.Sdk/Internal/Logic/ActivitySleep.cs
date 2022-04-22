@@ -24,11 +24,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
             if (Instance.HasCompleted) return;
-            await InternalExecuteAsync((_, _) => Task.CompletedTask, cancellationToken);
+            var now = DateTimeOffset.UtcNow;
+            var sleepUntil = await InternalExecuteAsync((_, _) => Task.FromResult(now.Add(TimeToSleep)), null, cancellationToken);
+            if (sleepUntil <= now) return;
             throw new ExceptionTransporter(new RequestPostponedException
             {
                 TryAgain = true,
-                TryAgainAfterMinimumTimeSpan = TimeToSleep
+                TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
             });
         }
     }

@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -30,11 +28,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             CancellationToken cancellationToken = default)
         {
             await InternalExecuteAsync(
-                (a, ct) => ForEachMethod(method, a, ct),
+                (_, ct) => ForEachMethod(method, ct),
                 cancellationToken);
         }
 
-        private async Task ForEachMethod(Func<TItemType, IActivityForEachParallel<TItemType>, CancellationToken, Task> method, IActivity activity, CancellationToken cancellationToken)
+        private async Task ForEachMethod(Func<TItemType, IActivityForEachParallel<TItemType>, CancellationToken, Task> method, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -42,12 +40,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             foreach (var item in Items)
             {
                 Iteration++;
-                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 WorkflowCache.LatestActivity = this;
-                var task = MapMethodAsync(item, method, activity, cancellationToken);
+                var task = MapMethodAsync(item, method, this, cancellationToken);
                 taskList.Add(task);
             }
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowCache.LatestActivity = this;
 
             await WorkflowHelper.WhenAllActivities(taskList);
@@ -66,8 +62,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
     internal class ActivityForEachParallel<TActivityReturns, TItem> : Activity, IActivityForEachParallel<TActivityReturns, TItem>
     {
-        private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
-
         private Func<TItem, string> _getKeyMethod;
 
         public IEnumerable<TItem> Items { get; }
@@ -75,13 +69,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public ActivityForEachParallel(
             IInternalActivityFlow activityFlow,
             IEnumerable<TItem> items,
-            Func<TItem, string> getKeyMethod,
-            Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            Func<TItem, string> getKeyMethod)
             : base(ActivityTypeEnum.ForEachParallel, activityFlow)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
-            _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
             Items = items;
             Iteration = 0;
             _getKeyMethod = getKeyMethod;
@@ -93,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             return InternalExecuteAsync(
                 (a, ct) => ForEachMethod(method, a, ct),
-                (ct) => null, cancellationToken);
+                (_) => null, cancellationToken);
         }
 
         private Task<IDictionary<string, TActivityReturns>> ForEachMethod(Func<TItem,
@@ -116,12 +108,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     InternalContract.Require(false, $"The {nameof(_getKeyMethod)} method failed. You must make it safe, so that it never fails.");
                 }
                 InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
-                FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 WorkflowCache.LatestActivity = this;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskDictionary.Add(key!, task);
             }
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowCache.LatestActivity = this;
             return AggregatePostponeExceptions(taskDictionary);
         }
@@ -138,36 +128,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private static async Task<IDictionary<string, TActivityReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TActivityReturns>> taskDictionary)
         {
-            RequestPostponedException outException = null;
+            await WorkflowHelper.WhenAllActivities(taskDictionary.Values);
             var resultDictionary = new Dictionary<string, TActivityReturns>();
             foreach (var (key, task) in taskDictionary)
             {
-                try
-                {
-                    var result = await task;
-                    resultDictionary.Add(key, result);
-                }
-                catch (ExceptionTransporter et)
-                {
-                    if (et.InnerException is RequestPostponedException rpe)
-                    {
-                        outException ??= new RequestPostponedException();
-                        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-                        if (!outException.TryAgain)
-                        {
-                            outException.TryAgain = rpe.TryAgain;
-                            var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
-                                                      || rpe.TryAgainAfterMinimumTimeSpan.HasValue && rpe.TryAgainAfterMinimumTimeSpan < outException.TryAgainAfterMinimumTimeSpan;
-                            if (replaceCurrentValue)
-                            {
-                                outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
-                            }
-                        }
-                    }
-                }
+                var result = await task;
+                resultDictionary.Add(key, result);
             }
-
-            if (outException != null) throw outException;
             return resultDictionary;
         }
     }

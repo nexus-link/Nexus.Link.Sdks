@@ -118,6 +118,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return new ActivitySleep(this, timeToSleep);
         }
 
+        /// <inheritdoc />
+        public IActivityParallel Parallel()
+        {
+            return new ActivityParallel(this);
+        }
+
         /// <inheritdoc/>
         public IActivityLoopUntilTrue LoopUntil()
         {
@@ -246,7 +252,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
-            return new ActivityForEachParallel<TActivityReturns, TItem>(this, items, getKeyMethod, GetDefaultValueForNotUrgentFail);
+            return new ActivityForEachParallel<TActivityReturns, TItem>(this, items, getKeyMethod);
         }
         
         /// <inheritdoc/>

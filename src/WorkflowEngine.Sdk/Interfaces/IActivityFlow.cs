@@ -39,12 +39,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel);
 
         IActivityAction Action();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         IActivitySleep Sleep(TimeSpan timeToSleep);
+        IActivityParallel Parallel();
 
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);

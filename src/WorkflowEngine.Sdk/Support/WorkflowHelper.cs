@@ -19,15 +19,13 @@ public class WorkflowHelper
     /// <exception cref="RequestPostponedException"></exception>
     public static async Task WhenAllActivities(IEnumerable<Task> tasks)
     {
-        var taskList = tasks.ToList();
+        var exceptionTasks = new List<Task>();
         RequestPostponedException outException = null;
-        var current = 0;
-        while (taskList.Count > current)
+        foreach (var task in tasks)
         {
             try
             {
-                await taskList[current];
-                current++;
+                await task;
             }
             catch (ExceptionTransporter et)
             {
@@ -39,20 +37,28 @@ public class WorkflowHelper
                     {
                         outException.TryAgain = rpe.TryAgain;
                         var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
-                                       || rpe.TryAgainAfterMinimumTimeSpan.HasValue && rpe.TryAgainAfterMinimumTimeSpan < outException.TryAgainAfterMinimumTimeSpan;
+                                                  || rpe.TryAgainAfterMinimumTimeSpan.HasValue &&
+                                                  rpe.TryAgainAfterMinimumTimeSpan <
+                                                  outException.TryAgainAfterMinimumTimeSpan;
                         if (replaceCurrentValue)
                         {
                             outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
                         }
                     }
-                    taskList.RemoveAt(current);
                 }
-                else current++;
+                else
+                {
+                    exceptionTasks.Add(task);
+                }
+            }
+            catch (Exception)
+            {
+                exceptionTasks.Add(task);
             }
         }
 
         if (outException != null) throw outException;
-        await Task.WhenAll(taskList);
+        await Task.WhenAll(exceptionTasks);
     }
 
     /// <summary>

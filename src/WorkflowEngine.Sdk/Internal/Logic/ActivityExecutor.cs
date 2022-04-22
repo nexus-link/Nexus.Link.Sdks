@@ -116,7 +116,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             // Book keeping
             BookKeeping();
-            await Activity.WorkflowCache.SaveAsync(cancellationToken);
+            //await Activity.WorkflowCache.SaveAsync(cancellationToken);
             var activityInstance = Activity.Instance;
 
             // Already have a result?

@@ -32,7 +32,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         /// <inheritdoc />
         [Obsolete("Please use WorkflowContainer. Obsolete since 2022-02-10")]
-        public IWorkflowVersions WorkflowVersions => (IWorkflowVersions) WorkflowContainer;
+        public IWorkflowVersions WorkflowVersions => WorkflowContainer as IWorkflowVersions;
 
         /// <inheritdoc />
         public IWorkflowContainer WorkflowContainer { get; }
