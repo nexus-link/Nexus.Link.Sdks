@@ -12,142 +12,121 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
-    internal abstract class ActivityFlowBase : IInternalActivityFlow
+    internal abstract class ActivityFlowBase : IActivityFlowBase
     {
-        /// <inheritdoc />
-        public WorkflowInformation WorkflowInformation{ get; }
+        protected IActivityInformation ActivityInformation{ get; }
 
-        /// <inheritdoc />
-        public WorkflowCache WorkflowCache { get; }
-
-        /// <inheritdoc />
-        public string ActivityFormId { get; }
-
-        /// <inheritdoc />
-        public MethodHandler MethodHandler { get; }
-
-        /// <inheritdoc />
-        public string FormTitle { get; }
-
-        /// <inheritdoc />
-        public ActivityOptions Options { get; } = new();
-        
-        /// <inheritdoc />
-        public int Position { get; }
-
-        protected ActivityFlowBase(WorkflowInformation workflowInformation,
-            WorkflowCache workflowCache, int position, string activityFormId)
+        protected ActivityFlowBase(IActivityInformation activityInformation)
         {
-            WorkflowCache = workflowCache;
-            WorkflowInformation = workflowInformation;
-            Position = position;
-            var activityDefinition = WorkflowInformation.WorkflowContainer.GetActivityDefinition(activityFormId);
-            ActivityFormId = activityFormId;
-            FormTitle = activityDefinition.Title;
-            MethodHandler = new MethodHandler(FormTitle);
-            Options.From(workflowInformation.DefaultActivityOptions);
+            ActivityInformation = activityInformation;
         }
     }
 
     internal class ActivityFlow : ActivityFlowBase, IActivityFlow
     {
-        public ActivityFlow(WorkflowInformation workflowInformation, WorkflowCache workflowCache,
-            int position, string activityFormId)
-        : base(workflowInformation, workflowCache, position, activityFormId)
+        public ActivityFlow(IActivityInformation activityInformation)
+        : base(activityInformation)
         {
         }
 
         public IActivityFlow SetParameter<T>(string name, T value)
         {
-            MethodHandler.DefineParameter<T>(name);
-            MethodHandler.SetParameter(name, value);
+            ActivityInformation.DefineParameter<T>(name);
+            ActivityInformation.SetParameter(name, value);
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetAsyncRequestPriority(double priority)
         {
-            Options.AsyncRequestPriority = priority;
+            ActivityInformation.Options.AsyncRequestPriority = priority;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            Options.FailUrgency = failUrgency;
+            ActivityInformation.Options.FailUrgency = failUrgency;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            Options.ExceptionAlertHandler = alertHandler;
+            ActivityInformation.Options.ExceptionAlertHandler = alertHandler;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetLogCreateThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogCreateThreshold = severityLevel;
+            ActivityInformation.Options.LogCreateThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy)
         {
-            Options.LogPurgeStrategy = logPurgeStrategy;
+            ActivityInformation.Options.LogPurgeStrategy = logPurgeStrategy;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogPurgeThreshold = severityLevel;
+            ActivityInformation.Options.LogPurgeThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc/>
         public IActivityAction Action()
         {
-            return new ActivityAction(this);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityAction(ActivityInformation);
         }
 
         /// <inheritdoc />
         public IActivitySleep Sleep(TimeSpan timeToSleep)
         {
-            return new ActivitySleep(this, timeToSleep);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Sleep, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivitySleep(ActivityInformation, timeToSleep);
         }
 
         /// <inheritdoc />
         public IActivityParallel Parallel()
         {
-            return new ActivityParallel(this);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Parallel, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityParallel(ActivityInformation);
         }
 
         /// <inheritdoc/>
         public IActivityLoopUntilTrue LoopUntil()
         {
-            return new ActivityLoopUntilTrue(this);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityLoopUntilTrue(ActivityInformation);
         }
         
         /// <inheritdoc/>
         public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            return new ActivityForEachParallel<TItem>(this, items);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityForEachParallel<TItem>(ActivityInformation, items);
         }
         
         /// <inheritdoc/>
         public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            return new ActivityForEachSequential<TItem>(this, items);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityForEachSequential<TItem>(ActivityInformation, items);
         }
 
         /// <inheritdoc />
         public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
-            return new ActivitySemaphore(this, resourceIdentifier);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Semaphore, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivitySemaphore(ActivityInformation, resourceIdentifier);
         }
     }
 
@@ -155,58 +134,57 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         public Func<CancellationToken, Task<TActivityReturns>> GetDefaultValueForNotUrgentFail { get; private set; }
 
-        public ActivityFlow(WorkflowInformation workflowInformation,
-            WorkflowCache workflowCache, int position, string activityFormId)
-        : base(workflowInformation, workflowCache, position, activityFormId)
+        public ActivityFlow(IActivityInformation activityInformation)
+        : base(activityInformation)
         {
         }
 
         public IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value)
         {
-            MethodHandler.DefineParameter<T>(name);
-            MethodHandler.SetParameter(name, value);
+            ActivityInformation.DefineParameter<T>(name);
+            ActivityInformation.SetParameter(name, value);
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority)
         {
-            Options.AsyncRequestPriority = priority;
+            ActivityInformation.Options.AsyncRequestPriority = priority;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            Options.FailUrgency = failUrgency;
+            ActivityInformation.Options.FailUrgency = failUrgency;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
         {
-            Options.ExceptionAlertHandler = alertHandler;
+            ActivityInformation.Options.ExceptionAlertHandler = alertHandler;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetLogCreateThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogCreateThreshold = severityLevel;
+            ActivityInformation.Options.LogCreateThreshold = severityLevel;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy)
         {
-            Options.LogPurgeStrategy = logPurgeStrategy;
+            ActivityInformation.Options.LogPurgeStrategy = logPurgeStrategy;
             return this;
         }
 
         /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetLogPurgeThreshold(LogSeverityLevel severityLevel)
         {
-            Options.LogPurgeThreshold = severityLevel;
+            ActivityInformation.Options.LogPurgeThreshold = severityLevel;
             return this;
         }
 
@@ -232,19 +210,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc/>
         public IActivityAction<TActivityReturns> Action()
         {
-            return new ActivityAction<TActivityReturns>(this, GetDefaultValueForNotUrgentFail);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityAction<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail);
         }
         
         /// <inheritdoc/>
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
-            return new ActivityLoopUntilTrue<TActivityReturns>(this, GetDefaultValueForNotUrgentFail);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail);
         }
 
         /// <inheritdoc />
         public IActivityCondition<TActivityReturns> Condition()
         {
-            return new ActivityCondition<TActivityReturns>(this, GetDefaultValueForNotUrgentFail);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Condition, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityCondition<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail);
         }
 
         /// <inheritdoc/>
@@ -252,14 +233,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
-            return new ActivityForEachParallel<TActivityReturns, TItem>(this, items, getKeyMethod);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod);
         }
         
         /// <inheritdoc/>
         public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            return new ActivityForEachSequential<TActivityReturns, TItem>(this, items, GetDefaultValueForNotUrgentFail);
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, GetDefaultValueForNotUrgentFail);
         }
     }
 }

@@ -14,6 +14,7 @@ using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
@@ -46,7 +47,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => throw new RequestPostponedException());
-            var executor = new WorkflowExecutor(implementation);
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -66,7 +68,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => throw new ExceptionTransporter(new WorkflowFastForwardBreakException()));
-            var executor = new WorkflowExecutor(implementation);
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information);
 
             // Act & Assert
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -82,7 +85,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => throw new ExceptionTransporter(new WorkflowFailedException(ActivityExceptionCategoryEnum.TechnicalError, expectedTechnicalMessage, expectedFriendlyMessage)));
-            var executor = new WorkflowExecutor(implementation);
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -101,12 +105,14 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             FulcrumApplication.Context.ReentryAuthentication = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => Task.CompletedTask);
-            var executor = new WorkflowExecutor(implementation);
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => throw new Exception());
-            executor = new WorkflowExecutor(implementation);
+            information = new WorkflowInformation(implementation);
+            executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -121,12 +127,14 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             FulcrumApplication.Context.ReentryAuthentication = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => Task.CompletedTask);
-            var executor = new WorkflowExecutor(implementation);
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 ct => throw new ExceptionTransporter(new Exception()));
-            executor = new WorkflowExecutor(implementation);
+            information = new WorkflowInformation(implementation);
+            executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())

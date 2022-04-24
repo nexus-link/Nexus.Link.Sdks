@@ -27,17 +27,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;
-        protected readonly WorkflowInformation WorkflowInformation;
-        protected WorkflowCache WorkflowCache;
+        protected IWorkflowInformation WorkflowInformation { get; }
 
-        public WorkflowExecutor(IWorkflowImplementationBase workflowImplementation)
+        public WorkflowExecutor(IWorkflowInformation workflowInformation)
         {
-            WorkflowInformation =
-                new WorkflowInformation(workflowImplementation);
-            _methodHandler = new MethodHandler(workflowImplementation.WorkflowContainer.WorkflowFormTitle);
+            WorkflowInformation = workflowInformation;
+            _methodHandler = new MethodHandler(WorkflowInformation.FormTitle);
         }
-
-        public ActivityOptions DefaultActivityOptions => WorkflowInformation.DefaultActivityOptions;
 
         public T GetArgument<T>(string name)
         {
@@ -46,58 +42,56 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public IActivity GetCurrentParentActivity()
         {
-            return WorkflowCache.GetCurrentParentActivity();
+            return WorkflowInformation.GetCurrentParentActivity();
         }
 
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId.ToGuidString();
-
             WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
-
-            WorkflowCache = new WorkflowCache(WorkflowInformation);
-            await WorkflowCache.LoadAsync(cancellationToken);
-            if (WorkflowCache.InstanceExists())
+            await WorkflowInformation.LoadAsync(cancellationToken);
+            if (WorkflowInformation.InstanceExists() && WorkflowInformation.WorkflowInstanceService != null)
             {
-                _workflowDistributedLock = await WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance.ClaimDistributedLockAsync(
+                _workflowDistributedLock = await WorkflowInformation.WorkflowInstanceService.ClaimDistributedLockAsync(
                     WorkflowInformation.InstanceId, null, null, cancellationToken);
             }
-            WorkflowCache.Form.CapabilityName = WorkflowInformation.CapabilityName;
-            WorkflowCache.Form.Title = WorkflowInformation.FormTitle;
-            WorkflowCache.Version.MinorVersion = WorkflowInformation.MinorVersion;
-            WorkflowCache.Instance.State = WorkflowStateEnum.Executing;
-            WorkflowCache.Instance.Title = WorkflowInformation.InstanceTitle;
-            await WorkflowCache.SaveAsync(cancellationToken);
+            WorkflowInformation.Form.CapabilityName = WorkflowInformation.CapabilityName;
+            WorkflowInformation.Form.Title = WorkflowInformation.FormTitle;
+            WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
+            WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
+            WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
+            await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
-            if (WorkflowCache.Instance.CancelledAt != null)
+            if (WorkflowInformation.Instance.CancelledAt != null)
             {
                 throw new WorkflowFailedException(
                     ActivityExceptionCategoryEnum.BusinessError,
-                    $"This workflow was manually marked for cancelling at {WorkflowCache.Instance.CancelledAt.Value.ToLogString()}.",
-                $"This workflow was manually marked for cancelling at {WorkflowCache.Instance.CancelledAt.Value.ToLogString()}.");
+                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.",
+                $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.");
             }
         }
 
         protected void MarkWorkflowAsSuccess<TResult>(TResult result)
         {
-            WorkflowCache.Instance.ResultAsJson = JsonConvert.SerializeObject(result);
+            WorkflowInformation.Instance.ResultAsJson = JsonConvert.SerializeObject(result);
             MarkWorkflowAsSuccess();
         }
 
         protected void MarkWorkflowAsSuccess()
         {
-            WorkflowCache.Instance.State = WorkflowStateEnum.Success;
-            WorkflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
+            WorkflowInformation.Instance.State = WorkflowStateEnum.Success;
+            WorkflowInformation.Instance.FinishedAt = DateTimeOffset.UtcNow;
         }
 
         protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
         {
-            WorkflowCache.AggregateActivityInformation();
-            await WorkflowCache.SaveAsync(cancellationToken);
+            WorkflowInformation.AggregateActivityInformation();
+            await WorkflowInformation.SaveAsync(cancellationToken);
             if (_workflowDistributedLock != null)
             {
-                await WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance.ReleaseDistributedLockAsync(
+                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
+                await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
                     _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, cancellationToken);
             }
         }
@@ -135,7 +129,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
-                await this.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
+                await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
                 await this.LogInformationAsync($"Workflow successful", result, cancellationToken);
@@ -153,7 +147,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution", WorkflowInformation.Instance, cancellationToken);
                     await PurgeLogsAsync(cancellationToken);
                 }
             }
@@ -161,10 +155,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public async Task PurgeLogsAsync(CancellationToken cancellationToken)
         {
+            if (WorkflowInformation.LogService == null) return;
             var purge = false;
-            var workflowInstance = WorkflowCache.Instance;
+            var workflowInstance = WorkflowInformation.Instance;
             FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
-            switch (DefaultActivityOptions.LogPurgeStrategy)
+            switch (WorkflowInformation.DefaultActivityOptions.LogPurgeStrategy)
             {
                 case LogPurgeStrategyEnum.AfterActivitySuccess:
                     purge = workflowInstance.IsComplete;
@@ -182,17 +177,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     break;
                 default:
                     throw new FulcrumAssertionFailedException(
-                        $"Unexpected {nameof(LogPurgeStrategyEnum)}: {DefaultActivityOptions.LogPurgeStrategy}", 
+                        $"Unexpected {nameof(LogPurgeStrategyEnum)}: {WorkflowInformation.DefaultActivityOptions.LogPurgeStrategy}", 
                         CodeLocation.AsString());
             }
 
             if (!purge) return;
-            foreach (var activityInstanceId in WorkflowCache.ActivitiesToPurge)
+            foreach (var activityInstanceId in WorkflowInformation.ActivitiesToPurge)
             {
-                var activity = WorkflowCache.GetActivity(activityInstanceId);
+                var activity = WorkflowInformation.GetActivity(activityInstanceId);
                 await activity.PurgeLogsAsync(cancellationToken);
             }
-            await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.DeleteWorkflowChildrenAsync(workflowInstance.Id, DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
+            await WorkflowInformation.LogService.DeleteWorkflowChildrenAsync(workflowInstance.Id, WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
@@ -201,7 +196,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try
             {
-                await this.LogInformationAsync($"Begin workflow execution", WorkflowCache.Instance, cancellationToken);
+                await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
                 await this.LogInformationAsync($"Workflow successful", null, cancellationToken);
@@ -218,7 +213,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution", WorkflowCache.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution", WorkflowInformation.Instance, cancellationToken);
                 }
             }
         }
@@ -236,10 +231,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             switch (innerException)
             {
                 case WorkflowFailedException wfe:
-                    WorkflowCache.Instance.State = WorkflowStateEnum.Failed;
-                    WorkflowCache.Instance.FinishedAt = DateTimeOffset.UtcNow;
-                    WorkflowCache.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
-                    WorkflowCache.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
+                    WorkflowInformation.Instance.State = WorkflowStateEnum.Failed;
+                    WorkflowInformation.Instance.FinishedAt = DateTimeOffset.UtcNow;
+                    WorkflowInformation.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
+                    WorkflowInformation.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
                     return new FulcrumCancelledException(wfe.TechnicalMessage)
                     {
                         FriendlyMessage = wfe.FriendlyMessage
@@ -263,10 +258,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 var technicalMessage = $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected?.Message}";
                 await this.LogCriticalAsync(technicalMessage, exception, cancellationToken);
-                WorkflowCache.Instance.State = WorkflowStateEnum.Halted;
-                WorkflowCache.Instance.ExceptionTechnicalMessage =
+                WorkflowInformation.Instance.State = WorkflowStateEnum.Halted;
+                WorkflowInformation.Instance.ExceptionTechnicalMessage =
                     technicalMessage;
-                WorkflowCache.Instance.ExceptionFriendlyMessage =
+                WorkflowInformation.Instance.ExceptionFriendlyMessage =
                     "The workflow engine failed; it encountered an unexpected exception";
             }
         }
@@ -275,30 +270,33 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
+            WorkflowStatic.Context.LatestActivity = WorkflowInformation.LatestActivity;
 
-            return new ActivityFlow<TActivityReturns>(WorkflowInformation, WorkflowCache,
-                position, id.ToGuidString());
+            var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
+
+            var flow = new ActivityFlow<TActivityReturns>(activityInformation);
+            return flow;
         }
 
         public IActivityFlow CreateActivity(int position, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            WorkflowStatic.Context.LatestActivity = WorkflowCache.LatestActivity;
-
-            return new ActivityFlow(WorkflowInformation, WorkflowCache, position, id.ToGuidString());
+            WorkflowStatic.Context.LatestActivity = WorkflowInformation.LatestActivity;
+            var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
+            var flow = new ActivityFlow(activityInformation);
+            return flow;
         }
 
         /// <inheritdoc />
         public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null,
             CancellationToken cancellationToken = default)
         {
+            if (WorkflowInformation.LogService == null) return;
             try
             {
-                FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowCapabilities.StateCapability, CodeLocation.AsString());
                 FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
-                if ((int) severityLevel < (int) DefaultActivityOptions.LogCreateThreshold) return;
+                if ((int) severityLevel < (int)WorkflowInformation.DefaultActivityOptions.LogCreateThreshold) return;
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {
@@ -310,7 +308,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await WorkflowInformation.WorkflowCapabilities.StateCapability.Log.CreateAsync(log, cancellationToken);
+                await WorkflowInformation.LogService.CreateAsync(log, cancellationToken);
             }
             catch (Exception)
             {

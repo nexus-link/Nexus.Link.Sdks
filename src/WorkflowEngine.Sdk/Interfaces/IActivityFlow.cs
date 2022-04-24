@@ -11,21 +11,8 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
-    internal interface IInternalActivityFlow
-    {
-        WorkflowCache WorkflowCache { get; }
-        WorkflowInformation WorkflowInformation { get; }
-        MethodHandler MethodHandler { get; }
-        int Position { get; }
-        string FormTitle { get; }
-        string ActivityFormId { get; }
-
-        ActivityOptions Options { get; }
-    }
-
     public interface IActivityFlowBase
     {
-        string ActivityFormId { get; }
     }
 
     public interface IActivityFlow : IActivityFlowBase

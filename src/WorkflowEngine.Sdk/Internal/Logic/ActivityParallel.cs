@@ -20,8 +20,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         private readonly Dictionary<int, Func<IActivityParallel, CancellationToken, Task>> _voidJobs = new();
         private readonly Dictionary<int, Task> _voidTasks = new();
 
-        public ActivityParallel(IInternalActivityFlow activityFlow)
-            : base(ActivityTypeEnum.Parallel, activityFlow)
+        public ActivityParallel(IActivityInformation activityInformation)
+            : base(activityInformation)
         {
             Iteration = 0;
         }
@@ -66,18 +66,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             foreach (var (index, job) in _voidJobs)
             {
                 Iteration = index;
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
                 var task = MapMethodAsync(job, this, cancellationToken);
                 _voidTasks.Add(index, task);
             }
             foreach (var (index, job) in _objectJobs)
             {
                 Iteration = index;
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
                 var task = MapMethodAsync(job, this, cancellationToken);
                 _objectTasks.Add(index, task);
             }
-            WorkflowCache.LatestActivity = this;
+            ActivityInformation.Workflow.LatestActivity = this;
             var taskList = new List<Task>(_voidTasks.Values);
             taskList.AddRange(_objectTasks.Values);
             await WorkflowHelper.WhenAllActivities(taskList);

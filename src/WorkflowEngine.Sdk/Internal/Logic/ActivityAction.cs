@@ -5,13 +5,14 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal class ActivityAction : Activity, IActivityAction
     {
-        public ActivityAction(IInternalActivityFlow activityFlow)
-            : base(ActivityTypeEnum.Action, activityFlow)
+        public ActivityAction(IActivityInformation activityInformation)
+            : base(activityInformation)
         {
         }
 
@@ -37,8 +38,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
         public ActivityAction(
-            IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(ActivityTypeEnum.Action, activityFlow)
+            IActivityInformation activityInformation, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }

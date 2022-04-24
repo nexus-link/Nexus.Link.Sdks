@@ -16,8 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public bool? EndLoop { get; set; }
 
-        protected ActivityLoopUntilTrueBase(IInternalActivityFlow activityFlow)
-            : base(ActivityTypeEnum.LoopUntilTrue, activityFlow)
+        protected ActivityLoopUntilTrueBase(IActivityInformation activityInformation)
+            : base(activityInformation)
         {
             Iteration = 0;
         }
@@ -36,8 +36,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
     internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue
     {
-        public ActivityLoopUntilTrue(IInternalActivityFlow activityFlow)
-            : base(activityFlow)
+        public ActivityLoopUntilTrue(IActivityInformation activityInformation)
+            : base(activityInformation)
         {
         }
 
@@ -61,7 +61,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
             } while (EndLoop != true);
         }
 
@@ -79,8 +79,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityLoopUntilTrue(IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(activityFlow)
+        public ActivityLoopUntilTrue(IActivityInformation activityInformation, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
@@ -107,7 +107,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 result = await MapMethodAsync(method, activity, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
             } while (EndLoop != true);
 
             return result;

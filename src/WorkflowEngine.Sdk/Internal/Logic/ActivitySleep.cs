@@ -5,6 +5,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -15,8 +16,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         public TimeSpan TimeToSleep { get; }
 
-        public ActivitySleep(IInternalActivityFlow activityFlow, TimeSpan timeToSleep)
-            : base(ActivityTypeEnum.Action, activityFlow)
+        public ActivitySleep(IActivityInformation activityInformation, TimeSpan timeToSleep)
+            : base(activityInformation)
         {
             TimeToSleep = timeToSleep;
         }

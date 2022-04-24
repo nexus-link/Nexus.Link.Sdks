@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
-{ 
+{
     /// <summary>
     /// Common interface for both implementations that returns a value and for those that don't
     /// </summary>
@@ -27,14 +28,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <summary>
         /// The workflow container for all implementations
         /// </summary>
-        [Obsolete("Please use WorkflowContainer. Obsolete since 2022-02-10")]
-        IWorkflowVersions WorkflowVersions { get; }
+        IWorkflowContainer WorkflowContainer { get; }
 
         /// <summary>
-        /// The workflow container for all implementations
+        /// The options for the 
         /// </summary>
-        IWorkflowContainer WorkflowContainer { get; }
+        public ActivityOptions DefaultActivityOptions { get; }
     }
+
+
 
     /// <summary>
     /// An implementation that returns a result

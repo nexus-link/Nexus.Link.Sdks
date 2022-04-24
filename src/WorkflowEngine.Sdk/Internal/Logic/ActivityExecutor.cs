@@ -20,14 +20,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal class ActivityExecutor
     {
-        public IWorkflowImplementationBase WorkflowImplementation { get; }
         public Activity Activity { get; set; }
 
-        public ActivityExecutor(IWorkflowImplementationBase workflowImplementation, Activity activity)
+        public ActivityExecutor(Activity activity)
         {
-            InternalContract.RequireNotNull(workflowImplementation, nameof(workflowImplementation));
             InternalContract.RequireNotNull(activity, nameof(activity));
-            WorkflowImplementation = workflowImplementation;
             Activity = activity;
         }
 
@@ -227,11 +224,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private void BookKeeping()
         {
-            var activityInstance = Activity.Instance;
-            FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
-            FulcrumAssert.IsNotNullOrWhiteSpace(activityInstance.Id);
-            Activity.WorkflowCache.AddActivity(activityInstance.Id, Activity);
-            Activity.WorkflowCache.LatestActivity = Activity;
+            Activity.ActivityInformation.Workflow.AddActivity(Activity);
+            Activity.ActivityInformation.Workflow.LatestActivity = Activity;
             WorkflowStatic.Context.LatestActivity = Activity;
         }
 

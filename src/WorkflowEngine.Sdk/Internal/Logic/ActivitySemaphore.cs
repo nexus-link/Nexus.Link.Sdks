@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -19,19 +20,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         private static readonly Dictionary<string, ActivitySemaphore> RaisedActivitySemaphores = new();
 
         public string ResourceIdentifier { get; }
-        private readonly IWorkflowSemaphoreService _semaphoreService;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="activityFlow"></param>
+        /// <param name="activityInformation"></param>
         /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
-        public ActivitySemaphore(IInternalActivityFlow activityFlow, string resourceIdentifier)
-            : base(ActivityTypeEnum.Semaphore, activityFlow)
+        public ActivitySemaphore(IActivityInformation activityInformation, string resourceIdentifier)
+            : base(activityInformation)
         {
+            InternalContract.Require(ActivityInformation.Workflow.SemaphoreService != null, $"You must provide a {typeof(IWorkflowSemaphoreService)}.");
             ResourceIdentifier = resourceIdentifier;
             if (string.IsNullOrWhiteSpace(ResourceIdentifier)) ResourceIdentifier = "";
-            _semaphoreService = WorkflowInformation.WorkflowCapabilities.StateCapability.WorkflowSemaphore;
         }
 
         /// <inheritdoc />
@@ -57,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     // The semaphore has been lowered
                     return;
                 }
-                await _semaphoreService.ExtendAsync(semaphoreHolderId, null, cancellationToken);
+                await ActivityInformation.Workflow.SemaphoreService.ExtendAsync(semaphoreHolderId, null, cancellationToken);
                 lock (RaisedActivitySemaphores)
                 {
                     RaisedActivitySemaphores[CalculatedKey] = this;
@@ -66,20 +66,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             await InternalExecuteAsync((a, ct) => InternalRaiseAsync(limit, expiresAfter, ct), _ => Task.FromResult((string)null), cancellationToken);
         }
 
-        private string CalculatedKey => $"{WorkflowInformation.InstanceId}.{ResourceIdentifier}";
+        private string CalculatedKey => $"{WorkflowInstanceId}.{ResourceIdentifier}";
 
         private async Task<string> InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
         {
             InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
             var semaphoreCreate = new WorkflowSemaphoreCreate
             {
-                WorkflowFormId = WorkflowInformation.FormId,
+                WorkflowFormId = ActivityInformation.Workflow.FormId,
                 WorkflowInstanceId = WorkflowInstanceId,
                 ResourceIdentifier = ResourceIdentifier,
                 Limit = limit,
                 ExpirationTime = expiresAfter
             };
-            var semaphoreHolderId = await _semaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
+            var semaphoreHolderId = await ActivityInformation.Workflow.SemaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
             lock (RaisedActivitySemaphores)
             {
                 RaisedActivitySemaphores[CalculatedKey] = this;
@@ -91,7 +91,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public Task LowerAsync(CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync((a, ct) => InternalLowerAsync(ct), cancellationToken);
+            return InternalExecuteAsync((_, ct) => InternalLowerAsync(ct), cancellationToken);
         }
 
         private Task InternalLowerAsync(CancellationToken cancellationToken)
@@ -107,7 +107,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 activity!.Instance.ResultAsJson = JsonConvert.SerializeObject(null);
                 RaisedActivitySemaphores.Remove(CalculatedKey);
             }
-            return _semaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);
+            return ActivityInformation.Workflow.SemaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);
         }
     }
 }

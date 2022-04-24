@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -15,8 +14,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IEnumerable<TItem> Items { get; }
 
         public ActivityForEachSequential(
-            IInternalActivityFlow activityFlow, IEnumerable<TItem> items)
-            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
+            IActivityInformation activityInformation, IEnumerable<TItem> items)
+            : base(activityInformation)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             Items = items;
@@ -41,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 Iteration++;
                 await MapMethodAsync(item, method, activity, cancellationToken);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
             }
         }
 
@@ -62,8 +61,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IEnumerable<TItemType> Items { get; }
 
         public ActivityForEachSequential(
-            IInternalActivityFlow activityFlow, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(ActivityTypeEnum.ForEachSequential, activityFlow)
+            IActivityInformation activityInformation, IEnumerable<TItemType> items, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
@@ -91,7 +90,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 var result = await MapMethodAsync(item, method, activity, cancellationToken);
                 resultList.Add(result);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
             }
 
             return resultList;

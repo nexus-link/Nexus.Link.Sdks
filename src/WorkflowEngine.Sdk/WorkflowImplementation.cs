@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
@@ -31,16 +32,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public abstract string GetInstanceTitle();
 
         /// <inheritdoc />
-        [Obsolete("Please use WorkflowContainer. Obsolete since 2022-02-10")]
-        public IWorkflowVersions WorkflowVersions => WorkflowContainer as IWorkflowVersions;
-
-        /// <inheritdoc />
         public IWorkflowContainer WorkflowContainer { get; }
 
         /// <summary>
         /// The default options for all created activities.
         /// </summary>
-        public ActivityOptions DefaultActivityOptions => _workflowExecutor.DefaultActivityOptions;
+        public ActivityOptions DefaultActivityOptions { get; } = new();
 
         internal IActivity CurrentParentActivity => _workflowExecutor.GetCurrentParentActivity();
 
@@ -52,9 +49,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             WorkflowContainer = workflowContainer;
-            _workflowExecutor = new WorkflowExecutor(this);
+            _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this));
         }
-        
+
         /// <summary>
         /// Create one activity for the workflow implementation.
         /// </summary>

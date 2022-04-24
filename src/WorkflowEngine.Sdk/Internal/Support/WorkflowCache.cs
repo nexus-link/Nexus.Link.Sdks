@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -11,14 +12,12 @@ using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
-using WorkflowVersion = Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities.WorkflowVersion;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
     internal class WorkflowCache
     {
-        private readonly WorkflowInformation _workflowInformation;
+        private readonly IWorkflowInformation _workflowInformation;
 
         private readonly CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string> _activityFormCache;
 
@@ -41,8 +40,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             set => _summary.Instance = value;
         }
 
-        public Activity LatestActivity { get; set; }
-
         private readonly NexusAsyncSemaphore _semaphore = new();
         private readonly CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string> _activityVersionCache;
         private readonly CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string> _activityInstanceCache;
@@ -51,9 +48,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         private readonly CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string> _workflowInstanceCache;
 
         private readonly Dictionary<string, Activity> _activities = new();
-        internal ICollection<string> ActivitiesToPurge = new List<string>();
+        private readonly IWorkflowStateCapability _stateCapability;
 
-        public WorkflowCache(WorkflowInformation workflowInformation)
+        public WorkflowCache(IWorkflowInformation workflowInformation,
+            IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             _workflowInformation = workflowInformation;
             var crudPersistenceHelperOptions = new CrudPersistenceHelperOptions
@@ -61,12 +59,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
             };
 
-            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
-            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
-            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
-            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(_workflowInformation.WorkflowCapabilities.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
-            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(_workflowInformation.WorkflowCapabilities.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
-            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(_workflowInformation.WorkflowCapabilities.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
+            _stateCapability = workflowCapabilities.StateCapability;
+            _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(workflowCapabilities.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
+            _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(workflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
+            _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(workflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
+            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(workflowCapabilities.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
+            _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(workflowCapabilities.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
+            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(workflowCapabilities.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
         }
 
         public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)
@@ -75,41 +74,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
                 if (_summary != null) return _summary;
-                _summary = await _workflowInformation.WorkflowCapabilities.StateCapability.WorkflowSummary.GetSummaryAsync(
+                _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
                 RememberData(true);
-                if (_summary.Form == null)
+                _summary.Form ??= new WorkflowForm
                 {
-                    _summary.Form = new WorkflowForm
-                    {
-                        Id = _workflowInformation.FormId,
-                        CapabilityName = _workflowInformation.CapabilityName,
-                        Title = _workflowInformation.FormTitle
-                    };
-                }
-                if (_summary.Version == null)
+                    Id = _workflowInformation.FormId,
+                    CapabilityName = _workflowInformation.CapabilityName,
+                    Title = _workflowInformation.FormTitle
+                };
+                _summary.Version ??= new WorkflowVersion
                 {
-                    _summary.Version = new WorkflowVersion
-                    {
-                        Id = Guid.NewGuid().ToGuidString(),
-                        WorkflowFormId = _workflowInformation.FormId,
-                        MajorVersion = _workflowInformation.MajorVersion,
-                        MinorVersion = _workflowInformation.MinorVersion,
-                        DynamicCreate = true
-                    };
-                }
-                if (_summary.Instance == null)
+                    Id = Guid.NewGuid().ToGuidString(),
+                    WorkflowFormId = _workflowInformation.FormId,
+                    MajorVersion = _workflowInformation.MajorVersion,
+                    MinorVersion = _workflowInformation.MinorVersion,
+                    DynamicCreate = true
+                };
+                _summary.Instance ??= new WorkflowInstance
                 {
-                    _summary.Instance = new WorkflowInstance
-                    {
-                        Id = _workflowInformation.InstanceId,
-                        WorkflowVersionId = _summary.Version.Id,
-                        StartedAt = DateTimeOffset.UtcNow,
-                        InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
-                        Title = _workflowInformation.InstanceTitle,
-                        State = WorkflowStateEnum.Executing
-                    };
-                }
+                    Id = _workflowInformation.InstanceId,
+                    WorkflowVersionId = _summary.Version.Id,
+                    StartedAt = DateTimeOffset.UtcNow,
+                    InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
+                    Title = _workflowInformation.InstanceTitle,
+                    State = WorkflowStateEnum.Executing
+                };
                 return _summary;
             }, cancellationToken);
 
@@ -130,7 +120,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         private void RememberData(bool stored)
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
-            var tasks = new List<Task>();
             if (_summary.Form != null)
             {
                 _workflowFormCache.Add(_summary.Form.Id, _summary.Form, stored);
@@ -206,6 +195,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
         public void AddActivity(string activityInstanceId, IActivity activity)
         {
+            InternalContract.RequireNotNull(activity, nameof(activity));
             var internalActivity = activity as Activity;
             FulcrumAssert.IsNotNull(internalActivity, CodeLocation.AsString());
             _activities[activityInstanceId] = internalActivity;
@@ -227,42 +217,36 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             return parentActivity;
         }
 
-        public string GetOrCreateInstanceId(ActivityTypeEnum activityTypeEnum, IInternalActivityFlow activityFlow,
-            IActivity parentActivity)
+        public string GetOrCreateInstanceId(IActivityInformation activityInformation)
         {
-            var internalParentActivity = parentActivity as Activity;
-            if (parentActivity != null)
-            {
-                FulcrumAssert.IsNotNull(internalParentActivity, CodeLocation.AsString());
-            }
             lock (_summary)
             {
-                var form = GetActivityForm(activityFlow.ActivityFormId);
+                var form = GetActivityForm(activityInformation.FormId);
                 if (form == null)
                 {
                     form = new ActivityForm
                     {
-                        Id = activityFlow.ActivityFormId,
+                        Id = activityInformation.FormId,
                         WorkflowFormId = _workflowInformation.FormId,
-                        Title = activityFlow.FormTitle,
-                        Type = activityTypeEnum
+                        Title = activityInformation.FormTitle,
+                        Type = activityInformation.Type
                     };
                     _summary.ActivityForms.Add(form.Id, form);
                     _activityFormCache.Add(form.Id, form, false);
 
                 }
 
-                var version = GetActivityVersionByFormId(activityFlow.ActivityFormId);
+                var version = GetActivityVersionByFormId(activityInformation.FormId);
                 if (version == null)
                 {
                     version = new ActivityVersion
                     {
                         Id = Guid.NewGuid().ToGuidString(),
                         WorkflowVersionId = _summary.Version.Id,
-                        ActivityFormId = activityFlow.ActivityFormId,
-                        FailUrgency = activityFlow.Options.FailUrgency,
-                        ParentActivityVersionId = internalParentActivity?.Version?.Id,
-                        Position = activityFlow.Position
+                        ActivityFormId = activityInformation.FormId,
+                        FailUrgency = activityInformation.Options.FailUrgency,
+                        ParentActivityVersionId = activityInformation.Parent?.Version?.Id,
+                        Position = activityInformation.Position
                     };
                     _summary.ActivityVersions.Add(version.Id, version);
                     _activityVersionCache.Add(version.Id, version, false);
@@ -270,16 +254,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
                 var instance = _summary.ActivityInstances.Values.FirstOrDefault(i =>
                     i.ActivityVersionId == version.Id
-                    && i.ParentActivityInstanceId == internalParentActivity?.Instance.Id
-                    && i.ParentIteration == parentActivity?.Iteration);
+                    && i.ParentActivityInstanceId == activityInformation.Parent?.Instance.Id
+                    && i.ParentIteration == activityInformation.Parent?.Iteration);
                 if (instance != null) return instance.Id;
                 instance = new ActivityInstance
                 {
                     Id = Guid.NewGuid().ToGuidString(),
                     WorkflowInstanceId = _workflowInformation.InstanceId,
                     ActivityVersionId = version.Id,
-                    ParentActivityInstanceId = parentActivity?.ActivityInstanceId,
-                    ParentIteration = parentActivity?.Iteration,
+                    ParentActivityInstanceId = activityInformation.Parent?.ActivityInstanceId,
+                    ParentIteration = activityInformation.Parent?.Iteration,
                     State = ActivityStateEnum.Executing,
                     StartedAt = DateTimeOffset.UtcNow
                 };

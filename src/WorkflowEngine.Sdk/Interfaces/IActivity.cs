@@ -31,6 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// </summary>
     public interface IActivity : IWorkflowLogger
     {
+
         /// <summary>
         /// The instance id of the workflow
         /// </summary>

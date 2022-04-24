@@ -15,8 +15,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         public IEnumerable<TItemType> Items { get; }
 
-        public ActivityForEachParallel(IInternalActivityFlow activityFlow, IEnumerable<TItemType> items)
-            : base(ActivityTypeEnum.ForEachParallel, activityFlow)
+        public ActivityForEachParallel(IActivityInformation activityInformation, IEnumerable<TItemType> items)
+            : base(activityInformation)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             Items = items;
@@ -40,11 +40,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             foreach (var item in Items)
             {
                 Iteration++;
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
                 var task = MapMethodAsync(item, method, this, cancellationToken);
                 taskList.Add(task);
             }
-            WorkflowCache.LatestActivity = this;
+            ActivityInformation.Workflow.LatestActivity = this;
 
             await WorkflowHelper.WhenAllActivities(taskList);
         }
@@ -67,10 +67,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IEnumerable<TItem> Items { get; }
 
         public ActivityForEachParallel(
-            IInternalActivityFlow activityFlow,
+            IActivityInformation activityInformation,
             IEnumerable<TItem> items,
             Func<TItem, string> getKeyMethod)
-            : base(ActivityTypeEnum.ForEachParallel, activityFlow)
+            : base(activityInformation)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
@@ -108,11 +108,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     InternalContract.Require(false, $"The {nameof(_getKeyMethod)} method failed. You must make it safe, so that it never fails.");
                 }
                 InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
-                WorkflowCache.LatestActivity = this;
+                ActivityInformation.Workflow.LatestActivity = this;
                 var task = MapMethodAsync(item, method, activity, cancellationToken);
                 taskDictionary.Add(key!, task);
             }
-            WorkflowCache.LatestActivity = this;
+            ActivityInformation.Workflow.LatestActivity = this;
             return AggregatePostponeExceptions(taskDictionary);
         }
 

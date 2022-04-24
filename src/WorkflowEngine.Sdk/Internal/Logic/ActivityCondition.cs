@@ -5,6 +5,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -12,8 +13,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityCondition(IInternalActivityFlow activityFlow, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
-            : base(ActivityTypeEnum.Condition, activityFlow)
+        public ActivityCondition(IActivityInformation activityInformation, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+            : base(activityInformation)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }

@@ -20,8 +20,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var asyncRequestMgmtCapabilityMock = new Mock<IAsyncRequestMgmtCapability>();
             var workflowCapabilities = new WorkflowCapabilities(configurationTables, runtimeTables, asyncRequestMgmtCapabilityMock.Object);
             var workflowImplementation = new TestWorkflowImplementation(workflowCapabilities);
-            var workflowInfo = new WorkflowInformation(workflowImplementation);
-            FulcrumAssert.IsValidated(workflowInfo);
         }
     }
 
