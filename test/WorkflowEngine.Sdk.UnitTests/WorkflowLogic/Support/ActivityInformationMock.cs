@@ -1,4 +1,6 @@
-﻿using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+﻿using System.Collections.Generic;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -30,6 +32,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 
         /// <inheritdoc />
         public ActivityOptions Options { get; set; } = new ActivityOptions();
+
+        /// <inheritdoc />
+        public ICollection<LogCreate> Logs { get; set; } = new List<LogCreate>();
 
         /// <inheritdoc />
         public void DefineParameter<T>(string name)

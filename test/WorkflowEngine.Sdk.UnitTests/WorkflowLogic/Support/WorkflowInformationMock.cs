@@ -58,6 +58,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public ILogService LogService { get; set; } = null;
 
         /// <inheritdoc />
+        public ICollection<LogCreate> Logs { get; set; } = new List<LogCreate>();
+
+        /// <inheritdoc />
         public IWorkflowSemaphoreService SemaphoreService { get; set; } = null;
 
         /// <inheritdoc />
@@ -68,9 +71,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
 
         /// <inheritdoc />
         public Activity LatestActivity { get; set; }
-
-        /// <inheritdoc />
-        public ICollection<string> ActivitiesToPurge { get; set; } = new List<string>();
 
         /// <inheritdoc />
         public ActivityDefinition GetActivityDefinition(string activityFormId)

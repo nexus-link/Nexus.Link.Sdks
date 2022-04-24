@@ -88,6 +88,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowInformation.AggregateActivityInformation();
             await WorkflowInformation.SaveAsync(cancellationToken);
+            try
+            {
+                foreach (var logCreate in WorkflowInformation.Logs)
+                {
+                    await WorkflowInformation.LogService.CreateAsync(logCreate, cancellationToken);
+                }
+            }
+            catch (Exception)
+            {
+                if (FulcrumApplication.IsInDevelopment) throw;
+                // Don't let logging problems get in our way
+            }
+
             if (_workflowDistributedLock != null)
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
@@ -162,7 +175,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             switch (WorkflowInformation.DefaultActivityOptions.LogPurgeStrategy)
             {
                 case LogPurgeStrategyEnum.AfterActivitySuccess:
-                    purge = workflowInstance.IsComplete;
+                    // The logs has already been purged.
                     break;
                 case LogPurgeStrategyEnum.AfterWorkflowSuccess:
                     purge = workflowInstance.State == WorkflowStateEnum.Success;
@@ -182,11 +195,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             if (!purge) return;
-            foreach (var activityInstanceId in WorkflowInformation.ActivitiesToPurge)
-            {
-                var activity = WorkflowInformation.GetActivity(activityInstanceId);
-                await activity.PurgeLogsAsync(cancellationToken);
-            }
             await WorkflowInformation.LogService.DeleteWorkflowChildrenAsync(workflowInstance.Id, WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 

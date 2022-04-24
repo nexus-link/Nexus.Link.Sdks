@@ -15,10 +15,15 @@ using Log = Nexus.Link.Capabilities.WorkflowState.Abstract.Entities.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 {
+    /// <inheritdoc />
     public class LogService : ILogService
     {
         private readonly IRuntimeTables _runtimeTables;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="runtimeTables"></param>
         public LogService(IRuntimeTables runtimeTables)
         {
             _runtimeTables = runtimeTables;

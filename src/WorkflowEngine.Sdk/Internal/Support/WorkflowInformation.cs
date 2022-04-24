@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,6 +55,9 @@ internal class WorkflowInformation : IWorkflowInformation
     public ILogService LogService => _workflowImplementation.WorkflowContainer.WorkflowCapabilities.StateCapability.Log;
 
     /// <inheritdoc />
+    public ICollection<LogCreate> Logs { get; } = new List<LogCreate>();
+
+    /// <inheritdoc />
     public IWorkflowSemaphoreService SemaphoreService => _workflowImplementation.WorkflowContainer.WorkflowCapabilities.StateCapability.WorkflowSemaphore;
 
     /// <inheritdoc />
@@ -71,7 +75,7 @@ internal class WorkflowInformation : IWorkflowInformation
     public Activity LatestActivity { get; set; }
 
     /// <inheritdoc />
-    public ICollection<string> ActivitiesToPurge { get; } = new List<string>();
+    public ICollection<string> ActivitiesToPurgeLogsFor { get; } = new List<string>();
 
     /// <inheritdoc />
     public WorkflowForm Form => _workflowCache.Form;
@@ -224,6 +228,8 @@ internal interface IWorkflowInformation
     /// </summary>
     ILogService LogService { get; }
 
+    ICollection<LogCreate> Logs { get; }
+
     /// <summary>
     /// Service for dealing with semaphores
     /// </summary>
@@ -243,11 +249,6 @@ internal interface IWorkflowInformation
     /// The latest activity that was activated
     /// </summary>
     public Activity LatestActivity { get; set; }
-
-    /// <summary>
-    /// If an activity should be purged, it should be added to this list.
-    /// </summary>
-    ICollection<string> ActivitiesToPurge { get; }
 
     /// <summary>
     /// Get the definition for a specific activity

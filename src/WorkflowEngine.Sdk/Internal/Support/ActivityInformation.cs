@@ -1,5 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -64,6 +66,9 @@ internal class ActivityInformation : IActivityInformation
 
     /// <inheritdoc />
     public Activity Parent { get; }
+
+    /// <inheritdoc />
+    public ICollection<LogCreate> Logs { get; } = new List<LogCreate>();
 }
 
 internal interface IActivityInformation
@@ -108,6 +113,11 @@ internal interface IActivityInformation
     /// The options for this activity
     /// </summary>
     ActivityOptions Options { get; }
+
+    /// <summary>
+    /// Log records to be stored to the log table
+    /// </summary>
+    public ICollection<LogCreate> Logs { get; }
 
     /// <summary>
     /// Define an activity parameter named <paramref name="name"/> with type <typeparamref name="T"/>.

@@ -107,8 +107,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             try
             {
                 if ((int)severityLevel < (int)Options.LogCreateThreshold) return;
-                FulcrumAssert.IsNotNull(ActivityInformation, CodeLocation.AsString());
-                FulcrumAssert.IsNotNullOrWhiteSpace(message, nameof(message));
                 var jToken = WorkflowStatic.SafeConvertToJToken(data);
                 var log = new LogCreate
                 {
@@ -120,13 +118,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     Data = jToken,
                     TimeStamp = DateTimeOffset.UtcNow,
                 };
-                await ActivityInformation.Workflow.LogService.CreateAsync(log, cancellationToken);
+                ActivityInformation.Logs.Add(log);
             }
             catch (Exception)
             {
                 if (FulcrumApplication.IsInDevelopment) throw;
                 // Ignore logging problems when not in development mode.
             }
+
+            await Task.CompletedTask;
         }
 
         /// <inheritdoc />
@@ -211,11 +211,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             if (!purge) return;
-            ActivityInformation.Workflow.ActivitiesToPurge.Add(ActivityInstanceId);
+            foreach (var logCreate in ActivityInformation.Logs)
+            {
+                if ((int) logCreate.SeverityLevel <= (int) Options.LogPurgeThreshold) continue;
+                ActivityInformation.Workflow.Logs.Add(logCreate);
+            }
         }
 
         public Task PurgeLogsAsync(CancellationToken cancellationToken)
         {
+
+            foreach (var log in ActivityInformation.Workflow.Logs)
+            {
+                if (log.ActivityFormId != ActivityFormId) continue;
+
+            }
             return ActivityInformation.Workflow.LogService?.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
         }
 
