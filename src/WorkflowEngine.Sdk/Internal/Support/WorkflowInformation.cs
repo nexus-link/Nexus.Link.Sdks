@@ -156,6 +156,12 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public IActivityExecutor GetActivityExecutor(Activity activity)
+    {
+        return new ActivityExecutor(activity);
+    }
+
+    /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;
 
     /// <inheritdoc />
@@ -316,4 +322,9 @@ internal interface IWorkflowInformation
     /// Aggregate all status information from the workflow activities into one consolidated state for the workflow.
     /// </summary>
     void AggregateActivityInformation();
+
+    /// <summary>
+    /// Get an activity executor for <paramref name="activity"/>
+    /// </summary>
+    IActivityExecutor GetActivityExecutor(Activity activity);
 }

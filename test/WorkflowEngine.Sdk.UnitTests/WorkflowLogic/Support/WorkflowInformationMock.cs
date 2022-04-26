@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
@@ -20,6 +21,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         private ActivityInstance _activityInstance;
         private ActivityVersion _activityVersion;
         private ActivityForm _activityForm;
+
+        public Mock<IActivityExecutor> ActivityExecutorMock = new Mock<IActivityExecutor>();
 
         /// <inheritdoc />
         public string CapabilityName { get; set; } = "Capability name";
@@ -172,5 +175,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         {
             throw new NotImplementedException();
         }
+
+        /// <inheritdoc />
+        public IActivityExecutor GetActivityExecutor(Activity activity) => ActivityExecutorMock.Object;
     }
 }

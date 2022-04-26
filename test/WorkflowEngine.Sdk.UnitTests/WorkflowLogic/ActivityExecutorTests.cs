@@ -61,7 +61,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var minTime = DateTimeOffset.UtcNow;
 
             // Act
-            var actualValue = await executor.ExecuteAsync((a, t) => Task.FromResult(expectedValue), null);
+            var actualValue = await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(expectedValue), null);
 
             // Assert
             actualValue.ShouldBe(expectedValue);
@@ -79,12 +79,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             RequestPostponedException postponed = null;
             try
             {
-                await executor.ExecuteAsync(
-                    (a, t) => throw new Exception("Fail"));
+                await executor.ExecuteWithoutReturnValueAsync(_ => throw new Exception("Fail"));
             }
             catch (Exception e)
             {
-                e.ShouldBeAssignableTo<ExceptionTransporter>();
+                e.ShouldBeAssignableTo<WorkflowImplementationShouldNotCatchThisException>();
                 e.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
                 postponed = e.InnerException as RequestPostponedException;
             }
@@ -111,8 +110,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             executor.Activity.Version.FailUrgency = ActivityFailUrgencyEnum.Stopping;
 
             // Act & Assert
-            await Should.ThrowAsync<ExceptionTransporter>(() => executor.ExecuteAsync(
-                   (a, t) => throw new Exception("Fail")));
+            await Should.ThrowAsync<WorkflowImplementationShouldNotCatchThisException>(() => executor.ExecuteWithoutReturnValueAsync(
+                   _ =>throw new Exception("Fail")));
 
             alertResult.ShouldBe(true);
             executor.Activity.Instance.Id.ShouldNotBeNull();
@@ -134,8 +133,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             const int expectedValue = 10;
 
             // Act
-            var actualValue = await executor.ExecuteAsync(
-                (a, t) => throw new Exception("Fail"), ct => Task.FromResult(expectedValue));
+            var actualValue = await executor.ExecuteWithReturnValueAsync(
+                _ =>throw new Exception("Fail"), ct => Task.FromResult(expectedValue));
             await _workflowCache.SaveAsync();
             executor.Activity.Instance.Id.ShouldNotBeNull();
             var instance = executor.Activity.Instance;
@@ -156,9 +155,9 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedRequestId = Guid.NewGuid().ToGuidString();
 
             // Act & Assert
-            await Should.ThrowAsync<ExceptionTransporter>(
-                () => executor.ExecuteAsync<int>(
-                    (a, t) => throw new RequestPostponedException(expectedRequestId), null));
+            await Should.ThrowAsync<WorkflowImplementationShouldNotCatchThisException>(
+                () => executor.ExecuteWithReturnValueAsync<int>(
+                    _ =>throw new RequestPostponedException(expectedRequestId), null));
             await _workflowCache.SaveAsync();
             executor.Activity.Instance.Id.ShouldNotBeNull();
             var instance = executor.Activity.Instance;
@@ -179,12 +178,12 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             FulcrumTryAgainException tryAgain = null;
             try
             {
-                await executor.ExecuteAsync<int>(
-                    (a, t) => throw new FulcrumTryAgainException("Fail"), null);
+                await executor.ExecuteWithReturnValueAsync<int>(
+                    _ =>throw new FulcrumTryAgainException("Fail"), null);
             }
             catch (Exception e)
             {
-                e.ShouldBeAssignableTo<ExceptionTransporter>();
+                e.ShouldBeAssignableTo<WorkflowImplementationShouldNotCatchThisException>();
                 e.InnerException.ShouldBeAssignableTo<FulcrumTryAgainException>();
                 tryAgain = e.InnerException as FulcrumTryAgainException;
             }

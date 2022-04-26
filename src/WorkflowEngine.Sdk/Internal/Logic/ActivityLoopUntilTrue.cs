@@ -45,11 +45,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<IActivityLoopUntilTrue, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            await InternalExecuteAsync(
-                (a, ct) => LoopUntilMethod(method, a, ct), cancellationToken);
+            await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilMethod(method, ct), cancellationToken);
         }
 
-        private async Task LoopUntilMethod(Func<IActivityLoopUntilTrue, CancellationToken, Task> method, IActivity activity, CancellationToken cancellationToken)
+        private async Task LoopUntilMethod(Func<IActivityLoopUntilTrue, CancellationToken, Task> method, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -58,20 +57,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                await MapMethodAsync(method, activity, cancellationToken);
+                await method(this, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 ActivityInformation.Workflow.LatestActivity = this;
             } while (EndLoop != true);
-        }
-
-        private Task MapMethodAsync(
-            Func<IActivityLoopUntilTrue, CancellationToken, Task> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityLoopUntilTrue;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(loop, cancellationToken);
         }
     }
 
@@ -89,12 +79,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return await InternalExecuteAsync(
-                (a, ct) => LoopUntilMethod(method, a, ct),
+            return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilMethod(method, ct),
                 _getDefaultValueMethodAsync, cancellationToken);
         }
 
-        private async Task<TActivityReturns> LoopUntilMethod(Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, IActivity activity, CancellationToken cancellationToken)
+        private async Task<TActivityReturns> LoopUntilMethod(Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
+            CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -104,22 +94,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 Iteration++;
                 // TODO: Verify that we don't use the same values each iteration
-                result = await MapMethodAsync(method, activity, cancellationToken);
+                result = await method(this, cancellationToken);
                 InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 ActivityInformation.Workflow.LatestActivity = this;
             } while (EndLoop != true);
 
             return result;
-        }
-
-        private Task<TActivityReturns> MapMethodAsync(
-            Func<IActivityLoopUntilTrue<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityLoopUntilTrue<TActivityReturns>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(loop, cancellationToken);
         }
     }
 }

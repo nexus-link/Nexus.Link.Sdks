@@ -20,7 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
     /// This middleware is a collection of all the middleware features that are provided by Nexus Link. Use <see name="INexusLinkMiddlewareOptions"/>
     /// to specify exactly how they should behave.
     /// </summary>
-    [Obsolete("Please use AsyncManagerMiddleware. Obsolete since 2022-04-07.")]
+    [Obsolete("Please use Nexus.Link.Misc.AspNet.Sdk.Inbound.NexusLinkMiddleware. Obsolete since 2022-04-07.")]
     public class WorkflowEngineMiddleware
     {
         protected readonly RequestDelegate Next;

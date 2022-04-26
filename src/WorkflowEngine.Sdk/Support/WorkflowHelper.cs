@@ -27,7 +27,7 @@ public class WorkflowHelper
             {
                 await task;
             }
-            catch (ExceptionTransporter et)
+            catch (WorkflowImplementationShouldNotCatchThisException et)
             {
                 if (et.InnerException is RequestPostponedException rpe)
                 {

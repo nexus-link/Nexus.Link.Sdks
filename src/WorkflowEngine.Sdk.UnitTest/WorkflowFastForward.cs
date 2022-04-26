@@ -68,7 +68,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         if (string.Equals(BreakAtActivityFormId, activityFormId, StringComparison.InvariantCultureIgnoreCase))
         {
             if (BreakAtIteration.Value != iteration) return;
-            throw new ExceptionTransporter(new WorkflowFastForwardBreakException());
+            throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException());
         }
     }
 
@@ -148,7 +148,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
                 if (BreakAtIteration.Value != parentActivity.Iteration.Value) return;
             }
 
-            throw new ExceptionTransporter(new WorkflowFastForwardBreakException());
+            throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException());
         }
     }
 }

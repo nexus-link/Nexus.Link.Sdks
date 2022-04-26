@@ -20,25 +20,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<IActivityAction, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync((instance, t) => MapMethodAsync(method, instance, t), cancellationToken);
-        }
-
-        private Task MapMethodAsync(
-            Func<IActivityAction, CancellationToken, Task> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var action = instance as IActivityAction;
-            FulcrumAssert.IsNotNull(action, CodeLocation.AsString());
-            return method(action, cancellationToken);
+            return ActivityExecutor.ExecuteWithoutReturnValueAsync( ct => method(this, ct), cancellationToken);
         }
     }
 
-    internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
+    internal class ActivityAction<TActivityReturns> : Activity, IActivityAction<TActivityReturns>
     {
         private readonly Func<CancellationToken, Task<TActivityReturns>> _getDefaultValueMethodAsync;
 
-        public ActivityAction(
-            IActivityInformation activityInformation, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+        public ActivityAction(IActivityInformation activityInformation, Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
             : base(activityInformation)
         {
             _getDefaultValueMethodAsync = getDefaultValueMethodAsync;
@@ -47,16 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<IActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
             CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync((instance, t) => MapMethodAsync(method, instance, t), _getDefaultValueMethodAsync, cancellationToken);
-        }
-
-        private Task<TActivityReturns> MapMethodAsync(
-            Func<IActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method, 
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var action = instance as IActivityAction<TActivityReturns>;
-            FulcrumAssert.IsNotNull(action, CodeLocation.AsString());
-            return method(action, cancellationToken);
+            return ActivityExecutor.ExecuteWithReturnValueAsync( ct => method(this, ct), _getDefaultValueMethodAsync, cancellationToken);
         }
     }
 }

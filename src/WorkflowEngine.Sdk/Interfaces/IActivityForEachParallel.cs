@@ -24,7 +24,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
     /// </summary>
-    public interface IActivityForEachParallel<TActivityReturns, out TItem> : IActivity<TActivityReturns>
+    public interface IActivityForEachParallel<TActivityReturns, out TItem> : IActivity
     {
         /// <summary>
         /// The items to loop over

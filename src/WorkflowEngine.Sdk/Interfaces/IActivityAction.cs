@@ -15,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
     /// </summary>
-    public interface IActivityAction<TActivityReturns> : IActivity<TActivityReturns>
+    public interface IActivityAction<TActivityReturns> : IActivity
     {
         Task<TActivityReturns> ExecuteAsync(
             Func<IActivityAction<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,

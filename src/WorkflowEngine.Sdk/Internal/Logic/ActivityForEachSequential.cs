@@ -26,32 +26,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync(
-                (a, ct) => ForEachMethod(method, a, ct),
+            return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachMethod(method, ct),
                 cancellationToken);
         }
 
-        private async Task ForEachMethod(Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method, IActivity activity, CancellationToken cancellationToken)
+        private async Task ForEachMethod(Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method, CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
             foreach (var item in Items)
             {
                 Iteration++;
-                await MapMethodAsync(item, method, activity, cancellationToken);
+                await method(item, this, cancellationToken);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 ActivityInformation.Workflow.LatestActivity = this;
             }
-        }
-
-        private Task MapMethodAsync(
-            TItem item,
-            Func<TItem, IActivityForEachSequential<TItem>, CancellationToken, Task> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityForEachSequential<TItem>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
         }
     }
 
@@ -74,12 +63,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync(
-                (a, ct) => ForEachMethod(method, a, ct),
+            return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachMethod(method, ct),
                 (ct) => null, cancellationToken);
         }
 
-        private async Task<IList<TActivityReturns>> ForEachMethod(Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method, IActivity activity, CancellationToken cancellationToken)
+        private async Task<IList<TActivityReturns>> ForEachMethod(
+            Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
+            CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -87,23 +77,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             foreach (var item in Items)
             {
                 Iteration++;
-                var result = await MapMethodAsync(item, method, activity, cancellationToken);
+                var result = await method(item, this, cancellationToken);
                 resultList.Add(result);
                 FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
                 ActivityInformation.Workflow.LatestActivity = this;
             }
 
             return resultList;
-        }
-
-        private Task<TActivityReturns> MapMethodAsync(
-            TItemType item,
-            Func<TItemType, IActivityForEachSequential<TActivityReturns, TItemType>, CancellationToken, Task<TActivityReturns>> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityForEachSequential<TActivityReturns, TItemType>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
         }
     }
 }

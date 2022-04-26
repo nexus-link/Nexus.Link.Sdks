@@ -27,9 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<TItemType, IActivityForEachParallel<TItemType>, CancellationToken, Task> method,
             CancellationToken cancellationToken = default)
         {
-            await InternalExecuteAsync(
-                (_, ct) => ForEachMethod(method, ct),
-                cancellationToken);
+            await ActivityExecutor.ExecuteWithoutReturnValueAsync( ct => ForEachMethod(method, ct), cancellationToken);
         }
 
         private async Task ForEachMethod(Func<TItemType, IActivityForEachParallel<TItemType>, CancellationToken, Task> method, CancellationToken cancellationToken)
@@ -41,22 +39,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 Iteration++;
                 ActivityInformation.Workflow.LatestActivity = this;
-                var task = MapMethodAsync(item, method, this, cancellationToken);
+                var task = method(item, this, cancellationToken);
                 taskList.Add(task);
             }
             ActivityInformation.Workflow.LatestActivity = this;
 
             await WorkflowHelper.WhenAllActivities(taskList);
-        }
-
-        private Task MapMethodAsync(
-            TItemType item,
-            Func<TItemType, IActivityForEachParallel<TItemType>, CancellationToken, Task> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityForEachParallel<TItemType>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
         }
     }
 
@@ -83,14 +71,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync(
-                (a, ct) => ForEachMethod(method, a, ct),
-                (_) => null, cancellationToken);
+            return ActivityExecutor.ExecuteWithReturnValueAsync( ct => ForEachMethod(method, ct),
+                _ => null, cancellationToken);
         }
 
-        private Task<IDictionary<string, TActivityReturns>> ForEachMethod(Func<TItem,
-                IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
-            IActivity activity, CancellationToken cancellationToken)
+        private Task<IDictionary<string, TActivityReturns>> ForEachMethod(
+            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
+            CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -109,21 +96,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
                 ActivityInformation.Workflow.LatestActivity = this;
-                var task = MapMethodAsync(item, method, activity, cancellationToken);
+                var task = method(item, this, cancellationToken);
                 taskDictionary.Add(key!, task);
             }
             ActivityInformation.Workflow.LatestActivity = this;
             return AggregatePostponeExceptions(taskDictionary);
-        }
-
-        private Task<TActivityReturns> MapMethodAsync(
-            TItem item,
-            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var loop = instance as IActivityForEachParallel<TActivityReturns, TItem>;
-            FulcrumAssert.IsNotNull(loop, CodeLocation.AsString());
-            return method(item, loop, cancellationToken);
         }
 
         private static async Task<IDictionary<string, TActivityReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TActivityReturns>> taskDictionary)

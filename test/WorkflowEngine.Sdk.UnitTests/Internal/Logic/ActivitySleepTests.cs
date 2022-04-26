@@ -29,7 +29,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
 
             // Act
             var exception = await activity.ExecuteAsync()
-                .ShouldThrowAsync<ExceptionTransporter>();
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
 
             // Assert
             exception.InnerException.ShouldNotBeNull();
@@ -48,7 +48,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var timeSpan = TimeSpan.FromMilliseconds(10);
             var activity = new ActivitySleep(activityInformation, timeSpan);
             var exception = await activity.ExecuteAsync()
-                .ShouldThrowAsync<ExceptionTransporter>();
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
             exception.InnerException.ShouldNotBeNull();
             var innerException = exception.InnerException as RequestPostponedException;
             innerException.ShouldNotBeNull();

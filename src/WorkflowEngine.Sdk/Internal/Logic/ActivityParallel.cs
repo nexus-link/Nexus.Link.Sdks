@@ -53,8 +53,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
         {
-            var result = await InternalExecuteAsync(
-                (_, ct) => ExecuteJobsAsync(ct),
+            var result = await ActivityExecutor.ExecuteWithReturnValueAsync(
+                ExecuteJobsAsync,
                 _ => null,
                 cancellationToken);
             return result;
@@ -67,14 +67,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 Iteration = index;
                 ActivityInformation.Workflow.LatestActivity = this;
-                var task = MapMethodAsync(job, this, cancellationToken);
+                var task = job(this, cancellationToken);
                 _voidTasks.Add(index, task);
             }
             foreach (var (index, job) in _objectJobs)
             {
                 Iteration = index;
                 ActivityInformation.Workflow.LatestActivity = this;
-                var task = MapMethodAsync(job, this, cancellationToken);
+                var task = job(this, cancellationToken);
                 _objectTasks.Add(index, task);
             }
             ActivityInformation.Workflow.LatestActivity = this;
@@ -89,15 +89,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 jobResults.Add(index, result, _objectTypes[index]);
             }
             return jobResults;
-        }
-
-        private static Task MapMethodAsync(
-            Func<IActivityParallel, CancellationToken, Task> method,
-            IActivity instance, CancellationToken cancellationToken)
-        {
-            var activity = instance as IActivityParallel;
-            FulcrumAssert.IsNotNull(activity, CodeLocation.AsString());
-            return method(activity, cancellationToken);
         }
     }
 }

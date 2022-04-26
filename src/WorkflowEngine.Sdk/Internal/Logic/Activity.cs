@@ -11,7 +11,9 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -22,7 +24,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         public IActivityInformation ActivityInformation { get; }
 
-        private readonly ActivityExecutor _activityExecutor;
+        protected IActivityExecutor ActivityExecutor { get; }
+
         public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
 
         /// <inheritdoc />
@@ -97,7 +100,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             ActivityInstanceId = ActivityInformation.Workflow.GetOrCreateInstanceId(activityInformation);
-            _activityExecutor = new ActivityExecutor(this);
+            ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
         }
 
         /// <inheritdoc />
@@ -174,24 +177,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return true;
         }
 
-        public Task<TMethodReturnType> InternalExecuteAsync<TMethodReturnType>(
-            ActivityMethod<TMethodReturnType> method,
-            Func<CancellationToken, Task<TMethodReturnType>> getDefaultValueMethodAsync,
-            CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(method, nameof(method));
-            return _activityExecutor.ExecuteAsync(method, getDefaultValueMethodAsync, cancellationToken);
-        }
-
-        public async Task InternalExecuteAsync(
-            ActivityMethod method,
-            CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(method, nameof(method));
-            await _activityExecutor.ExecuteAsync(method, cancellationToken);
-        }
-
-        public void PrepareForLogPurge(CancellationToken cancellationToken)
+        public void MaybePurgeLogs(CancellationToken cancellationToken)
         {
             var purge = false;
             switch (Options.LogPurgeStrategy)
@@ -218,25 +204,51 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
-        public Task PurgeLogsAsync(CancellationToken cancellationToken)
+        public Task MarkasFailedAsync(ActivityException exception, CancellationToken cancellationToken = default)
         {
-
-            foreach (var log in ActivityInformation.Workflow.Logs)
-            {
-                if (log.ActivityFormId != ActivityFormId) continue;
-
-            }
-            return ActivityInformation.Workflow.LogService?.DeleteActivityChildrenAsync(WorkflowInstanceId, Form.Id, Options.LogPurgeThreshold, cancellationToken);
+            Instance.State = ActivityStateEnum.Failed;
+            Instance.FinishedAt = DateTimeOffset.UtcNow;
+            ContextDictionary.Clear();
+            Instance.ExceptionCategory = exception.ExceptionCategory;
+            Instance.ExceptionTechnicalMessage = exception.TechnicalMessage;
+            Instance.ExceptionFriendlyMessage = exception.FriendlyMessage;
+            return SafeAlertExceptionAsync(cancellationToken);
         }
 
-
-    }
-
-    internal abstract class Activity<TResult> : Activity, IActivity<TResult>
-    {
-        protected Activity(IActivityInformation activityInformation) 
-            : base(activityInformation)
+        public async Task SafeAlertExceptionAsync(CancellationToken cancellationToken)
         {
+            if (Instance.State != ActivityStateEnum.Failed) return;
+            if (Instance.ExceptionCategory == null)
+            {
+                await this.LogErrorAsync($"Instance.ExceptionCategory unexpectedly was null. {CodeLocation.AsString()}",
+                    Instance, cancellationToken);
+                return;
+            }
+
+            if (Instance.ExceptionAlertHandled.HasValue &&
+                Instance.ExceptionAlertHandled.Value) return;
+
+            if (Options.ExceptionAlertHandler == null) return;
+
+            var alert = new ActivityExceptionAlert
+            {
+                Activity = this,
+                ExceptionCategory = Instance.ExceptionCategory!.Value,
+                ExceptionFriendlyMessage =
+                    Instance.ExceptionFriendlyMessage,
+                ExceptionTechnicalMessage =
+                    Instance.ExceptionTechnicalMessage
+            };
+            try
+            {
+                var handled =
+                    await Options.ExceptionAlertHandler(alert, cancellationToken);
+                Instance.ExceptionAlertHandled = handled;
+            }
+            catch (Exception)
+            {
+                // We will try again next reentry.
+            }
         }
     }
 }

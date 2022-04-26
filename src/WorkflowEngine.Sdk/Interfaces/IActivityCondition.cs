@@ -8,13 +8,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// An activity of type <see cref="ActivityTypeEnum.Condition"/>.
     /// </summary>
-    public interface IActivityCondition<TActivityReturns> : IActivity<TActivityReturns>
+    public interface IActivityCondition<TActivityReturns> : IActivity
     {
         /// <summary>
         /// The logic to calculate the condition value
         /// </summary>
         Task<TActivityReturns> ExecuteAsync(
-            Func<IActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> conditionMethodAsync,
+            Func<IActivityCondition<TActivityReturns>, CancellationToken, Task<TActivityReturns>> method,
             CancellationToken cancellationToken = default);
 
         /// <summary>

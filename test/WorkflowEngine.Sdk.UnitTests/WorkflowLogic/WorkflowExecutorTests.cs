@@ -67,7 +67,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedTechnicalMessage = Guid.NewGuid().ToGuidString();
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new ExceptionTransporter(new WorkflowFastForwardBreakException()));
+                ct => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException()));
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
@@ -84,7 +84,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             var expectedTechnicalMessage = Guid.NewGuid().ToGuidString();
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new ExceptionTransporter(new WorkflowFailedException(ActivityExceptionCategoryEnum.TechnicalError, expectedTechnicalMessage, expectedFriendlyMessage)));
+                ct => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, expectedTechnicalMessage, expectedFriendlyMessage)));
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
@@ -132,7 +132,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new ExceptionTransporter(new Exception()));
+                ct => throw new WorkflowImplementationShouldNotCatchThisException(new Exception()));
             information = new WorkflowInformation(implementation);
             executor = new WorkflowExecutor(information);
 

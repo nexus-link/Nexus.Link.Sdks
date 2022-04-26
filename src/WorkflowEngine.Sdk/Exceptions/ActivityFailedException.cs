@@ -2,7 +2,12 @@
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {
-    internal class WorkflowFailedException : ActivityFailedException
+    /// <summary>
+    /// Use this exception if your activity failed.
+    /// </summary>
+#pragma warning disable CS0618
+    public class ActivityFailedException : ActivityException
+#pragma warning restore CS0618
     {
 
         /// <summary>
@@ -11,7 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
         /// <param name="exceptionCategory">The failure category</param>
         /// <param name="technicalMessage">A message directed to a developer</param>
         /// <param name="friendlyMessage">A message directed to a business person</param>
-        public WorkflowFailedException(ActivityExceptionCategoryEnum exceptionCategory, string technicalMessage, string friendlyMessage) : base(exceptionCategory, technicalMessage, friendlyMessage)
+        public ActivityFailedException(ActivityExceptionCategoryEnum exceptionCategory, string technicalMessage, string friendlyMessage) : base(exceptionCategory, technicalMessage, friendlyMessage)
         {
         }
     }

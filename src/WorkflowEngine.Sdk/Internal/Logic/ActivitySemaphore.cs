@@ -63,7 +63,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     RaisedActivitySemaphores[CalculatedKey] = this;
                 }
             }
-            await InternalExecuteAsync((a, ct) => InternalRaiseAsync(limit, expiresAfter, ct), _ => Task.FromResult((string)null), cancellationToken);
+            await ActivityExecutor.ExecuteWithReturnValueAsync(
+                ct => InternalRaiseAsync(limit, expiresAfter, ct),
+                _ => Task.FromResult((string)null),
+                cancellationToken);
         }
 
         private string CalculatedKey => $"{WorkflowInstanceId}.{ResourceIdentifier}";
@@ -91,7 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public Task LowerAsync(CancellationToken cancellationToken = default)
         {
-            return InternalExecuteAsync((_, ct) => InternalLowerAsync(ct), cancellationToken);
+            return ActivityExecutor.ExecuteWithoutReturnValueAsync(InternalLowerAsync, cancellationToken);
         }
 
         private Task InternalLowerAsync(CancellationToken cancellationToken)

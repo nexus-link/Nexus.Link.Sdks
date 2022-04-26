@@ -228,7 +228,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private async Task<Exception> HandleAndCreateAsync(Exception exception, CancellationToken cancellationToken)
         {
-            if (exception is not ExceptionTransporter exceptionTransporter)
+            if (exception is not WorkflowImplementationShouldNotCatchThisException exceptionTransporter)
             {
                 await UnexpectedExceptionAsync(exception);
                 return new RequestPostponedException();

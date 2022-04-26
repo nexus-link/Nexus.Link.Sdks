@@ -9,22 +9,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// The implementation method for an activity.
     /// </summary>
-    /// <param name="activity">Access to information about the current activity.</param>
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TMethodReturnType">The type of the returned value from the method</typeparam>
-    public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(
-        IActivity activity,
-        CancellationToken cancellationToken);
+    public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(CancellationToken cancellationToken);
 
     /// <summary>
     /// The implementation method for an activity with no return value.
     /// </summary>
-    /// <param name="activity">Access to information about the current activity.</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public delegate Task ActivityMethod(
-        IActivity activity,
-        CancellationToken cancellationToken);
+    public delegate Task ActivityMethod(CancellationToken cancellationToken);
 
     /// <summary>
     /// Basic information about a workflow activity, this is the base information for all types of activities.
@@ -134,12 +128,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// saved in the database between runs and reset to empty after the activity has been completed.
         /// </remarks>
         bool TryGetContext<T>(string key, out T value);
-    }
-
-    /// <summary>
-    /// Information about a workflow activity that returns a value
-    /// </summary>
-    public interface IActivity<TResult> : IActivity
-    {
     }
 }

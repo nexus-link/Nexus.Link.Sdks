@@ -26,9 +26,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             if (Instance.HasCompleted) return;
             var now = DateTimeOffset.UtcNow;
-            var sleepUntil = await InternalExecuteAsync((_, _) => Task.FromResult(now.Add(TimeToSleep)), null, cancellationToken);
+            var sleepUntil = await ActivityExecutor.ExecuteWithReturnValueAsync(_ => Task.FromResult(now.Add(TimeToSleep)), null, cancellationToken);
             if (sleepUntil <= now) return;
-            throw new ExceptionTransporter(new RequestPostponedException
+            throw new WorkflowImplementationShouldNotCatchThisException(new RequestPostponedException
             {
                 TryAgain = true,
                 TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
