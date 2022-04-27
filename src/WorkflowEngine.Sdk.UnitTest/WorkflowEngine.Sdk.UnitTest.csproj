@@ -45,7 +45,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.2.7 Added missing activity types to switch statement
+      1.2.7 Added missing activity types to switch statement 
       1.2.6 Bump
       1.2.1 Renamed SetBreakCondition to BreakBeforeActivity
       1.2.0 Added WorkflowSemaphore

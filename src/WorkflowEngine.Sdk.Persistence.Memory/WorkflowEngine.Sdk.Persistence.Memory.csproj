@@ -39,7 +39,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.0.1
+      2.0.1 Bump
       2.0.0 Refactored Semaphores. Not backwards compatible
       1.6.0 Added HashTable
       1.5.0 Added WorkflowSemaphore
