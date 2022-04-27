@@ -10,7 +10,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
@@ -72,10 +72,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             throw new RequestPostponedException(requestId);
         }
 
-        private string ToLogString(Activity activity) =>
+        private string ToLogString(IInternalActivity activity) =>
             $"{activity} in workflow instance {WorkflowStatic.Context.WorkflowInstanceId}";
 
-        private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, Activity activity, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, IInternalActivity activity, CancellationToken cancellationToken)
         {
             InternalContract.Require(!activity.Instance.HasCompleted, "The activity instance must not be completed.");
             var asyncResponse = await _asyncRequestMgmtCapability.RequestResponse.ReadResponseAsync(activity.Instance.AsyncRequestId,
@@ -84,7 +84,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 
             if (asyncResponse.HttpStatus == null)
             {
-                throw new ActivityException(
+                throw new ActivityFailedException(
                     ActivityExceptionCategoryEnum.TechnicalError,
                     $"A remote method returned an exception with the name {asyncResponse.Exception.Name} and message: {asyncResponse.Exception.Message}",
                     $"A remote method failed with the following message: {asyncResponse.Exception.Message}");

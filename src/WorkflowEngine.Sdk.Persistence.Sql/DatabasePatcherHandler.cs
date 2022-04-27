@@ -66,7 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             }
             catch (Exception e)
             {
-                throw new FulcrumAssertionFailedException($"Could not patch database '{connection.Database}': {e.Message}", e);
+                throw new FulcrumAssertionFailedException($"Could not patch database '{connection.Database}': {e}", e);
             }
 
             // Now, if the level used by the SDK version is lower than the version in database,
@@ -85,7 +85,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
             catch (Exception e)
             {
                 if (e is FulcrumBusinessRuleException) throw;
-                throw new FulcrumAssertionFailedException($"Could not read patch level of database '{connection.Database}': {e.Message}", e);
+                throw new FulcrumAssertionFailedException($"Could not read patch level of database '{connection.Database}': {e}", e);
             }
         }
 

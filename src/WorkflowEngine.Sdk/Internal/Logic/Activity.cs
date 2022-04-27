@@ -4,40 +4,51 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
-    /// <inheritdoc />
-    internal abstract class Activity : IActivity
+    /// <inheritdoc cref="IInternalActivity" />
+    internal abstract class Activity : ActivityBase, IInternalActivity
     {
-        public IActivityInformation ActivityInformation { get; }
+
+        protected Activity(IActivityInformation activityInformation)
+            : base(activityInformation)
+        {
+            var parentActivity = ActivityInformation.Workflow.GetCurrentParentActivity();
+            if (parentActivity != null)
+            {
+                NestedIterations.AddRange(parentActivity.NestedIterations);
+                if (parentActivity.Iteration is > 0)
+                {
+                    NestedIterations.Add(parentActivity.Iteration.Value);
+                }
+                NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
+            }
+            else
+            {
+                NestedPosition = $"{ActivityInformation.Position}";
+            }
+
+            ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
+            ActivityInformation.Workflow.AddActivity(this);
+            ActivityInformation.Workflow.LatestActivity = this;
+            WorkflowStatic.Context.LatestActivity = this;
+        }
 
         protected IActivityExecutor ActivityExecutor { get; }
 
         public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
-
-        /// <inheritdoc />
-        public string WorkflowInstanceId => ActivityInformation.Workflow.InstanceId;
-
-        /// <inheritdoc />
-        public DateTimeOffset WorkflowStartedAt => ActivityInformation.Workflow.StartedAt;
-
-        /// <inheritdoc />
-        public string ActivityInstanceId { get; internal set; }
-
-        public string ActivityFormId => ActivityInformation.FormId;
 
         /// <inheritdoc />
         public string ActivityTitle
@@ -55,17 +66,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public int? Iteration { get; set; }
-
-        /// <inheritdoc />
-        public ActivityOptions Options => ActivityInformation.Options;
-
-        /// <inheritdoc />
-        [Obsolete("Please use Options.FailUrgency. Compilation warning since 2021-11-19.")]
-        public ActivityFailUrgencyEnum FailUrgency => Options.FailUrgency;
-
-        protected internal ActivityForm Form => ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
-        public ActivityVersion Version => ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
-        public ActivityInstance Instance => ActivityInformation.Workflow.GetActivityInstance(ActivityInstanceId);
         public string NestedPosition { get; }
         public string NestedPositionAndTitle => $"{NestedPosition} {ActivityInformation.FormTitle}";
 
@@ -79,29 +79,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         [Obsolete("Please use Options.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
         public ActivityExceptionAlertHandler ExceptionAlertHandler => Options.ExceptionAlertHandler;
-
-        protected Activity(IActivityInformation activityInformation)
-        {
-            InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
-            ActivityInformation = activityInformation;
-            var parentActivity = ActivityInformation.Workflow.GetCurrentParentActivity();
-            if (parentActivity != null)
-            {
-                NestedIterations.AddRange(parentActivity.NestedIterations);
-                if (parentActivity.Iteration is > 0)
-                {
-                    NestedIterations.Add(parentActivity.Iteration.Value);
-                }
-                NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
-            }
-            else
-            {
-                NestedPosition = $"{ActivityInformation.Position}";
-            }
-
-            ActivityInstanceId = ActivityInformation.Workflow.GetOrCreateInstanceId(activityInformation);
-            ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
-        }
 
         /// <inheritdoc />
         public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null, CancellationToken cancellationToken = default)
@@ -177,7 +154,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return true;
         }
 
-        public void MaybePurgeLogs(CancellationToken cancellationToken)
+        public void MaybePurgeLogs()
         {
             var purge = false;
             switch (Options.LogPurgeStrategy)
@@ -202,17 +179,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 if ((int) logCreate.SeverityLevel <= (int) Options.LogPurgeThreshold) continue;
                 ActivityInformation.Workflow.Logs.Add(logCreate);
             }
-        }
-
-        public Task MarkasFailedAsync(ActivityException exception, CancellationToken cancellationToken = default)
-        {
-            Instance.State = ActivityStateEnum.Failed;
-            Instance.FinishedAt = DateTimeOffset.UtcNow;
-            ContextDictionary.Clear();
-            Instance.ExceptionCategory = exception.ExceptionCategory;
-            Instance.ExceptionTechnicalMessage = exception.TechnicalMessage;
-            Instance.ExceptionFriendlyMessage = exception.FriendlyMessage;
-            return SafeAlertExceptionAsync(cancellationToken);
         }
 
         public async Task SafeAlertExceptionAsync(CancellationToken cancellationToken)
@@ -249,6 +215,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 // We will try again next reentry.
             }
+        }
+    }
+
+    /// <inheritdoc/>
+    internal abstract class Activity<TActivityReturns> : Activity
+    {
+
+        protected ActivityDefaultValueMethodAsync<TActivityReturns> GetDefaultValueMethodAsync { get; }
+
+        protected Activity(IActivityInformation activityInformation,
+            ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueMethodAsync)
+            : base(activityInformation)
+        {
+            GetDefaultValueMethodAsync = getDefaultValueMethodAsync;
         }
     }
 }

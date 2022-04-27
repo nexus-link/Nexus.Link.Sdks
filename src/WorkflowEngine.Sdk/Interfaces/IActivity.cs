@@ -1,50 +1,34 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
     /// <summary>
-    /// The implementation method for an activity.
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <typeparam name="TMethodReturnType">The type of the returned value from the method</typeparam>
-    public delegate Task<TMethodReturnType> ActivityMethod<TMethodReturnType>(CancellationToken cancellationToken);
-
-    /// <summary>
     /// The implementation method for an activity with no return value.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public delegate Task ActivityMethod(CancellationToken cancellationToken);
+    public delegate Task ActivityMethodAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The implementation method for an activity with a return value.
+    /// </summary>
+    /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+    public delegate Task<TMethodReturns> ActivityMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// A method that returns a default value for an activity.
+    /// </summary>
+    /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+    /// <remarks>
+    /// The default value is used if the <see cref="ActivityMethodAsync{TMethodReturns}"/> throws an exception that can be ignored.
+    /// </remarks>
+    public delegate Task<TMethodReturns> ActivityDefaultValueMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
 
     /// <summary>
     /// Basic information about a workflow activity, this is the base information for all types of activities.
     /// </summary>
-    public interface IActivity : IWorkflowLogger
+    public interface IActivity : IActivityBase, IWorkflowLogger
     {
-
-        /// <summary>
-        /// The instance id of the workflow
-        /// </summary>
-        string WorkflowInstanceId { get; }
-
-        /// <summary>
-        /// The date and time when the workflow started
-        /// </summary>
-        DateTimeOffset WorkflowStartedAt { get; }
-
-        /// <summary>
-        /// The instance id of the activity
-        /// </summary>
-        string ActivityInstanceId { get; }
-
-        /// <summary>
-        /// The form id of the activity
-        /// </summary>
-        string ActivityFormId { get; }
 
         /// <summary>
         /// The title of this activity
@@ -62,17 +46,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// 
         int? Iteration { get; }
-
-        /// <summary>
-        /// The <see cref="ActivityOptions"/> for this activity.
-        /// </summary>
-        ActivityOptions Options { get; }
-
-        /// <summary>
-        /// The fail urgency for this activity
-        /// </summary>
-        [Obsolete("Please use Options.FailUrgency. Compilation warning since 2021-11-19.")]
-        ActivityFailUrgencyEnum FailUrgency { get; }
 
         /// <summary>
         /// Access to the activity arguments

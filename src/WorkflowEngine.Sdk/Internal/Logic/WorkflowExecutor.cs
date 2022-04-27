@@ -14,7 +14,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -278,10 +278,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            WorkflowStatic.Context.LatestActivity = WorkflowInformation.LatestActivity;
-
             var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
-
             var flow = new ActivityFlow<TActivityReturns>(activityInformation);
             return flow;
         }
@@ -289,8 +286,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityFlow CreateActivity(int position, string id)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-
-            WorkflowStatic.Context.LatestActivity = WorkflowInformation.LatestActivity;
             var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
             var flow = new ActivityFlow(activityInformation);
             return flow;

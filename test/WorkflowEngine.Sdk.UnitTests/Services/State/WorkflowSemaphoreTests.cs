@@ -9,7 +9,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
-using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
+using WorkflowEngine.Sdk.UnitTests.TestSupport;
 
 namespace WorkflowEngine.Sdk.UnitTests.Services.State
 {

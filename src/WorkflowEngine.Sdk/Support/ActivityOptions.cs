@@ -1,9 +1,13 @@
-﻿using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+﻿using System;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Logging;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
 
+    /// <summary>
+    /// The accepted values for a log purge strategy.
+    /// </summary>
     public enum LogPurgeStrategyEnum
     {
         /// <summary>
@@ -64,6 +68,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// The strategy to be used after each activity and workflow. Purge the activity logs or not?
         /// </summary>
         public LogPurgeStrategyEnum LogPurgeStrategy { get; set; } = LogPurgeStrategyEnum.AfterActivitySuccess;
+
+        /// <summary>
+        /// If an activity is still executing after this time, it will throw an exception.
+        /// </summary>
+        public TimeSpan? ActivityMaxExecutionTimeSpan { get; set; }
 
         public ActivityOptions From(ActivityOptions source)
         {

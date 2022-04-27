@@ -4,7 +4,7 @@ using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
+namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     public class TestWorkflowContainer : IWorkflowContainer
     {

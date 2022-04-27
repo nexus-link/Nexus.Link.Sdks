@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
@@ -78,6 +77,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return this;
         }
 
+        /// <inheritdoc />
+        public IActivityFlow SetMaxExecutionTime(TimeSpan timeSpan)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
+            return this;
+        }
+
         /// <inheritdoc/>
         public IActivityAction Action()
         {
@@ -97,6 +103,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Parallel, $"The activity was declared as {ActivityInformation.Type}.");
             return new ActivityParallel(ActivityInformation);
+        }
+
+        /// <inheritdoc />
+        public IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
+            return new ActivityIf(ActivityInformation, conditionMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
+            return new ActivitySwitch<TSwitchValue>(ActivityInformation, switchValueMethodAsync);
         }
 
         /// <inheritdoc/>
@@ -132,7 +154,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
     internal class ActivityFlow<TActivityReturns> : ActivityFlowBase, IActivityFlow<TActivityReturns>
     {
-        public Func<CancellationToken, Task<TActivityReturns>> GetDefaultValueForNotUrgentFail { get; private set; }
+        public ActivityDefaultValueMethodAsync<TActivityReturns> GetDefaultValueForNotUrgentFail { get; private set; }
 
         public ActivityFlow(IActivityInformation activityInformation)
         : base(activityInformation)
@@ -189,6 +211,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
+            return this;
+        }
+
+        /// <inheritdoc />
         public IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue)
         {
             return SetDefaultValueForNotUrgentFail(_ => Task.FromResult(defaultValue));
@@ -201,9 +230,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync)
+        public IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueAsync)
         {
-            GetDefaultValueForNotUrgentFail = getDefaultValueMethodAsync;
+            GetDefaultValueForNotUrgentFail = getDefaultValueAsync;
             return this;
         }
 
@@ -222,10 +251,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use If. Obsolete since 2022-04-27.")]
         public IActivityCondition<TActivityReturns> Condition()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Condition, $"The activity was declared as {ActivityInformation.Type}.");
             return new ActivityCondition<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail);
+        }
+
+        /// <inheritdoc />
+        public IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
+            return new ActivityIf<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail, conditionMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
+            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, GetDefaultValueForNotUrgentFail, switchValueMethodAsync);
         }
 
         /// <inheritdoc/>
@@ -242,7 +288,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, GetDefaultValueForNotUrgentFail);
+            return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, GetDefaultValueForNotUrgentFail, items);
         }
     }
 }

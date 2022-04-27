@@ -19,7 +19,7 @@ jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
     jobName: 'WorkflowEngine_Sdk'
-    testProjectsPath: ''
+    testProjectsPath: '**/test/WorkflowEngine.Sdk.UnitTests/*.csproj'
     nugetProjectsPath: 'src/WorkflowEngine.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'

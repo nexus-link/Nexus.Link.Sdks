@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
+namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     public class TestWorkflowImplementation : WorkflowImplementation
     {

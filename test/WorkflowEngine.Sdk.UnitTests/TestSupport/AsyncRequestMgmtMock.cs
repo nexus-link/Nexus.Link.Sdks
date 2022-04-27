@@ -2,7 +2,7 @@ using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
+namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     public class AsyncRequestMgmtMock : IAsyncRequestMgmtCapability
     {

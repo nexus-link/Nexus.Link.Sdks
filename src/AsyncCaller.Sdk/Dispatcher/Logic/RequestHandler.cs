@@ -51,7 +51,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             catch (GiveUpException e)
             {
                 // TODO: Put on poison queue?
-                Log.LogError($"Giving up on envelope ({_envelope}): {e.Message}");
+                Log.LogError($"Giving up on envelope ({_envelope}): {e}");
             }
         }
 

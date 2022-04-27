@@ -32,7 +32,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Helpers
             }
             catch (Exception e)
             {
-                Log.LogError($"Could not get the default deadline time for new messages. The fallback plan is to use a deadline time span of 7 days. Exception message: {e.Message}");
+                Log.LogError($"Could not get the default deadline time for new messages. The fallback plan is to use a deadline time span of 7 days. This is was the exception: {e}");
                 timeSpan = TimeSpan.FromDays(7);
             }
 

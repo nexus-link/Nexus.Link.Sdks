@@ -4,39 +4,59 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
+namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+
+/// <summary>
+/// The implementation method for a parallel for each activity with no return value.
+/// </summary>
+/// <param name="item">The current individual item.</param>
+/// <param name="activity">The current <see cref="IActivityForEachParallel{TItem}"/>.</param>
+/// <param name="cancellationToken"></param>
+/// <typeparam name="TItem">The type for an individual item.</typeparam>
+public delegate Task ActivityForEachParallelMethodAsync<in TItem>(TItem item, IActivityForEachParallel<TItem> activity, CancellationToken cancellationToken);
+
+/// <summary>
+/// The implementation method for a parallel for each activity with a return value.
+/// </summary>
+/// <param name="item">The current individual item.</param>
+/// <param name="activity">The current <see cref="IActivityForEachParallel{TMethodReturns,TItem}"/>.</param>
+/// <param name="cancellationToken"></param>
+/// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+/// <typeparam name="TItem">The type for an individual item.</typeparam>
+public delegate Task<TMethodReturns> ActivityForEachParallelMethodAsync<TMethodReturns, in TItem>(TItem item, IActivityForEachParallel<TMethodReturns, TItem> activity, CancellationToken cancellationToken);
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
+/// </summary>
+/// <typeparam name="TItem">The type for an individual item.</typeparam>
+public interface IActivityForEachParallel<out TItem> : IActivity
 {
     /// <summary>
-    /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
+    /// The items to loop over
     /// </summary>
-    public interface IActivityForEachParallel<out TItem> : IActivity
-    {
-        /// <summary>
-        /// The items to loop over
-        /// </summary>
-        IEnumerable<TItem> Items { get; }
+    IEnumerable<TItem> Items { get; }
 
-        /// <summary>
-        /// Execute the <paramref name="method"/> for all items.
-        /// </summary>
-        Task ExecuteAsync(Func<TItem, IActivityForEachParallel<TItem>, CancellationToken, Task> method, CancellationToken cancellationToken = default);
-    }
     /// <summary>
-    /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
+    /// Execute the <paramref name="methodAsync"/> for all items.
     /// </summary>
-    public interface IActivityForEachParallel<TActivityReturns, out TItem> : IActivity
-    {
-        /// <summary>
-        /// The items to loop over
-        /// </summary>
-        IEnumerable<TItem> Items { get; }
+    Task ExecuteAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken = default);
+}
 
-        /// <summary>
-        /// Execute the <paramref name="method"/> for all items.
-        /// </summary>
-        /// <returns>A dictionary that associates each item with a result</returns>
-        Task<IDictionary<string, TActivityReturns>> ExecuteAsync(
-            Func<TItem, IActivityForEachParallel<TActivityReturns, TItem>, CancellationToken, Task<TActivityReturns>> method, 
-            CancellationToken cancellationToken = default);
-    }
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
+/// </summary>
+/// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+/// <typeparam name="TItem">The type for an individual item.</typeparam>
+public interface IActivityForEachParallel<TMethodReturns, out TItem> : IActivity
+{
+    /// <summary>
+    /// The items to loop over
+    /// </summary>
+    IEnumerable<TItem> Items { get; }
+
+    /// <summary>
+    /// Execute the <paramref name="method"/> for all items.
+    /// </summary>
+    /// <returns>A dictionary that associates each item with a result</returns>
+    Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> method, CancellationToken cancellationToken = default);
 }

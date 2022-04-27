@@ -59,7 +59,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Storage.Azure.Queue
             }
             catch (Exception e)
             {
-                throw new FulcrumResourceException($"Could not connect to queue '{name}' on storage '{_queueEndpoint}': {e.Message}", e);
+                throw new FulcrumResourceException($"Could not connect to queue '{name}' on storage '{_queueEndpoint}': {e}", e);
             }
         }
 

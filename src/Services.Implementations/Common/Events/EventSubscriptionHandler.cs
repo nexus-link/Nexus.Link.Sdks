@@ -96,7 +96,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             catch (Exception e)
             {
                 Log.LogError(
-                    $"Failed to handle event {publishableEvent.Metadata.ToLogString()}\r{e.GetType().FullName}: {e.Message}\r{e}");
+                    $"Failed to handle event {publishableEvent.Metadata.ToLogString()}:\r{e}");
                 throw;
             }
         }

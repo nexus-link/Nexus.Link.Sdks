@@ -30,7 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 }
                 catch (Exception e)
                 {
-                    var errorMessage = $"LOG ERROR: Can't serialize type {data.GetType().Name}: {e.Message}";
+                    var errorMessage = $"LOG ERROR: Can't serialize type {data.GetType().Name}: {e}";
                     jToken = JToken.FromObject(errorMessage);
                 }
             }

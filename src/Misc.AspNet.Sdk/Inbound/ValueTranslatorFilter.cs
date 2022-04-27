@@ -279,7 +279,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
             catch (Exception e)
             {
-                resultAsLog = $"Failed to serialize: {e.Message}";
+                resultAsLog = $"Failed to serialize: {e}";
             }
 
             try
@@ -321,7 +321,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
             catch (Exception e)
             {
-                resultAsLog = $"Failed to serialize: {e.Message}";
+                resultAsLog = $"Failed to serialize: {e}";
             }
 
             try
@@ -350,7 +350,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
             catch (Exception e)
             {
-                resultAsLog = $"Failed to serialize: {e.Message}";
+                resultAsLog = $"Failed to serialize: {e}";
             }
 
             try

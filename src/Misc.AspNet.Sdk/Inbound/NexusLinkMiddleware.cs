@@ -353,7 +353,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
             catch (FulcrumUnauthorizedException e)
             {
-                throw new FulcrumResourceException($"Could not fetch configuration for Tenant: '{tenant}': {e.Message}", e);
+                throw new FulcrumResourceException($"Could not fetch configuration for Tenant: '{tenant}': {e}", e);
             }
             catch
             {

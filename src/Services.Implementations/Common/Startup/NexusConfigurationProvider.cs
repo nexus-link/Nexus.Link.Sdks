@@ -34,7 +34,7 @@ namespace Nexus.Link.Services.Implementations.Common.Startup
             }
             catch (ConfigurationParseException e)
             {
-                Log.LogWarning($"Could not read the configuration for application with authentication client id {_authenticationClientId}: {e.Message}");
+                Log.LogWarning($"Could not read the configuration for application with authentication client id {_authenticationClientId}: {e}");
                 return;
             }
         }

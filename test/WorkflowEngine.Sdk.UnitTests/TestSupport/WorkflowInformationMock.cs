@@ -3,18 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
 using Newtonsoft.Json.Linq;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
+namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     internal class WorkflowInformationMock : IWorkflowInformation
     {
@@ -22,7 +19,11 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         private ActivityVersion _activityVersion;
         private ActivityForm _activityForm;
 
-        public Mock<IActivityExecutor> ActivityExecutorMock = new Mock<IActivityExecutor>();
+        public WorkflowInformationMock(IActivityExecutor activityExecutor)
+        {
+            Executor = activityExecutor;
+        }
+        public IActivityExecutor Executor { get; set; }
 
         /// <inheritdoc />
         public string CapabilityName { get; set; } = "Capability name";
@@ -73,7 +74,7 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         public ActivityOptions DefaultActivityOptions { get; set; }
 
         /// <inheritdoc />
-        public Activity LatestActivity { get; set; }
+        public IInternalActivity LatestActivity { get; set; }
 
         /// <inheritdoc />
         public ActivityDefinition GetActivityDefinition(string activityFormId)
@@ -136,14 +137,8 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         }
 
         /// <inheritdoc />
-        public void AddActivity(Activity activity)
+        public void AddActivity(IInternalActivity activity)
         {
-        }
-
-        /// <inheritdoc />
-        public Activity GetActivity(string activityInstanceId)
-        {
-            throw new NotImplementedException();
         }
 
         /// <inheritdoc />
@@ -177,6 +172,6 @@ namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
         }
 
         /// <inheritdoc />
-        public IActivityExecutor GetActivityExecutor(Activity activity) => ActivityExecutorMock.Object;
+        public IActivityExecutor GetActivityExecutor(Activity activity) => Executor;
     }
 }

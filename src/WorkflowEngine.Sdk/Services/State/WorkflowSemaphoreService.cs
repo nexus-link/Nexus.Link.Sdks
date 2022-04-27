@@ -15,7 +15,6 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.State;
 

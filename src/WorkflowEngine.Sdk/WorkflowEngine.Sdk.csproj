@@ -19,6 +19,11 @@
     <DebugType>embedded</DebugType>
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+  </ItemGroup>
 
   <!-- Publish symbols -->
   <ItemGroup>
@@ -26,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.6.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.0.0" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.7.0-alfa01" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.0.2-alfa01" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,13 +60,10 @@
       <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.3.1</Version>
+    <Version>6.4.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -71,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.4.0 ActivityExecutor now understands FulcrumExceptions. Added ActivityIf and ActivitySwitch. Added 
       6.3.1 Refactored ActivityExecutor to make the code more consistent and readable
       6.3.0 Introduced lazy logging, i.e. log storage is delayed until the workflow is postponed or completed
       6.2.0 Refactored to make it easier to do unit tests

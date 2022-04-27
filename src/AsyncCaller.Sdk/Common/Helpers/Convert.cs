@@ -23,7 +23,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Common.Helpers
             }
             catch (Exception e)
             {
-                InternalContract.Fail($"Could not parse parameter {nameof(source)} ({s}) into a JToken ({e.Message}).");
+                InternalContract.Fail($"Could not parse parameter {nameof(source)} ({s}) into a JToken: {e}");
                 throw;
             }
         }

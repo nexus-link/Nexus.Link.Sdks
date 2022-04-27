@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Logging;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
@@ -25,9 +21,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
         IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel);
 
+        /// <summary>
+        /// When the time spent since the activity started passes this time, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        IActivityFlow SetMaxExecutionTime(TimeSpan timeSpan);
+
         IActivityAction Action();
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
+        IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync);
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
 
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
@@ -51,14 +56,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetLogCreateThreshold(LogSeverityLevel severityLevel);
         IActivityFlow<TActivityReturns> SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
         IActivityFlow<TActivityReturns> SetLogPurgeThreshold(LogSeverityLevel severityLevel);
-        
+
+        /// <summary>
+        /// When the time spent since the activity started passes this time, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan);
+
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);
-        IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<CancellationToken, Task<TActivityReturns>> getDefaultValueMethodAsync);
+        IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueAsync);
 
         IActivityAction<TActivityReturns> Action();
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
+        [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
+        IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync);
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
         IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);
         IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }

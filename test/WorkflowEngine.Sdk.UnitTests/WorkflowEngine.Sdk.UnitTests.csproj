@@ -20,10 +20,10 @@
     </PackageReference>
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.6.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.0.0" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.7.0-alfa01" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.0.2-alfa01" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +32,10 @@
     <ProjectReference Include="..\..\src\WorkflowEngine.Sdk\WorkflowEngine.Sdk.csproj" />
     <ProjectReference Include="..\Capabilities.WorkflowConfiguration.UnitTests\Capabilities.WorkflowConfiguration.UnitTests.csproj" />
     <ProjectReference Include="..\Capabilities.WorkflowState.UnitTests\Capabilities.WorkflowState.UnitTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="WorkflowLogic\" />
   </ItemGroup>
 
 </Project>

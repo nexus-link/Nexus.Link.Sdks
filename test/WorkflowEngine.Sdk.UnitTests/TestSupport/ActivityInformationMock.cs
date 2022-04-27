@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support
+namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     internal class ActivityInformationMock : IActivityInformation
     {
+        public ActivityInformationMock(IWorkflowInformation workflowInformation)
+        {
+            Workflow = workflowInformation;
+        }
         /// <inheritdoc />
-        public IWorkflowInformation Workflow { get; set; } = new WorkflowInformationMock();
+        public IWorkflowInformation Workflow { get; } 
 
         /// <inheritdoc />
-        public Activity Parent { get; set; }
+        public IInternalActivity Parent { get; set; }
 
         /// <inheritdoc />
-        public Activity Previous { get; set; }
+        public IInternalActivity Previous { get; set; }
 
         /// <inheritdoc />
         public int Position { get; set; } = 1;

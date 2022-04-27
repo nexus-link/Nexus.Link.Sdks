@@ -1,26 +1,22 @@
 using System;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Shouldly;
-using WorkflowEngine.Sdk.UnitTests.WorkflowLogic.Support;
+using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
-namespace WorkflowEngine.Sdk.UnitTests.WorkflowLogic
+namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
 {
     public class WorkflowExecutorTests
     {
