@@ -89,10 +89,24 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     }
 
     /// <inheritdoc />
+    public IActivityIf<TActivityReturns> Then(TActivityReturns value)
+    {
+        _thenMethodAsync = (_, _) => Task.FromResult(value);
+        return this;
+    }
+
+    /// <inheritdoc />
     public IActivityIf<TActivityReturns> Else(ActivityIfMethodAsync<TActivityReturns> methodAsync)
     {
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
         _elseMethodAsync = methodAsync;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityIf<TActivityReturns> Else(TActivityReturns value)
+    {
+        _elseMethodAsync = (_, _) => Task.FromResult(value);
         return this;
     }
 

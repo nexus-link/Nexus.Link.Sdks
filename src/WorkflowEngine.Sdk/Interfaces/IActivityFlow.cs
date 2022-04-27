@@ -32,7 +32,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
         IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync);
+        IActivityIf If(ActivityIfConditionMethod conditionMethod);
+        IActivityIf If(bool condition);
+
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
 
         IActivityLoopUntilTrue LoopUntil();
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
@@ -73,7 +78,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
         IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync);
+        IActivityIf<TActivityReturns> If(ActivityIfConditionMethod conditionMethod);
+        IActivityIf<TActivityReturns> If(bool condition);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
         IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);
         IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
     }

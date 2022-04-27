@@ -81,10 +81,25 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> : Activity<TActivi
     }
 
     /// <inheritdoc />
+    public IActivitySwitch<TActivityReturns, TSwitchValue> Case(TSwitchValue caseValue, TActivityReturns value)
+    {
+        InternalContract.Require(!_caseMethods.ContainsKey(caseValue), $"Doublet {nameof(caseValue)}.");
+        _caseMethods.TryAdd(caseValue, (_, _) => Task.FromResult(value));
+        return this;
+    }
+
+    /// <inheritdoc />
     public IActivitySwitch<TActivityReturns, TSwitchValue> Default(ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _defaultMethod = methodAsync;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivitySwitch<TActivityReturns, TSwitchValue> Default(TActivityReturns value)
+    {
+        _defaultMethod = (_, _) => Task.FromResult(value);
         return this;
     }
 

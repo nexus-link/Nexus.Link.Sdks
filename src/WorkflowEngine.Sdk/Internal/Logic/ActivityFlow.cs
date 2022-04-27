@@ -114,11 +114,41 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        public IActivityIf If(ActivityIfConditionMethod conditionMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+            return new ActivityIf(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivityIf If(bool condition)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityIf(ActivityInformation, (a, _) => Task.FromResult(condition));
+        }
+
+        /// <inheritdoc />
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
             return new ActivitySwitch<TSwitchValue>(ActivityInformation, switchValueMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
+            return new ActivitySwitch<TSwitchValue>(ActivityInformation, (a, _) => Task.FromResult(switchValueMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivitySwitch<TSwitchValue>(ActivityInformation, (a, _) => Task.FromResult(switchValue));
         }
 
         /// <inheritdoc/>
@@ -267,11 +297,41 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        public IActivityIf<TActivityReturns> If(ActivityIfConditionMethod conditionMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+            return new ActivityIf<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivityIf<TActivityReturns> If(bool condition)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityIf<TActivityReturns>(ActivityInformation, GetDefaultValueForNotUrgentFail, (a, _) => Task.FromResult(condition));
+        }
+
+        /// <inheritdoc />
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
             return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, GetDefaultValueForNotUrgentFail, switchValueMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
+            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, GetDefaultValueForNotUrgentFail, (a, _) => Task.FromResult(switchValueMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, GetDefaultValueForNotUrgentFail, (a, _) => Task.FromResult(switchValue));
         }
 
         /// <inheritdoc/>
