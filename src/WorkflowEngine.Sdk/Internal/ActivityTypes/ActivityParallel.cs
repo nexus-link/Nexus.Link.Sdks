@@ -74,10 +74,7 @@ internal class ActivityParallel : Activity, IActivityParallel
         {
             Iteration = index;
             ActivityInformation.Workflow.LatestActivity = this;
-            // Saving different method signatures together is complicated. Step 2: Convert them to dynamic.
-            var convertedJobAsync = (dynamic) job;
-            // Saving different method signatures together is complicated. Step 3: Cast the result to Task, no matter what Task<T> they were previously.
-            var task = (Task)convertedJobAsync(this, cancellationToken);
+            var task = ExecuteJobAsync(job, cancellationToken);
             _objectTasks.Add(index, task);
         }
         ActivityInformation.Workflow.LatestActivity = this;
@@ -87,11 +84,25 @@ internal class ActivityParallel : Activity, IActivityParallel
         var jobResults = new JobResults();
         foreach (var (index, task) in _objectTasks)
         {
-            // Saving different method signatures together is complicated. Step 4: Cast the task to dynamic, get the Result, cast it to object. Done! Phu!
-            // https://stackoverflow.com/questions/48033760/cast-taskt-to-taskobject-in-c-sharp-without-having-t
-            var result =  (object)((dynamic)task).Result;
+            var result = GetResult(task);
             jobResults.Add(index, result, _objectTypes[index]);
         }
         return jobResults;
+    }
+
+    private Task ExecuteJobAsync(object job, CancellationToken cancellationToken)
+    {
+        // Saving different method signatures together is complicated. Step 2: Convert them to dynamic.
+        var convertedJobAsync = (dynamic) job;
+        // Saving different method signatures together is complicated. Step 3: Cast the result to Task, no matter what Task<T> they were previously.
+        var task = (Task) convertedJobAsync(this, cancellationToken);
+        return task;
+    }
+
+    private static object GetResult(Task task)
+    {
+        // Saving different method signatures together is complicated. Step 4: Cast the task to dynamic, get the Result, cast it to object. Done! Phu!
+        // https://stackoverflow.com/questions/48033760/cast-taskt-to-taskobject-in-c-sharp-without-having-t
+        return (object)((dynamic)task).Result;
     }
 }
