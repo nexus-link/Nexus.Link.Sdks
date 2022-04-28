@@ -90,6 +90,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             await WorkflowInformation.SaveAsync(cancellationToken);
             try
             {
+                // Save the logs
                 foreach (var logCreate in WorkflowInformation.Logs)
                 {
                     await WorkflowInformation.LogService.CreateAsync(logCreate, cancellationToken);
@@ -101,6 +102,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 // Don't let logging problems get in our way
             }
 
+            // Release semaphores
+            if (WorkflowInformation.Instance.State == WorkflowStateEnum.Success ||
+                WorkflowInformation.Instance.State == WorkflowStateEnum.Failed)
+            {
+                await WorkflowInformation.SemaphoreService.LowerAllAsync(WorkflowInformation.InstanceId,
+                    cancellationToken);
+            }
+
+            // Release the lock
             if (_workflowDistributedLock != null)
             {
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());

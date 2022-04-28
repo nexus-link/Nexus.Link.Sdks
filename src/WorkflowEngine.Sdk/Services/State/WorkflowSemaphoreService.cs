@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Microsoft.Extensions.Primitives;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
@@ -107,6 +108,37 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
         await _runtimeTables.WorkflowSemaphoreQueue.DeleteAsync(holder.Id, cancellationToken);
         await ActivateItemsInQueueAsync(semaphore.Id, semaphore.Limit, null, cancellationToken);
         scope.Complete();
+    }
+
+    /// <inheritdoc />
+    public async Task LowerAllAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
+    {
+        // Set a time limit for this operation to a maximum time of one minute
+        var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+
+        var searchDetails = new SearchDetails<WorkflowSemaphoreQueueRecord>(new
+        {
+            WorkflowInstanceId = workflowInstanceId.ToGuidString()
+        });
+        var handlers = await StorageHelper.ReadPagesAsync<WorkflowSemaphoreQueueRecord>((o, ct) => _runtimeTables.WorkflowSemaphoreQueue.SearchAsync(searchDetails, o, null, ct), int.MaxValue, cancellationToken);
+
+        foreach (var handler in handlers)
+        {
+            while (true)
+            {
+                try
+                {
+                    mergedToken.Token.ThrowIfCancellationRequested();
+                    await LowerAsync(handler.Id.ToGuidString(), mergedToken.Token);
+                }
+                catch (FulcrumTryAgainException e)
+                {
+                    // The semaphore was locked by another process, wait and try again
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), mergedToken.Token);
+                }
+            }
+        }
     }
 
     /// <summary>

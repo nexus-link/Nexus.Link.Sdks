@@ -7,6 +7,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
@@ -39,11 +40,26 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task Execute_Given_OneJob_Gives_Call()
+        public async Task Execute_Given_OneJobWithoutResult_Gives_Call()
         {
             // Arrange
             var activity = new ActivityParallel(_activityInformationMock);
             activity.AddJob(1, (a, ct) => Task.CompletedTask);
+
+            // Act
+            await activity.ExecuteAsync();
+
+            // Assert
+            _activityExecutorMock.Verify(
+                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Execute_Given_OneJobWithResult_Gives_Call()
+        {
+            // Arrange
+            var activity = new ActivityParallel(_activityInformationMock);
+            activity.AddJob(1, (a, ct) => Task.FromResult(10));
 
             // Act
             await activity.ExecuteAsync();
@@ -84,6 +100,23 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Act
             await activity.ExecuteJobsAsync();
+        }
+
+        [Fact]
+        public async Task ExecuteJobsAsync_()
+        {
+            // Arrange
+            var activity = new ActivityParallel(_activityInformationMock);
+            const int expectedResult = 10;
+            activity.AddJob(1, (a, ct) => Task.FromResult(expectedResult));
+
+            // Act
+            var results = await activity.ExecuteJobsAsync();
+
+            // Assert
+            results.ShouldNotBeNull();
+            var result = results.Get<int>(1);
+            result.ShouldBe(expectedResult);
         }
     }
 }

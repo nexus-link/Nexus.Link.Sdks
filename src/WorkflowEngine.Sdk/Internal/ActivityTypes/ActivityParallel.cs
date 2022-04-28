@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
@@ -16,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="IActivityParallel" />
 internal class ActivityParallel : Activity, IActivityParallel
 {
-    private readonly Dictionary<int, ActivityParallelMethodAsync> _objectJobs = new();
+    private readonly Dictionary<int, object> _objectJobs = new();
     private readonly Dictionary<int, Type> _objectTypes = new();
     private readonly Dictionary<int, Task> _objectTasks = new();
     private readonly Dictionary<int, ActivityParallelMethodAsync> _voidJobs = new();
@@ -46,9 +47,8 @@ internal class ActivityParallel : Activity, IActivityParallel
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
         InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
         InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        var convertedJob = jobAsync as ActivityParallelMethodAsync;
-        FulcrumAssert.IsNotNull(convertedJob, CodeLocation.AsString());
-        _objectJobs.Add(index, convertedJob);
+        // Saving different method signatures together is complicated. Step 1: Save them as object.
+        _objectJobs.Add(index, jobAsync);
         _objectTypes.Add(index, typeof(TMethodReturns));
         return this;
     }
@@ -74,7 +74,10 @@ internal class ActivityParallel : Activity, IActivityParallel
         {
             Iteration = index;
             ActivityInformation.Workflow.LatestActivity = this;
-            var task = job(this, cancellationToken);
+            // Saving different method signatures together is complicated. Step 2: Convert them to dynamic.
+            var convertedJobAsync = (dynamic) job;
+            // Saving different method signatures together is complicated. Step 3: Cast the result to Task, no matter what Task<T> they were previously.
+            var task = (Task)convertedJobAsync(this, cancellationToken);
             _objectTasks.Add(index, task);
         }
         ActivityInformation.Workflow.LatestActivity = this;
@@ -84,6 +87,7 @@ internal class ActivityParallel : Activity, IActivityParallel
         var jobResults = new JobResults();
         foreach (var (index, task) in _objectTasks)
         {
+            // Saving different method signatures together is complicated. Step 4: Cast the task to dynamic, get the Result, cast it to object. Done! Phu!
             // https://stackoverflow.com/questions/48033760/cast-taskt-to-taskobject-in-c-sharp-without-having-t
             var result =  (object)((dynamic)task).Result;
             jobResults.Add(index, result, _objectTypes[index]);
