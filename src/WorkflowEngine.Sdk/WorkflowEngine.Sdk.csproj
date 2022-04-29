@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.5.0</Version>
+    <Version>6.5.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.5.1 Bump
       6.5.0 Added ActivityLock and ActivityThrottle
       6.4.3 Corrected a casting bug for parallel jobs that return a value
       6.4.2 Now lowers all the semaphores of a workflow instance when it finishes with either state success or state failed
