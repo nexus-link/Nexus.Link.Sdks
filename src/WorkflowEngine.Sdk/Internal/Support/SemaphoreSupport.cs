@@ -12,8 +12,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 internal class SemaphoreSupport : ISemaphoreSupport
 {
-    private readonly bool _isThrottle;
+
+    /// <inheritdoc />
     public Activity Activity { get; set; }
+
+    /// <inheritdoc />
+    public bool IsThrottle { get; }
 
     /// <inheritdoc />
     public string ResourceIdentifier { get; }
@@ -21,15 +25,23 @@ internal class SemaphoreSupport : ISemaphoreSupport
     /// <inheritdoc />
     public int Limit { get; }
 
+    /// <inheritdoc />
+    public TimeSpan? LimitationTimeSpan { get; }
+
     private string ContextKey => $"Semaphore-{ResourceIdentifier}";
 
-    public SemaphoreSupport(string resourceIdentifier, int limit)
+    public SemaphoreSupport(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
     {
         InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
         InternalContract.RequireGreaterThan(0, limit, nameof(limit));
-        _isThrottle = true;
+        if (limitationTimeSpan.HasValue)
+        {
+            InternalContract.RequireGreaterThan(TimeSpan.FromMinutes(1), limitationTimeSpan.Value, nameof(limitationTimeSpan));
+        }
+        IsThrottle = true;
         ResourceIdentifier = resourceIdentifier;
         Limit = limit;
+        LimitationTimeSpan = limitationTimeSpan;
     }
 
     public SemaphoreSupport(string resourceIdentifier)
@@ -43,9 +55,10 @@ internal class SemaphoreSupport : ISemaphoreSupport
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier),
                 $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
         }
-        _isThrottle = false;
+        IsThrottle = false;
         ResourceIdentifier = resourceIdentifier;
         Limit = 1;
+        LimitationTimeSpan = null;
     }
 
     /// <inheritdoc />
@@ -60,11 +73,13 @@ internal class SemaphoreSupport : ISemaphoreSupport
         {
             var semaphoreCreate = new WorkflowSemaphoreCreate
             {
-                WorkflowFormId = _isThrottle ? Guid.Empty.ToGuidString() : Activity.ActivityInformation.Workflow.FormId,
+                WorkflowFormId = IsThrottle ? Guid.Empty.ToGuidString() : Activity.ActivityInformation.Workflow.FormId,
                 WorkflowInstanceId = Activity.WorkflowInstanceId,
                 ResourceIdentifier = ResourceIdentifier,
                 Limit = Limit,
-                ExpirationTime = TimeSpan.FromDays(365)
+                ExpirationTime = IsThrottle 
+                    ? LimitationTimeSpan ?? TimeSpan.FromMinutes(2) // For throttling with no LimitationTimeSpan we will release it as soon as the workflow is paused and that is never later than 100 seconds into the workflow execution, du to IIS limitations.
+                    : TimeSpan.FromDays(365)
             };
             semaphoreHolderId =
                 await Activity.ActivityInformation.Workflow.SemaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
@@ -76,6 +91,11 @@ internal class SemaphoreSupport : ISemaphoreSupport
     /// <inheritdoc />
     public async Task LowerAsync(CancellationToken cancellationToken)
     {
+        if (LimitationTimeSpan.HasValue)
+        {
+            // We will let the semaphore time out by itself
+            return;
+        }
         FulcrumAssert.IsNotNull(Activity, CodeLocation.AsString());
         if (!Activity.TryGetContext<string>(ContextKey, out var semaphoreHolderId)) return;
         FulcrumAssert.IsNotNullOrWhiteSpace(semaphoreHolderId, CodeLocation.AsString());

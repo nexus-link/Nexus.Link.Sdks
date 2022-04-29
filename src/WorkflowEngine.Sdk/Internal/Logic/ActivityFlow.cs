@@ -141,12 +141,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityThrottle Throttle(string resourceIdentifier, int limit)
+        public IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit);
+            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
             return new ActivityThrottle(ActivityInformation, semaphoreSupport);
         }
 
@@ -346,12 +346,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit)
+        public IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit);
+            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
             return new ActivityThrottle<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, semaphoreSupport);
         }
 

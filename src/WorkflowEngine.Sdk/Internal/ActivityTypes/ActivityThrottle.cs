@@ -1,6 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -29,6 +31,9 @@ internal class ActivityThrottle : Activity, IActivityThrottle
     public int Limit => _semaphoreSupport.Limit;
 
     /// <inheritdoc />
+    public TimeSpan? LimitationTimeSpan => _semaphoreSupport.LimitationTimeSpan;
+
+    /// <inheritdoc />
     public Task ExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), cancellationToken);
@@ -37,8 +42,14 @@ internal class ActivityThrottle : Activity, IActivityThrottle
     private async Task InternalExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken)
     {
         await _semaphoreSupport.RaiseAsync(cancellationToken);
-        await methodAsync(this, cancellationToken);
-        await _semaphoreSupport.LowerAsync(cancellationToken);
+        try
+        {
+            await methodAsync(this, cancellationToken);
+        }
+        finally
+        {
+            await _semaphoreSupport.LowerAsync(cancellationToken);
+        }
     }
 }
 
@@ -59,6 +70,9 @@ internal class ActivityThrottle<TActivityReturns> : Activity<TActivityReturns>, 
 
     /// <inheritdoc />
     public int Limit => _semaphoreSupport.Limit;
+
+    /// <inheritdoc />
+    public TimeSpan? LimitationTimeSpan => _semaphoreSupport.LimitationTimeSpan;
 
     /// <inheritdoc />
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)

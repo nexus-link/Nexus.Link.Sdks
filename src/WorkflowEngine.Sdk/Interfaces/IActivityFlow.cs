@@ -51,8 +51,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="resourceIdentifier">The resource that needs throttling. Can not be null.</param>
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
+        /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
-        IActivityThrottle Throttle(string resourceIdentifier, int limit);
+        IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null);
 
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync);
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
@@ -118,8 +119,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="resourceIdentifier">The resource that needs throttling. Can not be null.</param>
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
+        /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
-        IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit);
+        IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan);
 
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
