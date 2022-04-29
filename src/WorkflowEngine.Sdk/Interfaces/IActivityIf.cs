@@ -5,22 +5,6 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 /// <summary>
-/// The implementation method for an if activity with no return value.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityIf"/>.</param>
-/// <param name="cancellationToken"></param>
-/// <returns></returns>
-public delegate Task ActivityIfMethodAsync(IActivityIf activity, CancellationToken cancellationToken);
-
-/// <summary>
-/// The implementation method for an if activity with a return value.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityIf{TMethodReturns}"/>.</param>
-/// <param name="cancellationToken"></param>
-/// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
-public delegate Task<TMethodReturns> ActivityIfMethodAsync<TMethodReturns>(IActivityIf<TMethodReturns> activity, CancellationToken cancellationToken);
-
-/// <summary>
 /// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
 /// </summary>
 /// <param name="activity">The current <see cref="IActivityIf"/>.</param>
@@ -46,12 +30,12 @@ public interface IActivityIf : IActivity
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf Then(ActivityIfMethodAsync methodAsync);
+    IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync);
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
     /// </summary>
-    IActivityIf Else(ActivityIfMethodAsync methodAsync);
+    IActivityIf Else(ActivityMethodAsync<IActivityIf> methodAsync);
 
     /// <summary>
     /// Execute <see cref="ConditionMethodAsync"/>. If it returns true, then call the method from <see cref="Then"/>
@@ -72,7 +56,7 @@ public interface IActivityIf<TActivityReturns> : IActivity
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf<TActivityReturns> Then(ActivityIfMethodAsync<TActivityReturns> methodAsync);
+    IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
     /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns true.
@@ -82,7 +66,7 @@ public interface IActivityIf<TActivityReturns> : IActivity
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
     /// </summary>
-    IActivityIf<TActivityReturns> Else(ActivityIfMethodAsync<TActivityReturns> methodAsync);
+    IActivityIf<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
     /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns false.

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.7.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.8.0" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.1.0" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.5" />
   </ItemGroup>
@@ -41,7 +41,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.0.1 Bump 
+      3.0.2 Bump 
       3.0.0 Refactored Semaphores. Not backwards compatible
       2.6.0 Added HashTable
       2.5.3 Bump

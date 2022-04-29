@@ -7,7 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// The implementation method for an if activity with no return value.
 /// </summary>
-/// <param name="activity">The current <see cref="IActivitySwitch"/>.</param>
+/// <param name="activity">The current <see cref="IActivitySwitch{TSwitchValue}"/>.</param>
 /// <param name="cancellationToken"></param>
 /// <returns></returns>
 public delegate Task ActivitySwitchMethodAsync<TSwitchValue>(IActivitySwitch<TSwitchValue> activity, CancellationToken cancellationToken);
@@ -25,13 +25,6 @@ public delegate Task<TMethodReturns> ActivitySwitchMethodAsync<TMethodReturns, T
 /// The condition method for the if activity. Switch it returns true, the then-method is called, otherwise the else-method is called.
 /// </summary>
 /// <param name="activity">The current <see cref="IActivitySwitch{TSwitchValue}"/>.</param>
-/// <param name="cancellationToken"></param>
-public delegate Task<TSwitchValue> ActivitySwitchValueMethodAsync<TSwitchValue>(IActivity activity, CancellationToken cancellationToken);
-
-/// <summary>
-/// The condition method for the if activity. Switch it returns true, the then-method is called, otherwise the else-method is called.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivitySwitch{TSwitchValue}"/>.</param>
 public delegate TSwitchValue ActivitySwitchValueMethod<out TSwitchValue>(IActivity activity);
 
 /// <summary>
@@ -42,7 +35,7 @@ public interface IActivitySwitch<TSwitchValue> : IActivity
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivitySwitchValueMethodAsync<TSwitchValue> SwitchValueMethodAsync { get; }
+    ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="SwitchValueMethodAsync"/> returns a value that is Equal to <paramref name="caseValue"/>.
@@ -68,7 +61,7 @@ public interface IActivitySwitch<TActivityReturns, TSwitchValue> : IActivity
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivitySwitchValueMethodAsync<TSwitchValue> SwitchValueMethodAsync { get; }
+    ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="SwitchValueMethodAsync"/> returns a value that is Equal to <paramref name="caseValue"/>.

@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(activity, nameof(activity));
         }
 
-        public async Task ExecuteWithoutReturnValueAsync(ActivityMethodAsync methodAsync, CancellationToken cancellationToken = default)
+        public async Task ExecuteWithoutReturnValueAsync(InternalActivityMethodAsync methodAsync, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
 
@@ -36,7 +36,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         public async Task<TMethodReturns> ExecuteWithReturnValueAsync<TMethodReturns>(
-            ActivityMethodAsync<TMethodReturns> methodAsync,
+            InternalActivityMethodAsync<TMethodReturns> methodAsync,
             ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
             CancellationToken cancellationToken = default)
         {
@@ -57,7 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return result;
         }
 
-        private async Task ExecuteAsync<TMethodReturns>(ActivityMethodAsync<TMethodReturns> methodAsync,
+        private async Task ExecuteAsync<TMethodReturns>(InternalActivityMethodAsync<TMethodReturns> methodAsync,
             bool hasReturnValue,
             CancellationToken cancellationToken)
         {
@@ -77,7 +77,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         private async Task CallMethodAndUpdateActivityInformationAsync<TMethodReturns>(
-            ActivityMethodAsync<TMethodReturns> methodAsync, bool hasReturnValue, CancellationToken cancellationToken)
+            InternalActivityMethodAsync<TMethodReturns> methodAsync, bool hasReturnValue, CancellationToken cancellationToken)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
-        private async Task CallMethodAndLogAsync<TMethodReturns>(ActivityMethodAsync<TMethodReturns> methodAsync, bool hasReturnValue,
+        private async Task CallMethodAndLogAsync<TMethodReturns>(InternalActivityMethodAsync<TMethodReturns> methodAsync, bool hasReturnValue,
             CancellationToken cancellationToken)
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));

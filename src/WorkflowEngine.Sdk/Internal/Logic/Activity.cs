@@ -222,13 +222,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     internal abstract class Activity<TActivityReturns> : Activity
     {
 
-        protected ActivityDefaultValueMethodAsync<TActivityReturns> GetDefaultValueMethodAsync { get; }
+        protected ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
 
         protected Activity(IActivityInformation activityInformation,
-            ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueMethodAsync)
+            ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
             : base(activityInformation)
         {
-            GetDefaultValueMethodAsync = getDefaultValueMethodAsync;
+            DefaultValueMethodAsync = defaultValueMethodAsync;
         }
     }
 }

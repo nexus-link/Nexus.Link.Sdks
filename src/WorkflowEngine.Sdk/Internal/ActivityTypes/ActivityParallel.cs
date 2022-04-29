@@ -20,7 +20,7 @@ internal class ActivityParallel : Activity, IActivityParallel
     private readonly Dictionary<int, object> _objectJobs = new();
     private readonly Dictionary<int, Type> _objectTypes = new();
     private readonly Dictionary<int, Task> _objectTasks = new();
-    private readonly Dictionary<int, ActivityParallelMethodAsync> _voidJobs = new();
+    private readonly Dictionary<int, ActivityMethodAsync<IActivityParallel>> _voidJobs = new();
     private readonly Dictionary<int, Task> _voidTasks = new();
 
     public ActivityParallel(IActivityInformation activityInformation)
@@ -30,7 +30,7 @@ internal class ActivityParallel : Activity, IActivityParallel
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob(int index, ActivityParallelMethodAsync jobAsync)
+    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
@@ -41,7 +41,7 @@ internal class ActivityParallel : Activity, IActivityParallel
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityParallelMethodAsync<TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null)
+    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));

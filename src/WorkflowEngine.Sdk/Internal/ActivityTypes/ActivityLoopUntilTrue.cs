@@ -49,13 +49,13 @@ internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopU
 
     /// <inheritdoc/>
     public async Task ExecuteAsync(
-        ActivityLoopUntilMethodAsync methodAsync,
+        ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync,
         CancellationToken cancellationToken = default)
     {
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilMethod(methodAsync, ct), cancellationToken);
     }
 
-    private async Task LoopUntilMethod(ActivityLoopUntilMethodAsync methodAsync, CancellationToken cancellationToken)
+    private async Task LoopUntilMethod(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -84,13 +84,13 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBa
     }
 
     /// <inheritdoc/>
-    public async Task<TActivityReturns> ExecuteAsync(ActivityLoopUntilMethodAsync<TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
+    public async Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
         return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilMethod(methodAsync, ct),
             _getDefaultValueAsync, cancellationToken);
     }
 
-    private async Task<TActivityReturns> LoopUntilMethod(ActivityLoopUntilMethodAsync<TActivityReturns> method, CancellationToken cancellationToken)
+    private async Task<TActivityReturns> LoopUntilMethod(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;

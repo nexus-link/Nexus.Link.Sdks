@@ -35,7 +35,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync<int>(It.IsAny<ActivityMethodAsync<int>>(), DefaultMethod, It.IsAny<CancellationToken>()), Times.Once);
+                ae => ae.ExecuteWithReturnValueAsync<int>(It.IsAny<InternalActivityMethodAsync<int>>(), DefaultMethod, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         private Task<int> DefaultMethod(CancellationToken arg)
@@ -53,7 +53,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             _activityExecutorMock
-                .Verify(ae => ae.ExecuteWithoutReturnValueAsync(It.IsAny<ActivityMethodAsync>(), It.IsAny<CancellationToken>()), Times.Once);
+                .Verify(ae => ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

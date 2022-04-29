@@ -7,20 +7,52 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// The implementation method for an activity with no return value.
     /// </summary>
-    public delegate Task ActivityMethodAsync(CancellationToken cancellationToken);
+    public delegate Task InternalActivityMethodAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// The implementation method for an activity with a return value.
     /// </summary>
     /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
-    public delegate Task<TMethodReturns> ActivityMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
+    public delegate Task<TMethodReturns> InternalActivityMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The implementation method for an activity type with no return value.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityLock"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <typeparam name="TActivity">The activity type</typeparam>
+    public delegate Task ActivityMethodAsync<in TActivity>(TActivity activity, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The implementation method for an activity type with no return value.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityLock"/>.</param>
+    /// <typeparam name="TActivity">The activity type</typeparam>
+    public delegate void ActivityMethod<in TActivity>(TActivity activity);
+
+    /// <summary>
+    /// The implementation method for an activity type with a return value.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityLock{TMethodReturns}"/>.</param>
+    /// <param name="cancellationToken"></param>
+    /// <typeparam name="TActivity">The activity type</typeparam>
+    /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+    public delegate Task<TMethodReturns> ActivityMethodAsync<in TActivity, TMethodReturns>(TActivity activity, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The implementation method for an activity type with a return value.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityLock{TMethodReturns}"/>.</param>
+    /// <typeparam name="TActivity">The activity type</typeparam>
+    /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
+    public delegate TMethodReturns ActivityMethod<in TActivity, out TMethodReturns>(TActivity activity);
 
     /// <summary>
     /// A method that returns a default value for an activity.
     /// </summary>
     /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
     /// <remarks>
-    /// The default value is used if the <see cref="ActivityMethodAsync{TMethodReturns}"/> throws an exception that can be ignored.
+    /// The default value is used if the <see cref="InternalActivityMethodAsync{TMethodReturns}"/> throws an exception that can be ignored.
     /// </remarks>
     public delegate Task<TMethodReturns> ActivityDefaultValueMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
 

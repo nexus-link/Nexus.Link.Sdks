@@ -6,22 +6,6 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 /// <summary>
-/// The implementation method for an action activity with no return value.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityLoopUntilTrue"/>.</param>
-/// <param name="cancellationToken"></param>
-/// <returns></returns>
-public delegate Task ActivityLoopUntilMethodAsync(IActivityLoopUntilTrue activity, CancellationToken cancellationToken);
-
-/// <summary>
-/// The implementation method for an action activity with a return value.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityLoopUntilTrue{TMethodReturns}"/>.</param>
-/// <param name="cancellationToken"></param>
-/// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
-public delegate Task<TMethodReturns> ActivityLoopUntilMethodAsync<TMethodReturns>(IActivityLoopUntilTrue<TMethodReturns> activity, CancellationToken cancellationToken);
-
-/// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
 /// </summary>
 public interface IActivityLoopUntilTrueBase : IActivity
@@ -51,7 +35,7 @@ public interface IActivityLoopUntilTrue : IActivityLoopUntilTrueBase
     /// <summary>
     /// Execute the method <paramref name="methodAsync"/>.
     /// </summary>
-    Task ExecuteAsync(ActivityLoopUntilMethodAsync methodAsync, CancellationToken cancellationToken = default);
+    Task ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -62,5 +46,5 @@ public interface IActivityLoopUntilTrue<TActivityReturns> : IActivityLoopUntilTr
     /// <summary>
     /// Execute the method <paramref name="methodAsync"/>.
     /// </summary>
-    Task<TActivityReturns> ExecuteAsync(ActivityLoopUntilMethodAsync<TActivityReturns> methodAsync, CancellationToken cancellationToken = default);
+    Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default);
 }

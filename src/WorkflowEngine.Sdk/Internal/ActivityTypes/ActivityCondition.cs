@@ -12,22 +12,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 internal class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>, IActivityCondition<TActivityReturns>
 {
 
-    public ActivityCondition(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueMethodAsync)
-        : base(activityInformation, getDefaultValueMethodAsync)
+    public ActivityCondition(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
+        : base(activityInformation, defaultValueMethodAsync)
     {
     }
 
     /// <inheritdoc/>
     public Task<TActivityReturns> ExecuteAsync(
-        ActivityConditionMethodAsync<TActivityReturns> methodAsync,
+        ActivityMethodAsync<IActivityCondition<TActivityReturns>, TActivityReturns> methodAsync,
         CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), GetDefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public Task<TActivityReturns> ExecuteAsync(ActivityConditionMethod<TActivityReturns> method, CancellationToken cancellationToken = default)
+    public Task<TActivityReturns> ExecuteAsync(ActivityMethod<IActivityCondition<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( _ => Task.FromResult(method(this)), GetDefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync( _ => Task.FromResult(method(this)), DefaultValueMethodAsync, cancellationToken);
     }
 }

@@ -8,8 +8,8 @@ internal interface IActivityExecutor
 {
     public IInternalActivity Activity { get; }
 
-    Task ExecuteWithoutReturnValueAsync(ActivityMethodAsync methodAsync, CancellationToken cancellationToken = default);
+    Task ExecuteWithoutReturnValueAsync(InternalActivityMethodAsync methodAsync, CancellationToken cancellationToken = default);
 
-    Task<TMethodReturns> ExecuteWithReturnValueAsync<TMethodReturns>(ActivityMethodAsync<TMethodReturns> methodAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
+    Task<TMethodReturns> ExecuteWithReturnValueAsync<TMethodReturns>(InternalActivityMethodAsync<TMethodReturns> methodAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
         CancellationToken cancellationToken = default);
 }

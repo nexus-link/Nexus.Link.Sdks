@@ -36,7 +36,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
+                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
+                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
+                ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<JobResults>>(), null, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

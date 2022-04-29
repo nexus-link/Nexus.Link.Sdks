@@ -28,11 +28,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var workflowInformationMock = new WorkflowInformationMock(_activityExecutorMock.Object);
             _activityInformationMock = new ActivityInformationMock(workflowInformationMock);
             _activityExecutorMock.Setup(ae =>
-                    ae.ExecuteWithoutReturnValueAsync(It.IsAny<ActivityMethodAsync>(), It.IsAny<CancellationToken>()))
-                .Returns((ActivityMethodAsync m, CancellationToken ct) => m(ct));
+                    ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()))
+                .Returns((InternalActivityMethodAsync m, CancellationToken ct) => m(ct));
             _activityExecutorMock.Setup(ae =>
-                    ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<int>>(), It.IsAny<ActivityDefaultValueMethodAsync<int>>(), It.IsAny<CancellationToken>()))
-                .Returns((ActivityMethodAsync<int> m, ActivityDefaultValueMethodAsync<int> d, CancellationToken ct) => m(ct));
+                    ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(), It.IsAny<ActivityDefaultValueMethodAsync<int>>(), It.IsAny<CancellationToken>()))
+                .Returns((InternalActivityMethodAsync<int> m, ActivityDefaultValueMethodAsync<int> d, CancellationToken ct) => m(ct));
         }
 
         [Theory]

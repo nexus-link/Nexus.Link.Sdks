@@ -15,7 +15,7 @@ internal class ActivityAction : Activity, IActivityAction
     }
 
     /// <inheritdoc/>
-    public Task ExecuteAsync(ActivityActionMethodAsync methodAsync, CancellationToken cancellationToken = default)
+    public Task ExecuteAsync(ActivityMethodAsync<IActivityAction> methodAsync, CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync( ct => methodAsync(this, ct), cancellationToken);
     }
@@ -23,14 +23,14 @@ internal class ActivityAction : Activity, IActivityAction
 
 internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
 {
-    public ActivityAction(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueMethodAsync = null)
-        : base(activityInformation, getDefaultValueMethodAsync)
+    public ActivityAction(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync = null)
+        : base(activityInformation, defaultValueMethodAsync)
     {
     }
 
     /// <inheritdoc/>
-    public Task<TActivityReturns> ExecuteAsync(ActivityActionMethodAsync<TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
+    public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), GetDefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), DefaultValueMethodAsync, cancellationToken);
     }
 }

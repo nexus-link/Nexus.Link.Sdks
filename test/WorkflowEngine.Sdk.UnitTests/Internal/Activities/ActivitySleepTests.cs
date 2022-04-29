@@ -33,7 +33,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var timeSpan = TimeSpan.FromSeconds(10);
             var activity = new ActivitySleep(_activityInformationMock, timeSpan);
             var expectedTime = DateTimeOffset.UtcNow.Add(timeSpan);
-            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
+            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedTime);
 
             // Act
@@ -55,7 +55,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             // Arrange
             var timeSpan = TimeSpan.FromSeconds(10);
             var activity = new ActivitySleep(_activityInformationMock, timeSpan);
-            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<ActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
+            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(DateTimeOffset.UtcNow.Subtract(timeSpan));
 
             // Act

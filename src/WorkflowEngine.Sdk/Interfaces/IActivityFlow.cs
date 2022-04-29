@@ -31,11 +31,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityAction Action();
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
+
         IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync);
         IActivityIf If(ActivityIfConditionMethod conditionMethod);
         IActivityIf If(bool condition);
 
-        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
+        /// <summary>
+        /// Do an activity under a lock. This protects from other workflow instances of the same workflow form.
+        /// If you want to protect from all other instances, no matter from which workflow form, then please use
+        /// <see cref="Throttle"/>
+        /// </summary>
+        /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
+        /// <returns></returns>
+        IActivityLock Lock(string resourceIdentifier);
+
+        /// <summary>
+        /// Do an activity that uses a resource that needs throttling. This makes sure that there is a limited of concurrent
+        /// workflows that use this resource (for all workflow instances, no matter which workflow form they belong to).
+        /// </summary>
+        /// <param name="resourceIdentifier">The resource that needs throttling. Can not be null.</param>
+        /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
+        /// <returns></returns>
+        IActivityThrottle Throttle(string resourceIdentifier, int limit);
+
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync);
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
 
@@ -77,10 +96,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
         [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
+
         IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync);
         IActivityIf<TActivityReturns> If(ActivityIfConditionMethod conditionMethod);
         IActivityIf<TActivityReturns> If(bool condition);
-        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync);
+
+
+
+        /// <summary>
+        /// Do an activity under a lock. This protects from other workflow instances of the same workflow form.
+        /// If you want to protect from all other instances, no matter from which workflow form, then please use
+        /// <see cref="Throttle"/>
+        /// </summary>
+        /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
+        /// <returns></returns>
+        IActivityLock<TActivityReturns> Lock(string resourceIdentifier);
+
+        /// <summary>
+        /// Do an activity that uses a resource that needs throttling. This makes sure that there is a limited of concurrent
+        /// workflows that use this resource (for all workflow instances, no matter which workflow form they belong to).
+        /// </summary>
+        /// <param name="resourceIdentifier">The resource that needs throttling. Can not be null.</param>
+        /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
+        /// <returns></returns>
+        IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit);
+
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
         IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);

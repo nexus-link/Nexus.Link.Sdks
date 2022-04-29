@@ -17,7 +17,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
     private ActivitySwitchMethodAsync<TSwitchValue> _defaultMethod;
 
     /// <inheritdoc />
-    public ActivitySwitch(IActivityInformation activityInformation, ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync) 
+    public ActivitySwitch(IActivityInformation activityInformation, ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync) 
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
@@ -25,7 +25,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
     }
 
     /// <inheritdoc />
-    public ActivitySwitchValueMethodAsync<TSwitchValue> SwitchValueMethodAsync { get; }
+    public ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivitySwitch<TSwitchValue> Case(TSwitchValue caseValue, ActivitySwitchMethodAsync<TSwitchValue> methodAsync)
@@ -61,15 +61,15 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> : Activity<TActivi
     private ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> _defaultMethod;
 
     /// <inheritdoc />
-    public ActivitySwitch(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueMethodAsync, ActivitySwitchValueMethodAsync<TSwitchValue> switchValueMethodAsync)
-        : base(activityInformation, getDefaultValueMethodAsync)
+    public ActivitySwitch(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync, ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)
+        : base(activityInformation, defaultValueMethodAsync)
     {
         InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
         SwitchValueMethodAsync = switchValueMethodAsync;
     }
 
     /// <inheritdoc />
-    public ActivitySwitchValueMethodAsync<TSwitchValue> SwitchValueMethodAsync { get; }
+    public ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivitySwitch<TActivityReturns, TSwitchValue> Case(TSwitchValue caseValue, ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> methodAsync)

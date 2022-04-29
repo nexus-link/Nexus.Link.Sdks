@@ -125,10 +125,9 @@ public abstract class WorkflowFastForward : WorkflowImplementation
             case ActivityTypeEnum.ForEachParallel:
             case ActivityTypeEnum.ForEachSequential:
             case ActivityTypeEnum.Semaphore:
-            case ActivityTypeEnum.LimitedConcurrency:
+            case ActivityTypeEnum.Throttle:
             case ActivityTypeEnum.Lock:
             case ActivityTypeEnum.Sleep:
-            case ActivityTypeEnum.Group:
             case ActivityTypeEnum.Parallel:
                 break;
             case ActivityTypeEnum.LoopUntilTrue:
