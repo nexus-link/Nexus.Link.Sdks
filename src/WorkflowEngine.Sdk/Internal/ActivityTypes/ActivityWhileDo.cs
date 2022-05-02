@@ -28,6 +28,7 @@ internal class ActivityWhileDo : Activity, IActivityWhileDo
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
+        Iteration = 0;
         do
         {
             Iteration++;
@@ -77,6 +78,7 @@ internal class ActivityWhileDo<TActivityReturns> : Activity<TActivityReturns>, I
         ActivityConditionMethodAsync conditionMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
+        InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
         _conditionMethodAsync = conditionMethodAsync;
     }
 
@@ -86,6 +88,7 @@ internal class ActivityWhileDo<TActivityReturns> : Activity<TActivityReturns>, I
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         TActivityReturns result;
+        Iteration = 0;
         do
         {
             Iteration++;

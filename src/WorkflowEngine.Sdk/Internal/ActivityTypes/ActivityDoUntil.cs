@@ -29,6 +29,7 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
+        Iteration = 0;
         do
         {
             Iteration++;
@@ -121,6 +122,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
         ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
     }
 
@@ -130,6 +132,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         TActivityReturns result;
+        Iteration = 0;
         do
         {
             Iteration++;
