@@ -130,7 +130,11 @@ public abstract class WorkflowFastForward : WorkflowImplementation
             case ActivityTypeEnum.Sleep:
             case ActivityTypeEnum.Parallel:
                 break;
+#pragma warning disable CS0618
             case ActivityTypeEnum.LoopUntilTrue:
+#pragma warning restore CS0618
+            case ActivityTypeEnum.DoWhileOrUntil:
+            case ActivityTypeEnum.WhileDo:
                 return;
             default:
                 FulcrumAssert.Fail(CodeLocation.AsString());
