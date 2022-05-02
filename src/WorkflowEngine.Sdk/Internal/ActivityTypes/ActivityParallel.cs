@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -15,62 +10,27 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityParallel" />
-internal class ActivityParallel : Activity, IActivityParallel
+internal class ActivityParallel : ActivityJobs<IActivityParallel>, IActivityParallel
 {
-    private readonly Dictionary<int, object> _objectJobs = new();
-    private readonly Dictionary<int, Type> _objectTypes = new();
     private readonly Dictionary<int, Task> _objectTasks = new();
-    private readonly Dictionary<int, ActivityMethodAsync<IActivityParallel>> _voidJobs = new();
     private readonly Dictionary<int, Task> _voidTasks = new();
 
     public ActivityParallel(IActivityInformation activityInformation)
         : base(activityInformation)
     {
-        Iteration = 0;
     }
 
-    /// <inheritdoc />
-    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync)
-    {
-        InternalContract.RequireGreaterThan(0, index, nameof(index));
-        InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
-        InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        _voidJobs.Add(index, jobAsync);
-        return this;
-    }
-
-    /// <inheritdoc />
-    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null)
-    {
-        InternalContract.RequireGreaterThan(0, index, nameof(index));
-        InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
-        InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        // Saving different method signatures together is complicated. Step 1: Save them as object.
-        _objectJobs.Add(index, jobAsync);
-        _objectTypes.Add(index, typeof(TMethodReturns));
-        return this;
-    }
-
-    /// <inheritdoc />
-    public async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ExecuteJobsAsync, null, cancellationToken);
-        return result;
-    }
-
-    internal async Task<JobResults> ExecuteJobsAsync(CancellationToken cancellationToken = default)
+    protected internal override async Task<JobResults> ExecuteJobsAsync(CancellationToken cancellationToken = default)
     {
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        foreach (var (index, job) in _voidJobs)
+        foreach (var (index, job) in VoidJobs)
         {
             Iteration = index;
             ActivityInformation.Workflow.LatestActivity = this;
             var task = job(this, cancellationToken);
             _voidTasks.Add(index, task);
         }
-        foreach (var (index, job) in _objectJobs)
+        foreach (var (index, job) in ObjectJobs)
         {
             Iteration = index;
             ActivityInformation.Workflow.LatestActivity = this;
@@ -85,7 +45,7 @@ internal class ActivityParallel : Activity, IActivityParallel
         foreach (var (index, task) in _objectTasks)
         {
             var result = GetResult(task);
-            jobResults.Add(index, result, _objectTypes[index]);
+            jobResults.Add(index, result, ObjectTypes[index]);
         }
         return jobResults;
     }
@@ -93,16 +53,9 @@ internal class ActivityParallel : Activity, IActivityParallel
     private Task ExecuteJobAsync(object job, CancellationToken cancellationToken)
     {
         // Saving different method signatures together is complicated. Step 2: Convert them to dynamic.
-        var convertedJobAsync = (dynamic) job;
+        var convertedJobAsync = (dynamic)job;
         // Saving different method signatures together is complicated. Step 3: Cast the result to Task, no matter what Task<T> they were previously.
-        var task = (Task) convertedJobAsync(this, cancellationToken);
+        var task = (Task)convertedJobAsync(this, cancellationToken);
         return task;
-    }
-
-    private static object GetResult(Task task)
-    {
-        // Saving different method signatures together is complicated. Step 4: Cast the task to dynamic, get the Result, cast it to object. Done! Phu!
-        // https://stackoverflow.com/questions/48033760/cast-taskt-to-taskobject-in-c-sharp-without-having-t
-        return (object)((dynamic)task).Result;
     }
 }

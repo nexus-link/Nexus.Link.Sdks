@@ -31,7 +31,7 @@ internal class ActivityLock : Activity, IActivityLock
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), cancellationToken);
     }
 
-    private async Task InternalExecuteAsync(ActivityMethodAsync<IActivityLock> methodAsync, CancellationToken cancellationToken)
+    internal async Task InternalExecuteAsync(ActivityMethodAsync<IActivityLock> methodAsync, CancellationToken cancellationToken)
     {
         await _semaphoreSupport.RaiseAsync(cancellationToken);
         await methodAsync(this, cancellationToken);

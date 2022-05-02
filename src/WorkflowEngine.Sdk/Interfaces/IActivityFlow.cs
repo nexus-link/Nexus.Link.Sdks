@@ -11,6 +11,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     {
     }
 
+    /// <summary>
+    /// Interface for flow programming when creating an activity
+    /// </summary>
     public interface IActivityFlow : IActivityFlowBase
     {
         IActivityFlow SetParameter<T>(string name, T value);
@@ -28,9 +31,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <returns></returns>
         IActivityFlow SetMaxExecutionTime(TimeSpan timeSpan);
 
+        [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         IActivityAction Action();
+        IActivityAction Action(ActivityMethodAsync<IActivityAction> methodAsync);
+        IActivityAction Action(ActivityMethod<IActivityAction> method);
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
+        IActivitySequential Sequential();
 
         IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync);
         IActivityIf If(ActivityIfConditionMethod conditionMethod);
@@ -60,14 +67,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
 
         IActivityLoopUntilTrue LoopUntil();
+
+        [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
+        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync);
+
+        [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
-        
+        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync);
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
-        /// <returns></returns>
+                                                                                                     /// 
+                                                                                                     /// </summary>
+                                                                                                     /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
+                                                                                                     /// <returns></returns>
         IActivitySemaphore Semaphore(string resourceIdentifier);
     }
 
@@ -93,7 +105,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueAsync);
 
+
+        [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         IActivityAction<TActivityReturns> Action();
+        IActivityAction<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync);
+        IActivityAction<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method);
+        IActivityAction<TActivityReturns> Action(TActivityReturns value);
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
         [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
@@ -126,7 +143,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
+
+        [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync, Func<TItem, string> getKeyMethod);
+
+        [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
+        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync);
     }
 }

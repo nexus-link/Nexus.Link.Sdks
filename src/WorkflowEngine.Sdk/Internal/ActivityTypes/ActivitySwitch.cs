@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -11,7 +13,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivitySwitch{TSwitchValue}" />
-internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchValue>
+internal class ActivitySwitch<TSwitchValue> : 
+    Activity, IActivitySwitch<TSwitchValue>, IBackgroundActivity
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TSwitchValue> _defaultMethod;
@@ -44,8 +47,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
         return this;
     }
 
-    /// <inheritdoc />
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    internal async Task SwitchAsync(CancellationToken cancellationToken = default)
     {
         var switchValue = await SwitchValueMethodAsync(this, cancellationToken);
         var found = _caseMethods.TryGetValue(switchValue, out var methodAsync);
@@ -53,9 +55,18 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
         if (methodAsync == null) return;
         await methodAsync(this, cancellationToken);
     }
+
+    /// <inheritdoc />
+    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(SwitchAsync, cancellationToken);
+    }
 }
 
-internal class ActivitySwitch<TActivityReturns, TSwitchValue> : Activity<TActivityReturns>, IActivitySwitch<TActivityReturns, TSwitchValue>
+internal class ActivitySwitch<TActivityReturns, TSwitchValue> : 
+    Activity<TActivityReturns>,
+    IActivitySwitch<TActivityReturns, TSwitchValue>, 
+    IBackgroundActivity<TActivityReturns>
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> _defaultMethod;
@@ -103,13 +114,19 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> : Activity<TActivi
         return this;
     }
 
-    /// <inheritdoc />
-    public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+
+    internal async Task<TActivityReturns> SwitchAsync(CancellationToken cancellationToken = default)
     {
         var switchValue = await SwitchValueMethodAsync(this, cancellationToken);
         var found = _caseMethods.TryGetValue(switchValue, out var methodAsync);
         if (!found) methodAsync = _defaultMethod;
         InternalContract.Require(methodAsync != null, $"Could not match {switchValue} with any of the case values.");
         return await methodAsync!(this, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        return ActivityExecutor.ExecuteWithReturnValueAsync(SwitchAsync, DefaultValueMethodAsync ,cancellationToken);
     }
 }

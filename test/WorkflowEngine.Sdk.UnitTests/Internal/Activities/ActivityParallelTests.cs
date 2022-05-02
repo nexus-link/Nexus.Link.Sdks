@@ -103,7 +103,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task ExecuteJobsAsync_()
+        public async Task ExecuteJobsAsync_Given_Normal_ReturnsExpectedValue()
         {
             // Arrange
             var activity = new ActivityParallel(_activityInformationMock);

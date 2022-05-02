@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -30,7 +31,7 @@ public delegate TSwitchValue ActivitySwitchValueMethod<out TSwitchValue>(IActivi
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Switch"/>.
 /// </summary>
-public interface IActivitySwitch<TSwitchValue> : IActivity
+public interface IActivitySwitch<TSwitchValue> : IExecutableActivity
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -46,17 +47,13 @@ public interface IActivitySwitch<TSwitchValue> : IActivity
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="SwitchValueMethodAsync"/> returns a value that is not Equal to any of the case  values.
     /// </summary>
     IActivitySwitch<TSwitchValue> Default(ActivitySwitchMethodAsync<TSwitchValue> methodAsync);
-
-    /// <summary>
-    /// Execute <see cref="SwitchValueMethodAsync"/>, depending on the value, select one of the case methods or the default methods if none match.
-    /// </summary>
-    Task ExecuteAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Switch"/>.
 /// </summary>
-public interface IActivitySwitch<TActivityReturns, TSwitchValue> : IActivity
+public interface IActivitySwitch<TActivityReturns, TSwitchValue> : 
+    IExecutableActivity<TActivityReturns>
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -82,9 +79,4 @@ public interface IActivitySwitch<TActivityReturns, TSwitchValue> : IActivity
     /// Declare that <paramref name="value"/> should be returned if <see cref="SwitchValueMethodAsync"/> returns a value that is not Equal to any of the case  values.
     /// </summary>
     IActivitySwitch<TActivityReturns, TSwitchValue> Default(TActivityReturns value);
-
-    /// <summary>
-    /// Execute <see cref="SwitchValueMethodAsync"/>, depending on the value, select one of the case methods or the default methods if none match.
-    /// </summary>
-    Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default);
 }

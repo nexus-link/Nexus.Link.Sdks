@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -10,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityIf" />
-internal class ActivityIf : Activity, IActivityIf
+internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
 {
     private ActivityMethodAsync<IActivityIf> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf> _elseMethodAsync;
@@ -35,6 +37,19 @@ internal class ActivityIf : Activity, IActivityIf
     }
 
     /// <inheritdoc />
+    public IActivityIf Then(ActivityMethod<IActivityIf> method)
+    {
+        InternalContract.RequireNotNull(method, nameof(method));
+        InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
+        _thenMethodAsync = (a, _) =>
+        {
+            method(a);
+            return Task.CompletedTask;
+        };
+        return this;
+    }
+
+    /// <inheritdoc />
     public IActivityIf Else(ActivityMethodAsync<IActivityIf> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -44,12 +59,19 @@ internal class ActivityIf : Activity, IActivityIf
     }
 
     /// <inheritdoc />
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public IActivityIf Else(ActivityMethod<IActivityIf> method)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(IfThenElse, cancellationToken);
+        InternalContract.RequireNotNull(method, nameof(method));
+        InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
+        _elseMethodAsync = (a, _) =>
+        {
+            method(a);
+            return Task.CompletedTask;
+        };
+        return this;
     }
 
-    private async Task IfThenElse(CancellationToken cancellationToken)
+    internal async Task IfThenElse(CancellationToken cancellationToken)
     {
         var condition = await ConditionMethodAsync(this, cancellationToken);
         if (condition)
@@ -63,9 +85,16 @@ internal class ActivityIf : Activity, IActivityIf
             await _elseMethodAsync(this, cancellationToken);
         }
     }
+
+    /// <inheritdoc />
+    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(IfThenElse, cancellationToken);
+    }
 }
 
-internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActivityIf<TActivityReturns>
+internal class ActivityIf<TActivityReturns> : 
+    Activity<TActivityReturns>, IActivityIf<TActivityReturns>, IBackgroundActivity<TActivityReturns>
 {
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _elseMethodAsync;
@@ -83,14 +112,25 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     /// <inheritdoc />
     public IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
     {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
         _thenMethodAsync = methodAsync;
         return this;
     }
 
     /// <inheritdoc />
+    public IActivityIf<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
+    {
+        InternalContract.RequireNotNull(method, nameof(method));
+        InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
+        _thenMethodAsync = (a, _) => Task.FromResult(method(a));
+        return this;
+    }
+
+    /// <inheritdoc />
     public IActivityIf<TActivityReturns> Then(TActivityReturns value)
     {
+        InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
         _thenMethodAsync = (_, _) => Task.FromResult(value);
         return this;
     }
@@ -98,8 +138,18 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     /// <inheritdoc />
     public IActivityIf<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
     {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
         _elseMethodAsync = methodAsync;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityIf<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
+    {
+        InternalContract.RequireNotNull(method, nameof(method));
+        InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
+        _elseMethodAsync = (a, _) => Task.FromResult(method(a));
         return this;
     }
 
@@ -110,15 +160,7 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
         return this;
     }
 
-    /// <inheritdoc />
-    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
-        InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(IfThenElse, DefaultValueMethodAsync, cancellationToken);
-    }
-
-    private async Task<TActivityReturns> IfThenElse(CancellationToken cancellationToken)
+    internal async Task<TActivityReturns> IfThenElse(CancellationToken cancellationToken)
     {
         InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
         InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");
@@ -135,5 +177,13 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
         }
 
         return result;
+    }
+
+    /// <inheritdoc />
+    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
+        InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");
+        return ActivityExecutor.ExecuteWithReturnValueAsync(IfThenElse, DefaultValueMethodAsync, cancellationToken);
     }
 }

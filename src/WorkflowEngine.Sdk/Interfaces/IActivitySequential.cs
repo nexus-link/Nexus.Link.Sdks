@@ -7,8 +7,8 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 /// <summary>
-/// An activity of type <see cref="ActivityTypeEnum.Parallel"/>.
+/// An activity of type <see cref="ActivityTypeEnum.Sequential"/>.
 /// </summary>
-public interface IActivityParallel : IActivityJobs<IActivityParallel>
+public interface IActivitySequential : IActivityJobs<IActivitySequential>
 {
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -29,7 +30,7 @@ public delegate Task<TMethodReturns> ActivityForEachParallelMethodAsync<TMethodR
 /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
 /// </summary>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<out TItem> : IActivity
+public interface IActivityForEachParallel<out TItem> : IExecutableActivity
 {
     /// <summary>
     /// The items to loop over
@@ -39,6 +40,7 @@ public interface IActivityForEachParallel<out TItem> : IActivity
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.
     /// </summary>
+    [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
     Task ExecuteAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken = default);
 }
 
@@ -47,7 +49,7 @@ public interface IActivityForEachParallel<out TItem> : IActivity
 /// </summary>
 /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<TMethodReturns, out TItem> : IActivity
+public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutableActivity<IDictionary<string, TMethodReturns>>
 {
     /// <summary>
     /// The items to loop over
@@ -55,8 +57,9 @@ public interface IActivityForEachParallel<TMethodReturns, out TItem> : IActivity
     IEnumerable<TItem> Items { get; }
 
     /// <summary>
-    /// Execute the <paramref name="method"/> for all items.
+    /// Execute the <paramref name="methodAsync"/> for all items.
     /// </summary>
     /// <returns>A dictionary that associates each item with a result</returns>
-    Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> method, CancellationToken cancellationToken = default);
+    [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
+    Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync, CancellationToken cancellationToken = default);
 }

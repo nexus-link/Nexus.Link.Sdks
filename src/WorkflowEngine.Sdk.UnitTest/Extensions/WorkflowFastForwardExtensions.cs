@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -11,10 +12,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.UnitTest.Extensions;
 /// </summary>
 public static class WorkflowFastForwardExtensions
 {
-
     /// <summary>
     /// Mark the <paramref name="activity"/> as completed and successful.
     /// </summary>
+    [Obsolete("Please use the new activity declaration style and use ExecutionAsync() with no method parameter instead of this method. Obsolete since 2022-05-02.")]
     public static void Success(this IActivity activity)
     {
         var activityImplementation = activity as Activity;
@@ -27,6 +28,7 @@ public static class WorkflowFastForwardExtensions
     /// <summary>
     /// Mark the <paramref name="activity"/> as completed, successful and with result <paramref name="value"/>.
     /// </summary>
+    [Obsolete("Please use the new activity declaration style and use ExecutionAsync() with no method parameter instead of this method. Obsolete since 2022-05-02.")]
     public static T Success<T>(this IActivity activity, T value)
     {
         var activityImplementation = activity as Activity;

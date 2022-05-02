@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -20,7 +21,7 @@ public delegate bool ActivityIfConditionMethod(IActivity activity);
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.
 /// </summary>
-public interface IActivityIf : IActivity
+public interface IActivityIf : IExecutableActivity
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -33,20 +34,25 @@ public interface IActivityIf : IActivity
     IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync);
 
     /// <summary>
+    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
+    /// </summary>
+    IActivityIf Then(ActivityMethod<IActivityIf> method);
+
+    /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
     /// </summary>
     IActivityIf Else(ActivityMethodAsync<IActivityIf> methodAsync);
 
     /// <summary>
-    /// Execute <see cref="ConditionMethodAsync"/>. If it returns true, then call the method from <see cref="Then"/>
-    /// else call the method from <see cref="Else"/>.
+    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
     /// </summary>
-    Task ExecuteAsync(CancellationToken cancellationToken = default);
+    IActivityIf Else(ActivityMethod<IActivityIf> method);
 }
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.
 /// </summary>
-public interface IActivityIf<TActivityReturns> : IActivity
+public interface IActivityIf<TActivityReturns> :
+    IExecutableActivity<TActivityReturns>
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -59,6 +65,11 @@ public interface IActivityIf<TActivityReturns> : IActivity
     IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
+    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
+    /// </summary>
+    IActivityIf<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
+
+    /// <summary>
     /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
     IActivityIf<TActivityReturns> Then(TActivityReturns value);
@@ -69,13 +80,12 @@ public interface IActivityIf<TActivityReturns> : IActivity
     IActivityIf<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
+    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
+    /// </summary>
+    IActivityIf<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
+
+    /// <summary>
     /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns false.
     /// </summary>
     IActivityIf<TActivityReturns> Else(TActivityReturns value);
-
-    /// <summary>
-    /// Execute <see cref="ConditionMethodAsync"/>. If it returns true, then call the then-method"/>
-    /// else call the else-method.
-    /// </summary>
-    Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default);
 }

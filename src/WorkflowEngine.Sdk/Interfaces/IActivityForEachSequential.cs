@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
@@ -28,7 +29,7 @@ public delegate Task<TMethodReturns> ActivityForEachSequentialMethodAsync<TMetho
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachSequential"/>.
 /// </summary>
-public interface IActivityForEachSequential<out TItem> : IActivity
+public interface IActivityForEachSequential<out TItem> : IExecutableActivity
 {
     /// <summary>
     /// The items to loop over
@@ -38,13 +39,14 @@ public interface IActivityForEachSequential<out TItem> : IActivity
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.
     /// </summary>
+    [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
     Task ExecuteAsync(ActivityForEachSequentialMethodAsync<TItem> methodAsync, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachSequential"/>.
 /// </summary>
-public interface IActivityForEachSequential<TMethodReturns, out TItem> : IActivity
+public interface IActivityForEachSequential<TMethodReturns, out TItem> : IExecutableActivity<IList<TMethodReturns>>
 {
     /// <summary>
     /// The items to loop over
@@ -55,5 +57,6 @@ public interface IActivityForEachSequential<TMethodReturns, out TItem> : IActivi
     /// Execute the <paramref name="methodAsync"/> for all items.
     /// </summary>
     /// <returns>A dictionary that associates each item with a result</returns>
+    [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
     Task<IList<TMethodReturns>> ExecuteAsync(ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync, CancellationToken cancellationToken = default);
 }

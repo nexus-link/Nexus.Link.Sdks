@@ -12,7 +12,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityThrottle" />
-internal class ActivityThrottle : Activity, IActivityThrottle
+internal class ActivityThrottle : 
+    Activity, IActivityThrottle
 {
     private readonly ISemaphoreSupport _semaphoreSupport;
 
@@ -36,10 +37,10 @@ internal class ActivityThrottle : Activity, IActivityThrottle
     /// <inheritdoc />
     public Task ExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), cancellationToken);
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => Throttle(methodAsync, ct), cancellationToken);
     }
 
-    private async Task InternalExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken)
+    internal async Task Throttle(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken)
     {
         await _semaphoreSupport.RaiseAsync(cancellationToken);
         try
@@ -53,7 +54,8 @@ internal class ActivityThrottle : Activity, IActivityThrottle
     }
 }
 
-internal class ActivityThrottle<TActivityReturns> : Activity<TActivityReturns>, IActivityThrottle<TActivityReturns>
+internal class ActivityThrottle<TActivityReturns> : 
+    Activity<TActivityReturns>, IActivityThrottle<TActivityReturns>
 {
     private readonly ISemaphoreSupport _semaphoreSupport;
 
@@ -77,10 +79,10 @@ internal class ActivityThrottle<TActivityReturns> : Activity<TActivityReturns>, 
     /// <inheritdoc />
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ThrottleAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
     }
 
-    private async Task<TActivityReturns> InternalExecuteAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken)
+    internal async Task<TActivityReturns> ThrottleAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken)
     {
         await _semaphoreSupport.RaiseAsync(cancellationToken);
         var result = await methodAsync(this, cancellationToken);
