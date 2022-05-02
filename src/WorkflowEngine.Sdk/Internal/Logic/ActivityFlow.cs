@@ -202,10 +202,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc/>
+        [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         public IActivityLoopUntilTrue LoopUntil()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             return new ActivityLoopUntilTrue(ActivityInformation);
+        }
+
+        /// <inheritdoc />
+        public IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            return new ActivityLoopUntilTrue(ActivityInformation, methodAsync);
         }
 
         /// <inheritdoc/>
@@ -368,10 +377,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc/>
+        [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+        }
+
+        /// <inheritdoc />
+        public IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
         }
 
         /// <inheritdoc />

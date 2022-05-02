@@ -21,8 +21,7 @@ public interface IActivityAction : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
-public interface IActivityAction<TActivityReturns> :
-    IExecutableActivity<TActivityReturns>
+public interface IActivityAction<TActivityReturns> : IExecutableActivity<TActivityReturns>
 {
     /// <summary>
     /// Execute the action <paramref name="methodAsync"/>.

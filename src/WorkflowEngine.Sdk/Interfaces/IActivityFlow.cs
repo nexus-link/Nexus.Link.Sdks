@@ -66,7 +66,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
 
+        [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue LoopUntil();
+        IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync);
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
@@ -111,7 +113,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityAction<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync);
         IActivityAction<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method);
         IActivityAction<TActivityReturns> Action(TActivityReturns value);
+
+        [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
+        IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync);
+
         [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
 

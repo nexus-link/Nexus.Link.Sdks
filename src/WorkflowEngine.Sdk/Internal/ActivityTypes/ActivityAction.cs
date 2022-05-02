@@ -25,7 +25,6 @@ internal class ActivityAction : Activity, IActivityAction, IBackgroundActivity
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
     }
 
@@ -65,7 +64,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     }
 
     /// <inheritdoc/>
-    [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
+    [Obsolete("Please use the ExecuteAsync() method without a method parameter in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync == null, $"You must use the {nameof(IActivityAction<TActivityReturns>.ExecuteAsync)}() method that has no method parameter.");
