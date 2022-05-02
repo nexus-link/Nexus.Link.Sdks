@@ -9,50 +9,30 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
-/// <inheritdoc cref="IActivityDoUntil" />
-internal class ActivityDoUntil : Activity, IActivityDoUntil
+/// <inheritdoc cref="IActivityDoWhileOrUntil" />
+internal class ActivityDoWhileOrUntil : Activity, IActivityDoWhileOrUntil
 {
-    private readonly ActivityMethodAsync<IActivityDoUntil> _methodAsync;
+    private readonly ActivityMethodAsync<IActivityDoWhileOrUntil> _methodAsync;
     private ActivityConditionMethodAsync _conditionMethodAsync;
     private bool _isWhileCondition;
 
-    public ActivityDoUntil(IActivityInformation activityInformation,
-        ActivityMethodAsync<IActivityDoUntil> methodAsync)
+    public ActivityDoWhileOrUntil(IActivityInformation activityInformation,
+        ActivityMethodAsync<IActivityDoWhileOrUntil> methodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
     }
 
-    internal async Task DoUntilAsync(ActivityMethodAsync<IActivityDoUntil> methodAsync, CancellationToken cancellationToken)
-    {
-        InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        Iteration = 0;
-        do
-        {
-            Iteration++;
-            await methodAsync(this, cancellationToken);
-            ActivityInformation.Workflow.LatestActivity = this;
-        } while (await GetWhileConditionAsync(cancellationToken));
-    }
-
-    internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken)
-    {
-        var condition = await _conditionMethodAsync(this, cancellationToken);
-        return _isWhileCondition ? condition : !condition;
-    }
-
     /// <inheritdoc />
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => DoUntilAsync(_methodAsync, ct), cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(DoWhileOrUntilAsync, cancellationToken);
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil Until(ActivityConditionMethodAsync conditionMethodAsync)
+    public IActivityDoWhileOrUntil Until(ActivityConditionMethodAsync conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -62,7 +42,7 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil Until(ActivityConditionMethod conditionMethod)
+    public IActivityDoWhileOrUntil Until(ActivityConditionMethod conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -72,7 +52,7 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil Until(bool condition)
+    public IActivityDoWhileOrUntil Until(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
@@ -81,7 +61,7 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil While(ActivityConditionMethodAsync conditionMethodAsync)
+    public IActivityDoWhileOrUntil While(ActivityConditionMethodAsync conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -91,7 +71,7 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil While(ActivityConditionMethod conditionMethod)
+    public IActivityDoWhileOrUntil While(ActivityConditionMethod conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -101,47 +81,49 @@ internal class ActivityDoUntil : Activity, IActivityDoUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil While(bool condition)
+    public IActivityDoWhileOrUntil While(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
         _isWhileCondition = true;
         return this;
     }
-}
 
-/// <inheritdoc cref="IActivityDoUntil{TActivityReturns}" />
-internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, IActivityDoUntil<TActivityReturns>
-{
-    private readonly ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> _methodAsync;
-    private ActivityConditionMethodAsync _conditionMethodAsync;
-    private bool _isWhileCondition;
-
-    public ActivityDoUntil(IActivityInformation activityInformation,
-        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
-        ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync)
-        : base(activityInformation, defaultValueMethodAsync)
-    {
-        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        _methodAsync = methodAsync;
-    }
-
-    internal async Task<TActivityReturns> DoUntilAsync(ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
+    internal async Task DoWhileOrUntilAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        TActivityReturns result;
         Iteration = 0;
         do
         {
             Iteration++;
-            result = await method(this, cancellationToken);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            await _methodAsync(this, cancellationToken);
             ActivityInformation.Workflow.LatestActivity = this;
         } while (await GetWhileConditionAsync(cancellationToken));
+    }
 
-        return result;
+    internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken = default)
+    {
+        var condition = await _conditionMethodAsync(this, cancellationToken);
+        return _isWhileCondition ? condition : !condition;
+    }
+}
+
+/// <inheritdoc cref="IActivityDoWhileOrUntil" />
+internal class ActivityDoWhileOrUntil<TActivityReturns> : Activity<TActivityReturns>, IActivityDoWhileOrUntil<TActivityReturns>
+{
+    private readonly ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> _methodAsync;
+    private ActivityConditionMethodAsync _conditionMethodAsync;
+    private bool _isWhileCondition;
+
+    public ActivityDoWhileOrUntil(IActivityInformation activityInformation,
+        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
+        ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> methodAsync)
+        : base(activityInformation, defaultValueMethodAsync)
+    {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        _methodAsync = methodAsync;
     }
 
     internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken)
@@ -154,11 +136,11 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => DoUntilAsync(_methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(DoWhileOrUntilAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> Until(ActivityConditionMethodAsync conditionMethodAsync)
+    public IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethodAsync conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -168,7 +150,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> Until(ActivityConditionMethod conditionMethod)
+    public IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethod conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods method can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -178,7 +160,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> Until(bool condition)
+    public IActivityDoWhileOrUntil<TActivityReturns> Until(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
@@ -187,7 +169,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync)
+    public IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -197,7 +179,7 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> While(ActivityConditionMethod conditionMethod)
+    public IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethod conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -207,11 +189,28 @@ internal class ActivityDoUntil<TActivityReturns> : Activity<TActivityReturns>, I
     }
 
     /// <inheritdoc />
-    public IActivityDoUntil<TActivityReturns> While(bool condition)
+    public IActivityDoWhileOrUntil<TActivityReturns> While(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
         _isWhileCondition = true;
         return this;
+    }
+    internal async Task<TActivityReturns> DoWhileOrUntilAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
+        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
+        TActivityReturns result;
+        Iteration = 0;
+        do
+        {
+            Iteration++;
+            result = await _methodAsync(this, cancellationToken);
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            ActivityInformation.Workflow.LatestActivity = this;
+        } while (await GetWhileConditionAsync(cancellationToken));
+
+        return result;
     }
 }

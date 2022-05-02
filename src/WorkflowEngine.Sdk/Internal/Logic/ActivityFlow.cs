@@ -219,11 +219,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityDoUntil Do(ActivityMethodAsync<IActivityDoUntil> methodAsync)
+        public IActivityDoWhileOrUntil Do(ActivityMethodAsync<IActivityDoWhileOrUntil> methodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityDoUntil(ActivityInformation, methodAsync);
+            return new ActivityDoWhileOrUntil(ActivityInformation, methodAsync);
         }
 
         /// <inheritdoc />
@@ -426,11 +426,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityDoUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync)
+        public IActivityDoWhileOrUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> methodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityDoUntil<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            return new ActivityDoWhileOrUntil<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
         }
 
         /// <inheritdoc />

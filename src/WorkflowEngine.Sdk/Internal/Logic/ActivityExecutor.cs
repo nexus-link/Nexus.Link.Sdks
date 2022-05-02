@@ -31,8 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
 
-            var task = ExecuteAsync(async ct => { await methodAsync(ct); return true; }, false, cancellationToken);
-            await ProtectExceptionsFromGettingCaughtAsync(task);
+            await ExecuteAsync(async ct => { await methodAsync(ct); return true; }, false, cancellationToken);
         }
 
         public async Task<TMethodReturns> ExecuteWithReturnValueAsync<TMethodReturns>(
@@ -42,8 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
 
-            var task = ExecuteAsync(methodAsync, true, cancellationToken);
-            await ProtectExceptionsFromGettingCaughtAsync(task);
+            await ExecuteAsync(methodAsync, true, cancellationToken);
             TMethodReturns result;
             if (Activity.Instance.State == ActivityStateEnum.Success)
             {
@@ -67,7 +65,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 if (Activity.Instance.HasCompleted) return;
                 await CallMethodAndUpdateActivityInformationAsync(methodAsync, hasReturnValue, cancellationToken);
                 FulcrumAssert.IsTrue(Activity.Instance.HasCompleted, CodeLocation.AsString());
-                await MaybeThrowAsync(cancellationToken);
+                MaybeThrow();
+            }
+            catch (WorkflowImplementationShouldNotCatchThisException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                // Wrap all exceptions in a protective layer
+                throw new WorkflowImplementationShouldNotCatchThisException(e);
             }
             finally
             {
@@ -216,7 +223,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
-        private async Task MaybeThrowAsync(CancellationToken cancellationToken)
+        private void MaybeThrow()
         {
             if (Activity.Instance.State != ActivityStateEnum.Failed) return;
             switch (Activity.Options.FailUrgency)
@@ -252,22 +259,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     $" The default value for {typeof(TMethodReturns).Name} ({default(TMethodReturns)}) is used instead.",
                     e, cancellationToken);
                 return default;
-            }
-        }
-
-        private async Task ProtectExceptionsFromGettingCaughtAsync(Task task)
-        {
-            try
-            {
-                await task;
-            }
-            catch (WorkflowImplementationShouldNotCatchThisException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                throw new WorkflowImplementationShouldNotCatchThisException(e);
             }
         }
     }

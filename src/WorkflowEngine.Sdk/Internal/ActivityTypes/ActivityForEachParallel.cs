@@ -123,7 +123,32 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             cancellationToken);
     }
 
-    internal Task<IDictionary<string, TMethodReturns>> ForEachMethod(
+    private static async Task<IDictionary<string, TMethodReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TMethodReturns>> taskDictionary)
+    {
+        await WorkflowHelper.WhenAllActivities(taskDictionary.Values);
+        var resultDictionary = new Dictionary<string, TMethodReturns>();
+        foreach (var (key, task) in taskDictionary)
+        {
+            var result = await task;
+            resultDictionary.Add(key, result);
+        }
+        return resultDictionary;
+    }
+
+    /// <inheritdoc />
+    public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.ForEachParallel)}() method that has a method as parameter.");
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ForEachMethod, EmptyDictionaryAsync, cancellationToken);
+    }
+
+    internal async Task<IDictionary<string, TMethodReturns>> ForEachMethod(CancellationToken cancellationToken)
+    {
+        FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
+        return await ForEachMethod(_methodAsync, cancellationToken);
+    }
+
+    private Task<IDictionary<string, TMethodReturns>> ForEachMethod(
         ActivityForEachParallelMethodAsync<TMethodReturns, TItem> method,
         CancellationToken cancellationToken)
     {
@@ -151,25 +176,8 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         return AggregatePostponeExceptions(taskDictionary);
     }
 
-    private static async Task<IDictionary<string, TMethodReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TMethodReturns>> taskDictionary)
+    private Task<IDictionary<string, TMethodReturns>> EmptyDictionaryAsync(CancellationToken cancellationtoken)
     {
-        await WorkflowHelper.WhenAllActivities(taskDictionary.Values);
-        var resultDictionary = new Dictionary<string, TMethodReturns>();
-        foreach (var (key, task) in taskDictionary)
-        {
-            var result = await task;
-            resultDictionary.Add(key, result);
-        }
-        return resultDictionary;
-    }
-
-    /// <inheritdoc />
-    public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.ForEachParallel)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachMethod(_methodAsync, ct),
-            _ => Task.FromResult((IDictionary<string, TMethodReturns>)new Dictionary<string, TMethodReturns>()),
-            cancellationToken);
+        return Task.FromResult((IDictionary<string, TMethodReturns>) new Dictionary<string, TMethodReturns>());
     }
 }

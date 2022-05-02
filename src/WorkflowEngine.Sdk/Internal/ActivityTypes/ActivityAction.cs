@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -40,7 +41,13 @@ internal class ActivityAction : Activity, IActivityAction, IBackgroundActivity
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), cancellationToken);
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
+    }
+
+    internal async Task ActionAsync(CancellationToken cancellationToken = default)
+    {
+        FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
+        await _methodAsync(this, cancellationToken);
     }
 }
 
@@ -75,6 +82,12 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), DefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
+    }
+
+    internal async Task<TActivityReturns> ActionAsync(CancellationToken cancellationToken = default)
+    {
+        FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
+        return await _methodAsync(this, cancellationToken);
     }
 }

@@ -72,7 +72,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync);
 
-        IActivityDoUntil Do(ActivityMethodAsync<IActivityDoUntil> methodAsync);
+        IActivityDoWhileOrUntil Do(ActivityMethodAsync<IActivityDoWhileOrUntil> methodAsync);
 
         IActivityWhileDo While(ActivityConditionMethodAsync conditionMethodAsync);
         IActivityWhileDo While(ActivityConditionMethod conditionMethod);
@@ -128,7 +128,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync);
 
-        IActivityDoUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync);
+        IActivityDoWhileOrUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> methodAsync);
 
         IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync);
         IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod conditionMethod);
