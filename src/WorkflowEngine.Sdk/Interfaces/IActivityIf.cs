@@ -6,19 +6,6 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 /// <summary>
-/// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityIf"/>.</param>
-/// <param name="cancellationToken"></param>
-public delegate Task<bool> ActivityIfConditionMethodAsync(IActivity activity, CancellationToken cancellationToken);
-
-/// <summary>
-/// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
-/// </summary>
-/// <param name="activity">The current <see cref="IActivityIf"/>.</param>
-public delegate bool ActivityIfConditionMethod(IActivity activity);
-
-/// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.
 /// </summary>
 public interface IActivityIf : IExecutableActivity
@@ -26,7 +13,7 @@ public interface IActivityIf : IExecutableActivity
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivityIfConditionMethodAsync ConditionMethodAsync { get; }
+    ActivityConditionMethodAsync ConditionMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
@@ -57,7 +44,7 @@ public interface IActivityIf<TActivityReturns> :
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivityIfConditionMethodAsync ConditionMethodAsync { get; }
+    ActivityConditionMethodAsync ConditionMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.

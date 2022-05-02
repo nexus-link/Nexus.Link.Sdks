@@ -9,6 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
 /// </summary>
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 public interface IActivityLoopUntilTrueBase : IActivity
 {
     /// <summary>
@@ -33,6 +34,7 @@ public interface IActivityLoopUntilTrueBase : IActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
 /// </summary>
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 public interface IActivityLoopUntilTrue : IActivityLoopUntilTrueBase, IExecutableActivity
 {
     /// <summary>
@@ -45,6 +47,7 @@ public interface IActivityLoopUntilTrue : IActivityLoopUntilTrueBase, IExecutabl
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
 /// </summary>
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 public interface IActivityLoopUntilTrue<TActivityReturns> : IActivityLoopUntilTrueBase, IExecutableActivity<TActivityReturns>
 {
     /// <summary>

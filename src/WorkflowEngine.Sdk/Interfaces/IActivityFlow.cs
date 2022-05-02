@@ -39,8 +39,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityParallel Parallel();
         IActivitySequential Sequential();
 
-        IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync);
-        IActivityIf If(ActivityIfConditionMethod conditionMethod);
+        IActivityIf If(ActivityConditionMethodAsync conditionMethodAsync);
+        IActivityIf If(ActivityConditionMethod conditionMethod);
         IActivityIf If(bool condition);
 
         /// <summary>
@@ -68,7 +68,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue LoopUntil();
+
+        [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync);
+
+        IActivityDoUntil Do(ActivityMethodAsync<IActivityDoUntil> methodAsync);
+
+        IActivityWhileDo While(ActivityConditionMethodAsync conditionMethodAsync);
+        IActivityWhileDo While(ActivityConditionMethod conditionMethod);
+        IActivityWhileDo While(bool condition);
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
@@ -116,13 +124,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();
+
+        [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync);
+
+        IActivityDoUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync);
+
+        IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync);
+        IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod conditionMethod);
+        IActivityWhileDo<TActivityReturns> While(bool condition);
 
         [Obsolete("Please use ActivityIf. Obsolete since 2022-04-27.")]
         IActivityCondition<TActivityReturns> Condition();
 
-        IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync);
-        IActivityIf<TActivityReturns> If(ActivityIfConditionMethod conditionMethod);
+        IActivityIf<TActivityReturns> If(ActivityConditionMethodAsync conditionMethodAsync);
+        IActivityIf<TActivityReturns> If(ActivityConditionMethod conditionMethod);
         IActivityIf<TActivityReturns> If(bool condition);
 
 

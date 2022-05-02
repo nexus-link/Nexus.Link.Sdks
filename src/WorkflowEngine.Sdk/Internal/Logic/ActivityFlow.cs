@@ -135,7 +135,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf If(ActivityIfConditionMethodAsync conditionMethodAsync)
+        public IActivityIf If(ActivityConditionMethodAsync conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -143,7 +143,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf If(ActivityIfConditionMethod conditionMethod)
+        public IActivityIf If(ActivityConditionMethod conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -210,11 +210,43 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         public IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             return new ActivityLoopUntilTrue(ActivityInformation, methodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityDoUntil Do(ActivityMethodAsync<IActivityDoUntil> methodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            return new ActivityDoUntil(ActivityInformation, methodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo While(ActivityConditionMethodAsync conditionMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
+            return new ActivityWhileDo(ActivityInformation, conditionMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo While(ActivityConditionMethod conditionMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+            return new ActivityWhileDo(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo While(bool condition)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityWhileDo(ActivityInformation, (a, _) => Task.FromResult(condition));
         }
 
         /// <inheritdoc/>
@@ -385,11 +417,43 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityDoUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoUntil<TActivityReturns>, TActivityReturns> methodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            return new ActivityDoUntil<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
+            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, conditionMethodAsync);
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod conditionMethod)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+        }
+
+        /// <inheritdoc />
+        public IActivityWhileDo<TActivityReturns> While(bool condition)
+        {
+            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(condition));
         }
 
         /// <inheritdoc />
@@ -401,7 +465,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf<TActivityReturns> If(ActivityIfConditionMethodAsync conditionMethodAsync)
+        public IActivityIf<TActivityReturns> If(ActivityConditionMethodAsync conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -409,7 +473,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf<TActivityReturns> If(ActivityIfConditionMethod conditionMethod)
+        public IActivityIf<TActivityReturns> If(ActivityConditionMethod conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));

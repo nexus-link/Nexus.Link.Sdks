@@ -57,6 +57,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     public delegate Task<TMethodReturns> ActivityDefaultValueMethodAsync<TMethodReturns>(CancellationToken cancellationToken);
 
     /// <summary>
+    /// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityIf"/>.</param>
+    /// <param name="cancellationToken"></param>
+    public delegate Task<bool> ActivityConditionMethodAsync(IActivity activity, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
+    /// </summary>
+    /// <param name="activity">The current <see cref="IActivityIf"/>.</param>
+    public delegate bool ActivityConditionMethod(IActivity activity);
+
+
+    /// <summary>
     /// Basic information about a workflow activity, this is the base information for all types of activities.
     /// </summary>
     public interface IActivity : IActivityBase, IWorkflowLogger

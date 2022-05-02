@@ -17,7 +17,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     private ActivityMethodAsync<IActivityIf> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf> _elseMethodAsync;
 
-    public ActivityIf(IActivityInformation activityInformation, ActivityIfConditionMethodAsync conditionMethodAsync)
+    public ActivityIf(IActivityInformation activityInformation, ActivityConditionMethodAsync conditionMethodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -25,7 +25,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     }
 
     /// <inheritdoc />
-    public ActivityIfConditionMethodAsync ConditionMethodAsync { get; }
+    public ActivityConditionMethodAsync ConditionMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync)
@@ -99,7 +99,10 @@ internal class ActivityIf<TActivityReturns> :
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _elseMethodAsync;
 
-    public ActivityIf(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync, ActivityIfConditionMethodAsync conditionMethodAsync)
+    public ActivityIf(
+        IActivityInformation activityInformation,
+        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
+        ActivityConditionMethodAsync conditionMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -107,7 +110,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public ActivityIfConditionMethodAsync ConditionMethodAsync { get; }
+    public ActivityConditionMethodAsync ConditionMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)

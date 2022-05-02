@@ -12,6 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityLoopUntilTrueBase" />
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 internal abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntilTrueBase
 {
     private readonly Dictionary<string, object> _loopArguments = new();
@@ -42,6 +43,7 @@ internal abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntil
 }
 
 /// <inheritdoc cref="IActivityLoopUntilTrue" />
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue
 {
     private readonly ActivityMethodAsync<IActivityLoopUntilTrue> _methodAsync;
@@ -51,6 +53,8 @@ internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopU
         : base(activityInformation)
     {
     }
+
+    [Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
     public ActivityLoopUntilTrue(IActivityInformation activityInformation,
         ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync)
         : base(activityInformation)
@@ -66,10 +70,10 @@ internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopU
         CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilMethod(methodAsync, ct), cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), cancellationToken);
     }
 
-    internal async Task LoopUntilMethod(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync, CancellationToken cancellationToken)
+    internal async Task LoopUntilAsync(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -89,11 +93,12 @@ internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopU
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.LoopUntil)}() method that has a method as parameter.");
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilMethod(_methodAsync, ct), cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilAsync(_methodAsync, ct), cancellationToken);
     }
 }
 
 /// <inheritdoc cref="IActivityLoopUntilTrue{TActivityReturns}" />
+[Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
 internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBase, IActivityLoopUntilTrue<TActivityReturns>
 {
     private readonly ActivityDefaultValueMethodAsync<TActivityReturns> _getDefaultValueAsync;
@@ -106,6 +111,7 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBa
         _getDefaultValueAsync = getDefaultValueAsync;
     }
 
+    [Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
     public ActivityLoopUntilTrue(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueAsync,
         ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync)
@@ -120,11 +126,11 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBa
     public async Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilMethod(methodAsync, ct),
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct),
             _getDefaultValueAsync, cancellationToken);
     }
 
-    internal async Task<TActivityReturns> LoopUntilMethod(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
+    internal async Task<TActivityReturns> LoopUntilAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
@@ -147,6 +153,6 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBa
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilMethod(_methodAsync, ct), _getDefaultValueAsync, cancellationToken);
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(_methodAsync, ct), _getDefaultValueAsync, cancellationToken);
     }
 }
