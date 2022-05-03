@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return _methodHandler.GetArgument<T>(name);
         }
 
-        public IActivity GetCurrentParentActivity()
+        public IInternalActivity GetCurrentParentActivity()
         {
             return WorkflowInformation.GetCurrentParentActivity();
         }

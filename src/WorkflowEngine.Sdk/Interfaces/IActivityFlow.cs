@@ -167,8 +167,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod);
-        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync, Func<TItem, string> getKeyMethod);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync);
 
         [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);

@@ -289,10 +289,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     _activityVersionCache.Add(version.Id, version, false);
                 }
 
-                var instance = _summary.ActivityInstances.Values.FirstOrDefault(i =>
-                    i.ActivityVersionId == version.Id
-                    && i.ParentActivityInstanceId == activityInformation.Parent?.Instance.Id
-                    && i.ParentIteration == activityInformation.Parent?.Iteration);
+                var instance = _summary.ActivityInstances.Values.FirstOrDefault(i => IsSameInstance(i, version));
                 if (instance != null) return instance.Id;
                 instance = new ActivityInstance
                 {
@@ -300,13 +297,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     WorkflowInstanceId = _workflowInformation.InstanceId,
                     ActivityVersionId = version.Id,
                     ParentActivityInstanceId = activityInformation.Parent?.ActivityInstanceId,
-                    ParentIteration = activityInformation.Parent?.Iteration,
+                    ParentIteration = activityInformation.Parent?.InternalIteration,
                     State = ActivityStateEnum.Executing,
                     StartedAt = DateTimeOffset.UtcNow
                 };
                 _summary.ActivityInstances.Add(instance.Id, instance);
                 _activityInstanceCache.Add(instance.Id, instance, false);
                 return instance.Id;
+            }
+
+            bool IsSameInstance(ActivityInstance instance, ActivityVersion version)
+            {
+                return instance.ActivityVersionId == version.Id
+                       && instance.ParentActivityInstanceId == activityInformation.Parent?.Instance.Id
+                       && instance.ParentIteration == activityInformation.Parent?.InternalIteration;
             }
         }
 

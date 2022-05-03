@@ -5,6 +5,7 @@
     <AssemblyName>Nexus.Link.WorkflowEngine.Sdk.UnitTests</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -6,6 +6,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -39,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         public ActivityOptions DefaultActivityOptions { get; } = new();
 
-        internal IActivity CurrentParentActivity => _workflowExecutor.GetCurrentParentActivity();
+        internal IInternalActivity CurrentParentActivity => _workflowExecutor.GetCurrentParentActivity();
 
         /// <summary>
         /// Constructor

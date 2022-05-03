@@ -27,10 +27,16 @@ public delegate Task ActivityForEachParallelMethodAsync<in TItem>(TItem item, IA
 public delegate Task<TMethodReturns> ActivityForEachParallelMethodAsync<TMethodReturns, in TItem>(TItem item, IActivityForEachParallel<TMethodReturns, TItem> activity, CancellationToken cancellationToken);
 
 /// <summary>
+/// Get the key for a specific item.
+/// </summary>
+/// <typeparam name="T">The type of the item</typeparam>
+public delegate string GetKeyMethod<in T>(T item);
+
+/// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
 /// </summary>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<out TItem> : IExecutableActivity
+public interface IActivityForEachParallel<out TItem> : IExecutableActivity, IParentActivity
 {
     /// <summary>
     /// The items to loop over
@@ -49,7 +55,7 @@ public interface IActivityForEachParallel<out TItem> : IExecutableActivity
 /// </summary>
 /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutableActivity<IDictionary<string, TMethodReturns>>
+public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutableActivity<IDictionary<string, TMethodReturns>>, IParentActivity
 {
     /// <summary>
     /// The items to loop over

@@ -29,7 +29,7 @@ public delegate Task<TMethodReturns> ActivityForEachSequentialMethodAsync<TMetho
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachSequential"/>.
 /// </summary>
-public interface IActivityForEachSequential<out TItem> : IExecutableActivity
+public interface IActivityForEachSequential<out TItem> : IExecutableActivity, IParentActivity
 {
     /// <summary>
     /// The items to loop over
@@ -46,7 +46,7 @@ public interface IActivityForEachSequential<out TItem> : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachSequential"/>.
 /// </summary>
-public interface IActivityForEachSequential<TMethodReturns, out TItem> : IExecutableActivity<IList<TMethodReturns>>
+public interface IActivityForEachSequential<TMethodReturns, out TItem> : IExecutableActivity<IList<TMethodReturns>>, IParentActivity
 {
     /// <summary>
     /// The items to loop over

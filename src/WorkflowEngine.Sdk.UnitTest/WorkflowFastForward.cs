@@ -54,8 +54,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
 
     public void MaybeBreak(IActivityLoopUntilTrueBase activity)
     {
-        FulcrumAssert.IsNotNull(activity.Iteration, CodeLocation.AsString());
-        MaybeBreak(activity.ActivityFormId, activity.Iteration!.Value);
+        MaybeBreak(activity.ActivityFormId, activity.ChildCounter);
     }
 
     private void MaybeBreak(string activityFormId, int iteration)
@@ -151,13 +150,13 @@ public abstract class WorkflowFastForward : WorkflowImplementation
                         $"Break condition for activity {activityFormId} included iteration {BreakAtIteration.Value}, so the activity was expected to have a parent activity.");
                 }
 
-                if (!parentActivity.Iteration.HasValue)
+                if (!parentActivity.InternalIteration.HasValue)
                 {
                     throw new WorkflowUnitTestFailedException(
                         $"Break condition for activity {activityFormId} included iteration {BreakAtIteration.Value}, so the parent activity was expected to have an iteration value.");
                 }
 
-                if (BreakAtIteration.Value != parentActivity.Iteration.Value) return;
+                if (BreakAtIteration.Value != parentActivity.InternalIteration.Value) return;
             }
 
             throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException());

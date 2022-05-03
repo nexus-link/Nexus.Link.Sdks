@@ -15,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="ActivityForEachSequential{TItem}" />
 internal class ActivityForEachSequential<TItem> :
-    Activity, IActivityForEachSequential<TItem>, IBackgroundActivity
+    ParentActivity, IActivityForEachSequential<TItem>, IBackgroundActivity
 {
     private readonly ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
@@ -27,7 +27,6 @@ internal class ActivityForEachSequential<TItem> :
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
-        Iteration = 0;
     }
     public ActivityForEachSequential(
         IActivityInformation activityInformation, IEnumerable<TItem> items,
@@ -38,7 +37,6 @@ internal class ActivityForEachSequential<TItem> :
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
         Items = items;
-        Iteration = 0;
     }
 
     /// <inheritdoc/>
@@ -47,17 +45,23 @@ internal class ActivityForEachSequential<TItem> :
         ActivityForEachSequentialMethodAsync<TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachMethod(methodAsync, ct),
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachSequentialAsync(methodAsync, ct),
             cancellationToken);
     }
 
-    internal async Task ForEachMethod(ActivityForEachSequentialMethodAsync<TItem> method, CancellationToken cancellationToken)
+    internal Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    {
+        FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
+        return ForEachSequentialAsync(_methodAsync, cancellationToken);
+    }
+
+    private async Task ForEachSequentialAsync(ActivityForEachSequentialMethodAsync<TItem> method, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         foreach (var item in Items)
         {
-            Iteration++;
+            ChildCounter++;
             await method(item, this, cancellationToken);
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             ActivityInformation.Workflow.LatestActivity = this;
@@ -67,14 +71,14 @@ internal class ActivityForEachSequential<TItem> :
     /// <inheritdoc />
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachMethod(_methodAsync, ct),
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachSequentialAsync(_methodAsync, ct),
             cancellationToken);
     }
 }
 
 /// <inheritdoc cref="ActivityForEachSequential{TMethodReturns, TItem}" />
 internal class ActivityForEachSequential<TMethodReturns, TItem> :
-    Activity, IActivityForEachSequential<TMethodReturns, TItem>,
+    ParentActivity, IActivityForEachSequential<TMethodReturns, TItem>,
     IBackgroundActivity<IList<TMethodReturns>>
 {
     private readonly ActivityDefaultValueMethodAsync<TMethodReturns> _getDefaultValueAsync;
@@ -89,7 +93,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         InternalContract.RequireNotNull(items, nameof(items));
         _getDefaultValueAsync = getDefaultValueAsync;
         Items = items;
-        Iteration = 0;
+        ChildCounter = 0;
     }
     public ActivityForEachSequential(
         IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
@@ -102,7 +106,6 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         _getDefaultValueAsync = getDefaultValueAsync;
         _methodAsync = methodAsync;
         Items = items;
-        Iteration = 0;
     }
 
     /// <inheritdoc/>
@@ -112,12 +115,18 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachMethod(method, ct),
+            ct => ForEachSequentialAsync(method, ct),
             _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
             cancellationToken);
     }
 
-    internal async Task<IList<TMethodReturns>> ForEachMethod(
+    internal Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    {
+        FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
+        return ForEachSequentialAsync(_methodAsync, cancellationToken);
+    }
+
+    private async Task<IList<TMethodReturns>> ForEachSequentialAsync(
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken)
     {
@@ -126,7 +135,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         var resultList = new List<TMethodReturns>();
         foreach (var item in Items)
         {
-            Iteration++;
+            ChildCounter++;
             var result = await methodAsync(item, this, cancellationToken);
             resultList.Add(result);
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
@@ -140,7 +149,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     public Task<IList<TMethodReturns>> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachMethod(_methodAsync, ct),
+            ct => ForEachSequentialAsync(_methodAsync, ct),
             _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
             cancellationToken);
     }

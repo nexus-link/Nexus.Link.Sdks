@@ -90,7 +90,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <summary>
         /// If the activity is part of a loop, this is the iteration count for that loop
         /// </summary>
-        /// 
+        ///
+        [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", false)]
         int? Iteration { get; }
 
         /// <summary>

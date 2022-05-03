@@ -86,7 +86,6 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 
             // Assert
             actualValue.ShouldBe(expectedValue);
-            activity.Iteration.ShouldBe(expectedValue);
         }
 
         [Fact]
@@ -105,22 +104,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task Execute_Given_ReturnValue_Gives_Call()
-        {
-            // Arrange
-            var activity = new ActivityDoWhileOrUntil<int>(_activityInformationMock, DefaultMethod, (a, ct) => Task.FromResult(10));
-            activity.Until(true);
-
-            // Act
-            await activity.ExecuteAsync();
-
-            // Assert
-            _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync<int>(It.IsAny<InternalActivityMethodAsync<int>>(), DefaultMethod, It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task Execute_Given_NoReturnValue_Gives_Call()
+        public async Task Execute_NoReturn_Given_OneLoop_Gives_OnCall()
         {
             // Arrange
             var activity = new ActivityDoWhileOrUntil(_activityInformationMock, (a, ct) => Task.CompletedTask);
@@ -132,6 +116,21 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             // Assert
             _activityExecutorMock
                 .Verify(ae => ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Execute_ReturnValue_Given_OneLoop_Gives_Call()
+        {
+            // Arrange
+            var activity = new ActivityDoWhileOrUntil<int>(_activityInformationMock, DefaultMethod, (a, ct) => Task.FromResult(10));
+            activity.Until(true);
+
+            // Act
+            await activity.ExecuteAsync();
+
+            // Assert
+            _activityExecutorMock.Verify(
+                ae => ae.ExecuteWithReturnValueAsync<int>(It.IsAny<InternalActivityMethodAsync<int>>(), DefaultMethod, It.IsAny<CancellationToken>()), Times.Once);
         }
         private Task<int> DefaultMethod(CancellationToken cancellationToken)
         {

@@ -10,7 +10,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityWhileDo" />
-internal class ActivityWhileDo : Activity, IActivityWhileDo
+internal class ActivityWhileDo : ParentActivity, IActivityWhileDo
 {
     private ActivityMethodAsync<IActivityWhileDo> _methodAsync;
     private readonly ActivityConditionMethodAsync _conditionMethodAsync;
@@ -28,10 +28,9 @@ internal class ActivityWhileDo : Activity, IActivityWhileDo
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        Iteration = 0;
         do
         {
-            Iteration++;
+            ChildCounter++;
             await methodAsync(this, cancellationToken);
             ActivityInformation.Workflow.LatestActivity = this;
         } while (await _conditionMethodAsync!(this, cancellationToken));
@@ -68,7 +67,7 @@ internal class ActivityWhileDo : Activity, IActivityWhileDo
 }
 
 /// <inheritdoc cref="IActivityWhileDo{TActivityReturns}" />
-internal class ActivityWhileDo<TActivityReturns> : Activity<TActivityReturns>, IActivityWhileDo<TActivityReturns>
+internal class ActivityWhileDo<TActivityReturns> : ParentActivity<TActivityReturns>, IActivityWhileDo<TActivityReturns>
 {
     private ActivityMethodAsync<IActivityWhileDo<TActivityReturns>, TActivityReturns> _methodAsync;
     private readonly ActivityConditionMethodAsync _conditionMethodAsync;
@@ -88,10 +87,9 @@ internal class ActivityWhileDo<TActivityReturns> : Activity<TActivityReturns>, I
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         TActivityReturns result;
-        Iteration = 0;
         do
         {
-            Iteration++;
+            ChildCounter++;
             result = await method(this, cancellationToken);
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             ActivityInformation.Workflow.LatestActivity = this;

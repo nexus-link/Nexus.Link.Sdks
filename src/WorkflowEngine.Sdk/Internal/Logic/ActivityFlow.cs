@@ -534,7 +534,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc/>
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, Func<TItem, string> getKeyMethod)
+        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
@@ -543,14 +543,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync,
-            Func<TItem, string> getKeyMethod)
+        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, methodAsync, getKeyMethod);
+            return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync);
         }
 
         /// <inheritdoc/>

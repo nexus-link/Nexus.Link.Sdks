@@ -12,7 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IActivityJobs{T}" />
-internal abstract class ActivityJobs<T> : Activity, IActivityJobs<T>, IBackgroundActivity<IJobResults>
+internal abstract class ActivityJobs<T> : ParentActivity, IActivityJobs<T>, IBackgroundActivity<IJobResults>
 where T : class, IActivityJobs<T>
 {
     protected readonly Dictionary<int, object> ObjectJobs = new();
@@ -23,7 +23,6 @@ where T : class, IActivityJobs<T>
     protected ActivityJobs(IActivityInformation activityInformation)
         : base(activityInformation)
     {
-        Iteration = 0;
         MaxJobIndex = 0;
     }
 

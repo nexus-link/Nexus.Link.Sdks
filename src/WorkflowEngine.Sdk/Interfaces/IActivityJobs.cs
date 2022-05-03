@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// Common base interface for <see cref="IActivitySequential"/> and <see cref="IActivityParallel"/>
 /// </summary>
 public interface IActivityJobs<out T> : 
-    IExecutableActivity<IJobResults>
+    IExecutableActivity<IJobResults>, IParentActivity
 {
     /// <summary>
     /// Add a <paramref name="jobAsync"/> to be executed in parallel with all other added jobs.

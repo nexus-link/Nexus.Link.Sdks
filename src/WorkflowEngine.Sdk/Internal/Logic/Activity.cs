@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
@@ -31,9 +32,9 @@ internal abstract class Activity : ActivityBase,
         if (parentActivity != null)
         {
             NestedIterations.AddRange(parentActivity.NestedIterations);
-            if (parentActivity.Iteration is > 0)
+            if (parentActivity.InternalIteration is > 0)
             {
-                NestedIterations.Add(parentActivity.Iteration.Value);
+                NestedIterations.Add(parentActivity.InternalIteration.Value);
             }
             NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
         }
@@ -46,6 +47,8 @@ internal abstract class Activity : ActivityBase,
         ActivityInformation.Workflow.AddActivity(this);
         ActivityInformation.Workflow.LatestActivity = this;
         WorkflowStatic.Context.LatestActivity = this;
+        var valueProvider = new AsyncLocalContextValueProvider();
+        _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
     }
 
     protected IActivityExecutor ActivityExecutor { get; }
@@ -66,8 +69,19 @@ internal abstract class Activity : ActivityBase,
     /// <inheritdoc />
     public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
 
+    private readonly OneValueProvider<int?> _internalIteration;
+
     /// <inheritdoc />
-    public int? Iteration { get; set; }
+    public int? InternalIteration
+    {
+        get => _internalIteration.GetValue();
+        set => _internalIteration.SetValue(value);
+    }
+
+    /// <inheritdoc />
+    [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", true)]
+    public int? Iteration => InternalIteration;
+
     public string NestedPosition { get; }
     public string NestedPositionAndTitle => $"{NestedPosition} {ActivityInformation.FormTitle}";
 
@@ -140,7 +154,7 @@ internal abstract class Activity : ActivityBase,
         if (!ContextDictionary.ContainsKey(key))
         {
             throw new FulcrumNotFoundException($"Could not find key {key} in context dictionary for activity {ActivityInstanceId}.");
-        } 
+        }
         var jToken = ContextDictionary[key];
         FulcrumAssert.IsNotNull(jToken, CodeLocation.AsString());
         return jToken.ToObject<T>();
@@ -171,14 +185,14 @@ internal abstract class Activity : ActivityBase,
                 break;
             default:
                 throw new FulcrumAssertionFailedException(
-                    $"Unexpected {nameof(LogPurgeStrategyEnum)}: {Options.LogPurgeStrategy}", 
+                    $"Unexpected {nameof(LogPurgeStrategyEnum)}: {Options.LogPurgeStrategy}",
                     CodeLocation.AsString());
         }
 
         if (!purge) return;
         foreach (var logCreate in ActivityInformation.Logs)
         {
-            if ((int) logCreate.SeverityLevel <= (int) Options.LogPurgeThreshold) continue;
+            if ((int)logCreate.SeverityLevel <= (int)Options.LogPurgeThreshold) continue;
             ActivityInformation.Workflow.Logs.Add(logCreate);
         }
     }

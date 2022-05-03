@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
@@ -13,6 +15,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public ActivityMock(IActivityInformation activityInformation) : base(activityInformation)
         {
             ActivityStartedAt = DateTimeOffset.UtcNow;
+            var valueProvider = new AsyncLocalContextValueProvider();
+            _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
         }
 
         public int MaybePurgeLogsCalled { get; private set; }
@@ -31,8 +35,18 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public DateTimeOffset ActivityStartedAt { get; set; }
 
+        private readonly OneValueProvider<int?> _internalIteration;
+
         /// <inheritdoc />
-        public int? Iteration { get; set; }
+        public int? InternalIteration
+        {
+            get => _internalIteration.GetValue();
+            set => _internalIteration.SetValue(value);
+        }
+
+        /// <inheritdoc />
+        [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", true)]
+        public int? Iteration => InternalIteration;
 
         /// <inheritdoc />
         public T GetArgument<T>(string parameterName)

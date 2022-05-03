@@ -13,7 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityLoopUntilTrueBase" />
 [Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
-internal abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntilTrueBase
+internal abstract class ActivityLoopUntilTrueBase : ParentActivity, IActivityLoopUntilTrueBase
 {
     private readonly Dictionary<string, object> _loopArguments = new();
 
@@ -23,7 +23,6 @@ internal abstract class ActivityLoopUntilTrueBase : Activity, IActivityLoopUntil
     protected ActivityLoopUntilTrueBase(IActivityInformation activityInformation)
         : base(activityInformation)
     {
-        Iteration = 0;
     }
 
     /// <inheritdoc/>
@@ -80,7 +79,7 @@ internal class ActivityLoopUntilTrue : ActivityLoopUntilTrueBase, IActivityLoopU
         EndLoop = null;
         do
         {
-            Iteration++;
+            ChildCounter++;
             // TODO: Verify that we don't use the same values each iteration
             await methodAsync(this, cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
@@ -138,7 +137,7 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : ActivityLoopUntilTrueBa
         TActivityReturns result;
         do
         {
-            Iteration++;
+            ChildCounter++;
             // TODO: Verify that we don't use the same values each iteration
             result = await method(this, cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");

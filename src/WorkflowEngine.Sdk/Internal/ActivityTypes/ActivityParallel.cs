@@ -25,14 +25,14 @@ internal class ActivityParallel : ActivityJobs<IActivityParallel>, IActivityPara
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         foreach (var (index, job) in VoidJobs)
         {
-            Iteration = index;
+            ChildCounter = index;
             ActivityInformation.Workflow.LatestActivity = this;
             var task = job(this, cancellationToken);
             _voidTasks.Add(index, task);
         }
         foreach (var (index, job) in ObjectJobs)
         {
-            Iteration = index;
+            ChildCounter = index;
             ActivityInformation.Workflow.LatestActivity = this;
             var task = ExecuteJobAsync(job, cancellationToken);
             _objectTasks.Add(index, task);

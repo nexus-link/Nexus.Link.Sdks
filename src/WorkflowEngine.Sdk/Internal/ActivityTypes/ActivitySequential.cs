@@ -22,7 +22,7 @@ internal class ActivitySequential : ActivityJobs<IActivitySequential>, IActivity
         var jobResults = new JobResults();
         for (var i = 0; i < MaxJobIndex; i++)
         {
-            Iteration = i;
+            ChildCounter = i+1;
             ActivityInformation.Workflow.LatestActivity = this;
             if (VoidJobs.ContainsKey(i))
             {

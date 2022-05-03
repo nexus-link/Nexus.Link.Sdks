@@ -10,7 +10,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityDoWhileOrUntil" />
-internal class ActivityDoWhileOrUntil : Activity, IActivityDoWhileOrUntil
+internal class ActivityDoWhileOrUntil : ParentActivity, IActivityDoWhileOrUntil
 {
     private readonly ActivityMethodAsync<IActivityDoWhileOrUntil> _methodAsync;
     private ActivityConditionMethodAsync _conditionMethodAsync;
@@ -94,10 +94,9 @@ internal class ActivityDoWhileOrUntil : Activity, IActivityDoWhileOrUntil
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        Iteration = 0;
         do
         {
-            Iteration++;
+            ChildCounter++;
             await _methodAsync(this, cancellationToken);
             ActivityInformation.Workflow.LatestActivity = this;
         } while (await GetWhileConditionAsync(cancellationToken));
@@ -111,7 +110,7 @@ internal class ActivityDoWhileOrUntil : Activity, IActivityDoWhileOrUntil
 }
 
 /// <inheritdoc cref="IActivityDoWhileOrUntil" />
-internal class ActivityDoWhileOrUntil<TActivityReturns> : Activity<TActivityReturns>, IActivityDoWhileOrUntil<TActivityReturns>
+internal class ActivityDoWhileOrUntil<TActivityReturns> : ParentActivity<TActivityReturns>, IActivityDoWhileOrUntil<TActivityReturns>
 {
     private readonly ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> _methodAsync;
     private ActivityConditionMethodAsync _conditionMethodAsync;
@@ -202,10 +201,9 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : Activity<TActivityRetu
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         TActivityReturns result;
-        Iteration = 0;
         do
         {
-            Iteration++;
+            ChildCounter++;
             result = await _methodAsync(this, cancellationToken);
             FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
             ActivityInformation.Workflow.LatestActivity = this;
