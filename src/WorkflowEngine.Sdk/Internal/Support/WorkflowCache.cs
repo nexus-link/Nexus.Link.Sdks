@@ -139,7 +139,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 _activityFormCache.Add(activityForm.Id, activityForm, stored);
             }
 
-            foreach (var activityVersion in _summary.ActivityVersions.Values)
+            foreach (var activityVersion in _summary.ActivityVersions.Values
+                         .OrderBy(av => av, new ActivityVersionSaveOrder()))
             {
                 _activityVersionCache.Add(activityVersion.Id, activityVersion, stored);
             }
@@ -147,6 +148,41 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             foreach (var activityInstance in _summary.ActivityInstances.Values)
             {
                 _activityInstanceCache.Add(activityInstance.Id, activityInstance, stored);
+            }
+        }
+
+        /// <summary>
+        /// We need to sort the activity versions so the versions that are referred as parents by
+        /// other versions are saved first
+        /// </summary>
+        private class ActivityVersionSaveOrder : IComparer<ActivityVersion>
+        {
+            /// <inheritdoc />
+            public int Compare(ActivityVersion x, ActivityVersion y)
+            {
+                if (x == null || y == null) return 0;
+                if (x.Id == y.ParentActivityVersionId) return -1;
+                var preliminaryResult = 0;
+                if (string.IsNullOrWhiteSpace(x.ParentActivityVersionId))
+                {
+                    preliminaryResult--;
+                }
+                else
+                {
+                    if (y.Id == x.ParentActivityVersionId) return 1;
+                    preliminaryResult++;
+                }
+                if (string.IsNullOrWhiteSpace(y.ParentActivityVersionId))
+                {
+                    preliminaryResult++;
+                }
+                else
+                {
+                    if (x.Id == y.ParentActivityVersionId) return -1;
+                    preliminaryResult--;
+                }
+
+                return preliminaryResult;
             }
         }
 

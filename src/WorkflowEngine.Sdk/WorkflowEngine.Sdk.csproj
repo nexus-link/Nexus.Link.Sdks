@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.7.2</Version>
+    <Version>6.7.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.7.3 Now saves the ActivityVersions in an ordered fashion, to avoid foreign key constraints within the table
       6.7.2 Renamed IActivityDoWhileOrUntil
       6.7.1 Missing Iteration
       6.7.0 Added ActivityDoUntil and ActivityWhileDo
