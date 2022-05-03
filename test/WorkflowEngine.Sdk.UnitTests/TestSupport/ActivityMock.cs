@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Context;
@@ -15,8 +16,6 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public ActivityMock(IActivityInformation activityInformation) : base(activityInformation)
         {
             ActivityStartedAt = DateTimeOffset.UtcNow;
-            var valueProvider = new AsyncLocalContextValueProvider();
-            _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
         }
 
         public int MaybePurgeLogsCalled { get; private set; }
@@ -35,17 +34,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public DateTimeOffset ActivityStartedAt { get; set; }
 
-        private readonly OneValueProvider<int?> _internalIteration;
-
         /// <inheritdoc />
-        public int? InternalIteration
-        {
-            get => _internalIteration.GetValue();
-            set => _internalIteration.SetValue(value);
-        }
-
-        /// <inheritdoc />
-        [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", true)]
+        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IParallelActivity.JobNumber)}.", true)]
         public int? Iteration => InternalIteration;
 
         /// <inheritdoc />

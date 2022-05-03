@@ -18,8 +18,8 @@ internal class ActivityInformation : IActivityInformation
         Workflow = workflowInformation;
         Position = position;
         FormId = formId;
-        Parent = Workflow.GetCurrentParentActivity();
-        Previous = Workflow.LatestActivity;
+        Parent = WorkflowStatic.Context.ParentActivity;
+        Previous = WorkflowStatic.Context.LatestActivity;
         _activityDefinition = Workflow.GetActivityDefinition(formId);
         Options.From(Workflow.DefaultActivityOptions);
         _methodHandler = new MethodHandler(FormTitle);
@@ -27,6 +27,9 @@ internal class ActivityInformation : IActivityInformation
 
     /// <inheritdoc />
     public IInternalActivity Previous { get; }
+
+    /// <inheritdoc />
+    public IInternalActivity Parent { get; }
 
     /// <inheritdoc />
 
@@ -63,9 +66,6 @@ internal class ActivityInformation : IActivityInformation
 
     /// <inheritdoc />
     public string FormId { get; }
-
-    /// <inheritdoc />
-    public IInternalActivity Parent { get; }
 
     /// <inheritdoc />
     public ICollection<LogCreate> Logs { get; } = new List<LogCreate>();

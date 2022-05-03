@@ -4,19 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityForEachParallel{TItem}" />
 internal class ActivityForEachParallel<TItem> :
-    ParentActivity, IActivityForEachParallel<TItem>, IBackgroundActivity
+    LoopActivity, IActivityForEachParallel<TItem>, IBackgroundActivity
 {
     private readonly ActivityForEachParallelMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
@@ -50,7 +47,7 @@ internal class ActivityForEachParallel<TItem> :
     }
 
     /// <inheritdoc />
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override async Task InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ForEachParallelAsync, cancellationToken);
     }
@@ -64,16 +61,13 @@ internal class ActivityForEachParallel<TItem> :
     private async Task ForEachParallelAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         var taskList = new List<Task>();
         foreach (var item in Items)
         {
-            ChildCounter++;
-            ActivityInformation.Workflow.LatestActivity = this;
+            LoopIteration++;
             var task = methodAsync(item, this, cancellationToken);
             taskList.Add(task);
         }
-        ActivityInformation.Workflow.LatestActivity = this;
 
         await WorkflowHelper.WhenAllActivities(taskList);
     }
@@ -81,7 +75,7 @@ internal class ActivityForEachParallel<TItem> :
 
 /// <inheritdoc cref="IActivityForEachParallel{TMethodReturns, TItem}" />
 internal class ActivityForEachParallel<TMethodReturns, TItem> :
-    ParentActivity, IActivityForEachParallel<TMethodReturns, TItem>,
+    LoopActivity<IDictionary<string, TMethodReturns>>, IActivityForEachParallel<TMethodReturns, TItem>,
     IBackgroundActivity<IDictionary<string, TMethodReturns>>
 {
     private GetKeyMethod<TItem> _getKeyMethod;
@@ -93,7 +87,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     public ActivityForEachParallel(IActivityInformation activityInformation,
         IEnumerable<TItem> items,
         GetKeyMethod<TItem> getKeyMethod)
-        : base(activityInformation)
+        : base(activityInformation, EmptyDictionaryAsync)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
@@ -105,7 +99,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         IEnumerable<TItem> items,
         GetKeyMethod<TItem> getKeyMethod,
         ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync)
-        : base(activityInformation)
+        : base(activityInformation, EmptyDictionaryAsync)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -119,10 +113,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachParallelAsync(methodAsync, ct), 
-            _ => Task.FromResult((IDictionary<string, TMethodReturns>)new Dictionary<string, TMethodReturns>()), 
-            cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), EmptyDictionaryAsync, cancellationToken);
     }
 
     private static async Task<IDictionary<string, TMethodReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TMethodReturns>> taskDictionary)
@@ -138,10 +129,10 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     }
 
     /// <inheritdoc />
-    public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override async Task<IDictionary<string, TMethodReturns>> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.ForEachParallel)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ForEachParallelAsync, EmptyDictionaryAsync, cancellationToken);
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(ForEachParallelAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
     internal async Task<IDictionary<string, TMethodReturns>> ForEachParallelAsync(CancellationToken cancellationToken = default)
@@ -155,11 +146,10 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         var taskDictionary = new Dictionary<string, Task<TMethodReturns>>();
         foreach (var item in Items)
         {
-            ChildCounter++;
+            LoopIteration++;
             string key = default;
             try
             {
@@ -170,15 +160,13 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
                 InternalContract.Require(false, $"The {nameof(_getKeyMethod)} method failed. You must make it safe, so that it never fails.");
             }
             InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
-            ActivityInformation.Workflow.LatestActivity = this;
             var task = method(item, this, cancellationToken);
             taskDictionary.Add(key!, task);
         }
-        ActivityInformation.Workflow.LatestActivity = this;
         return AggregatePostponeExceptions(taskDictionary);
     }
 
-    private Task<IDictionary<string, TMethodReturns>> EmptyDictionaryAsync(CancellationToken cancellationToken)
+    private static Task<IDictionary<string, TMethodReturns>> EmptyDictionaryAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult((IDictionary<string, TMethodReturns>) new Dictionary<string, TMethodReturns>());
     }

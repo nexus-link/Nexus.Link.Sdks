@@ -35,6 +35,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         public ActivityOptions DefaultActivityOptions { get; }
     }
 
+    /// <summary>
+    /// An implementation that doesn't return a result
+    /// </summary>
+    public interface IWorkflowImplementation : IWorkflowImplementationBase
+    {
+        /// <summary>
+        /// Method for creating a new instance of the workflow implementation
+        /// </summary>
+        /// <returns>Returns the implementation. To be used for chaining.</returns>
+        IWorkflowImplementation CreateWorkflowInstance();
+
+        /// <summary>
+        /// Set an input parameter for the workflow instance before it executes.
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the parameter</typeparam>
+        /// <param name="name">The name of the parameter</param>
+        /// <param name="value">The parameter value</param>
+        /// <returns>Returns the implementation. To be used for chaining.</returns>
+        IWorkflowImplementation SetParameter<TParameter>(string name, TParameter value);
+
+        /// <summary>
+        /// Execute the current instance of the workflow implementation
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        Task ExecuteAsync(CancellationToken cancellationToken = default);
+    }
 
 
     /// <summary>
@@ -63,32 +89,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="cancellationToken"></param>
         Task<TWorkflowResult> ExecuteAsync(CancellationToken cancellationToken = default);
-    }
-
-    /// <summary>
-    /// An implementation that doesn't return a result
-    /// </summary>
-    public interface IWorkflowImplementation : IWorkflowImplementationBase
-    {
-        /// <summary>
-        /// Method for creating a new instance of the workflow implementation
-        /// </summary>
-        /// <returns>Returns the implementation. To be used for chaining.</returns>
-        IWorkflowImplementation CreateWorkflowInstance();
-
-        /// <summary>
-        /// Set an input parameter for the workflow instance before it executes.
-        /// </summary>
-        /// <typeparam name="TParameter">The type of the parameter</typeparam>
-        /// <param name="name">The name of the parameter</param>
-        /// <param name="value">The parameter value</param>
-        /// <returns>Returns the implementation. To be used for chaining.</returns>
-        IWorkflowImplementation SetParameter<TParameter>(string name, TParameter value);
-
-        /// <summary>
-        /// Execute the current instance of the workflow implementation
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        Task ExecuteAsync(CancellationToken cancellationToken = default);
     }
 }

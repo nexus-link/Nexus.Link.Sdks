@@ -59,15 +59,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <summary>
     /// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
     /// </summary>
-    /// <param name="activity">The current <see cref="IActivityIf"/>.</param>
+    /// <param name="activity">The current activity.</param>
     /// <param name="cancellationToken"></param>
-    public delegate Task<bool> ActivityConditionMethodAsync(IActivity activity, CancellationToken cancellationToken);
+    public delegate Task<bool> ActivityConditionMethodAsync<in TActivity>(TActivity activity, CancellationToken cancellationToken) where TActivity : IActivity;
 
     /// <summary>
     /// The condition method for the if activity. If it returns true, the then-method is called, otherwise the else-method is called.
     /// </summary>
-    /// <param name="activity">The current <see cref="IActivityIf"/>.</param>
-    public delegate bool ActivityConditionMethod(IActivity activity);
+    /// <param name="activity">The current activity.</param>
+    public delegate bool ActivityConditionMethod<in TActivity>(TActivity activity) where TActivity : IActivity;
 
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// If the activity is part of a loop, this is the iteration count for that loop
         /// </summary>
         ///
-        [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", false)]
+        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IParallelActivity.JobNumber)}.", false)]
         int? Iteration { get; }
 
         /// <summary>

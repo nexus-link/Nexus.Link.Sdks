@@ -13,7 +13,7 @@ public interface IActivityIf : IExecutableActivity
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivityConditionMethodAsync ConditionMethodAsync { get; }
+    ActivityConditionMethodAsync<IActivityIf> ConditionMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
@@ -44,7 +44,7 @@ public interface IActivityIf<TActivityReturns> :
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
     /// </summary>
-    ActivityConditionMethodAsync ConditionMethodAsync { get; }
+    ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> ConditionMethodAsync { get; }
 
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.

@@ -27,7 +27,7 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         throw new NotImplementedException();
     }
 
-    [Obsolete("Please use BreakBeforeActivity or BreakBeforeActivityIteration")]
+    [Obsolete("Please use BreakBeforeActivity or BreakBeforeActivityIteration. Obsolete since 2022-03-03.")]
     public IWorkflowImplementation SetBreakCondition(string activityFormId, int? iteration = null)
     {
         BreakAtActivityFormId = activityFormId;
@@ -52,7 +52,9 @@ public abstract class WorkflowFastForward : WorkflowImplementation
         return this;
     }
 
+#pragma warning disable CS0618
     public void MaybeBreak(IActivityLoopUntilTrueBase activity)
+#pragma warning restore CS0618
     {
         MaybeBreak(activity.ActivityFormId, activity.ChildCounter);
     }

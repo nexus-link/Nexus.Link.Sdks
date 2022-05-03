@@ -128,14 +128,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivitySequential Sequential()
-        {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Sequential, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivitySequential(ActivityInformation);
-        }
-
-        /// <inheritdoc />
-        public IActivityIf If(ActivityConditionMethodAsync conditionMethodAsync)
+        public IActivityIf If(ActivityConditionMethodAsync<IActivityIf> conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -143,7 +136,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf If(ActivityConditionMethod conditionMethod)
+        public IActivityIf If(ActivityConditionMethod<IActivityIf> conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -227,7 +220,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityWhileDo While(ActivityConditionMethodAsync conditionMethodAsync)
+        public IActivityWhileDo While(ActivityConditionMethodAsync<IActivityWhileDo> conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -235,7 +228,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityWhileDo While(ActivityConditionMethod conditionMethod)
+        public IActivityWhileDo While(ActivityConditionMethod<IActivityWhileDo> conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -434,7 +427,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync)
+        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync<IActivityWhileDo<TActivityReturns>> conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -442,7 +435,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod conditionMethod)
+        public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod<IActivityWhileDo<TActivityReturns>> conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -465,7 +458,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf<TActivityReturns> If(ActivityConditionMethodAsync conditionMethodAsync)
+        public IActivityIf<TActivityReturns> If(ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> conditionMethodAsync)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -473,7 +466,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityIf<TActivityReturns> If(ActivityConditionMethod conditionMethod)
+        public IActivityIf<TActivityReturns> If(ActivityConditionMethod<IActivityIf<TActivityReturns>> conditionMethod)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));

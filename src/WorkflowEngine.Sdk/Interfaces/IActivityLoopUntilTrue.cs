@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// An activity of type <see cref="ActivityTypeEnum.LoopUntilTrue"/>.
 /// </summary>
 [Obsolete("Please use DoUntil or WhileDo. Obsolete since 2022-05-02.")]
-public interface IActivityLoopUntilTrueBase : IActivity, IParentActivity
+public interface IActivityLoopUntilTrueBase : IActivity, ILoopActivity
 {
     /// <summary>
     /// Set this to true when you want to end the loop and false otherwise. Missing to set this will result in a runtime error.

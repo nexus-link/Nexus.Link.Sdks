@@ -17,7 +17,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     private ActivityMethodAsync<IActivityIf> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf> _elseMethodAsync;
 
-    public ActivityIf(IActivityInformation activityInformation, ActivityConditionMethodAsync conditionMethodAsync)
+    public ActivityIf(IActivityInformation activityInformation, ActivityConditionMethodAsync<IActivityIf> conditionMethodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -25,7 +25,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     }
 
     /// <inheritdoc />
-    public ActivityConditionMethodAsync ConditionMethodAsync { get; }
+    public ActivityConditionMethodAsync<IActivityIf> ConditionMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync)
@@ -102,7 +102,7 @@ internal class ActivityIf<TActivityReturns> :
     public ActivityIf(
         IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
-        ActivityConditionMethodAsync conditionMethodAsync)
+        ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> conditionMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -110,7 +110,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public ActivityConditionMethodAsync ConditionMethodAsync { get; }
+    public ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> ConditionMethodAsync { get; }
 
     /// <inheritdoc />
     public IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)

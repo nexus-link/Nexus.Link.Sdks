@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
@@ -12,10 +13,4 @@ internal interface IInternalActivity : IInternalActivityBase, IActivity
     ActivityVersion Version { get; }
     void MaybePurgeLogs();
     Task SafeAlertExceptionAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    /// If the activity is part of a loop, this is the iteration count for that loop
-    /// </summary>
-    ///
-    int? InternalIteration { get; set; }
 }

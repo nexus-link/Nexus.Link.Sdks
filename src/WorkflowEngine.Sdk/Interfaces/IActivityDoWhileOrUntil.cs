@@ -9,17 +9,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.DoWhileOrUntil"/>.
 /// </summary>
-public interface IActivityDoWhileOrUntil : IExecutableActivity
+public interface IActivityDoWhileOrUntil : IExecutableActivity, ILoopActivity
 {
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethodAsync"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil Until(ActivityConditionMethodAsync conditionMethodAsync);
+    IActivityDoWhileOrUntil Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync);
 
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethod"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil Until(ActivityConditionMethod conditionMethod);
+    IActivityDoWhileOrUntil Until(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod);
 
     /// <summary>
     /// Continue the loop until <paramref name="condition"/> is true.
@@ -29,12 +29,12 @@ public interface IActivityDoWhileOrUntil : IExecutableActivity
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethodAsync"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil While(ActivityConditionMethodAsync conditionMethodAsync);
+    IActivityDoWhileOrUntil While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync);
 
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethod"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil While(ActivityConditionMethod conditionMethod);
+    IActivityDoWhileOrUntil While(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod);
 
     /// <summary>
     /// Continue the loop until <paramref name="condition"/> is true.
@@ -45,17 +45,17 @@ public interface IActivityDoWhileOrUntil : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.DoWhileOrUntil"/>.
 /// </summary>
-public interface IActivityDoWhileOrUntil<TActivityReturns> : IExecutableActivity<TActivityReturns>
+public interface IActivityDoWhileOrUntil<TActivityReturns> : IExecutableActivity<TActivityReturns>, ILoopActivity
 {
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethodAsync"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethodAsync conditionMethodAsync);
+    IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync);
 
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethod"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethod conditionMethod);
+    IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod);
 
     /// <summary>
     /// Continue the loop until <paramref name="condition"/> is true.
@@ -65,12 +65,12 @@ public interface IActivityDoWhileOrUntil<TActivityReturns> : IExecutableActivity
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethodAsync"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethodAsync conditionMethodAsync);
+    IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync);
 
     /// <summary>
     /// Continue the loop until <paramref name="conditionMethod"/> return true.
     /// </summary>
-    IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethod conditionMethod);
+    IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod);
 
     /// <summary>
     /// Continue the loop until <paramref name="condition"/> is true.

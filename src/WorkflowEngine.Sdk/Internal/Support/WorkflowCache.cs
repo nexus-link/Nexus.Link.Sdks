@@ -275,14 +275,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             return activity;
         }
 
-        public Activity GetCurrentParentActivity()
-        {
-            if (WorkflowStatic.Context.ParentActivityInstanceId == null) return null;
-            var parentActivity = GetActivity(WorkflowStatic.Context.ParentActivityInstanceId);
-            FulcrumAssert.IsNotNull(parentActivity, CodeLocation.AsString());
-            return parentActivity;
-        }
-
         public string GetOrCreateInstanceId(IActivityInformation activityInformation)
         {
             lock (_summary)

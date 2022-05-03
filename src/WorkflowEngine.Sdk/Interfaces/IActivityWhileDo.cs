@@ -9,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.WhileDo"/>.
 /// </summary>
-public interface IActivityWhileDo : IExecutableActivity, IParentActivity
+public interface IActivityWhileDo : IExecutableActivity, ILoopActivity
 {
     /// <summary>
     /// Do this until the while condition is true.
@@ -25,7 +25,7 @@ public interface IActivityWhileDo : IExecutableActivity, IParentActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.WhileDo"/>.
 /// </summary>
-public interface IActivityWhileDo<TActivityReturns> : IExecutableActivity<TActivityReturns>, IParentActivity
+public interface IActivityWhileDo<TActivityReturns> : IExecutableActivity<TActivityReturns>, ILoopActivity
 {
     /// <summary>
     /// Do this until the while condition is true.

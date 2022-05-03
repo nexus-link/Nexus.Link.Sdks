@@ -93,7 +93,7 @@ internal interface IWorkflowInformation
     /// <summary>
     /// The latest activity that was activated
     /// </summary>
-    public IInternalActivity LatestActivity { get; set; }
+    public IInternalActivity LatestActivity { get; }
 
     /// <summary>
     /// Get the definition for a specific activity
@@ -119,11 +119,6 @@ internal interface IWorkflowInformation
     /// <param name="activityInstanceId"></param>
     /// <returns></returns>
     ActivityInstance GetActivityInstance(string activityInstanceId);
-
-    /// <summary>
-    /// Get the current parent activity, or null.
-    /// </summary>
-    Activity GetCurrentParentActivity();
 
     /// <summary>
     /// Add the <paramref name="activity"/> to the list of known activities.

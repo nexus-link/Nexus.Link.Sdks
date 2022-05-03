@@ -10,13 +10,13 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityWhileDo" />
-internal class ActivityWhileDo : ParentActivity, IActivityWhileDo
+internal class ActivityWhileDo : LoopActivity, IActivityWhileDo
 {
     private ActivityMethodAsync<IActivityWhileDo> _methodAsync;
-    private readonly ActivityConditionMethodAsync _conditionMethodAsync;
+    private readonly ActivityConditionMethodAsync<IActivityWhileDo> _conditionMethodAsync;
 
     public ActivityWhileDo(IActivityInformation activityInformation,
-        ActivityConditionMethodAsync conditionMethodAsync)
+        ActivityConditionMethodAsync<IActivityWhileDo> conditionMethodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -27,17 +27,15 @@ internal class ActivityWhileDo : ParentActivity, IActivityWhileDo
     {
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
         FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         do
         {
-            ChildCounter++;
+            LoopIteration++;
             await methodAsync(this, cancellationToken);
-            ActivityInformation.Workflow.LatestActivity = this;
         } while (await _conditionMethodAsync!(this, cancellationToken));
     }
 
     /// <inheritdoc />
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override async Task InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => WhileDoAsync(_methodAsync, ct), cancellationToken);
@@ -67,42 +65,18 @@ internal class ActivityWhileDo : ParentActivity, IActivityWhileDo
 }
 
 /// <inheritdoc cref="IActivityWhileDo{TActivityReturns}" />
-internal class ActivityWhileDo<TActivityReturns> : ParentActivity<TActivityReturns>, IActivityWhileDo<TActivityReturns>
+internal class ActivityWhileDo<TActivityReturns> : LoopActivity<TActivityReturns>, IActivityWhileDo<TActivityReturns>
 {
     private ActivityMethodAsync<IActivityWhileDo<TActivityReturns>, TActivityReturns> _methodAsync;
-    private readonly ActivityConditionMethodAsync _conditionMethodAsync;
+    private readonly ActivityConditionMethodAsync<IActivityWhileDo<TActivityReturns>> _conditionMethodAsync;
 
     public ActivityWhileDo(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
-        ActivityConditionMethodAsync conditionMethodAsync)
+        ActivityConditionMethodAsync<IActivityWhileDo<TActivityReturns>> conditionMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
         _conditionMethodAsync = conditionMethodAsync;
-    }
-
-    internal async Task<TActivityReturns> WhileDoAsync(ActivityMethodAsync<IActivityWhileDo<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
-    {
-        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
-        TActivityReturns result;
-        do
-        {
-            ChildCounter++;
-            result = await method(this, cancellationToken);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
-            ActivityInformation.Workflow.LatestActivity = this;
-        } while (await _conditionMethodAsync!(this, cancellationToken));
-
-        return result;
-    }
-
-    /// <inheritdoc />
-    public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => WhileDoAsync(_methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -126,5 +100,27 @@ internal class ActivityWhileDo<TActivityReturns> : ParentActivity<TActivityRetur
     {
         _methodAsync = (_, _) => Task.FromResult(condition);
         return this;
+    }
+
+    /// <inheritdoc />
+    protected override async Task<TActivityReturns> InternalExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(WhileDoAsync, DefaultValueMethodAsync, cancellationToken);
+    }
+
+    internal async Task<TActivityReturns> WhileDoAsync(CancellationToken cancellationToken)
+    {
+        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
+        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+        TActivityReturns result;
+        do
+        {
+            LoopIteration++;
+            result = await _methodAsync!(this, cancellationToken);
+            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+        } while (await _conditionMethodAsync!(this, cancellationToken));
+
+        return result;
     }
 }

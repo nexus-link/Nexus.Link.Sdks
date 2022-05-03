@@ -38,7 +38,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             {
                 lock (lockObject)
                 {
-                    if (i == a.ChildCounter) actualValue += i;
+                    if (i == a.LoopIteration) actualValue += i;
                 }
                 return Task.CompletedTask;
             });
@@ -60,7 +60,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
                 async (_, a, ct) =>
             {
                 await Task.Delay(1, ct);
-                return a.ChildCounter.ToString();
+                return a.LoopIteration.ToString();
             });
 
             // Act

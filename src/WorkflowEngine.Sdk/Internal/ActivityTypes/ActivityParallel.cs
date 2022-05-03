@@ -22,22 +22,18 @@ internal class ActivityParallel : ActivityJobs<IActivityParallel>, IActivityPara
 
     protected internal override async Task<JobResults> ExecuteJobsAsync(CancellationToken cancellationToken = default)
     {
-        WorkflowStatic.Context.ParentActivityInstanceId = Instance.Id;
         foreach (var (index, job) in VoidJobs)
         {
-            ChildCounter = index;
-            ActivityInformation.Workflow.LatestActivity = this;
+            JobNumber = index;
             var task = job(this, cancellationToken);
             _voidTasks.Add(index, task);
         }
         foreach (var (index, job) in ObjectJobs)
         {
-            ChildCounter = index;
-            ActivityInformation.Workflow.LatestActivity = this;
+            JobNumber = index;
             var task = ExecuteJobAsync(job, cancellationToken);
             _objectTasks.Add(index, task);
         }
-        ActivityInformation.Workflow.LatestActivity = this;
         var taskList = new List<Task>(_voidTasks.Values);
         taskList.AddRange(_objectTasks.Values);
         await WorkflowHelper.WhenAllActivities(taskList);

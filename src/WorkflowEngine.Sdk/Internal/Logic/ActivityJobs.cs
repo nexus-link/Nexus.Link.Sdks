@@ -12,7 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IActivityJobs{T}" />
-internal abstract class ActivityJobs<T> : ParentActivity, IActivityJobs<T>, IBackgroundActivity<IJobResults>
+internal abstract class ActivityJobs<T> : ParallelActivity<IJobResults>, IActivityJobs<T>, IBackgroundActivity<IJobResults>
 where T : class, IActivityJobs<T>
 {
     protected readonly Dictionary<int, object> ObjectJobs = new();
@@ -21,7 +21,7 @@ where T : class, IActivityJobs<T>
     protected int MaxJobIndex;
 
     protected ActivityJobs(IActivityInformation activityInformation)
-        : base(activityInformation)
+        : base(activityInformation, null)
     {
         MaxJobIndex = 0;
     }
@@ -66,7 +66,7 @@ where T : class, IActivityJobs<T>
     }
 
     /// <inheritdoc />
-    public async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
+    protected override async Task<IJobResults> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
         var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ExecuteJobsAsync, null, cancellationToken);
         return result;

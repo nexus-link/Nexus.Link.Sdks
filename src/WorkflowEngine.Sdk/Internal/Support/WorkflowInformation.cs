@@ -100,12 +100,6 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Activity GetCurrentParentActivity()
-    {
-        return _workflowCache.GetCurrentParentActivity();
-    }
-
-    /// <inheritdoc />
     public void AddActivity(IInternalActivity activity)
     {
         InternalContract.RequireNotNull(activity, nameof(activity));

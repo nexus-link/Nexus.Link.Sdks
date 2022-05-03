@@ -28,27 +28,8 @@ internal abstract class Activity : ActivityBase,
     protected Activity(IActivityInformation activityInformation)
         : base(activityInformation)
     {
-        var parentActivity = ActivityInformation.Workflow.GetCurrentParentActivity();
-        if (parentActivity != null)
-        {
-            NestedIterations.AddRange(parentActivity.NestedIterations);
-            if (parentActivity.InternalIteration is > 0)
-            {
-                NestedIterations.Add(parentActivity.InternalIteration.Value);
-            }
-            NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
-        }
-        else
-        {
-            NestedPosition = $"{ActivityInformation.Position}";
-        }
-
         ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
-        ActivityInformation.Workflow.AddActivity(this);
-        ActivityInformation.Workflow.LatestActivity = this;
         WorkflowStatic.Context.LatestActivity = this;
-        var valueProvider = new AsyncLocalContextValueProvider();
-        _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
     }
 
     protected IActivityExecutor ActivityExecutor { get; }
@@ -69,26 +50,12 @@ internal abstract class Activity : ActivityBase,
     /// <inheritdoc />
     public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
 
-    private readonly OneValueProvider<int?> _internalIteration;
-
     /// <inheritdoc />
-    public int? InternalIteration
-    {
-        get => _internalIteration.GetValue();
-        set => _internalIteration.SetValue(value);
-    }
-
-    /// <inheritdoc />
-    [Obsolete($"Please use {nameof(IParentActivity.ChildCounter)}.", true)]
+    [Obsolete($"Please use {nameof(ILoopActivity.ChildCounter)}.", true)]
     public int? Iteration => InternalIteration;
-
-    public string NestedPosition { get; }
-    public string NestedPositionAndTitle => $"{NestedPosition} {ActivityInformation.FormTitle}";
 
     /// <inheritdoc />
     public override string ToString() => ActivityTitle;
-
-    public List<int> NestedIterations { get; } = new();
 
     [Obsolete("Please use Options.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
     public double AsyncRequestPriority => Options.AsyncRequestPriority;

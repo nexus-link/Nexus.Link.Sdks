@@ -36,7 +36,7 @@ public delegate string GetKeyMethod<in T>(T item);
 /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
 /// </summary>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<out TItem> : IExecutableActivity, IParentActivity
+public interface IActivityForEachParallel<out TItem> : IExecutableActivity, ILoopActivity
 {
     /// <summary>
     /// The items to loop over
@@ -55,7 +55,7 @@ public interface IActivityForEachParallel<out TItem> : IExecutableActivity, IPar
 /// </summary>
 /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>
-public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutableActivity<IDictionary<string, TMethodReturns>>, IParentActivity
+public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutableActivity<IDictionary<string, TMethodReturns>>, ILoopActivity
 {
     /// <summary>
     /// The items to loop over

@@ -23,6 +23,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
         private readonly WorkflowExecutor _workflowExecutor;
 
+        internal IInternalActivity CurrentParentActivity => WorkflowStatic.Context.ParentActivity;
+
         /// <inheritdoc />
         public int MajorVersion { get; }
 
@@ -39,8 +41,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// The default options for all created activities.
         /// </summary>
         public ActivityOptions DefaultActivityOptions { get; } = new();
-
-        internal IInternalActivity CurrentParentActivity => _workflowExecutor.GetCurrentParentActivity();
 
         /// <summary>
         /// Constructor
@@ -82,6 +82,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// Create one activity for the workflow implementation.
         /// </summary>
         /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="title">The title for this activity.</param>
         /// <param name="id">The key for the activity form</param>
         /// <typeparam name="TActivityReturns">The type that this activity returns.</typeparam>
         [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
@@ -101,6 +102,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// Create one activity for the workflow implementation.
         /// </summary>
         /// <param name="position">The relative position in the hierarchy of activities.</param>
+        /// <param name="title">The title for this activity.</param>
         /// <param name="id">The key for the activity form</param>
         [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
         public IActivityFlow CreateActivity(int position, string title, string id)
@@ -200,7 +202,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         }
     }
 
-    /// <inheritdoc cref="IWorkflowImplementation" />
+
+    /// <summary>
+    /// All workflow implementations should inherit from this class or <see cref="WorkflowImplementation"/>
+    /// </summary>
     public abstract class WorkflowImplementation : WorkflowImplementationBase, IWorkflowImplementation
     {
 
@@ -236,6 +241,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         }
     }
 
+    /// <summary>
+    /// All workflow implementations should inherit from this class or <see cref="WorkflowImplementation"/>
+    /// </summary>
+    /// <typeparam name="TWorkflowResult">
+    /// The type for the result value for this workflow.
+    /// </typeparam>
     public abstract class WorkflowImplementation<TWorkflowResult> : WorkflowImplementationBase, IWorkflowImplementation<TWorkflowResult>
     {
         /// <inheritdoc />

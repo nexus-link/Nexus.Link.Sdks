@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -23,6 +26,36 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         Form = ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
         Version = ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
         Instance = ActivityInformation.Workflow.GetActivityInstance(ActivityInstanceId);
+
+        var parentActivity = ActivityInformation.Parent;
+        if (parentActivity != null)
+        {
+            NestedIterations.AddRange(parentActivity.NestedIterations);
+            FulcrumAssert.IsNotNull(parentActivity.InternalIteration, CodeLocation.AsString());
+            FulcrumAssert.IsGreaterThan(0, parentActivity.InternalIteration!.Value, CodeLocation.AsString());
+            NestedIterations.Add(parentActivity.InternalIteration.Value);
+            NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
+        }
+        else
+        {
+            NestedPosition = $"{ActivityInformation.Position}";
+        }
+        var valueProvider = new AsyncLocalContextValueProvider();
+        _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
+    }
+    public string NestedPositionAndTitle => $"{NestedPosition} {ActivityInformation.FormTitle}";
+
+    public List<int> NestedIterations { get; } = new();
+
+    public string NestedPosition { get; }
+
+    private readonly OneValueProvider<int?> _internalIteration;
+
+    /// <inheritdoc />
+    public int? InternalIteration
+    {
+        get => _internalIteration.GetValue();
+        set => _internalIteration.SetValue(value);
     }
 
     public IActivityInformation ActivityInformation { get; }

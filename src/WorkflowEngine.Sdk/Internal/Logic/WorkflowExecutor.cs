@@ -40,11 +40,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return _methodHandler.GetArgument<T>(name);
         }
 
-        public IInternalActivity GetCurrentParentActivity()
-        {
-            return WorkflowInformation.GetCurrentParentActivity();
-        }
-
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());

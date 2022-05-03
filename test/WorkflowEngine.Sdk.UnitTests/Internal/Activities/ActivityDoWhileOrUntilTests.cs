@@ -46,12 +46,12 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             switch (style)
             {
                 case 1:
-                    ActivityConditionMethodAsync conditionMethodAsync = (a, ct) => Task.FromResult(conditionValue);
+                    ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync = (a, ct) => Task.FromResult(conditionValue);
                     if (isWhileCondition) activity.While(conditionMethodAsync);
                     else activity.Until(conditionMethodAsync);
                     break;
                 case 2:
-                    ActivityConditionMethod conditionMethod = a => conditionValue;
+                    ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod = a => conditionValue;
                     if (isWhileCondition) activity.While(conditionMethod);
                     else activity.Until(conditionMethod);
                     break;
