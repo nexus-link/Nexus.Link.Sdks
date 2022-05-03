@@ -140,12 +140,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
 
             foreach (var activityVersion in _summary.ActivityVersions.Values
-                         .OrderBy(av => av, new ActivityVersionSaveOrder()))
+                         .OrderBy(av => av, new ActivitySaveOrder()))
             {
                 _activityVersionCache.Add(activityVersion.Id, activityVersion, stored);
             }
 
-            foreach (var activityInstance in _summary.ActivityInstances.Values)
+            foreach (var activityInstance in _summary.ActivityInstances.Values
+                         .OrderBy(ai => ai, new ActivitySaveOrder()))
             {
                 _activityInstanceCache.Add(activityInstance.Id, activityInstance, stored);
             }
@@ -155,7 +156,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         /// We need to sort the activity versions so the versions that are referred as parents by
         /// other versions are saved first
         /// </summary>
-        private class ActivityVersionSaveOrder : IComparer<ActivityVersion>
+        private class ActivitySaveOrder : IComparer<ActivityVersion>, IComparer<ActivityInstance>
         {
             /// <inheritdoc />
             public int Compare(ActivityVersion x, ActivityVersion y)
@@ -179,6 +180,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 else
                 {
                     if (x.Id == y.ParentActivityVersionId) return -1;
+                    preliminaryResult--;
+                }
+
+                return preliminaryResult;
+            }
+
+            /// <inheritdoc />
+            public int Compare(ActivityInstance x, ActivityInstance y)
+            {
+                if (x == null || y == null) return 0;
+                if (x.Id == y.ParentActivityInstanceId) return -1;
+                var preliminaryResult = 0;
+                if (string.IsNullOrWhiteSpace(x.ParentActivityInstanceId))
+                {
+                    preliminaryResult--;
+                }
+                else
+                {
+                    if (y.Id == x.ParentActivityInstanceId) return 1;
+                    preliminaryResult++;
+                }
+                if (string.IsNullOrWhiteSpace(y.ParentActivityInstanceId))
+                {
+                    preliminaryResult++;
+                }
+                else
+                {
+                    if (x.Id == y.ParentActivityInstanceId) return -1;
                     preliminaryResult--;
                 }
 
