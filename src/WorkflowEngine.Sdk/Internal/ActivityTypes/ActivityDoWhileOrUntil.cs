@@ -32,7 +32,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync)
+    public IExecutableActivity Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -42,7 +42,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil Until(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod)
+    public IExecutableActivity Until(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -52,7 +52,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil Until(bool condition)
+    public IExecutableActivity Until(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
@@ -61,7 +61,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync)
+    public IExecutableActivity While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil> conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -71,7 +71,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil While(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod)
+    public IExecutableActivity While(ActivityConditionMethod<IActivityDoWhileOrUntil> conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -81,7 +81,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil While(bool condition)
+    public IExecutableActivity While(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
@@ -137,7 +137,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync)
+    public IExecutableActivity<TActivityReturns> Until(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -147,7 +147,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> Until(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod)
+    public IExecutableActivity<TActivityReturns> Until(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods method can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -157,7 +157,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> Until(bool condition)
+    public IExecutableActivity<TActivityReturns> Until(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);
@@ -166,7 +166,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync)
+    public IExecutableActivity<TActivityReturns> While(ActivityConditionMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethodAsync)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
@@ -176,7 +176,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> While(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod)
+    public IExecutableActivity<TActivityReturns> While(ActivityConditionMethod<IActivityDoWhileOrUntil<TActivityReturns>> conditionMethod)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
@@ -186,7 +186,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     }
 
     /// <inheritdoc />
-    public IActivityDoWhileOrUntil<TActivityReturns> While(bool condition)
+    public IExecutableActivity<TActivityReturns> While(bool condition)
     {
         InternalContract.Require(_conditionMethodAsync == null, "The While and Until methods can only be called once.");
         _conditionMethodAsync = (_, _) => Task.FromResult(condition);

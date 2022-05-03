@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.
 /// </summary>
-public interface IActivityIf : IExecutableActivity
+public interface IActivityIf : IActivity
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -18,28 +18,34 @@ public interface IActivityIf : IExecutableActivity
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync);
+    IActivityIfElse Then(ActivityMethodAsync<IActivityIf> methodAsync);
 
     /// <summary>
     /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf Then(ActivityMethod<IActivityIf> method);
-
-    /// <summary>
-    /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
-    /// </summary>
-    IActivityIf Else(ActivityMethodAsync<IActivityIf> methodAsync);
-
-    /// <summary>
-    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
-    /// </summary>
-    IActivityIf Else(ActivityMethod<IActivityIf> method);
+    IActivityIfElse Then(ActivityMethod<IActivityIf> method);
 }
+
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.
 /// </summary>
-public interface IActivityIf<TActivityReturns> :
-    IExecutableActivity<TActivityReturns>
+public interface IActivityIfElse : IExecutableActivity
+{
+    /// <summary>
+    /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="IActivityIf.ConditionMethodAsync"/> returns false.
+    /// </summary>
+    IExecutableActivity Else(ActivityMethodAsync<IActivityIf> methodAsync);
+
+    /// <summary>
+    /// Declare that <paramref name="method"/> should be executed if <see cref="IActivityIf.ConditionMethodAsync"/> returns false.
+    /// </summary>
+    IExecutableActivity Else(ActivityMethod<IActivityIf> method);
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.If"/>.
+/// </summary>
+public interface IActivityIf<TActivityReturns> : IActivity
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -49,30 +55,37 @@ public interface IActivityIf<TActivityReturns> :
     /// <summary>
     /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
+    IActivityIfElse<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
     /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
+    IActivityIfElse<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
 
     /// <summary>
     /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns true.
     /// </summary>
-    IActivityIf<TActivityReturns> Then(TActivityReturns value);
+    IActivityIfElse<TActivityReturns> Then(TActivityReturns value);
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.If"/>.
+/// </summary>
+public interface IActivityIfElse<TActivityReturns> :
+    IExecutableActivity<TActivityReturns>
+{
+    /// <summary>
+    /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="IActivityIf{TActivityReturns}.ConditionMethodAsync"/> returns false.
+    /// </summary>
+    IExecutableActivity<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
 
     /// <summary>
-    /// Declare that <paramref name="methodAsync"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
+    /// Declare that <paramref name="method"/> should be executed if <see cref="IActivityIf{TActivityReturns}.ConditionMethodAsync"/> returns false.
     /// </summary>
-    IActivityIf<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync);
+    IExecutableActivity<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
 
     /// <summary>
-    /// Declare that <paramref name="method"/> should be executed if <see cref="ConditionMethodAsync"/> returns false.
+    /// Declare that <paramref name="value"/> should be returned if <see cref="IActivityIf{TActivityReturns}.ConditionMethodAsync"/> returns false.
     /// </summary>
-    IActivityIf<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method);
-
-    /// <summary>
-    /// Declare that <paramref name="value"/> should be returned if <see cref="ConditionMethodAsync"/> returns false.
-    /// </summary>
-    IActivityIf<TActivityReturns> Else(TActivityReturns value);
+    IExecutableActivity<TActivityReturns> Else(TActivityReturns value);
 }

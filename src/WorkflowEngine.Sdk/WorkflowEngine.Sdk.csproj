@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.8.0</Version>
+    <Version>6.9.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.9.0 Tried to syntactially hinder bad activity flows like If().Then().Then()
       6.8.0 Refactored how we work with ParentActivity and PreviousActivity. Introduced LoopIteration and JobNumber as replacements for Iteration
       6.7.5 Now saves the ActivityInstance in an ordered fashion, to avoid foreign key constraints within the table
       6.7.4 Unit tests + correcting bug for IActivity.Iteration

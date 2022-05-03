@@ -12,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityIf" />
-internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
+internal class ActivityIf : Activity, IActivityIf, IActivityIfElse, IBackgroundActivity
 {
     private ActivityMethodAsync<IActivityIf> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf> _elseMethodAsync;
@@ -28,7 +28,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     public ActivityConditionMethodAsync<IActivityIf> ConditionMethodAsync { get; }
 
     /// <inheritdoc />
-    public IActivityIf Then(ActivityMethodAsync<IActivityIf> methodAsync)
+    public IActivityIfElse Then(ActivityMethodAsync<IActivityIf> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
@@ -37,7 +37,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     }
 
     /// <inheritdoc />
-    public IActivityIf Then(ActivityMethod<IActivityIf> method)
+    public IActivityIfElse Then(ActivityMethod<IActivityIf> method)
     {
         InternalContract.RequireNotNull(method, nameof(method));
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
@@ -50,7 +50,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     }
 
     /// <inheritdoc />
-    public IActivityIf Else(ActivityMethodAsync<IActivityIf> methodAsync)
+    public IExecutableActivity Else(ActivityMethodAsync<IActivityIf> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
@@ -59,7 +59,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
     }
 
     /// <inheritdoc />
-    public IActivityIf Else(ActivityMethod<IActivityIf> method)
+    public IExecutableActivity Else(ActivityMethod<IActivityIf> method)
     {
         InternalContract.RequireNotNull(method, nameof(method));
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
@@ -94,7 +94,7 @@ internal class ActivityIf : Activity, IActivityIf, IBackgroundActivity
 }
 
 internal class ActivityIf<TActivityReturns> : 
-    Activity<TActivityReturns>, IActivityIf<TActivityReturns>, IBackgroundActivity<TActivityReturns>
+    Activity<TActivityReturns>, IActivityIf<TActivityReturns>, IActivityIfElse<TActivityReturns>, IBackgroundActivity<TActivityReturns>
 {
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _elseMethodAsync;
@@ -113,7 +113,7 @@ internal class ActivityIf<TActivityReturns> :
     public ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> ConditionMethodAsync { get; }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
+    public IActivityIfElse<TActivityReturns> Then(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
@@ -122,7 +122,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
+    public IActivityIfElse<TActivityReturns> Then(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
     {
         InternalContract.RequireNotNull(method, nameof(method));
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
@@ -131,7 +131,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Then(TActivityReturns value)
+    public IActivityIfElse<TActivityReturns> Then(TActivityReturns value)
     {
         InternalContract.Require(_thenMethodAsync == null, "This method can only be called once.");
         _thenMethodAsync = (_, _) => Task.FromResult(value);
@@ -139,7 +139,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
+    public IExecutableActivity<TActivityReturns> Else(ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> methodAsync)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
@@ -148,7 +148,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
+    public IExecutableActivity<TActivityReturns> Else(ActivityMethod<IActivityIf<TActivityReturns>, TActivityReturns> method)
     {
         InternalContract.RequireNotNull(method, nameof(method));
         InternalContract.Require(_elseMethodAsync == null, "This method can only be called once.");
@@ -157,7 +157,7 @@ internal class ActivityIf<TActivityReturns> :
     }
 
     /// <inheritdoc />
-    public IActivityIf<TActivityReturns> Else(TActivityReturns value)
+    public IExecutableActivity<TActivityReturns> Else(TActivityReturns value)
     {
         _elseMethodAsync = (_, _) => Task.FromResult(value);
         return this;
