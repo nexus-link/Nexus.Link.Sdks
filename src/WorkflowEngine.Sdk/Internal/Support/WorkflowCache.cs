@@ -64,9 +64,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             _workflowFormCache = new CrudPersistenceHelper<WorkflowFormCreate, WorkflowForm, string>(workflowCapabilities.ConfigurationCapability.WorkflowForm, crudPersistenceHelperOptions);
             _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(workflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
             _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(workflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
-            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(workflowCapabilities.ConfigurationCapability.ActivityVersion, crudPersistenceHelperOptions);
+            _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(
+                workflowCapabilities.ConfigurationCapability.ActivityVersion, 
+                crudPersistenceHelperOptions,
+                new ActivitySaveOrder());
             _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(workflowCapabilities.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
-            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(workflowCapabilities.StateCapability.ActivityInstance, crudPersistenceHelperOptions);
+            _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(
+                workflowCapabilities.StateCapability.ActivityInstance, 
+                crudPersistenceHelperOptions,
+                new ActivitySaveOrder());
         }
 
         public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)

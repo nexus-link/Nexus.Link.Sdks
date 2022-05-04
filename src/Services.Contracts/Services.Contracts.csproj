@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.12.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.0" />
   </ItemGroup>
 
   <PropertyGroup>
