@@ -29,6 +29,7 @@ internal abstract class Activity : ActivityBase,
         : base(activityInformation)
     {
         ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
+        ActivityInformation.Workflow.AddActivity(this);
         WorkflowStatic.Context.LatestActivity = this;
     }
 

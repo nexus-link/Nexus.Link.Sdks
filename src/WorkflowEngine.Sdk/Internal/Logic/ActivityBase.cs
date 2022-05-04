@@ -26,7 +26,6 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         Form = ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
         Version = ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
         Instance = ActivityInformation.Workflow.GetActivityInstance(ActivityInstanceId);
-
         var parentActivity = ActivityInformation.Parent;
         if (parentActivity != null)
         {

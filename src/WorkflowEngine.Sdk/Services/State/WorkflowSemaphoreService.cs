@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,21 +122,26 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
         {
             WorkflowInstanceId = workflowInstanceId.ToGuidString()
         });
-        var handlers = await StorageHelper.ReadPagesAsync<WorkflowSemaphoreQueueRecord>((o, ct) => _runtimeTables.WorkflowSemaphoreQueue.SearchAsync(searchDetails, o, null, ct), int.MaxValue, cancellationToken);
+        var handlers = (await StorageHelper.ReadPagesAsync((o, ct) => _runtimeTables.WorkflowSemaphoreQueue.SearchAsync(searchDetails, o, null, ct), int.MaxValue, cancellationToken))
+            .ToDictionary(record => record.Id);
 
-        foreach (var handler in handlers)
+        var queue = new Queue<Guid>(handlers.Keys);
+        while (queue.TryDequeue(out var key))
         {
-            while (true)
+            var handler = handlers[key];
+            try
             {
-                try
+                mergedToken.Token.ThrowIfCancellationRequested();
+                await LowerAsync(handler.Id.ToGuidString(), mergedToken.Token);
+            }
+            catch (FulcrumTryAgainException e)
+            {
+                var sleep = !queue.Any();
+                // The semaphore was locked by another process, enqueue to try later
+                queue.Enqueue(key);
+                if (sleep)
                 {
-                    mergedToken.Token.ThrowIfCancellationRequested();
-                    await LowerAsync(handler.Id.ToGuidString(), mergedToken.Token);
-                }
-                catch (FulcrumTryAgainException e)
-                {
-                    // The semaphore was locked by another process, wait and try again
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), mergedToken.Token);
+                    await Task.Delay(TimeSpan.FromMilliseconds(10), mergedToken.Token);
                 }
             }
         }
@@ -244,7 +250,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
         var count = 0;
         while (count < 3)
         {
-            count++; 
+            count++;
             var unique = new WorkflowSemaphoreQueueRecordUnique
             {
                 WorkflowSemaphoreId = recordCreate.WorkflowSemaphoreId,
