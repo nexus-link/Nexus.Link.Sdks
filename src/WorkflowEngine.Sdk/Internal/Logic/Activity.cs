@@ -20,8 +20,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IInternalActivity" />
-internal abstract class Activity : ActivityBase,
-    IInternalActivity
+internal class Activity : ActivityBase, IInternalActivity
 {
 
     protected Activity(IActivityInformation activityInformation)
@@ -214,19 +213,8 @@ internal abstract class Activity<TActivityReturns> : Activity
         DefaultValueMethodAsync = defaultValueMethodAsync;
     }
 
-    // https://stackoverflow.com/questions/5780888/casting-interfaces-for-deserialization-in-json-net
     public TActivityReturns GetResult()
     {
-        FulcrumAssert.IsNotNull(Instance.ResultAsJson); 
-        try
-        {
-            var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(Instance.ResultAsJson);
-            return deserializedObject;
-        }
-        catch (Exception e)
-        {
-            throw new FulcrumAssertionFailedException(
-                $"Could not deserialize activity {this} to type {typeof(TActivityReturns).Name}:{e}\r{Instance.ResultAsJson}");
-        }
+        return ActivityInformation.Workflow.GetActivityResult<TActivityReturns>(ActivityInstanceId);
     }
 }

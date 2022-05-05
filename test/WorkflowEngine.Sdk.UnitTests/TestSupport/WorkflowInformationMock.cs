@@ -169,6 +169,24 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public IActivityExecutor GetActivityExecutor(Activity activity) => Executor;
 
         /// <inheritdoc />
+        public bool TryGetActivity(string activityId, out Activity activity)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public bool TryGetActivity<TActivityReturns>(string activityId, out Activity<TActivityReturns> activity)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
         public Activity GetActivity(string activityId)
         {
             throw new NotImplementedException();

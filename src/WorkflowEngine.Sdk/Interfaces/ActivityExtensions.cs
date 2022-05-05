@@ -59,6 +59,7 @@ public static class ActivityExtensions
     public static async Task EndAsync(this BackgroundActivity backgroundActivity, CancellationToken cancellationToken = default)
     {
         var activity = backgroundActivity.GetActivity();
+        if (activity == null) return;
         await activity.ExecuteAsync(cancellationToken);
     }
 
@@ -68,6 +69,11 @@ public static class ActivityExtensions
     public static async Task<T> EndAsync<T>(this BackgroundActivity<T> backgroundActivity, CancellationToken cancellationToken = default)
     {
         var activity = backgroundActivity.GetActivity();
-        return await activity.ExecuteAsync(cancellationToken);
+        if (activity != null)
+        {
+            return await activity.ExecuteAsync(cancellationToken);
+        }
+
+        return backgroundActivity.GetResult();
     }
 }

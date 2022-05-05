@@ -17,7 +17,7 @@ public interface IExecutableActivity : IActivity
 /// <summary>
 /// An activity that can either be r
 /// </summary>
-public interface IExecutableActivity<TActivityResult> : IActivity
+public interface IExecutableActivity<TActivityReturns> : IActivity
 {
     /// <summary>
     /// Start the activity and don't proceed until the activity has completed.
@@ -25,5 +25,5 @@ public interface IExecutableActivity<TActivityResult> : IActivity
     /// <returns>
     /// The result from the completed activity.
     /// </returns>
-    Task<TActivityResult> ExecuteAsync(CancellationToken cancellationToken = default);
+    Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default);
 }

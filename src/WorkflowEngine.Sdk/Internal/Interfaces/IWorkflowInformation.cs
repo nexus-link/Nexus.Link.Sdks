@@ -157,7 +157,8 @@ internal interface IWorkflowInformation
     /// </summary>
     IActivityExecutor GetActivityExecutor(Activity activity);
 
-    Activity GetActivity(string activityId);
+    bool TryGetActivity(string activityId, out Activity activity);
 
-    Activity<TActivityResult> GetActivity<TActivityResult>(string activityId);
+    bool TryGetActivity<TActivityReturns>(string activityId, out Activity<TActivityReturns> activity);
+    TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId);
 }

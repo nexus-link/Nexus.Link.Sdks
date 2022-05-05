@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -65,12 +68,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             _workflowVersionCache = new CrudPersistenceHelper<WorkflowVersionCreate, WorkflowVersion, string>(workflowCapabilities.ConfigurationCapability.WorkflowVersion, crudPersistenceHelperOptions);
             _activityFormCache = new CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string>(workflowCapabilities.ConfigurationCapability.ActivityForm, crudPersistenceHelperOptions);
             _activityVersionCache = new CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string>(
-                workflowCapabilities.ConfigurationCapability.ActivityVersion, 
+                workflowCapabilities.ConfigurationCapability.ActivityVersion,
                 crudPersistenceHelperOptions,
                 new ActivitySaveOrder());
             _workflowInstanceCache = new CrudPersistenceHelper<WorkflowInstanceCreate, WorkflowInstance, string>(workflowCapabilities.StateCapability.WorkflowInstance, crudPersistenceHelperOptions);
             _activityInstanceCache = new CrudPersistenceHelper<ActivityInstanceCreate, ActivityInstance, string>(
-                workflowCapabilities.StateCapability.ActivityInstance, 
+                workflowCapabilities.StateCapability.ActivityInstance,
                 crudPersistenceHelperOptions,
                 new ActivitySaveOrder());
         }
@@ -273,20 +276,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             _activities[activityInstanceId] = internalActivity;
         }
 
-        public Activity GetActivity(string activityId)
+        public bool TryGetActivity(string activityId, out Activity activity)
         {
-            if (activityId == null) return null;
-            var success = _activities.TryGetValue(activityId, out var activity);
-            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
-            return activity;
+            activity = null;
+            return activityId != null && _activities.TryGetValue(activityId, out activity);
         }
 
-        public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
+        public bool TryGetActivity<TActivityReturns>(string activityId, out Activity<TActivityReturns> activity)
         {
-            var activity = GetActivity(activityId);
-            var activityWithResult = activity as Activity<TActivityResult>;
-            FulcrumAssert.IsNotNull(activityWithResult, CodeLocation.AsString());
-            return activityWithResult;
+            activity = null;
+            if (!TryGetActivity(activityId, out var noResultActivity)) return false;
+            activity = noResultActivity as Activity<TActivityReturns>;
+            FulcrumAssert.IsNotNull(activity, CodeLocation.AsString());
+            return true;
         }
 
         public string GetOrCreateInstanceId(IActivityInformation activityInformation)
@@ -417,6 +419,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 Instance.FinishedAt = DateTimeOffset.UtcNow;
                 if (cancelWorkflow && Instance.CancelledAt == null) Instance.CancelledAt = Instance.FinishedAt;
             }
+        }
+
+
+        // https://stackoverflow.com/questions/5780888/casting-interfaces-for-deserialization-in-json-net
+        public TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId)
+        {
+            var instance = GetActivityInstance(activityInstanceId);
+            FulcrumAssert.IsNotNull(instance, CodeLocation.AsString());
+            FulcrumAssert.IsTrue(instance.HasCompleted, CodeLocation.AsString());
+            if (instance.State == ActivityStateEnum.Success)
+            {
+                FulcrumAssert.IsNotNull(instance.ResultAsJson);
+                try
+                {
+                    var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(instance.ResultAsJson);
+                    return deserializedObject;
+                }
+                catch (Exception e)
+                {
+                    throw new FulcrumAssertionFailedException(
+                        $"Could not deserialize activity {this} to type {typeof(TActivityReturns).Name}:{e}\r{instance.ResultAsJson}");
+                }
+            }
+            FulcrumAssert.IsNotNull(instance.ExceptionCategory, CodeLocation.AsString());
+            throw new ActivityFailedException(instance.ExceptionCategory!.Value, instance.ExceptionTechnicalMessage,
+                instance.ExceptionFriendlyMessage);
         }
     }
 }

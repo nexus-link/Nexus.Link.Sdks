@@ -1,6 +1,7 @@
 ﻿using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk;
@@ -19,7 +20,8 @@ public class BackgroundActivity
     {
         var workflowExecutor = WorkflowStatic.Context.CurrentWorkflowExecutor;
         FulcrumAssert.IsNotNull(workflowExecutor, CodeLocation.AsString());
-        var activity = workflowExecutor.WorkflowInformation.GetActivity(ActivityInstanceId);
+        var success = workflowExecutor.WorkflowInformation.TryGetActivity(ActivityInstanceId, out var activity);
+        if (!success) return null;
         var executableActivity = activity as IExecutableActivity;
         FulcrumAssert.IsNotNull(executableActivity, CodeLocation.AsString());
         return executableActivity;
@@ -40,9 +42,22 @@ public class BackgroundActivity<TActivityReturns>
     {
         var workflowExecutor = WorkflowStatic.Context.CurrentWorkflowExecutor;
         FulcrumAssert.IsNotNull(workflowExecutor, CodeLocation.AsString());
-        var activity = workflowExecutor.WorkflowInformation.GetActivity(ActivityInstanceId);
+        var success = workflowExecutor.WorkflowInformation.TryGetActivity(ActivityInstanceId, out var activity);
+        if (!success) return null;
         var executableActivity = activity as IExecutableActivity<TActivityReturns>;
         FulcrumAssert.IsNotNull(executableActivity, CodeLocation.AsString());
         return executableActivity;
+    }
+
+    /// <summary>
+    /// Get the result value from the activity.
+    /// </summary>
+    /// <returns></returns>
+    public TActivityReturns GetResult()
+    {
+        var workflowExecutor = WorkflowStatic.Context.CurrentWorkflowExecutor;
+        FulcrumAssert.IsNotNull(workflowExecutor, CodeLocation.AsString());
+        var result = workflowExecutor.WorkflowInformation.GetActivityResult<TActivityReturns>(ActivityInstanceId);
+        return result;
     }
 }

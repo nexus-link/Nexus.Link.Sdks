@@ -145,6 +145,24 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public bool TryGetActivity(string activityId, out Activity activity)
+    {
+        return _workflowCache.TryGetActivity(activityId, out activity);
+    }
+
+    /// <inheritdoc />
+    public bool TryGetActivity<TActivityReturns>(string activityId, out Activity<TActivityReturns> activity)
+    {
+        return _workflowCache.TryGetActivity(activityId, out activity);
+    }
+
+    /// <inheritdoc />
+    public TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId)
+    {
+        return _workflowCache.GetActivityResult<TActivityReturns>(activityInstanceId);
+    }
+
+    /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;
 
     /// <inheritdoc />
@@ -152,14 +170,4 @@ internal class WorkflowInformation : IWorkflowInformation
 
     /// <inheritdoc />
     public string InstanceId { get; set; }
-
-    public Activity GetActivity(string activityId)
-    {
-        return _workflowCache.GetActivity(activityId);
-    }
-
-    public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
-    {
-        return _workflowCache.GetActivity<TActivityResult>(activityId);
-    }
 }
