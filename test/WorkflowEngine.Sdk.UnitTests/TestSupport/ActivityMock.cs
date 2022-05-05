@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -79,6 +77,24 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         {
             SafeAlertExceptionCalled++;
             return Task.CompletedTask;
+        }
+    }
+
+    /// <inheritdoc cref="ActivityMock" />
+    internal class ActivityMock<TActivityReturns> : ActivityMock, IInternalActivity<TActivityReturns>
+    {
+        public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
+
+        public ActivityMock(IActivityInformation activityInformation,
+            ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
+            : base(activityInformation)
+        {
+            DefaultValueMethodAsync = defaultValueMethodAsync;
+        }
+
+        public TActivityReturns GetResult()
+        {
+            return ActivityInformation.Workflow.GetActivityResult<TActivityReturns>(ActivityInstanceId);
         }
     }
 }

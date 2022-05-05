@@ -3,10 +3,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -183,19 +188,27 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public Activity GetActivity(string activityId)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
-        {
-            throw new NotImplementedException();
+            // https://stackoverflow.com/questions/5780888/casting-interfaces-for-deserialization-in-json-net
+            var instance = GetActivityInstance(activityInstanceId);
+            FulcrumAssert.IsNotNull(instance, CodeLocation.AsString());
+            FulcrumAssert.IsTrue(instance.HasCompleted, CodeLocation.AsString());
+            if (instance.State == ActivityStateEnum.Success)
+            {
+                FulcrumAssert.IsNotNull(instance.ResultAsJson);
+                try
+                {
+                    var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(instance.ResultAsJson);
+                    return deserializedObject;
+                }
+                catch (Exception e)
+                {
+                    throw new FulcrumAssertionFailedException(
+                        $"Could not deserialize activity {this} to type {typeof(TActivityReturns).Name}:{e}\r{instance.ResultAsJson}");
+                }
+            }
+            FulcrumAssert.IsNotNull(instance.ExceptionCategory, CodeLocation.AsString());
+            throw new ActivityFailedException(instance.ExceptionCategory!.Value, instance.ExceptionTechnicalMessage,
+                instance.ExceptionFriendlyMessage);
         }
     }
 }

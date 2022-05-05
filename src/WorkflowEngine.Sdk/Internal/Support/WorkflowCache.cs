@@ -420,31 +420,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 if (cancelWorkflow && Instance.CancelledAt == null) Instance.CancelledAt = Instance.FinishedAt;
             }
         }
-
-
-        // https://stackoverflow.com/questions/5780888/casting-interfaces-for-deserialization-in-json-net
-        public TActivityReturns GetActivityResult<TActivityReturns>(string activityInstanceId)
-        {
-            var instance = GetActivityInstance(activityInstanceId);
-            FulcrumAssert.IsNotNull(instance, CodeLocation.AsString());
-            FulcrumAssert.IsTrue(instance.HasCompleted, CodeLocation.AsString());
-            if (instance.State == ActivityStateEnum.Success)
-            {
-                FulcrumAssert.IsNotNull(instance.ResultAsJson);
-                try
-                {
-                    var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(instance.ResultAsJson);
-                    return deserializedObject;
-                }
-                catch (Exception e)
-                {
-                    throw new FulcrumAssertionFailedException(
-                        $"Could not deserialize activity {this} to type {typeof(TActivityReturns).Name}:{e}\r{instance.ResultAsJson}");
-                }
-            }
-            FulcrumAssert.IsNotNull(instance.ExceptionCategory, CodeLocation.AsString());
-            throw new ActivityFailedException(instance.ExceptionCategory!.Value, instance.ExceptionTechnicalMessage,
-                instance.ExceptionFriendlyMessage);
-        }
     }
 }

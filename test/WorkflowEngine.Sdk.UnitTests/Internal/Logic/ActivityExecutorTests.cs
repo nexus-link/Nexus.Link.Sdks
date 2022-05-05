@@ -21,6 +21,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         private readonly ActivityInformationMock _activityInformation;
         private readonly ActivityMock _activityMock;
         private readonly ActivityExecutor _executor;
+        private readonly ActivityInformationMock _activityInformationResult;
+        private readonly ActivityMock<int> _activityMockResult;
+        private readonly ActivityExecutor _executorResult;
 
         public ActivityExecutorTests()
         {
@@ -32,6 +35,12 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             _activityMock = new ActivityMock(_activityInformation);
             _executor = new ActivityExecutor(_activityMock);
             workflowInformationMock.Executor = _executor;
+
+            var workflowInformationResultMock = new WorkflowInformationMock(null);
+            _activityInformationResult = new ActivityInformationMock(workflowInformationResultMock);
+            _activityMockResult = new ActivityMock<int>(_activityInformationResult, null);
+            _executorResult = new ActivityExecutor(_activityMockResult);
+            workflowInformationResultMock.Executor = _executorResult;
         }
 
         [Theory]
@@ -40,28 +49,35 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         public async Task Execute_Given_MethodReturns_Gives_Success(bool withReturnValue)
         {
             // Arrange
-            var executor = _executor;
 
             // Act
             if (withReturnValue)
             {
-                await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null);
+                await _executorResult.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null);
             }
             else
             {
-                await executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask);
+                await _executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask);
             }
 
             // Assert
-            _activityMock.Instance.State.ShouldBe(ActivityStateEnum.Success);
-            _activityMock.SafeAlertExceptionCalled.ShouldBe(0);
+            if (withReturnValue)
+            {
+                _activityMockResult.Instance.State.ShouldBe(ActivityStateEnum.Success);
+                _activityMockResult.SafeAlertExceptionCalled.ShouldBe(0);
+            }
+            else
+            {
+                _activityMock.Instance.State.ShouldBe(ActivityStateEnum.Success);
+                _activityMock.SafeAlertExceptionCalled.ShouldBe(0);
+            }
         }
 
         [Fact]
         public async Task ExecuteWithReturnValue_Given_MethodReturns_Gives_CorrectValue()
         {
             // Arrange
-            var executor = _executor;
+            var executor = _executorResult;
             const int expectedValue = 10;
 
             // Act
@@ -288,29 +304,34 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         public async Task Execute_Given_TimeOut_Gives_Throws(bool withReturnValue)
         {
             // Arrange
-            var executor = _executor;
             _activityInformation.Options.ActivityMaxExecutionTimeSpan = TimeSpan.Zero;
+            _activityInformationResult.Options.ActivityMaxExecutionTimeSpan = TimeSpan.Zero;
 
             // Act
-            WorkflowImplementationShouldNotCatchThisException outerException;
             if (withReturnValue)
             {
-                outerException = await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+                await _executorResult.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
+                    .ShouldThrowAsync<ActivityFailedException>();
             }
             else
             {
-                outerException = await executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+                await _executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
+                    .ShouldThrowAsync<ActivityFailedException>();
             }
 
             // Assert
-            _activityMock.SafeAlertExceptionCalled.ShouldBe(1);
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
-            innerException.ShouldNotBeNull();
-            _activityMock.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            _activityMock.Instance.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError); 
+            if (withReturnValue)
+            {
+                _activityMockResult.SafeAlertExceptionCalled.ShouldBe(1);
+                _activityMockResult.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+                _activityMockResult.Instance.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError);
+            }
+            else
+            {
+                _activityMock.SafeAlertExceptionCalled.ShouldBe(1);
+                _activityMock.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+                _activityMock.Instance.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError);
+            }
         }
     }
 }

@@ -201,10 +201,10 @@ internal class Activity : ActivityBase, IInternalActivity
 }
 
 /// <inheritdoc/>
-internal abstract class Activity<TActivityReturns> : Activity
+internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>
 {
 
-    protected ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
+    public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
 
     protected Activity(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)

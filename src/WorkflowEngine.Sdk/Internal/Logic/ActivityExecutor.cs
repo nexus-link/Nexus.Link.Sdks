@@ -45,13 +45,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             TMethodReturns result;
             if (Activity.Instance.State == ActivityStateEnum.Success)
             {
-                var resultActivity = Activity as Activity<TMethodReturns>;
+                var resultActivity = Activity as IInternalActivity<TMethodReturns>;
                 FulcrumAssert.IsNotNull(resultActivity, CodeLocation.AsString());
                 result = resultActivity!.GetResult();
             }
             else
             {
-                // We will typically get here if the activity failed and the activity was configured to ignore the failure
+                // We will get here if the activity failed and the activity was configured to ignore the failure
                 result = await GetDefaultValueAsync(getDefaultValueAsync, cancellationToken);
             }
             return result;

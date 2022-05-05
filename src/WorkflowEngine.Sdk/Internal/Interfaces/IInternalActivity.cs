@@ -14,3 +14,10 @@ internal interface IInternalActivity : IInternalActivityBase, IActivity
     void MaybePurgeLogs();
     Task SafeAlertExceptionAsync(CancellationToken cancellationToken);
 }
+
+internal interface IInternalActivity<TActivityReturns> : IInternalActivity
+{
+    ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
+
+    TActivityReturns GetResult();
+}
