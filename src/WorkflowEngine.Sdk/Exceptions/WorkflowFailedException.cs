@@ -2,7 +2,7 @@
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {
-    internal class WorkflowFailedException : ActivityFailedException
+    public class WorkflowFailedException : ActivityFailedException
     {
 
         /// <summary>

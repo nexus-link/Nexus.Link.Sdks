@@ -12,7 +12,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityIf" />
-internal class ActivityIf : Activity, IActivityIf, IActivityIfElse, IBackgroundActivity
+internal class ActivityIf : Activity, IActivityIf, IActivityIfElse
 {
     private ActivityMethodAsync<IActivityIf> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf> _elseMethodAsync;
@@ -93,8 +93,7 @@ internal class ActivityIf : Activity, IActivityIf, IActivityIfElse, IBackgroundA
     }
 }
 
-internal class ActivityIf<TActivityReturns> : 
-    Activity<TActivityReturns>, IActivityIf<TActivityReturns>, IActivityIfElse<TActivityReturns>, IBackgroundActivity<TActivityReturns>
+internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActivityIf<TActivityReturns>, IActivityIfElse<TActivityReturns>
 {
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _thenMethodAsync;
     private ActivityMethodAsync<IActivityIf<TActivityReturns>, TActivityReturns> _elseMethodAsync;

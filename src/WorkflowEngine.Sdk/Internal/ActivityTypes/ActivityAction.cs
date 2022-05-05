@@ -12,7 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityAction" />
-internal class ActivityAction : Activity, IActivityAction, IBackgroundActivity
+internal class ActivityAction : Activity, IActivityAction
 {
     private readonly ActivityMethodAsync<IActivityAction> _methodAsync;
 
@@ -51,7 +51,7 @@ internal class ActivityAction : Activity, IActivityAction, IBackgroundActivity
     }
 }
 
-internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>, IBackgroundActivity<TActivityReturns>
+internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
 {
     private readonly ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
 

@@ -57,7 +57,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         set => _internalIteration.SetValue(value);
     }
 
-    public IActivityInformation ActivityInformation { get; }
+    public IActivityInformation ActivityInformation { get; protected set; }
 
     /// <inheritdoc />
     public string ActivityInstanceId { get; }

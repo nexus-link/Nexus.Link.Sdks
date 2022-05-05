@@ -29,7 +29,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
-        IActivityFlow SetMaxExecutionTime(TimeSpan timeSpan);
+        IActivityFlow SetMaxExecutionTimeSpan(TimeSpan timeSpan);
+
+        /// <summary>
+        /// When time has passed <paramref name="deadLine"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        IActivityFlow SetDeadLine(DateTimeOffset deadLine);
 
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         IActivityAction Action();
@@ -109,6 +114,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <param name="timeSpan"></param>
         /// <returns></returns>
         IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan);
+
+        /// <summary>
+        /// When time has passed <paramref name="deadLine"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadLine);
 
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);

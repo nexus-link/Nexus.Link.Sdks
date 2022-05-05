@@ -93,6 +93,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// Select that latest <see cref="IWorkflowImplementation"/> with a <see cref="IWorkflowImplementationBase.MajorVersion"/>
         /// that is greater than or equal to <paramref name="minVersion"/>.
         /// </summary>
+        [Obsolete("Please use the overload with a maxVersion parameter. Obsolete since 2022-05-05.")]
         public Task<IWorkflowImplementation<TWorkflowResult>> SelectImplementationAsync<TWorkflowResult>(int minVersion, CancellationToken cancellationToken = default)
         {
             return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);

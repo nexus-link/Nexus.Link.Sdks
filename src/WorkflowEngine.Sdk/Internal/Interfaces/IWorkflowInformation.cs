@@ -156,4 +156,8 @@ internal interface IWorkflowInformation
     /// Get an activity executor for <paramref name="activity"/>
     /// </summary>
     IActivityExecutor GetActivityExecutor(Activity activity);
+
+    Activity GetActivity(string activityId);
+
+    Activity<TActivityResult> GetActivity<TActivityResult>(string activityId);
 }

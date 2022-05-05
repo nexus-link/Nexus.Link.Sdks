@@ -11,6 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         private readonly OneValueProvider<string> _workflowInstanceId;
         private readonly OneValueProvider<Activity> _parentActivity;
         private readonly OneValueProvider<Activity> _latestActivity;
+        private readonly OneValueProvider<WorkflowExecutor> _currentWorkflowExecutor;
 
         public WorkflowContext(IContextValueProvider valueProvider)
         {
@@ -19,6 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
             _parentActivity = new OneValueProvider<Activity>(ValueProvider, "ParentActivity");
             _latestActivity = new OneValueProvider<Activity>(ValueProvider, "LatestActivity");
+            _currentWorkflowExecutor = new OneValueProvider<WorkflowExecutor>(ValueProvider, "CurrentWorkflowExecutor");
         }
 
         /// <summary>
@@ -57,6 +59,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         {
             get => _latestActivity.GetValue();
             set => _latestActivity.SetValue(value);
+        }
+
+        public WorkflowExecutor CurrentWorkflowExecutor
+        {
+            get => _currentWorkflowExecutor.GetValue();
+            set => _currentWorkflowExecutor.SetValue(value);
         }
     }
 }

@@ -14,8 +14,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="ActivityForEachSequential{TItem}" />
-internal class ActivityForEachSequential<TItem> :
-    LoopActivity, IActivityForEachSequential<TItem>, IBackgroundActivity
+internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEachSequential<TItem>
 {
     private readonly ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
@@ -76,8 +75,7 @@ internal class ActivityForEachSequential<TItem> :
 
 /// <inheritdoc cref="ActivityForEachSequential{TMethodReturns, TItem}" />
 internal class ActivityForEachSequential<TMethodReturns, TItem> :
-    LoopActivity<IList<TMethodReturns>, TMethodReturns>, IActivityForEachSequential<TMethodReturns, TItem>,
-    IBackgroundActivity<IList<TMethodReturns>>
+    LoopActivity<IList<TMethodReturns>, TMethodReturns>, IActivityForEachSequential<TMethodReturns, TItem>
 {
     private readonly ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }

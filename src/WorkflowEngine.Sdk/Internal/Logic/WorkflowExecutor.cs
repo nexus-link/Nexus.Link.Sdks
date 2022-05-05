@@ -27,7 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;
-        protected IWorkflowInformation WorkflowInformation { get; }
+        public IWorkflowInformation WorkflowInformation { get; }
 
         public WorkflowExecutor(IWorkflowInformation workflowInformation)
         {
@@ -205,6 +205,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
         {
+            WorkflowStatic.Context.CurrentWorkflowExecutor = this;
             await PrepareBeforeExecutionAsync(cancellationToken);
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             try

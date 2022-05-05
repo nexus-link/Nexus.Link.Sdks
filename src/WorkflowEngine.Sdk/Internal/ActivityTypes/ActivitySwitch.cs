@@ -13,8 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivitySwitch{TSwitchValue}" />
-internal class ActivitySwitch<TSwitchValue> : 
-    Activity, IActivitySwitch<TSwitchValue>, IBackgroundActivity
+internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchValue>
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TSwitchValue> _defaultMethod;
@@ -65,8 +64,7 @@ internal class ActivitySwitch<TSwitchValue> :
 
 internal class ActivitySwitch<TActivityReturns, TSwitchValue> : 
     Activity<TActivityReturns>,
-    IActivitySwitch<TActivityReturns, TSwitchValue>, 
-    IBackgroundActivity<TActivityReturns>
+    IActivitySwitch<TActivityReturns, TSwitchValue>
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> _defaultMethod;

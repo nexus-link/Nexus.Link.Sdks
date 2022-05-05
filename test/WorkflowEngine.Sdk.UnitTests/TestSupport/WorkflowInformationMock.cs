@@ -131,12 +131,6 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public Activity GetCurrentParentActivity()
-        {
-            return null;
-        }
-
-        /// <inheritdoc />
         public void AddActivity(IInternalActivity activity)
         {
         }
@@ -173,5 +167,17 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 
         /// <inheritdoc />
         public IActivityExecutor GetActivityExecutor(Activity activity) => Executor;
+
+        /// <inheritdoc />
+        public Activity GetActivity(string activityId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

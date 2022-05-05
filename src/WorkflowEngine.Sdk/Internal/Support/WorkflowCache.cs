@@ -281,6 +281,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             return activity;
         }
 
+        public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
+        {
+            var activity = GetActivity(activityId);
+            var activityWithResult = activity as Activity<TActivityResult>;
+            FulcrumAssert.IsNotNull(activityWithResult, CodeLocation.AsString());
+            return activityWithResult;
+        }
+
         public string GetOrCreateInstanceId(IActivityInformation activityInformation)
         {
             lock (_summary)

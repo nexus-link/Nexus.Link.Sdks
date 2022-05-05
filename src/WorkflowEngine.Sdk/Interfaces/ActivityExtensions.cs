@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -16,13 +17,9 @@ public static class ActivityExtensions
     /// Start the activity, but don't wait for the activity to complete.
     /// Use <see cref="EndAsync{T}"/> to wait for the activity to complete.
     /// </summary>
-    public static async Task<IBackgroundActivity> BeginAsync(this IExecutableActivity activity, CancellationToken cancellationToken = default)
+    public static async Task<BackgroundActivity> BeginAsync(this IExecutableActivity activity, CancellationToken cancellationToken = default)
     {
-        if (activity is not IBackgroundActivity backgroundActivity)
-        {
-            throw new FulcrumContractException($"The class {activity.GetType().Name} must implement {nameof(IBackgroundActivity)}.");
-        }
-
+        InternalContract.RequireNotNull(activity, nameof(activity));
         try
         {
             await activity.ExecuteAsync(cancellationToken);
@@ -32,20 +29,17 @@ public static class ActivityExtensions
             if (outerException.InnerException is not RequestPostponedException) throw;
             // Ignore postpone exceptions, this will be taken care of in EndAsync();
         }
-        return backgroundActivity;
+        FulcrumAssert.IsNotNull(activity.ActivityInstanceId, CodeLocation.AsString());
+        return new BackgroundActivity { ActivityInstanceId = activity.ActivityInstanceId };
     }
 
     /// <summary>
     /// Start the activity, but don't wait for the activity to complete.
     /// Use <see cref="EndAsync{T}"/> to wait for the activity to complete.
     /// </summary>
-    public static async Task<IBackgroundActivity<T>> BeginAsync<T>(this IExecutableActivity<T> activity, CancellationToken cancellationToken = default)
+    public static async Task<BackgroundActivity<T>> BeginAsync<T>(this IExecutableActivity<T> activity, CancellationToken cancellationToken = default)
     {
-        if (activity is not IBackgroundActivity<T> backgroundActivity)
-        {
-            throw new FulcrumContractException($"The class {activity.GetType().Name} must implement {nameof(IBackgroundActivity)}.");
-        }
-
+        InternalContract.RequireNotNull(activity, nameof(activity));
         try
         {
             await activity.ExecuteAsync(cancellationToken);
@@ -55,33 +49,25 @@ public static class ActivityExtensions
             if (outerException.InnerException is not RequestPostponedException) throw;
             // Ignore postpone exceptions, this will be taken care of in EndAsync();
         }
-        return backgroundActivity;
+        FulcrumAssert.IsNotNull(activity.ActivityInstanceId, CodeLocation.AsString());
+        return new BackgroundActivity<T> { ActivityInstanceId = activity.ActivityInstanceId };
     }
 
     /// <summary>
     /// Wait for the activity to complete.
     /// </summary>
-    public static async Task EndAsync(this IBackgroundActivity activity, CancellationToken cancellationToken = default)
+    public static async Task EndAsync(this BackgroundActivity backgroundActivity, CancellationToken cancellationToken = default)
     {
-        if (activity is not IExecutableActivity executableActivity)
-        {
-            throw new FulcrumContractException($"The class {activity.GetType().Name} must implement {nameof(IExecutableActivity)}.");
-        }
-
-        await executableActivity.ExecuteAsync(cancellationToken);
+        var activity = backgroundActivity.GetActivity();
+        await activity.ExecuteAsync(cancellationToken);
     }
 
     /// <summary>
     /// Wait for the activity to complete.
     /// </summary>
-    public static async Task<T> EndAsync<T>(this IBackgroundActivity<T> activity, CancellationToken cancellationToken = default)
+    public static async Task<T> EndAsync<T>(this BackgroundActivity<T> backgroundActivity, CancellationToken cancellationToken = default)
     {
-        if (activity is not IExecutableActivity<T> executableActivity)
-        {
-            throw new FulcrumContractException($"The class {activity.GetType().Name} must implement {nameof(IExecutableActivity)}.");
-        }
-
-        var result = await executableActivity.ExecuteAsync(cancellationToken);
-        return result;
+        var activity = backgroundActivity.GetActivity();
+        return await activity.ExecuteAsync(cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 
@@ -44,8 +45,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             if (!_arguments.TryGetValue(parameterName, out var argument))
             {
-                var argumentParameters = string.Join(", ", _arguments.Values.Select(a => a.Parameter.Name));
-                InternalContract.Fail($"{FormTitle} has a parameter named {parameterName}, but {InstanceTitle} had no argument for that parameter. Found these: {argumentParameters}");
+                throw new FulcrumNotFoundException($"{FormTitle} has a parameter named {parameterName}, but {InstanceTitle} had no argument for that parameter." +
+                                                   $" Found these: {string.Join(", ", ArgumentNames())}");
                 return default;
             }
 
@@ -58,6 +59,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             return argument.Value;
         }
 
+        private IEnumerable<string> ArgumentNames()
+        {
+            return _arguments.Values.Select(a => a.Parameter.Name);
+        }
+
+        private IEnumerable<string> ParameterNames()
+        {
+            return _parameters.Values.Select(a => a.Name);
+        }
+
         public TArgument GetArgument<TArgument>(string parameterName)
         {
             return (TArgument)GetArgument(parameterName);
@@ -67,7 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             var parameter = _parameters.Values.FirstOrDefault(p => p.Name == parameterName);
             InternalContract.RequireNotNull(parameter, nameof(parameterName),
-                $"No parameter named {parameterName}. These are registered: {string.Join(", ", _parameters.Keys)}");
+                $"No parameter named {parameterName}. These are registered: {string.Join(", ", ParameterNames())}");
             return parameter;
         }
 

@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -25,6 +23,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 internal abstract class Activity : ActivityBase,
     IInternalActivity
 {
+
     protected Activity(IActivityInformation activityInformation)
         : base(activityInformation)
     {
@@ -213,5 +212,21 @@ internal abstract class Activity<TActivityReturns> : Activity
         : base(activityInformation)
     {
         DefaultValueMethodAsync = defaultValueMethodAsync;
+    }
+
+    // https://stackoverflow.com/questions/5780888/casting-interfaces-for-deserialization-in-json-net
+    public TActivityReturns GetResult()
+    {
+        FulcrumAssert.IsNotNull(Instance.ResultAsJson); 
+        try
+        {
+            var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(Instance.ResultAsJson);
+            return deserializedObject;
+        }
+        catch (Exception e)
+        {
+            throw new FulcrumAssertionFailedException(
+                $"Could not deserialize activity {this} to type {typeof(TActivityReturns).Name}:{e}\r{Instance.ResultAsJson}");
+        }
     }
 }

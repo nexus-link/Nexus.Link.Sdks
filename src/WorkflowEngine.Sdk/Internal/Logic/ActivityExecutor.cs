@@ -45,7 +45,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             TMethodReturns result;
             if (Activity.Instance.State == ActivityStateEnum.Success)
             {
-                result = JsonHelper.SafeDeserializeObject<TMethodReturns>(Activity.Instance.ResultAsJson);
+                var resultActivity = Activity as Activity<TMethodReturns>;
+                FulcrumAssert.IsNotNull(resultActivity, CodeLocation.AsString());
+                result = resultActivity!.GetResult();
             }
             else
             {
@@ -73,6 +75,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (Exception e)
             {
+                if (e is RequestPostponedException postponed)
+                {
+                    var timeLeft = GetExecutionTimeRemainingOrThrow();
+                    if (timeLeft.HasValue)
+                    {
+                        if (!postponed.TryAgainAfterMinimumTimeSpan.HasValue ||
+                            postponed.TryAgainAfterMinimumTimeSpan > timeLeft.Value)
+                        {
+                            postponed.TryAgainAfterMinimumTimeSpan = timeLeft.Value;
+                        }
+
+                        postponed.TryAgain = true;
+                    }
+                }
                 // Wrap all exceptions in a protective layer
                 throw new WorkflowImplementationShouldNotCatchThisException(e);
             }
@@ -83,24 +99,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
+        private TimeSpan? GetExecutionTimeRemainingOrThrow()
+        {
+            if (!Activity.ActivityInformation.Options.ActivityMaxExecutionTimeSpan.HasValue) return null;
+            var maxExecutionTime = Activity.ActivityInformation.Options.ActivityMaxExecutionTimeSpan.Value;
+            var startedAt = Activity.ActivityStartedAt;
+            var now = DateTimeOffset.UtcNow;
+            var executionTimeSoFar = now - startedAt;
+            var timeLeft = maxExecutionTime - executionTimeSoFar;
+            if (timeLeft < TimeSpan.Zero)
+            {
+                throw new ActivityFailedException(ActivityExceptionCategoryEnum.MaxTimeReachedError,
+                    $"The maximum time ({maxExecutionTime}) for the activity has been reached. The activity was started at {startedAt.ToLogString()} and expired at {startedAt.Add(maxExecutionTime).ToLogString()}, it is now {now.ToLogString()}",
+                    "The maximum time for the activity has been reached.");
+            }
+            return timeLeft;
+        }
+
         private async Task CallMethodAndUpdateActivityInformationAsync<TMethodReturns>(
             InternalActivityMethodAsync<TMethodReturns> methodAsync, bool hasReturnValue, CancellationToken cancellationToken)
         {
             try
             {
-                if (Activity.ActivityInformation.Options.ActivityMaxExecutionTimeSpan.HasValue)
-                {
-                    var maxExecutionTime = Activity.ActivityInformation.Options.ActivityMaxExecutionTimeSpan.Value;
-                    var startedAt = Activity.ActivityStartedAt;
-                    var expirationTime = startedAt.Add(maxExecutionTime);
-                    var now = DateTimeOffset.UtcNow;
-                    if (expirationTime <= now)
-                    {
-                        throw new ActivityFailedException(ActivityExceptionCategoryEnum.MaxTimeReachedError,
-                            $"The maximum time for the activity has been reached. The activity was started at {startedAt.ToLogString()} and expired at {expirationTime.ToLogString()}, it is now {now.ToLogString()}",
-                            "The maximum time for the activity has been reached.");
-                    }
-                }
+                GetExecutionTimeRemainingOrThrow();
                 await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
                 Activity.MarkAsSuccess();
             }

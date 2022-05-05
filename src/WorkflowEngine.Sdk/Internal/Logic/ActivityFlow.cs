@@ -79,9 +79,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow SetMaxExecutionTime(TimeSpan timeSpan)
+        public IActivityFlow SetMaxExecutionTimeSpan(TimeSpan timeSpan)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow SetDeadLine(DateTimeOffset deadLine)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadLine.Subtract(DateTimeOffset.UtcNow);
             return this;
         }
 
@@ -348,6 +355,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadLine)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadLine.Subtract(DateTimeOffset.UtcNow);
             return this;
         }
 

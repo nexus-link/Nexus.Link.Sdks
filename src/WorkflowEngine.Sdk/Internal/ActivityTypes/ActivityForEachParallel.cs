@@ -12,8 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityForEachParallel{TItem}" />
-internal class ActivityForEachParallel<TItem> :
-    LoopActivity, IActivityForEachParallel<TItem>, IBackgroundActivity
+internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachParallel<TItem>
 {
     private readonly ActivityForEachParallelMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
@@ -75,8 +74,7 @@ internal class ActivityForEachParallel<TItem> :
 
 /// <inheritdoc cref="IActivityForEachParallel{TMethodReturns, TItem}" />
 internal class ActivityForEachParallel<TMethodReturns, TItem> :
-    LoopActivity<IDictionary<string, TMethodReturns>>, IActivityForEachParallel<TMethodReturns, TItem>,
-    IBackgroundActivity<IDictionary<string, TMethodReturns>>
+    LoopActivity<IDictionary<string, TMethodReturns>>, IActivityForEachParallel<TMethodReturns, TItem>
 {
     private GetKeyMethod<TItem> _getKeyMethod;
     private readonly ActivityForEachParallelMethodAsync<TMethodReturns, TItem> _methodAsync;

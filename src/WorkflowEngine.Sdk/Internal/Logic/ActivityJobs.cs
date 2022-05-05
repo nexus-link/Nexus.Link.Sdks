@@ -12,7 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IActivityJobs{T}" />
-internal abstract class ActivityJobs<T> : ParallelActivity<IJobResults>, IActivityJobs<T>, IBackgroundActivity<IJobResults>
+internal abstract class ActivityJobs<T> : ParallelActivity<IJobResults>, IActivityJobs<T>
 where T : class, IActivityJobs<T>
 {
     protected readonly Dictionary<int, object> ObjectJobs = new();

@@ -152,4 +152,14 @@ internal class WorkflowInformation : IWorkflowInformation
 
     /// <inheritdoc />
     public string InstanceId { get; set; }
+
+    public Activity GetActivity(string activityId)
+    {
+        return _workflowCache.GetActivity(activityId);
+    }
+
+    public Activity<TActivityResult> GetActivity<TActivityResult>(string activityId)
+    {
+        return _workflowCache.GetActivity<TActivityResult>(activityId);
+    }
 }

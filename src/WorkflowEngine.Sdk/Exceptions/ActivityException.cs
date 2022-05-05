@@ -6,7 +6,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
     /// <summary>
     /// Use this exception if your activity failed.
     /// </summary>
-    [Obsolete("Please use ActivityFailedException. Obsolete since 2022-04-26.")]
+    [Obsolete($"Please use {nameof(ActivityFailedException)}. Obsolete since 2022-04-26.")]
     public class ActivityException : Exception
     {
         /// <summary>
