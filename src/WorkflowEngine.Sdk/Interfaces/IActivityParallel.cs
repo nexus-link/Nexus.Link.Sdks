@@ -9,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Parallel"/>.
 /// </summary>
-public interface IActivityParallel
+public interface IActivityParallel : IExecutableActivity<IJobResults>
 {
     /// <summary>
     /// The number of an individual job in the parallel activity.
