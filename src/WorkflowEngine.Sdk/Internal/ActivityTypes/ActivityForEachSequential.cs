@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -57,12 +61,12 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 
     private async Task ForEachSequentialAsync(ActivityForEachSequentialMethodAsync<TItem> method, CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         foreach (var item in Items)
         {
             LoopIteration++;
-            await method(item, this, cancellationToken);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            await method(item, this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
+
         }
     }
 
@@ -124,14 +128,13 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         var resultList = new List<TMethodReturns>();
         foreach (var item in Items)
         {
             LoopIteration++;
-            var result = await methodAsync(item, this, cancellationToken);
+            var result = await methodAsync(item, this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
             resultList.Add(result);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         }
 
         return resultList;

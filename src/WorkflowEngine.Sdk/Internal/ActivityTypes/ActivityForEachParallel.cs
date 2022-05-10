@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -42,7 +45,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public async Task ExecuteAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken = default)
     {
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync( ct => ForEachParallelAsync(methodAsync, ct), cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), cancellationToken);
     }
 
     /// <inheritdoc />
@@ -59,7 +62,6 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
 
     private async Task ForEachParallelAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         var taskList = new List<Task>();
         foreach (var item in Items)
         {
@@ -114,18 +116,6 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), EmptyDictionaryAsync, cancellationToken);
     }
 
-    private static async Task<IDictionary<string, TMethodReturns>> AggregatePostponeExceptions(IDictionary<string, Task<TMethodReturns>> taskDictionary)
-    {
-        await WorkflowHelper.WhenAllActivities(taskDictionary.Values);
-        var resultDictionary = new Dictionary<string, TMethodReturns>();
-        foreach (var (key, task) in taskDictionary)
-        {
-            var result = await task;
-            resultDictionary.Add(key, result);
-        }
-        return resultDictionary;
-    }
-
     /// <inheritdoc />
     protected override async Task<IDictionary<string, TMethodReturns>> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
@@ -143,7 +133,6 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         ActivityForEachParallelMethodAsync<TMethodReturns, TItem> method,
         CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         var taskDictionary = new Dictionary<string, Task<TMethodReturns>>();
         foreach (var item in Items)
         {
@@ -161,11 +150,33 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             var task = method(item, this, cancellationToken);
             taskDictionary.Add(key!, task);
         }
-        return AggregatePostponeExceptions(taskDictionary);
+        return AggregateResultsAndPostponeExceptionsAsync(taskDictionary, cancellationToken);
+    }
+
+    private async Task<IDictionary<string, TMethodReturns>> AggregateResultsAndPostponeExceptionsAsync(IDictionary<string, Task<TMethodReturns>> taskDictionary, CancellationToken cancellationToken)
+    {
+        await WorkflowHelper.WhenAllActivities(taskDictionary.Values);
+        var resultDictionary = new Dictionary<string, TMethodReturns>();
+        foreach (var (key, task) in taskDictionary)
+        {
+            try
+            {
+                var result = await task;
+                resultDictionary.Add(key, result);
+            }
+            catch (WorkflowImplementationShouldNotCatchThisException outerException)
+            {
+                if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
+                FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
+                var e = innerException.ActivityFailedException;
+                await this.LogInformationAsync($"Ignoring exception for parallel job {key}", e, cancellationToken);
+            }
+        }
+        return resultDictionary;
     }
 
     private static Task<IDictionary<string, TMethodReturns>> EmptyDictionaryAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult((IDictionary<string, TMethodReturns>) new Dictionary<string, TMethodReturns>());
+        return Task.FromResult((IDictionary<string, TMethodReturns>)new Dictionary<string, TMethodReturns>());
     }
 }

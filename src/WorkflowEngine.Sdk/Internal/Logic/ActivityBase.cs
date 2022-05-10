@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -42,6 +44,9 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         var valueProvider = new AsyncLocalContextValueProvider();
         _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
     }
+
+    public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
+
     public string NestedPositionAndTitle => $"{NestedPosition} {ActivityInformation.FormTitle}";
 
     public List<int> NestedIterations { get; } = new();
@@ -97,7 +102,47 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     {
         Instance.State = ActivityStateEnum.Success;
         Instance.FinishedAt = DateTimeOffset.UtcNow;
-        Instance.ContextDictionary.Clear();
+    }
+
+    /// <inheritdoc />
+    public void SetContext<T>(string key, T value)
+    {
+        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+        FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
+        ContextDictionary[key] = JToken.FromObject(value);
+    }
+
+    /// <inheritdoc />
+    public void RemoveContext(string key)
+    {
+        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+        FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
+        if (!ContextDictionary.ContainsKey(key)) return;
+        ContextDictionary.Remove(key);
+    }
+
+    /// <inheritdoc />
+    public T GetContext<T>(string key)
+    {
+        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+        FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
+        if (!ContextDictionary.ContainsKey(key))
+        {
+            throw new FulcrumNotFoundException($"Could not find key {key} in context dictionary for activity {ActivityInstanceId}.");
+        }
+        var jToken = ContextDictionary[key];
+        FulcrumAssert.IsNotNull(jToken, CodeLocation.AsString());
+        return jToken.ToObject<T>();
+    }
+
+    /// <inheritdoc />
+    public bool TryGetContext<T>(string key, out T value)
+    {
+        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
+        value = default;
+        if (!ContextDictionary.ContainsKey(key)) return false;
+        value = GetContext<T>(key);
+        return true;
     }
 
     /// <inheritdoc />
@@ -107,7 +152,6 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     {
         Instance.State = ActivityStateEnum.Failed;
         Instance.FinishedAt = DateTimeOffset.UtcNow;
-        Instance.ContextDictionary.Clear();
         Instance.ExceptionCategory = exception.ExceptionCategory;
         Instance.ExceptionTechnicalMessage = exception.TechnicalMessage;
         Instance.ExceptionFriendlyMessage = exception.FriendlyMessage;

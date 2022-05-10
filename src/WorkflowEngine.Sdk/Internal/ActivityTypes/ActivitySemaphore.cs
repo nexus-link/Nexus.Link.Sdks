@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -17,7 +15,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="IActivitySemaphore" />
 internal class ActivitySemaphore : Activity, IActivitySemaphore
 {
-    private static readonly Dictionary<string, ActivitySemaphore> RaisedActivitySemaphores = new();
+    private const string ContextSemaphoreHolderId = "SemaphoreHolderId";
+    private static readonly Dictionary<string, Activity> RaisedActivitySemaphores = new();
 
     public string ResourceIdentifier { get; }
 
@@ -46,13 +45,8 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
         InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
         if (Instance.HasCompleted && Instance.State == ActivityStateEnum.Success)
         {
-            if (Instance.ResultAsJson == null)
-            {
-                // The workflow has reached the point where the semaphore has been lowered.
-                return;
-            }
-            var semaphoreHolderId = JsonHelper.SafeDeserializeObject<string>(Instance.ResultAsJson);
-            if (semaphoreHolderId == null)
+            var success = TryGetContext<string>(ContextSemaphoreHolderId, out var semaphoreHolderId);
+            if (!success)
             {
                 // The semaphore has been lowered
                 return;
@@ -63,15 +57,14 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
                 RaisedActivitySemaphores[CalculatedKey] = this;
             }
         }
-        await ActivityExecutor.ExecuteWithReturnValueAsync(
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(
             ct => InternalRaiseAsync(limit, expiresAfter, ct),
-            _ => Task.FromResult((string)null),
             cancellationToken);
     }
 
     private string CalculatedKey => $"{WorkflowInstanceId}.{ResourceIdentifier}";
 
-    private async Task<string> InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
+    private async Task InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
     {
         InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
         var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -85,10 +78,9 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
         var semaphoreHolderId = await ActivityInformation.Workflow.SemaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
         lock (RaisedActivitySemaphores)
         {
+            SetContext(ContextSemaphoreHolderId, semaphoreHolderId);
             RaisedActivitySemaphores[CalculatedKey] = this;
         }
-
-        return semaphoreHolderId;
     }
 
     /// <inheritdoc />
@@ -102,12 +94,12 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
         string semaphoreHolderId;
         lock (RaisedActivitySemaphores)
         {
-            var found = RaisedActivitySemaphores.TryGetValue(CalculatedKey, out var activity);
+            var found = RaisedActivitySemaphores.TryGetValue(CalculatedKey, out var raisedActivitySemaphore);
             FulcrumAssert.IsTrue(found, CodeLocation.AsString());
-            FulcrumAssert.IsNotNull(activity!.Instance.ResultAsJson, CodeLocation.AsString());
-            semaphoreHolderId = JsonHelper.SafeDeserializeObject<string>(activity!.Instance.ResultAsJson);
+            var success = raisedActivitySemaphore!.TryGetContext(ContextSemaphoreHolderId, out semaphoreHolderId);
+            FulcrumAssert.IsTrue(success, CodeLocation.AsString());
             FulcrumAssert.IsNotNullOrWhiteSpace(semaphoreHolderId, CodeLocation.AsString());
-            activity!.Instance.ResultAsJson = JsonConvert.SerializeObject(null);
+            raisedActivitySemaphore.RemoveContext(ContextSemaphoreHolderId);
             RaisedActivitySemaphores.Remove(CalculatedKey);
         }
         return ActivityInformation.Workflow.SemaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);

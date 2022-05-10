@@ -13,11 +13,6 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
 {
-    /// <summary>
-    /// The signature for a method that will be called whenever an activity fails.
-    /// </summary>
-    public delegate Task<bool> ActivityExceptionAlertHandler(ActivityExceptionAlert alert, CancellationToken cancellationToken = default);
-
     /// <inheritdoc />
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
@@ -161,9 +156,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// Obsolete
         /// </summary>
         [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
-        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync)
         {
-            _workflowExecutor.SetDefaultExceptionAlertHandler(alertHandler);
+            _workflowExecutor.SetDefaultExceptionAlertHandler(alertMethodAsync);
         }
 
         /// <summary>

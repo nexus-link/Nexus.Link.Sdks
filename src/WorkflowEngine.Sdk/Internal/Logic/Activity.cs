@@ -33,8 +33,6 @@ internal class Activity : ActivityBase, IInternalActivity
 
     protected IActivityExecutor ActivityExecutor { get; }
 
-    public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
-
     /// <inheritdoc />
     public string ActivityTitle
     {
@@ -60,7 +58,7 @@ internal class Activity : ActivityBase, IInternalActivity
     public double AsyncRequestPriority => Options.AsyncRequestPriority;
 
     [Obsolete("Please use Options.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
-    public ActivityExceptionAlertHandler ExceptionAlertHandler => Options.ExceptionAlertHandler;
+    public ActivityExceptionAlertMethodAsync ExceptionAlertHandler => Options.ExceptionAlertHandler;
 
     /// <inheritdoc />
     public async Task LogAtLevelAsync(LogSeverityLevel severityLevel, string message, object data = null, CancellationToken cancellationToken = default)
@@ -102,38 +100,6 @@ internal class Activity : ActivityBase, IInternalActivity
     public T GetActivityArgument<T>(string parameterName)
     {
         return ActivityInformation.GetArgument<T>(parameterName);
-    }
-
-    /// <inheritdoc />
-    public void SetContext<T>(string key, T value)
-    {
-        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
-        FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
-        ContextDictionary[key] = JToken.FromObject(value);
-    }
-
-    /// <inheritdoc />
-    public T GetContext<T>(string key)
-    {
-        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
-        FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
-        if (!ContextDictionary.ContainsKey(key))
-        {
-            throw new FulcrumNotFoundException($"Could not find key {key} in context dictionary for activity {ActivityInstanceId}.");
-        }
-        var jToken = ContextDictionary[key];
-        FulcrumAssert.IsNotNull(jToken, CodeLocation.AsString());
-        return jToken.ToObject<T>();
-    }
-
-    /// <inheritdoc />
-    public bool TryGetContext<T>(string key, out T value)
-    {
-        InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
-        value = default;
-        if (!ContextDictionary.ContainsKey(key)) return false;
-        value = GetContext<T>(key);
-        return true;
     }
 
     public void MaybePurgeLogs()
@@ -200,7 +166,7 @@ internal class Activity : ActivityBase, IInternalActivity
     }
 }
 
-/// <inheritdoc/>
+/// <inheritdoc cref="Activity" />
 internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>
 {
 

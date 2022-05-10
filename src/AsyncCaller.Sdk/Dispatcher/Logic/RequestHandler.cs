@@ -60,7 +60,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             var envelopeAsString = _envelope.ToString();
             try
             {
-                if (HasReachedDeadLine) throw new DeadlineReachedException(_envelope.DeadlineAt);
+                if (HasReachedDeadline) throw new DeadlineReachedException(_envelope.DeadlineAt);
                 var response = await _sender.SendAsync(_envelope.Request.CallOut, cancellationToken);
                 FulcrumAssert.IsNotNull(response, $"Expected to receive a non-null response when making the call for {envelopeAsString}.");
                 if (response.IsSuccessStatusCode) await HandleSuccessfulResponseAsync(response, cancellationToken);
@@ -184,7 +184,7 @@ namespace Nexus.Link.AsyncCaller.Sdk.Dispatcher.Logic
             return false;
         }
 
-        private bool HasReachedDeadLine => _envelope.DeadlineAt <= DateTimeOffset.Now;
+        private bool HasReachedDeadline => _envelope.DeadlineAt <= DateTimeOffset.Now;
         private bool AcceptsCallback => _envelope.Request.CallBack?.RequestUri != null;
         private bool HasEarlierResponse => _envelope.LatestResponse != null;
         private bool IsTimeForNextCall => _envelope.NextAttemptAt < DateTimeOffset.Now;

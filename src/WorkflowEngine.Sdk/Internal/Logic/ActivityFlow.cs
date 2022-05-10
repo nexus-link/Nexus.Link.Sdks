@@ -51,9 +51,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        public IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync)
         {
-            ActivityInformation.Options.ExceptionAlertHandler = alertHandler;
+            ActivityInformation.Options.ExceptionAlertHandler = alertMethodAsync;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync)
+        {
+            ActivityInformation.Options.ExceptionHandler = exceptionHandlerAsync;
             return this;
         }
 
@@ -86,9 +93,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow SetDeadLine(DateTimeOffset deadLine)
+        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        public IActivityFlow SetDeadLine(DateTimeOffset deadline)
         {
-            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadLine.Subtract(DateTimeOffset.UtcNow);
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow SetDeadline(DateTimeOffset deadline)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
             return this;
         }
 
@@ -324,9 +339,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        public IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync)
         {
-            ActivityInformation.Options.ExceptionAlertHandler = alertHandler;
+            ActivityInformation.Options.ExceptionAlertHandler = alertMethodAsync;
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync)
+        {
+            ActivityInformation.Options.ExceptionHandler = exceptionHandlerAsync;
             return this;
         }
 
@@ -359,9 +381,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadLine)
+        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        public IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadline)
         {
-            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadLine.Subtract(DateTimeOffset.UtcNow);
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IActivityFlow<TActivityReturns> SetDeadline(DateTimeOffset deadline)
+        {
+            ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
             return this;
         }
 

@@ -14,6 +14,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// </summary>
 internal class ActivitySleep: Activity, IActivitySleep
 {
+    internal const string ContextSleepUntil = "SleepUntil";
     public TimeSpan TimeToSleep { get; }
 
     public ActivitySleep(IActivityInformation activityInformation, TimeSpan timeToSleep)
@@ -27,12 +28,20 @@ internal class ActivitySleep: Activity, IActivitySleep
     {
         if (Instance.HasCompleted) return;
         var now = DateTimeOffset.UtcNow;
-        var sleepUntil = await ActivityExecutor.ExecuteWithReturnValueAsync(_ => Task.FromResult(now.Add(TimeToSleep)), null, cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(_ => SleepAsync(now), cancellationToken);
+        var success = TryGetContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil);
         if (sleepUntil <= now) return;
         throw new WorkflowImplementationShouldNotCatchThisException(new RequestPostponedException
         {
             TryAgain = true,
             TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
         });
+    }
+
+    private Task SleepAsync(DateTimeOffset now)
+    {
+        var sleepUntil = now.Add(TimeToSleep);
+        SetContext(ContextSleepUntil, sleepUntil);
+        return Task.CompletedTask;
     }
 }

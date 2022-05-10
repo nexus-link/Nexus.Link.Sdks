@@ -1,6 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support
 {
@@ -47,7 +48,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// When an activity throws an exception, the alert handler is called. It gives the workflow programmer
         /// a possibility to publish an event or similar.
         /// </summary>
-        public ActivityExceptionAlertHandler ExceptionAlertHandler { get; set; }
+        public ActivityExceptionAlertMethodAsync ExceptionAlertHandler { get; set; }
 
         /// <summary>
         /// This value defines the priority for any background asynchronous requests.
@@ -73,6 +74,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// If an activity is still executing after this time, it will throw an exception.
         /// </summary>
         public TimeSpan? ActivityMaxExecutionTimeSpan { get; set; }
+
+        /// <summary>
+        /// If this method returns true, the exception is ignored.
+        /// </summary>
+        public ActivityExceptionHandlerAsync ExceptionHandler { get; set; }
 
         public ActivityOptions From(ActivityOptions source)
         {

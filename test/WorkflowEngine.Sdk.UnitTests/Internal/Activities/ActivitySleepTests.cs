@@ -32,9 +32,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             // Arrange
             var timeSpan = TimeSpan.FromSeconds(10);
             var activity = new ActivitySleep(_activityInformationMock, timeSpan);
-            var expectedTime = DateTimeOffset.UtcNow.Add(timeSpan);
-            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(expectedTime);
+            var expectedSleepUntil = DateTimeOffset.UtcNow + timeSpan;
+            _activityExecutorMock.Setup(ae =>
+                ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()))
+                .Callback((InternalActivityMethodAsync _, CancellationToken _) => activity.SetContext(ActivitySleep.ContextSleepUntil, expectedSleepUntil))
+                .Returns(Task.CompletedTask);
 
             // Act
             var exception = await activity.ExecuteAsync()

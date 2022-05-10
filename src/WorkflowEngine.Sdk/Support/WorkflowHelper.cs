@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -27,9 +30,13 @@ public class WorkflowHelper
             {
                 await task;
             }
-            catch (WorkflowImplementationShouldNotCatchThisException et)
+            catch (WorkflowImplementationShouldNotCatchThisException outerException)
             {
-                if (et.InnerException is RequestPostponedException rpe)
+                if (outerException.InnerException is IgnoreAndExitToParentException)
+                {
+                    // Ignore the exception by not adding it to the list exceptionTasksFulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
+                }
+                else if (outerException.InnerException is RequestPostponedException rpe)
                 {
                     outException ??= new RequestPostponedException();
                     outException.AddWaitingForIds(rpe.WaitingForRequestIds);

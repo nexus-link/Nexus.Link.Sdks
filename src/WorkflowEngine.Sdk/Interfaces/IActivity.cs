@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
 {
@@ -69,6 +72,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// <param name="activity">The current activity.</param>
     public delegate bool ActivityConditionMethod<in TActivity>(TActivity activity) where TActivity : IActivity;
 
+    /// <summary>
+    /// The signature for a method that will be called whenever an activity fails.
+    /// </summary>
+    public delegate Task<bool> ActivityExceptionAlertMethodAsync(ActivityExceptionAlert alert, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// A method to call when an activity throws an activity exception, <paramref name="exception"/>.
+    /// </summary>
+    /// <returns>True if the current activity thread should be abandoned and control should be given back to the parent.</returns>
+    public delegate Task<bool> ActivityExceptionHandlerAsync(IActivity activity, ActivityFailedException exception, CancellationToken cancellationToken);
 
     /// <summary>
     /// Basic information about a workflow activity, this is the base information for all types of activities.
@@ -91,7 +104,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// If the activity is part of a loop, this is the iteration count for that loop
         /// </summary>
         ///
-        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IParallelActivity.JobNumber)}.", false)]
+        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IActivityParallel.JobNumber)}.", false)]
         int? Iteration { get; }
 
         /// <summary>
@@ -110,43 +123,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <param name="parameterName">The name of the parameter.</param>
         /// <returns>The argument value for this parameter.</returns>
         T GetActivityArgument<T>(string parameterName);
-
-        /// <summary>
-        /// Set an activity context key-value.
-        /// </summary>
-        /// <typeparam name="T">The type of the data in the parameter.</typeparam>
-        /// <param name="key">The name of the part of the context that we want to access.</param>
-        /// <param name="value">The value of the parameter</param>
-        /// <returns>The context value for this part of the context.</returns>
-        /// <remarks>
-        /// The activity context is made available for arbitrary use by the implementor. It is
-        /// saved in the database between runs and reset to empty after the activity has been completed.
-        /// </remarks>
-        void SetContext<T>(string key, T value);
-
-        /// <summary>
-        /// Get an activity context key-value.
-        /// </summary>
-        /// <typeparam name="T">The type of the data in the parameter.</typeparam>
-        /// <param name="key">The name of the part of the context that we want to access.</param>
-        /// <returns>The context value for this part of the context.</returns>
-        /// <remarks>
-        /// The activity context is made available for arbitrary use by the implementor. It is
-        /// saved in the database between runs and reset to empty after the activity has been completed.
-        /// </remarks>
-        T GetContext<T>(string key);
-
-        /// <summary>
-        /// Get an activity context key-value.
-        /// </summary>
-        /// <typeparam name="T">The type of the data in the parameter.</typeparam>
-        /// <param name="key">The name of the part of the context that we want to access.</param>
-        /// <param name="value">The context value for this part of the context. Will be default(T) if the method returns false.</param>
-        /// <returns>True if the key was found. This also means that <paramref name="value"/> has been set.</returns>
-        /// <remarks>
-        /// The activity context is made available for arbitrary use by the implementor. It is
-        /// saved in the database between runs and reset to empty after the activity has been completed.
-        /// </remarks>
-        bool TryGetContext<T>(string key, out T value);
     }
 }

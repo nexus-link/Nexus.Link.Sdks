@@ -19,7 +19,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetParameter<T>(string name, T value);
         IActivityFlow SetAsyncRequestPriority(double priority);
         IActivityFlow SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
-        IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
+        IActivityFlow SetExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync);
+        IActivityFlow SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync);
         IActivityFlow SetLogCreateThreshold(LogSeverityLevel severityLevel);
         IActivityFlow SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
         IActivityFlow SetLogPurgeThreshold(LogSeverityLevel severityLevel);
@@ -32,9 +33,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow SetMaxExecutionTimeSpan(TimeSpan timeSpan);
 
         /// <summary>
-        /// When time has passed <paramref name="deadLine"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
-        IActivityFlow SetDeadLine(DateTimeOffset deadLine);
+        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        IActivityFlow SetDeadLine(DateTimeOffset deadline);
+
+        /// <summary>
+        /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        IActivityFlow SetDeadline(DateTimeOffset deadline);
 
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         IActivityAction Action();
@@ -103,7 +110,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value);
         IActivityFlow<TActivityReturns> SetAsyncRequestPriority(double priority);
         IActivityFlow<TActivityReturns> SetFailUrgency(ActivityFailUrgencyEnum failUrgency);
-        IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler);
+        IActivityFlow<TActivityReturns> SetExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync);
+        IActivityFlow<TActivityReturns> SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync);
         IActivityFlow<TActivityReturns> SetLogCreateThreshold(LogSeverityLevel severityLevel);
         IActivityFlow<TActivityReturns> SetPurgeLogStrategy(LogPurgeStrategyEnum logPurgeStrategy);
         IActivityFlow<TActivityReturns> SetLogPurgeThreshold(LogSeverityLevel severityLevel);
@@ -116,9 +124,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan);
 
         /// <summary>
-        /// When time has passed <paramref name="deadLine"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
-        IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadLine);
+        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadline);
+
+        /// <summary>
+        /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
+        /// </summary>
+        IActivityFlow<TActivityReturns> SetDeadline(DateTimeOffset deadline);
 
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(Func<TActivityReturns> getDefaultValueMethod);

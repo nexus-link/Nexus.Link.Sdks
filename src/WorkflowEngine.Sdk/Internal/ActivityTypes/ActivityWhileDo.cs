@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -26,11 +27,11 @@ internal class ActivityWhileDo : LoopActivity, IActivityWhileDo
     internal async Task WhileDoAsync(ActivityMethodAsync<IActivityWhileDo> methodAsync, CancellationToken cancellationToken)
     {
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         do
         {
             LoopIteration++;
-            await methodAsync(this, cancellationToken);
+            await methodAsync(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
         } while (await _conditionMethodAsync!(this, cancellationToken));
     }
 
@@ -112,13 +113,12 @@ internal class ActivityWhileDo<TActivityReturns> : LoopActivity<TActivityReturns
     internal async Task<TActivityReturns> WhileDoAsync(CancellationToken cancellationToken)
     {
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         TActivityReturns result;
         do
         {
             LoopIteration++;
-            result = await _methodAsync!(this, cancellationToken);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            result = await _methodAsync!(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
         } while (await _conditionMethodAsync!(this, cancellationToken));
 
         return result;

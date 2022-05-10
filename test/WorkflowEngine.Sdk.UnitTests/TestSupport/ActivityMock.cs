@@ -33,7 +33,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public DateTimeOffset ActivityStartedAt { get; set; }
 
         /// <inheritdoc />
-        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IParallelActivity.JobNumber)}.", true)]
+        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IActivityParallel.JobNumber)}.", true)]
         public int? Iteration => InternalIteration;
 
         /// <inheritdoc />
@@ -44,24 +44,6 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 
         /// <inheritdoc />
         public T GetActivityArgument<T>(string parameterName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void SetContext<T>(string key, T value)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public T GetContext<T>(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool TryGetContext<T>(string key, out T value)
         {
             throw new NotImplementedException();
         }

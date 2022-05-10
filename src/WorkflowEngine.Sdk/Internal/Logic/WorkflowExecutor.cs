@@ -130,9 +130,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
-        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertHandler alertHandler)
+        public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync)
         {
-            WorkflowInformation.DefaultActivityOptions.ExceptionAlertHandler = alertHandler;
+            WorkflowInformation.DefaultActivityOptions.ExceptionAlertHandler = alertMethodAsync;
         }
 
         [Obsolete("Please use DefaultActivityOptions.AsyncRequestPriority. Compilation warning since 2021-11-19.")]

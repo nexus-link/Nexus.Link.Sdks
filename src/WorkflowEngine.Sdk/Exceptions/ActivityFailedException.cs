@@ -19,5 +19,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
         public ActivityFailedException(ActivityExceptionCategoryEnum exceptionCategory, string technicalMessage, string friendlyMessage) : base(exceptionCategory, technicalMessage, friendlyMessage)
         {
         }
+
+        /// <inheritdoc />
+        public override string ToString() => $"{ExceptionCategory} {TechnicalMessage}";
     }
 }

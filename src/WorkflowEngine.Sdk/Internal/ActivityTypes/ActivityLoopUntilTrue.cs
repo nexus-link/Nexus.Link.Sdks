@@ -4,7 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -70,15 +74,13 @@ internal class ActivityLoopUntilTrue : LoopActivity, IActivityLoopUntilTrue
 
     private async Task LoopUntilAsync(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync, CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         EndLoop = null;
         do
         {
             LoopIteration++;
-            // TODO: Verify that we don't use the same values each iteration
-            await methodAsync(this, cancellationToken);
+            await methodAsync(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         } while (EndLoop != true);
     }
 
@@ -148,16 +150,15 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : LoopActivity<TActivityR
 
     private async Task<TActivityReturns> LoopUntilAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken)
     {
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         EndLoop = null;
         TActivityReturns result;
         do
         {
             LoopIteration++;
             // TODO: Verify that we don't use the same values each iteration
-            result = await method(this, cancellationToken);
+            result = await method(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         } while (EndLoop != true);
 
         return result;

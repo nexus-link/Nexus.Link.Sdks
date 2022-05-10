@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
@@ -122,7 +123,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             try
             {
                 GetExecutionTimeRemainingOrThrow();
-                await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
+                try
+                {
+                    await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
+                }
+                catch (WorkflowImplementationShouldNotCatchThisException outerException)
+                {
+                    if (outerException.InnerException is not IgnoreAndExitToParentException e) throw;
+                    // A child has failed and exited to the parent.
+                    FulcrumAssert.IsNotNull(e.ActivityFailedException, CodeLocation.AsString());
+                    throw e;
+                }
                 Activity.MarkAsSuccess();
             }
             catch (WorkflowImplementationShouldNotCatchThisException)
@@ -137,6 +148,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (ActivityFailedException e)
             {
+                if (Activity.Options.ExceptionHandler != null)
+                {
+                    var exitToParent = await Activity.Options.ExceptionHandler(Activity, e, cancellationToken);
+                    if (exitToParent) throw new IgnoreAndExitToParentException(e);
+                }
                 Activity.MarkAsFailed(e);
                 await Activity.SafeAlertExceptionAsync(cancellationToken);
             }
@@ -219,7 +235,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             try
             {
                 result = await methodAsync(cancellationToken);
-                if (hasReturnValue) {
+                if (hasReturnValue)
+                {
                     hasResult = true;
                     Activity.Instance.ResultAsJson = result.ToJsonString();
                 }

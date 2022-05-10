@@ -2,7 +2,11 @@
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -92,11 +96,11 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
     internal async Task DoWhileOrUntilAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
-        FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
         do
         {
             LoopIteration++;
-            await _methodAsync(this, cancellationToken);
+            await _methodAsync(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
         } while (await GetWhileConditionAsync(cancellationToken));
     }
 
@@ -200,8 +204,8 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
         do
         {
             LoopIteration++;
-            result = await _methodAsync(this, cancellationToken);
-            FulcrumAssert.IsNotNull(Instance.Id, CodeLocation.AsString());
+            result = await _methodAsync(this, cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
         } while (await GetWhileConditionAsync(cancellationToken));
 
         return result;
