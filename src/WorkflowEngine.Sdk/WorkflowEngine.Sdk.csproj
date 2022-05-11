@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.11.2</Version>
+    <Version>6.11.3</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.11.3 Added early fail if the reduced cancellation token has a cancellation request
       6.11.2 ActivityPostponedException now inherits from RequestPostponedException.
       Now has a reduced time for the activity methods to protect the workflow engine from early cancellation. 
       Fixed a bug in Sleep that made it always succeed, even when it shouldn't

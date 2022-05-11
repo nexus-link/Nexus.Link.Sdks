@@ -125,6 +125,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 GetExecutionTimeRemainingOrThrow();
                 try
                 {
+                    // Early fail if the cancellation token has a cancellation request
+                    Activity.ActivityInformation.Workflow.ReducedCancellationToken.ThrowIfCancellationRequested();
                     await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
                 }
                 catch (OperationCanceledException)
