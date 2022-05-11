@@ -37,14 +37,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         public ActivityOptions DefaultActivityOptions { get; } = new();
 
+        /// <inheritdoc />
+        public CancellationToken ReducedCancellationToken { get; }
+
         /// <summary>
         /// Constructor
         /// </summary>
-        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
+        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken)
         {
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             WorkflowContainer = workflowContainer;
+
+            var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            ReducedCancellationToken = mergedToken.Token;
+
             _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this));
         }
 
@@ -205,8 +213,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
 
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
-            : base(majorVersion, minorVersion, workflowContainer)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken = default)
+            : base(majorVersion, minorVersion, workflowContainer, cancellationToken)
         {
         }
 
@@ -245,8 +253,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     public abstract class WorkflowImplementation<TWorkflowResult> : WorkflowImplementationBase, IWorkflowImplementation<TWorkflowResult>
     {
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
-            : base(majorVersion, minorVersion, workflowContainer)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken = default)
+            : base(majorVersion, minorVersion, workflowContainer, cancellationToken)
         {
         }
 

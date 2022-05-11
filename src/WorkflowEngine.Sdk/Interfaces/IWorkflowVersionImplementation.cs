@@ -33,6 +33,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// The options for the 
         /// </summary>
         public ActivityOptions DefaultActivityOptions { get; }
+
+        /// <summary>
+        /// This token has shorter time than the token that the workflow engine is using. This means that when
+        /// that time has expired, we will still have some time to finalize our work, such as saving the state
+        /// to the database.
+        /// </summary>
+        CancellationToken ReducedCancellationToken { get; }
     }
 
     /// <summary>

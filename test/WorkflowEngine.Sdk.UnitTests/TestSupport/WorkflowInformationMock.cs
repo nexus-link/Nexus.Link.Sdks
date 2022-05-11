@@ -24,9 +24,10 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         private ActivityVersion _activityVersion;
         private ActivityForm _activityForm;
 
-        public WorkflowInformationMock(IActivityExecutor activityExecutor)
+        public WorkflowInformationMock(IActivityExecutor activityExecutor, CancellationToken reducedCancellationToken = default)
         {
             Executor = activityExecutor;
+            ReducedCancellationToken = reducedCancellationToken;
         }
         public IActivityExecutor Executor { get; set; }
 
@@ -210,5 +211,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
             throw new ActivityFailedException(instance.ExceptionCategory!.Value, instance.ExceptionTechnicalMessage,
                 instance.ExceptionFriendlyMessage);
         }
+
+        /// <inheritdoc />
+        public CancellationToken ReducedCancellationToken { get; }
     }
 }

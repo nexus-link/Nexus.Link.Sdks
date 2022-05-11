@@ -127,6 +127,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 {
                     await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
                 }
+                catch (OperationCanceledException)
+                {
+                    throw new RequestPostponedException
+                    {
+                        TryAgain = true,
+                        TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
+                    };
+                }
                 catch (WorkflowImplementationShouldNotCatchThisException outerException)
                 {
                     if (outerException.InnerException is not IgnoreAndExitToParentException e) throw;
@@ -163,11 +171,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await Activity.SafeAlertExceptionAsync(cancellationToken);
             }
 #pragma warning restore CS0618
-            catch (ActivityPostponedException)
-            {
-                Activity.Instance.State = ActivityStateEnum.Waiting;
-                throw new RequestPostponedException();
-            }
             catch (FulcrumException e)
             {
                 ActivityFailedException exception;
@@ -181,7 +184,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     }
                     throw new RequestPostponedException
                     {
-                        TryAgain = e.IsRetryMeaningful,
+                        TryAgain = true,
                         TryAgainAfterMinimumTimeSpan = timeSpan
                     };
                 }
@@ -234,7 +237,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             var hasResult = false;
             try
             {
-                result = await methodAsync(cancellationToken);
+                result = await methodAsync(Activity.ActivityInformation.Workflow.ReducedCancellationToken);
                 if (hasReturnValue)
                 {
                     hasResult = true;

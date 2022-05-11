@@ -27,28 +27,22 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task Execute_Given_NormalSleep_Gives_ExceptionWithSleepTime()
+        public async Task Sleep_Given_NormalSleep_Gives_ExceptionWithSleepTime()
         {
             // Arrange
             var timeSpan = TimeSpan.FromSeconds(10);
             var activity = new ActivitySleep(_activityInformationMock, timeSpan);
-            var expectedSleepUntil = DateTimeOffset.UtcNow + timeSpan;
-            _activityExecutorMock.Setup(ae =>
-                ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()))
-                .Callback((InternalActivityMethodAsync _, CancellationToken _) => activity.SetContext(ActivitySleep.ContextSleepUntil, expectedSleepUntil))
-                .Returns(Task.CompletedTask);
+            var now = DateTimeOffset.UtcNow;
 
             // Act
-            var exception = await activity.ExecuteAsync()
-                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+            var exception = await activity.SleepAsync(now)
+                .ShouldThrowAsync<RequestPostponedException>();
 
             // Assert
-            exception.InnerException.ShouldNotBeNull();
-            var innerException = exception.InnerException as RequestPostponedException;
-            innerException.ShouldNotBeNull();
-            innerException.TryAgainAfterMinimumTimeSpan.ShouldNotBeNull();
-            innerException.TryAgainAfterMinimumTimeSpan.Value.ShouldBeGreaterThan(TimeSpan.Zero);
-            innerException.TryAgainAfterMinimumTimeSpan.Value.ShouldBeLessThanOrEqualTo(timeSpan);
+            exception.ShouldNotBeNull();
+            exception.TryAgainAfterMinimumTimeSpan.ShouldNotBeNull();
+            exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeGreaterThan(timeSpan.Subtract(TimeSpan.FromSeconds(1)));
+            exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeLessThanOrEqualTo(timeSpan.Add(TimeSpan.FromSeconds(1)));
         }
 
         [Fact]

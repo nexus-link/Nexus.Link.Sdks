@@ -159,6 +159,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             finally
             {
+                // Please note! We will not honor the original cancellation token here, because it is very important
+                // that we save the state. We will give ourselves 10 seconds, no matter what the original
+                // cancellation token thinks
+                var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                cancellationToken = limitedTimeCancellationToken.Token;
                 try
                 {
                     await AfterExecutionAsync(cancellationToken);

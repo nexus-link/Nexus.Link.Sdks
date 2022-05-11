@@ -186,6 +186,9 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public CancellationToken ReducedCancellationToken => _workflowImplementation.ReducedCancellationToken;
+
+    /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;
 
     /// <inheritdoc />

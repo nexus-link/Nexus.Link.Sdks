@@ -29,19 +29,26 @@ internal class ActivitySleep: Activity, IActivitySleep
         if (Instance.HasCompleted) return;
         var now = DateTimeOffset.UtcNow;
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(_ => SleepAsync(now), cancellationToken);
-        var success = TryGetContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil);
-        if (sleepUntil <= now) return;
-        throw new WorkflowImplementationShouldNotCatchThisException(new RequestPostponedException
-        {
-            TryAgain = true,
-            TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
-        });
     }
 
-    private Task SleepAsync(DateTimeOffset now)
+    internal async Task SleepAsync(DateTimeOffset now)
     {
-        var sleepUntil = now.Add(TimeToSleep);
-        SetContext(ContextSleepUntil, sleepUntil);
-        return Task.CompletedTask;
+        var success = TryGetContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil);
+        if (!success)
+        {
+            sleepUntil = now.Add(TimeToSleep);
+            SetContext(ContextSleepUntil, sleepUntil);
+        }
+
+        if (sleepUntil > DateTimeOffset.UtcNow)
+        {
+            throw new RequestPostponedException
+            {
+                TryAgain = true,
+                TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
+            };
+        }
+
+        await Task.CompletedTask;
     }
 }
