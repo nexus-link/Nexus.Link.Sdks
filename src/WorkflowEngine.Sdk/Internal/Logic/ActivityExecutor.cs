@@ -131,7 +131,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     // To prevent accumulating time to get a real OperationCanceledException, we will postpone
                     // even at short execution times 
                     var executionTimeSoFar = Activity.ActivityInformation.Workflow.TimeSinceExecutionStarted.Elapsed;
-                    var postponeAfter = Activity.ActivityInformation.Workflow.DefaultActivityOptions.PostponeAfter;
+                    var postponeAfter = Activity.ActivityInformation.Options.PostponeAfter;
                     if (executionTimeSoFar > postponeAfter)
                     {
                         await Activity.LogVerboseAsync($"The workflow execution has run for {executionTimeSoFar.TotalSeconds} s," +
