@@ -86,7 +86,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// has passed this time. This is done before calling the actual activity method, to
         /// get an early fail.
         /// </summary>
-        public TimeSpan PostponeAfter { get; set; } = TimeSpan.FromSeconds(20.0);
+        public TimeSpan PostponeAfterTimeSpan { get; set; } = TimeSpan.FromSeconds(20.0);
 
         // TODO: Create a new WorkflowOptions and move this option there
         /// <summary>
@@ -94,7 +94,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// running into an outer cancellation time. The workflow engine needs some time to
         /// do the absolutely necessary save state after the run.
         /// </summary>
-        public TimeSpan OperationCancelledAfter { get; set; } = TimeSpan.FromSeconds(60.0);
+        public TimeSpan MaxTotalRunTimeSpan { get; set; } = TimeSpan.FromSeconds(60.0);
 
         /// <summary>
         /// Copy the options from <paramref name="source"/>.
@@ -108,8 +108,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             LogPurgeThreshold = source.LogPurgeThreshold;
             LogPurgeStrategy = source.LogPurgeStrategy;
             ExceptionHandler = source.ExceptionHandler;
-            PostponeAfter = source.PostponeAfter;
-            OperationCancelledAfter = source.OperationCancelledAfter;
+            PostponeAfterTimeSpan = source.PostponeAfterTimeSpan;
+            MaxTotalRunTimeSpan = source.MaxTotalRunTimeSpan;
             return this;
         }
     }
