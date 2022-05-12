@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -28,6 +29,8 @@ internal class WorkflowInformation : IWorkflowInformation
 
     public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
     {
+        TimeSinceExecutionStarted = new();
+        TimeSinceExecutionStarted.Start();
         _workflowImplementation = workflowImplementation;
         _workflowCache = new WorkflowCache(this, workflowImplementation.WorkflowContainer.WorkflowCapabilities);
     }
@@ -186,7 +189,10 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public CancellationToken ReducedCancellationToken => _workflowImplementation.ReducedCancellationToken;
+    public CancellationToken ReducedTimeCancellationToken => _workflowImplementation.ReducedTimeCancellationToken;
+
+    /// <inheritdoc />
+    public Stopwatch TimeSinceExecutionStarted { get; }
 
     /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;

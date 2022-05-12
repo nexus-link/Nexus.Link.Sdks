@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
@@ -166,5 +167,11 @@ internal interface IWorkflowInformation
     /// that time has expired, we will still have some time to finalize our work, such as saving the state
     /// to the database.
     /// </summary>
-    CancellationToken ReducedCancellationToken { get; }
+    CancellationToken ReducedTimeCancellationToken { get; }
+
+    /// <summary>
+    /// Whenever a workflow is called again, this timer is reset. It is used to know how long time
+    /// the current run is taking.
+    /// </summary>
+    Stopwatch TimeSinceExecutionStarted { get; }
 }

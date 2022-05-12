@@ -15,6 +15,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -126,7 +127,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 try
                 {
                     // Early fail if the cancellation token has a cancellation request
-                    Activity.ActivityInformation.Workflow.ReducedCancellationToken.ThrowIfCancellationRequested();
+                    Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken.ThrowIfCancellationRequested();
+                    // To prevent accumulating time to get a real OperationCanceledException, we will postpone
+                    // even at short execution times 
+                    var executionTimeSoFar = Activity.ActivityInformation.Workflow.TimeSinceExecutionStarted.Elapsed;
+                    var postponeAfter = Activity.ActivityInformation.Workflow.DefaultActivityOptions.PostponeAfter;
+                    if (executionTimeSoFar > postponeAfter)
+                    {
+                        await Activity.LogVerboseAsync($"The workflow execution has run for {executionTimeSoFar.TotalSeconds} s," +
+                                                       $" passing the limit of {postponeAfter.TotalSeconds} s.", Activity, cancellationToken);
+                        throw new OperationCanceledException("This exception will eventually be converted to a RequestPostponed exception.");
+                    }
                     await CallMethodAndLogAsync(methodAsync, hasReturnValue, cancellationToken);
                 }
                 catch (OperationCanceledException)
@@ -239,7 +250,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             var hasResult = false;
             try
             {
-                result = await methodAsync(Activity.ActivityInformation.Workflow.ReducedCancellationToken);
+                // Please note that we are using the reduced time cancellation token.
+                result = await methodAsync(Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken);
                 if (hasReturnValue)
                 {
                     hasResult = true;

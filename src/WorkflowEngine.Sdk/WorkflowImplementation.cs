@@ -38,7 +38,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public ActivityOptions DefaultActivityOptions { get; } = new();
 
         /// <inheritdoc />
-        public CancellationToken ReducedCancellationToken { get; }
+        public CancellationToken ReducedTimeCancellationToken { get; private set; }
 
         /// <summary>
         /// Constructor
@@ -48,10 +48,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             WorkflowContainer = workflowContainer;
-
-            var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
-            ReducedCancellationToken = mergedToken.Token;
 
             _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this));
         }
@@ -196,11 +192,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         internal Task<TWorkflowResult> InternalExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
         {
+            var limitedTimeCancellationToken = new CancellationTokenSource(DefaultActivityOptions.OperationCancelledAfter);
+            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            ReducedTimeCancellationToken = mergedToken.Token;
             return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
 
         internal Task InternalExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
         {
+            var limitedTimeCancellationToken = new CancellationTokenSource(DefaultActivityOptions.OperationCancelledAfter);
+            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            ReducedTimeCancellationToken = mergedToken.Token;
             return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
     }

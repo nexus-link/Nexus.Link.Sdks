@@ -39,7 +39,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// that time has expired, we will still have some time to finalize our work, such as saving the state
         /// to the database.
         /// </summary>
-        CancellationToken ReducedCancellationToken { get; }
+        CancellationToken ReducedTimeCancellationToken { get; }
     }
 
     /// <summary>

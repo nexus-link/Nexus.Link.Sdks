@@ -80,6 +80,25 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// </summary>
         public ActivityExceptionHandlerAsync ExceptionHandler { get; set; }
 
+        // TODO: Create a new WorkflowOptions and move this option there
+        /// <summary>
+        /// When an activity is started, the workflow engine postpones the execution if the execution
+        /// has passed this time. This is done before calling the actual activity method, to
+        /// get an early fail.
+        /// </summary>
+        public TimeSpan PostponeAfter { get; set; } = TimeSpan.FromSeconds(20.0);
+
+        // TODO: Create a new WorkflowOptions and move this option there
+        /// <summary>
+        /// The workflow will use this value to limit the total execution time for a single run, to avoid
+        /// running into an outer cancellation time. The workflow engine needs some time to
+        /// do the absolutely necessary save state after the run.
+        /// </summary>
+        public TimeSpan OperationCancelledAfter { get; set; } = TimeSpan.FromSeconds(60.0);
+
+        /// <summary>
+        /// Copy the options from <paramref name="source"/>.
+        /// </summary>
         public ActivityOptions From(ActivityOptions source)
         {
             FailUrgency = source.FailUrgency;
@@ -88,6 +107,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             LogCreateThreshold = source.LogCreateThreshold;
             LogPurgeThreshold = source.LogPurgeThreshold;
             LogPurgeStrategy = source.LogPurgeStrategy;
+            ExceptionHandler = source.ExceptionHandler;
+            PostponeAfter = source.PostponeAfter;
+            OperationCancelledAfter = source.OperationCancelledAfter;
             return this;
         }
     }

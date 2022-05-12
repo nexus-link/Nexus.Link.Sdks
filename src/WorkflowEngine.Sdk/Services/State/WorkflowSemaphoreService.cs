@@ -114,8 +114,8 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
     /// <inheritdoc />
     public async Task LowerAllAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
     {
-        // Set a time limit for this operation to a maximum time of one minute
-        var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        // Set a time limit for this operation
+        var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
 
         var searchDetails = new SearchDetails<WorkflowSemaphoreQueueRecord>(new

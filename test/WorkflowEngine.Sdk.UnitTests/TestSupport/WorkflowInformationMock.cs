@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
@@ -26,8 +28,10 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 
         public WorkflowInformationMock(IActivityExecutor activityExecutor, CancellationToken reducedCancellationToken = default)
         {
+            TimeSinceExecutionStarted = new();
+            TimeSinceExecutionStarted.Start();
             Executor = activityExecutor;
-            ReducedCancellationToken = reducedCancellationToken;
+            ReducedTimeCancellationToken = reducedCancellationToken;
         }
         public IActivityExecutor Executor { get; set; }
 
@@ -213,6 +217,9 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public CancellationToken ReducedCancellationToken { get; }
+        public CancellationToken ReducedTimeCancellationToken { get; }
+
+        /// <inheritdoc />
+        public Stopwatch TimeSinceExecutionStarted { get; }
     }
 }

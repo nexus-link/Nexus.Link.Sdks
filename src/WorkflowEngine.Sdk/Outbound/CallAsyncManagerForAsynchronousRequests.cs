@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Log = Nexus.Link.Libraries.Core.Logging.Log;
@@ -54,19 +55,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 var response = await TryGetResponseAsync(request, activity, cancellationToken);
                 if (response != null)
                 {
-                    Log.LogInformation($"Activity {ToLogString(activity)} received a response"+
-                                       $" on request {request.ToLogString()}");
+                    await activity.LogInformationAsync($"Activity received a response"+
+                                       $" on request {request.ToLogString()}", activity, cancellationToken);
                     return response;
                 }
-                Log.LogVerbose($"Activity {ToLogString(activity)} polled for a response" +
-                               $" to request {request.ToLogString()}");
+                await activity.LogVerboseAsync($"Activity polled for a response" +
+                                                   $" to request {request.ToLogString()}", activity, cancellationToken);
                 throw new RequestPostponedException(activity.Instance.AsyncRequestId);
             }
 
             // Send the request to AM
             var asyncRequest = await new HttpRequestCreate().FromAsync(request, activity.Options.AsyncRequestPriority, cancellationToken);
             var requestId = await _asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
-            Log.LogInformation($"Activity {ToLogString(activity)} sent the request {request.ToLogString()} for asynchronous execution.");
+            await activity.LogInformationAsync($"Activity sent the request {request.ToLogString()} for asynchronous execution.", activity, cancellationToken);
 
             // Remember the request id and postpone the activity.
             throw new RequestPostponedException(requestId);

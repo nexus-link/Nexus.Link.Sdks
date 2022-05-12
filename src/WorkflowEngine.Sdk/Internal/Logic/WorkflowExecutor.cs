@@ -150,7 +150,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
-                await this.LogInformationAsync($"Workflow successful", result, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -170,7 +170,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
                     await PurgeLogsAsync(cancellationToken);
                 }
             }
@@ -218,7 +218,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
-                await this.LogInformationAsync($"Workflow successful", null, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", null, cancellationToken);
             }
             catch (Exception e)
             {
@@ -232,7 +232,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
                 }
             }
         }
