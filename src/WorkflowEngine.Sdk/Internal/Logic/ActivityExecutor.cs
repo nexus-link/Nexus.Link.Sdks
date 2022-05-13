@@ -244,7 +244,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             CancellationToken cancellationToken)
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            await Activity.LogVerboseAsync($"Begin activity {Activity.ToLogString()} method.", Activity, cancellationToken);
+            await Activity.LogVerboseAsync($"Begin activity {Activity.ToLogString()} method.", Activity.Instance, cancellationToken);
             TMethodReturns result = default;
             var hasResult = false;
             try
@@ -263,17 +263,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     or RequestPostponedException
                     or FulcrumException)
             {
-                await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, Activity }, cancellationToken);
+                await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, ActivityInstance= Activity.Instance }, cancellationToken);
                 throw;
             }
             catch (Exception e)
             {
-                await Activity.LogWarningAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, Activity }, cancellationToken);
+                await Activity.LogWarningAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, ActivityInstance = Activity.Instance }, cancellationToken);
                 throw;
             }
             finally
             {
-                await Activity.LogVerboseAsync($"End activity {Activity.ToLogString()} method.", hasResult ? result : Activity, cancellationToken);
+                await Activity.LogVerboseAsync($"End activity {Activity.ToLogString()} method.", hasResult ? new {result, ActivityInstance = Activity.Instance}:  Activity.Instance, cancellationToken);
             }
         }
 

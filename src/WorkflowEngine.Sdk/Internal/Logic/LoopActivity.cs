@@ -13,7 +13,6 @@ internal abstract class LoopActivity : Activity, ILoopActivity, IExecutableActiv
     protected LoopActivity(IActivityInformation activityInformation)
         : base(activityInformation)
     {
-        LoopIteration = 0;
     }
 
     /// <inheritdoc />
@@ -48,7 +47,6 @@ internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activit
         ActivityDefaultValueMethodAsync<TMethodReturns> defaultValueMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
-        LoopIteration = 0;
     }
 
     /// <inheritdoc />
@@ -69,6 +67,7 @@ internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activit
     /// <inheritdoc />
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
+        LoopIteration = 0;
         WorkflowStatic.Context.ParentActivity = this;
         return await InternalExecuteAsync(cancellationToken);
     }

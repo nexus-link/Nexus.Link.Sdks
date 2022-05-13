@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
@@ -51,8 +52,6 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         {
             NestedPosition = $"{ActivityInformation.Position}";
         }
-        var valueProvider = new AsyncLocalContextValueProvider();
-        _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
     }
 
     /// <inheritdoc />
@@ -87,13 +86,13 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
 
     public string NestedPosition { get; }
 
-    private readonly OneValueProvider<int?> _internalIteration;
+    private static readonly AsyncLocal<int?> InternalIterationAsAsyncLocal = new AsyncLocal<int?>();
 
     /// <inheritdoc />
     public int? InternalIteration
     {
-        get => _internalIteration.GetValue();
-        set => _internalIteration.SetValue(value);
+        get => InternalIterationAsAsyncLocal.Value;
+        set => InternalIterationAsAsyncLocal.Value = value;
     }
 
     public IActivityInformation ActivityInformation { get; protected set; }

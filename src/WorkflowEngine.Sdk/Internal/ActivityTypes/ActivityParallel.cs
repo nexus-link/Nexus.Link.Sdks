@@ -30,7 +30,6 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
         : base(activityInformation, _ => Task.FromResult(new JobResults()))
     {
         _maxJobIndex = 0;
-        JobNumber = 0;
     }
 
     /// <inheritdoc />
@@ -69,6 +68,7 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
     /// <inheritdoc />
     public async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
     {
+        JobNumber = 0;
         WorkflowStatic.Context.ParentActivity = this;
         return await InternalExecuteAsync(cancellationToken);
     }

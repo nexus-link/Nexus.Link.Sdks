@@ -91,7 +91,6 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
-        ChildCounter = 0;
     }
     public ActivityForEachSequential(
         IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
@@ -111,6 +110,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> method,
         CancellationToken cancellationToken = default)
     {
+        ChildCounter = 0;
         WorkflowStatic.Context.ParentActivity = this;
         return ActivityExecutor.ExecuteWithReturnValueAsync(
             ct => ForEachSequentialAsync(method, ct),
