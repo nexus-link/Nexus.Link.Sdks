@@ -218,11 +218,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
-                await this.LogInformationAsync($"Workflow {WorkflowInformation} successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", null, cancellationToken);
+                await this.LogInformationAsync($"Workflow {WorkflowInformation} successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
             }
             catch (Exception e)
             {
-                await this.LogVerboseAsync($"Workflow {WorkflowInformation} throw exception (often normal), execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", null, cancellationToken);
+                await this.LogVerboseAsync($"Workflow {WorkflowInformation} throw exception (often normal), execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
 
                 throw await HandleAndCreateAsync(e, cancellationToken);
             }
@@ -256,7 +256,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     WorkflowInformation.Instance.FinishedAt = DateTimeOffset.UtcNow;
                     WorkflowInformation.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
                     WorkflowInformation.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
-                    await this.LogWarningAsync($"Workflow {WorkflowInformation} failed: {wfe.TechnicalMessage}", WorkflowInformation, cancellationToken);
+                    await this.LogWarningAsync($"Workflow {WorkflowInformation} failed: {wfe.TechnicalMessage}", WorkflowInformation.Instance, cancellationToken);
                     return new FulcrumCancelledException(wfe.TechnicalMessage)
                     {
                         FriendlyMessage = wfe.FriendlyMessage
@@ -278,7 +278,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
             async Task UnexpectedExceptionAsync(Exception unexpected)
             {
-                var technicalMessage = $"Workflow engine error. Unexpected exception of type {unexpected?.GetType().Name}: {unexpected?.Message}";
+                var technicalMessage = $"Workflow engine error. Unexpected exception: {unexpected}";
                 await this.LogCriticalAsync(technicalMessage, exception, cancellationToken);
                 WorkflowInformation.Instance.State = WorkflowStateEnum.Halted;
                 WorkflowInformation.Instance.ExceptionTechnicalMessage =
