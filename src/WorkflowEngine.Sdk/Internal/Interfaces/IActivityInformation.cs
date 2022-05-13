@@ -70,4 +70,10 @@ internal interface IActivityInformation
     /// Get the value of parameter <paramref name="parameterName"/> with type <typeparamref name="T"/>.
     /// </summary>
     T GetArgument<T>(string parameterName);
+
+    /// <summary>
+    /// A string representation of the activity that is detailed enough for logging.
+    /// </summary>
+    /// <returns></returns>
+    string ToLogString();
 }

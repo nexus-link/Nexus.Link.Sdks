@@ -88,25 +88,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
     /// </summary>
     public interface IActivity : IActivityBase, IWorkflowLogger
     {
-
-        /// <summary>
-        /// The title of this activity
-        /// </summary>
-        /// 
-        string ActivityTitle { get; }
-
-        /// <summary>
-        /// The date and time when the activity started
-        /// </summary>
-        DateTimeOffset ActivityStartedAt { get; }
-
-        /// <summary>
-        /// If the activity is part of a loop, this is the iteration count for that loop
-        /// </summary>
-        ///
-        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IActivityParallel.JobNumber)}.", false)]
-        int? Iteration { get; }
-
         /// <summary>
         /// Access to the activity arguments
         /// </summary>

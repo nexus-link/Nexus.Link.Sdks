@@ -33,27 +33,6 @@ internal class Activity : ActivityBase, IInternalActivity
 
     protected IActivityExecutor ActivityExecutor { get; }
 
-    /// <inheritdoc />
-    public string ActivityTitle
-    {
-        get
-        {
-            if (!NestedIterations.Any()) return NestedPositionAndTitle;
-            var iterations = string.Join(",", NestedIterations);
-            return $"{NestedPositionAndTitle} [{iterations}]";
-        }
-    }
-
-    /// <inheritdoc />
-    public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
-
-    /// <inheritdoc />
-    [Obsolete($"Please use {nameof(ILoopActivity.ChildCounter)}.", true)]
-    public int? Iteration => InternalIteration;
-
-    /// <inheritdoc />
-    public override string ToString() => ActivityTitle;
-
     [Obsolete("Please use Options.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
     public double AsyncRequestPriority => Options.AsyncRequestPriority;
 

@@ -221,5 +221,23 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 
         /// <inheritdoc />
         public Stopwatch TimeSinceExecutionStarted { get; }
+
+        /// <inheritdoc />
+        public string ToLogString()
+        {
+            string title;
+            try
+            {
+                title = InstanceTitle;
+            }
+            catch (Exception e)
+            {
+                title = FormTitle;
+            }
+
+            var id = !string.IsNullOrWhiteSpace(InstanceId) ? $"instance id: {InstanceId}" : $"form id: {FormId}";
+            var state = Instance == null ? "" : Instance.State.ToString();
+            return $"{title}{state} (id)";
+        }
     }
 }

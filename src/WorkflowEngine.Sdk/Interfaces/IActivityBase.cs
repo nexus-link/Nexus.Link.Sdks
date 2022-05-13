@@ -21,6 +21,30 @@ public interface IActivityBase
     string ActivityFormId { get; }
 
     /// <summary>
+    /// The title of this activity
+    /// </summary>
+    /// 
+    string ActivityTitle { get; }
+
+    /// <summary>
+    /// If the activity is part of a loop, this is the iteration count for that loop
+    /// </summary>
+    ///
+    [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IActivityParallel.JobNumber)}.", false)]
+    int? Iteration { get; }
+
+    /// <summary>
+    /// The date and time when the activity started
+    /// </summary>
+    DateTimeOffset ActivityStartedAt { get; }
+
+    /// <summary>
+    /// A string representation that is good for logging purposes.
+    /// </summary>
+    /// <returns></returns>
+    string ToLogString();
+
+    /// <summary>
     /// The date and time when the workflow started
     /// </summary>
     DateTimeOffset WorkflowStartedAt { get; }

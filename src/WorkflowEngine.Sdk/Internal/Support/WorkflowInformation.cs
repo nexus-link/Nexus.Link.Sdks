@@ -66,10 +66,10 @@ internal class WorkflowInformation : IWorkflowInformation
 
     /// <inheritdoc />
     public IWorkflowInstanceService WorkflowInstanceService => _workflowImplementation.WorkflowContainer.WorkflowCapabilities.StateCapability.WorkflowInstance;
-    
+
     /// <inheritdoc />
     public ActivityOptions DefaultActivityOptions => _workflowImplementation.DefaultActivityOptions;
-    
+
 
     /// <inheritdoc />
     public ActivityDefinition GetActivityDefinition(string activityFormId) =>
@@ -193,6 +193,24 @@ internal class WorkflowInformation : IWorkflowInformation
 
     /// <inheritdoc />
     public Stopwatch TimeSinceExecutionStarted { get; }
+
+    /// <inheritdoc />
+    public string ToLogString()
+    {
+        string title;
+        try
+        {
+            title = InstanceTitle;
+        }
+        catch (Exception e)
+        {
+            title = FormTitle;
+        }
+
+        var id = !string.IsNullOrWhiteSpace(InstanceId) ? $"instance id: {InstanceId}" : $"form id: {FormId}";
+        var state = Instance == null ? "" : Instance.State.ToString();
+        return $"{title}{state} (id)";
+    }
 
     /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;

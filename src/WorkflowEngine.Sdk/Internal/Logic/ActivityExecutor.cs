@@ -15,7 +15,6 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
-using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -63,7 +62,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             bool hasReturnValue,
             CancellationToken cancellationToken)
         {
-            await Activity.LogInformationAsync($"Begin activity {Activity}", Activity.Instance, cancellationToken);
+            await Activity.LogInformationAsync($"Begin activity {Activity.ToLogString()}", Activity.Instance, cancellationToken);
             try
             {
                 if (Activity.Instance.HasCompleted) return;
@@ -97,7 +96,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             finally
             {
                 Activity.MaybePurgeLogs();
-                await Activity.LogInformationAsync($"End activity {Activity}", Activity.Instance, cancellationToken);
+                await Activity.LogInformationAsync($"End activity {Activity.ToLogString()}", Activity.Instance, cancellationToken);
             }
         }
 
@@ -112,7 +111,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             if (timeLeft < TimeSpan.Zero)
             {
                 throw new ActivityFailedException(ActivityExceptionCategoryEnum.MaxTimeReachedError,
-                    $"The maximum time ({maxExecutionTime}) for the activity has been reached. The activity was started at {startedAt.ToLogString()} and expired at {startedAt.Add(maxExecutionTime).ToLogString()}, it is now {now.ToLogString()}",
+                    $"The maximum time ({maxExecutionTime}) for the activity {Activity.ToLogString()} has been reached. The activity was started at {startedAt.ToLogString()} and expired at {startedAt.Add(maxExecutionTime).ToLogString()}, it is now {now.ToLogString()}",
                     "The maximum time for the activity has been reached.");
             }
             return timeLeft;
@@ -201,7 +200,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                         TryAgainAfterMinimumTimeSpan = timeSpan
                     };
                 }
-                
+
                 if (e is FulcrumProgrammersErrorException)
                 {
                     // The workflow implementor has made a programmers error
@@ -245,7 +244,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             CancellationToken cancellationToken)
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            await Activity.LogVerboseAsync($"Begin activity {Activity} method.", null, cancellationToken);
+            await Activity.LogVerboseAsync($"Begin activity {Activity.ToLogString()} method.", Activity, cancellationToken);
             TMethodReturns result = default;
             var hasResult = false;
             try
@@ -264,17 +263,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     or RequestPostponedException
                     or FulcrumException)
             {
-                await Activity.LogInformationAsync($"Activity {Activity} method threw exception: {e}", e, cancellationToken);
+                await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, Activity }, cancellationToken);
                 throw;
             }
             catch (Exception e)
             {
-                await Activity.LogWarningAsync($"Activity {Activity} method threw exception: {e}", e, cancellationToken);
+                await Activity.LogWarningAsync($"Activity {Activity.ToLogString()} method threw exception: {e}", new { Exception = e, Activity }, cancellationToken);
                 throw;
             }
             finally
             {
-                await Activity.LogVerboseAsync($"End activity {Activity} method.", hasResult ? result : null, cancellationToken);
+                await Activity.LogVerboseAsync($"End activity {Activity.ToLogString()} method.", hasResult ? result : Activity, cancellationToken);
             }
         }
 
@@ -310,7 +309,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             catch (Exception e)
             {
                 await Activity.LogErrorAsync(
-                    $"The default value method for activity {Activity} threw an exception." +
+                    $"The default value method for activity {Activity.ToLogString()} threw an exception." +
                     $" The default value for {typeof(TMethodReturns).Name} ({default(TMethodReturns)}) is used instead.",
                     e, cancellationToken);
                 return default;

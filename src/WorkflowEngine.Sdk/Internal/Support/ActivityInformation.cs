@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
@@ -15,12 +17,21 @@ internal class ActivityInformation : IActivityInformation
 
     public ActivityInformation(IWorkflowInformation workflowInformation, int position, string formId)
     {
+        InternalContract.RequireNotNull(workflowInformation, nameof(workflowInformation));
+        InternalContract.RequireGreaterThanOrEqualTo(1, position, nameof(position));
+        InternalContract.RequireNotNullOrWhiteSpace(formId, nameof(formId));
         Workflow = workflowInformation;
         Position = position;
         FormId = formId;
         Parent = WorkflowStatic.Context.ParentActivity;
         Previous = WorkflowStatic.Context.LatestActivity;
         _activityDefinition = Workflow.GetActivityDefinition(formId);
+        if (_activityDefinition == null)
+        {
+            throw new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
+                $"The workflow container of {workflowInformation.ToLogString()} was expected to contain a definition for the activity with id {formId}",
+                "The workflow was implemented in a bad way.");
+        }
         Options.From(Workflow.DefaultActivityOptions);
         _methodHandler = new MethodHandler(FormTitle);
     }
@@ -57,6 +68,9 @@ internal class ActivityInformation : IActivityInformation
     {
         return _methodHandler.GetArgument<T>(parameterName);
     }
+
+    /// <inheritdoc />
+    public string ToLogString() => $"{Type} {FormTitle} (form id: {FormId})";
 
     /// <inheritdoc />
     public IWorkflowInformation Workflow { get; }

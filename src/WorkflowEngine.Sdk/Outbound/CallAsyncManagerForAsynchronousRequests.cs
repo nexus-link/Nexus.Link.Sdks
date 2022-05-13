@@ -74,7 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         }
 
         private string ToLogString(IInternalActivity activity) =>
-            $"{activity} in workflow instance {WorkflowStatic.Context.WorkflowInstanceId}";
+            $"{activity.ToLogString()} in workflow instance {WorkflowStatic.Context.WorkflowInstanceId}";
 
         private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, IInternalActivity activity, CancellationToken cancellationToken)
         {

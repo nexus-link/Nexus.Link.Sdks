@@ -174,4 +174,10 @@ internal interface IWorkflowInformation
     /// the current run is taking.
     /// </summary>
     Stopwatch TimeSinceExecutionStarted { get; }
+
+    /// <summary>
+    /// A string representation of the workflow that is detailed enough for logging.
+    /// </summary>
+    /// <returns></returns>
+    string ToLogString();
 }

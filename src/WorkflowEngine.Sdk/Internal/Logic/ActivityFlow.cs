@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -14,11 +15,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
     internal abstract class ActivityFlowBase : IActivityFlowBase
     {
-        protected IActivityInformation ActivityInformation{ get; }
+        protected IActivityInformation ActivityInformation { get; }
 
         protected ActivityFlowBase(IActivityInformation activityInformation)
         {
             ActivityInformation = activityInformation;
+        }
+
+        protected Exception CreateExceptionBecauseActivityConstructorFailed(IActivityInformation activityInformation, Exception exception)
+        {
+            return new WorkflowImplementationShouldNotCatchThisException(new WorkflowEngineInternalErrorException(ActivityInformation, exception));
         }
     }
 
@@ -112,7 +118,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityAction Action()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityAction(ActivityInformation);
+            try
+            {
+                return new ActivityAction(ActivityInformation);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -120,7 +133,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityAction(ActivityInformation, methodAsync);
+            try
+            {
+                return new ActivityAction(ActivityInformation, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -128,25 +148,47 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(method, nameof(method));
-            return new ActivityAction(ActivityInformation, (a, _) =>
+            try
             {
-                method(a);
-                return Task.CompletedTask;
-            });
+                return new ActivityAction(ActivityInformation, (a, _) =>
+          {
+              method(a);
+              return Task.CompletedTask;
+          });
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivitySleep Sleep(TimeSpan timeToSleep)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Sleep, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivitySleep(ActivityInformation, timeToSleep);
+            try
+            {
+                return new ActivitySleep(ActivityInformation, timeToSleep);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityParallel Parallel()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Parallel, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityParallel(ActivityInformation);
+
+            try
+            {
+                return new ActivityParallel(ActivityInformation);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -154,7 +196,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
-            return new ActivityIf(ActivityInformation, conditionMethodAsync);
+            try
+            {
+                return new ActivityIf(ActivityInformation, conditionMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -162,14 +211,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
-            return new ActivityIf(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+            try
+            {
+                return new ActivityIf(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityIf If(bool condition)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityIf(ActivityInformation, (a, _) => Task.FromResult(condition));
+            try
+            {
+                return new ActivityIf(ActivityInformation, (_, _) => Task.FromResult(condition));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -179,8 +242,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier), $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
             }
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier);
-            return new ActivityLock(ActivityInformation, semaphoreSupport);
+            try
+            {
+                var semaphoreSupport = new SemaphoreSupport(resourceIdentifier);
+                return new ActivityLock(ActivityInformation, semaphoreSupport);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -189,8 +259,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
-            return new ActivityThrottle(ActivityInformation, semaphoreSupport);
+            try
+            {
+                var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
+                return new ActivityThrottle(ActivityInformation, semaphoreSupport);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -198,7 +275,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
-            return new ActivitySwitch<TSwitchValue>(ActivityInformation, switchValueMethodAsync);
+            try
+            {
+                return new ActivitySwitch<TSwitchValue>(ActivityInformation, switchValueMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -206,14 +290,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
-            return new ActivitySwitch<TSwitchValue>(ActivityInformation, (a, _) => Task.FromResult(switchValueMethod(a)));
+            try
+            {
+                return new ActivitySwitch<TSwitchValue>(ActivityInformation, (a, _) => Task.FromResult(switchValueMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivitySwitch<TSwitchValue>(ActivityInformation, (a, _) => Task.FromResult(switchValue));
+            try
+            {
+                return new ActivitySwitch<TSwitchValue>(ActivityInformation, (_, _) => Task.FromResult(switchValue));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -221,7 +319,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityLoopUntilTrue LoopUntil()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityLoopUntilTrue(ActivityInformation);
+            try
+            {
+                return new ActivityLoopUntilTrue(ActivityInformation);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -230,7 +335,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityLoopUntilTrue(ActivityInformation, methodAsync);
+            try
+            {
+                return new ActivityLoopUntilTrue(ActivityInformation, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -238,7 +350,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityDoWhileOrUntil(ActivityInformation, methodAsync);
+            try
+            {
+                return new ActivityDoWhileOrUntil(ActivityInformation, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -246,7 +365,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
-            return new ActivityWhileDo(ActivityInformation, conditionMethodAsync);
+            try
+            {
+                return new ActivityWhileDo(ActivityInformation, conditionMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -254,14 +380,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
-            return new ActivityWhileDo(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+            try
+            {
+                return new ActivityWhileDo(ActivityInformation, (a, _) => Task.FromResult(conditionMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityWhileDo While(bool condition)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityWhileDo(ActivityInformation, (a, _) => Task.FromResult(condition));
+            try
+            {
+                return new ActivityWhileDo(ActivityInformation, (_, _) => Task.FromResult(condition));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -270,7 +410,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityForEachParallel<TItem>(ActivityInformation, items);
+            try
+            {
+                return new ActivityForEachParallel<TItem>(ActivityInformation, items);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -279,7 +426,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityForEachParallel<TItem>(ActivityInformation, items, methodAsync);
+            try
+            {
+                return new ActivityForEachParallel<TItem>(ActivityInformation, items, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -288,7 +442,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityForEachSequential<TItem>(ActivityInformation, items);
+            try
+            {
+                return new ActivityForEachSequential<TItem>(ActivityInformation, items);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -297,14 +458,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityForEachSequential<TItem>(ActivityInformation, items, methodAsync);
+            try
+            {
+                return new ActivityForEachSequential<TItem>(ActivityInformation, items, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Semaphore, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivitySemaphore(ActivityInformation, resourceIdentifier);
+            try
+            {
+                return new ActivitySemaphore(ActivityInformation, resourceIdentifier);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
     }
 
@@ -419,7 +594,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityAction<TActivityReturns> Action()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            try
+            {
+                return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -427,7 +609,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            try
+            {
+                return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -435,14 +624,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(method, nameof(method));
-            return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(method(a)));
+            try
+            {
+                return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(method(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityAction<TActivityReturns> Action(TActivityReturns value)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(value));
+            try
+            {
+                return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(value));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -450,7 +653,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            try
+            {
+                return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -459,7 +669,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            try
+            {
+                return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -467,7 +684,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityDoWhileOrUntil<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            try
+            {
+                return new ActivityDoWhileOrUntil<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -475,7 +699,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
-            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, conditionMethodAsync);
+            try
+            {
+                return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, conditionMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -483,14 +714,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
-            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+            try
+            {
+                return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityWhileDo<TActivityReturns> While(bool condition)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(condition));
+            try
+            {
+                return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(condition));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -498,7 +743,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityCondition<TActivityReturns> Condition()
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Condition, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityCondition<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            try
+            {
+                return new ActivityCondition<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -506,7 +758,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
-            return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, conditionMethodAsync);
+            try
+            {
+                return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, conditionMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -514,14 +773,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
-            return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+            try
+            {
+                return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(conditionMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivityIf<TActivityReturns> If(bool condition)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(condition));
+            try
+            {
+                return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(condition));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -532,8 +805,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier), $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
             }
 
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier);
-            return new ActivityLock<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, semaphoreSupport);
+            try
+            {
+                var semaphoreSupport = new SemaphoreSupport(resourceIdentifier);
+                return new ActivityLock<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, semaphoreSupport);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -542,8 +822,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
-            var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
-            return new ActivityThrottle<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, semaphoreSupport);
+            try
+            {
+                var semaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan);
+                return new ActivityThrottle<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, semaphoreSupport);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -551,7 +838,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
-            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, switchValueMethodAsync);
+            try
+            {
+                return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, switchValueMethodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -559,14 +853,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
-            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(switchValueMethod(a)));
+            try
+            {
+                return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(switchValueMethod(a)));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, (a, _) => Task.FromResult(switchValue));
+            try
+            {
+                return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(switchValue));
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -576,7 +884,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod);
+            try
+            {
+                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -586,7 +901,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync);
+            try
+            {
+                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc/>
@@ -595,7 +917,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
-            return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items);
+            try
+            {
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
 
         /// <inheritdoc />
@@ -604,7 +933,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-            return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items, methodAsync);
+            try
+            {
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items, methodAsync);
+            }
+            catch (Exception e)
+            {
+                throw CreateExceptionBecauseActivityConstructorFailed(ActivityInformation, e);
+            }
         }
     }
 }

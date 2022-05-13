@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
@@ -31,11 +32,20 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         var parentActivity = ActivityInformation.Parent;
         if (parentActivity != null)
         {
-            NestedIterations.AddRange(parentActivity.NestedIterations);
-            FulcrumAssert.IsNotNull(parentActivity.InternalIteration, CodeLocation.AsString());
-            FulcrumAssert.IsGreaterThan(0, parentActivity.InternalIteration!.Value, CodeLocation.AsString());
-            NestedIterations.Add(parentActivity.InternalIteration.Value);
-            NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
+            try
+            {
+                NestedIterations.AddRange(parentActivity.NestedIterations);
+                FulcrumAssert.IsNotNull(parentActivity.InternalIteration, CodeLocation.AsString());
+                FulcrumAssert.IsGreaterThan(0, parentActivity.InternalIteration!.Value, CodeLocation.AsString());
+                NestedIterations.Add(parentActivity.InternalIteration.Value);
+                NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
+            }
+            catch (FulcrumAssertionFailedException e)
+            {
+                // Add some information to the exception
+                throw new FulcrumAssertionFailedException(
+                    $"The parent {parentActivity?.ToLogString()} of the current activity ({ToLogString()}) is not correct: {e.Message}");
+            }
         }
         else
         {
@@ -44,6 +54,30 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         var valueProvider = new AsyncLocalContextValueProvider();
         _internalIteration = new OneValueProvider<int?>(valueProvider, nameof(InternalIteration));
     }
+
+    /// <inheritdoc />
+    public string ActivityTitle
+    {
+        get
+        {
+            if (!NestedIterations.Any()) return NestedPositionAndTitle;
+            var iterations = string.Join(",", NestedIterations);
+            return $"{NestedPositionAndTitle} [{iterations}]";
+        }
+    }
+
+    /// <inheritdoc />
+    public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
+
+    /// <inheritdoc />
+    [Obsolete($"Please use {nameof(ILoopActivity.ChildCounter)}.", true)]
+    public int? Iteration => InternalIteration;
+
+    /// <inheritdoc />
+    public override string ToString() => ActivityTitle;
+
+    /// <inheritdoc />
+    public string ToLogString() => $"{ActivityTitle} (instance id: {ActivityInstanceId})";
 
     public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
 

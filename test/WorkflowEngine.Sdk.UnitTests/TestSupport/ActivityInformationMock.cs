@@ -56,5 +56,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         {
             throw new System.NotImplementedException();
         }
+
+        /// <inheritdoc />
+        public string ToLogString() => $"{Type} {FormTitle} (form id: {FormId})";
     }
 }
