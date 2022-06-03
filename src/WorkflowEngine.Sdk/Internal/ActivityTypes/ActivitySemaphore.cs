@@ -62,7 +62,7 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
             cancellationToken);
     }
 
-    private string CalculatedKey => $"{WorkflowInstanceId}.{ResourceIdentifier}";
+    private string CalculatedKey => $"{WorkflowInstanceId}.{ActivityInformation.Parent?.ActivityInstanceId}.{ResourceIdentifier}";
 
     private async Task InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
     {
@@ -71,6 +71,8 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
         {
             WorkflowFormId = ActivityInformation.Workflow.FormId,
             WorkflowInstanceId = WorkflowInstanceId,
+            ParentActivityInstanceId = ActivityInformation.Parent?.ActivityInstanceId,
+            ParentIteration = ActivityInformation.Parent?.InternalIteration,
             ResourceIdentifier = ResourceIdentifier,
             Limit = limit,
             ExpirationTime = expiresAfter

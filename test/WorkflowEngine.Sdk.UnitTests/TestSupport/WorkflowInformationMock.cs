@@ -35,6 +35,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
         public IActivityExecutor Executor { get; set; }
 
+        public IMethodMock MethodMock { get; set; }
+
         /// <inheritdoc />
         public string CapabilityName { get; set; } = "Capability name";
 
@@ -125,6 +127,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public ActivityInstance GetActivityInstance(string activityInstanceId)
         {
+            if (MethodMock != null) return MethodMock.GetActivityInstance(activityInstanceId);
+
             _activityInstance ??= new ActivityInstance
             {
                 Id = activityInstanceId,
@@ -146,7 +150,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public string GetOrCreateInstanceId(IActivityInformation activityInformation)
+        public string GetOrCreateActivityInstanceId(IActivityInformation activityInformation)
         {
             return "1EA54949-94C6-469E-857F-E16EC216D498";
         }

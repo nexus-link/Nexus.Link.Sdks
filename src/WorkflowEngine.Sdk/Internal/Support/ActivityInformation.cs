@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
@@ -37,19 +38,35 @@ internal class ActivityInformation : IActivityInformation
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IInternalActivity Previous { get; }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IInternalActivity Parent { get; }
 
     /// <inheritdoc />
-
     public string FormTitle => _activityDefinition.Title;
+
+    private readonly object _lockObject = new();
+    private string _instanceId;
+
+    /// <inheritdoc />
+    public string InstanceId
+    {
+        get
+        {
+            lock (_lockObject)
+            {
+                return _instanceId ??= Workflow.GetOrCreateActivityInstanceId(this);
+            }
+        }
+    }
 
     public ActivityTypeEnum Type => _activityDefinition.Type;
 
     /// <inheritdoc />
-    public ActivityOptions Options { get; } = new ();
+    public ActivityOptions Options { get; } = new();
 
     /// <inheritdoc />
     public void DefineParameter<T>(string name)

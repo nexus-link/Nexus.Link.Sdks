@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
@@ -62,7 +61,7 @@ internal class SemaphoreSupport : ISemaphoreSupport
     }
 
     /// <inheritdoc />
-    public async Task<string> RaiseAsync(CancellationToken cancellationToken)
+    public async Task<string> RaiseAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(Activity, CodeLocation.AsString());
         if (Activity.TryGetContext<string>(ContextKey, out var semaphoreHolderId))
@@ -73,8 +72,10 @@ internal class SemaphoreSupport : ISemaphoreSupport
         {
             var semaphoreCreate = new WorkflowSemaphoreCreate
             {
-                WorkflowFormId = IsThrottle ? Guid.Empty.ToGuidString() : Activity.ActivityInformation.Workflow.FormId,
+                WorkflowFormId = IsThrottle ? null : Activity.ActivityInformation.Workflow.FormId,
                 WorkflowInstanceId = Activity.WorkflowInstanceId,
+                ParentActivityInstanceId = Activity.ActivityInformation.Parent?.ActivityInstanceId,
+                ParentIteration = Activity.ActivityInformation.Parent?.InternalIteration,
                 ResourceIdentifier = ResourceIdentifier,
                 Limit = Limit,
                 ExpirationTime = IsThrottle 

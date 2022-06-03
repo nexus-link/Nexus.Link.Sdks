@@ -31,6 +31,9 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public string FormTitle { get; set; } = "Form title";
 
         /// <inheritdoc />
+        public string InstanceId { get; set; } = "7A67BD5E-430C-4B01-B281-445D3BB7FE12";
+
+        /// <inheritdoc />
         public ActivityTypeEnum Type { get; set; } = ActivityTypeEnum.Action;
 
         /// <inheritdoc />

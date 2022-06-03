@@ -59,10 +59,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     public class WorkflowSemaphoreRecordUnique
     {
         /// <summary>
-        /// The workflow that this semaphore is for
+        /// The workflow that this semaphore is for or null if it is for all workflows
         /// </summary>
-        [Validation.NotDefault]
-        public Guid WorkflowFormId { get; set; }
+        public Guid? WorkflowFormId { get; set; }
 
         /// <summary>
         /// This value is used to distinguish different semaphores for the same workflow
@@ -71,6 +70,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         public string ResourceIdentifier { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => $"{ResourceIdentifier} for workflow form {WorkflowFormId}";
+        public override string ToString() => WorkflowFormId.HasValue ? $"{ResourceIdentifier} for workflow form {WorkflowFormId.Value}" : $"{ResourceIdentifier}";
     }
 }

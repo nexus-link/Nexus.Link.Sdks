@@ -22,6 +22,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             {
                 nameof(WorkflowSemaphoreQueueRecord.WorkflowSemaphoreId),
                 nameof(WorkflowSemaphoreQueueRecord.WorkflowInstanceId),
+                nameof(WorkflowSemaphoreQueueRecord.ParentActivityInstanceId),
+                nameof(WorkflowSemaphoreQueueRecord.ParentIteration),
                 nameof(WorkflowSemaphoreQueueRecord.Raised),
                 nameof(WorkflowSemaphoreQueueRecord.ExpiresAt),
                 nameof(WorkflowSemaphoreQueueRecord.ExpirationAfterSeconds)

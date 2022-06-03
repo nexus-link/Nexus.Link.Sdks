@@ -59,6 +59,7 @@ internal class WorkflowInformation : IWorkflowInformation
     public ILogService LogService => _workflowImplementation.WorkflowContainer.WorkflowCapabilities.StateCapability.Log;
 
     /// <inheritdoc />
+    [JsonIgnore]
     public ICollection<LogCreate> Logs { get; } = new List<LogCreate>();
 
     /// <inheritdoc />
@@ -76,6 +77,7 @@ internal class WorkflowInformation : IWorkflowInformation
         _workflowImplementation.WorkflowContainer.GetActivityDefinition(activityFormId);
 
     /// <inheritdoc />
+    [JsonIgnore]
     public IInternalActivity LatestActivity { get; set; }
 
     /// <inheritdoc />
@@ -115,7 +117,7 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public string GetOrCreateInstanceId(IActivityInformation activityInformation)
+    public string GetOrCreateActivityInstanceId(IActivityInformation activityInformation)
     {
         return _workflowCache.GetOrCreateInstanceId(activityInformation);
     }

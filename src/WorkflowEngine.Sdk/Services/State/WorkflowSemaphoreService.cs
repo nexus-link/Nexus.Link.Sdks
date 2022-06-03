@@ -202,7 +202,9 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
             waitingHolder.Raised = true;
             waitingHolder.ExpiresAt = DateTimeOffset.UtcNow.Add(TimeSpan.FromSeconds(waitingHolder.ExpirationAfterSeconds));
             var activatedHolder = await _runtimeTables.WorkflowSemaphoreQueue.UpdateAndReturnAsync(waitingHolder.Id, waitingHolder, cancellationToken);
-            if (activatedHolder.WorkflowInstanceId == myHolder?.WorkflowInstanceId)
+            if (activatedHolder.WorkflowInstanceId == myHolder?.WorkflowInstanceId 
+                && activatedHolder.ParentActivityInstanceId == myHolder?.ParentActivityInstanceId
+                && activatedHolder.ParentIteration == myHolder?.ParentIteration)
             {
                 myHolderAsActivated = activatedHolder;
             }
@@ -247,6 +249,9 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
     private async Task<WorkflowSemaphoreQueueRecord> GetOrCreateSemaphoreQueueRecordAsync(
         WorkflowSemaphoreQueueRecordCreate recordCreate, CancellationToken cancellationToken)
     {
+        InternalContract.RequireNotNull(recordCreate, nameof(recordCreate));
+        InternalContract.RequireValidated(recordCreate, nameof(recordCreate));
+
         var count = 0;
         while (count < 3)
         {
@@ -255,6 +260,8 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
             {
                 WorkflowSemaphoreId = recordCreate.WorkflowSemaphoreId,
                 WorkflowInstanceId = recordCreate.WorkflowInstanceId,
+                ParentActivityInstanceId = recordCreate.ParentActivityInstanceId,
+                ParentIteration = recordCreate.ParentIteration
             };
             var searchDetails = new SearchDetails<WorkflowSemaphoreQueueRecord>(unique);
             var holder = await _runtimeTables.WorkflowSemaphoreQueue.FindUniqueAsync(searchDetails, cancellationToken);

@@ -35,6 +35,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         public ActivityOptions DefaultActivityOptions { get; }
 
         /// <summary>
+        /// Set <see cref="DefaultActivityOptions"/> to the values that are recommended when debugging.
+        /// </summary>
+        public void SetDebugMode();
+
+        /// <summary>
         /// This token has shorter time than the token that the workflow engine is using. This means that when
         /// that time has expired, we will still have some time to finalize our work, such as saving the state
         /// to the database.

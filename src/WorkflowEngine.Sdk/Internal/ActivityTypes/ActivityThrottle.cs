@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -12,81 +13,52 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityThrottle" />
-internal class ActivityThrottle : 
-    Activity, IActivityThrottle
+internal class ActivityThrottle : ActivityLockOrThrottle<IActivityThrottle, IActivityThrottleThen>, IActivityThrottle, IActivityThrottleThen
 {
-    private readonly ISemaphoreSupport _semaphoreSupport;
-
     public ActivityThrottle(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
-        : base(activityInformation)
+        : base(activityInformation, semaphoreSupport)
     {
-        InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
-        _semaphoreSupport = semaphoreSupport;
-        _semaphoreSupport.Activity = this;
+        InternalContract.RequireNotNull(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.RequireValidated(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.Require(semaphoreSupport.IsThrottle, $"The parameter {semaphoreSupport} was supposed to have {nameof(semaphoreSupport.IsThrottle)} == true");
     }
 
     /// <inheritdoc />
-    public string ResourceIdentifier => _semaphoreSupport.ResourceIdentifier;
+    public int Limit => SemaphoreSupport.Limit;
 
     /// <inheritdoc />
-    public int Limit => _semaphoreSupport.Limit;
-
-    /// <inheritdoc />
-    public TimeSpan? LimitationTimeSpan => _semaphoreSupport.LimitationTimeSpan;
+    public TimeSpan? LimitationTimeSpan => SemaphoreSupport.LimitationTimeSpan;
 
     /// <inheritdoc />
     public Task ExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => Throttle(methodAsync, ct), cancellationToken);
-    }
-
-    internal async Task Throttle(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken)
-    {
-        await _semaphoreSupport.RaiseAsync(cancellationToken);
-        try
-        {
-            await methodAsync(this, cancellationToken);
-        }
-        finally
-        {
-            await _semaphoreSupport.LowerAsync(cancellationToken);
-        }
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        ThenMethodAsync = methodAsync;
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(LockOrThrottleAsync, cancellationToken);
     }
 }
 
-internal class ActivityThrottle<TActivityReturns> : 
-    Activity<TActivityReturns>, IActivityThrottle<TActivityReturns>
+internal class ActivityThrottle<TActivityReturns> : ActivityLockOrThrottle<TActivityReturns, IActivityThrottle<TActivityReturns>, IActivityThrottleThen<TActivityReturns>>, IActivityThrottle<TActivityReturns>, IActivityThrottleThen<TActivityReturns>
 {
-    private readonly ISemaphoreSupport _semaphoreSupport;
-
     public ActivityThrottle(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync, ISemaphoreSupport semaphoreSupport)
-        : base(activityInformation, defaultValueMethodAsync)
+        : base(activityInformation, defaultValueMethodAsync, semaphoreSupport)
     {
-        InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
-        _semaphoreSupport = semaphoreSupport;
-        _semaphoreSupport.Activity = this;
+        InternalContract.RequireNotNull(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.RequireValidated(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.Require(semaphoreSupport.IsThrottle, $"The parameter {semaphoreSupport} was supposed to have {nameof(semaphoreSupport.IsThrottle)} == true");
     }
 
     /// <inheritdoc />
-    public string ResourceIdentifier => _semaphoreSupport.ResourceIdentifier;
+    public int Limit => SemaphoreSupport.Limit;
 
     /// <inheritdoc />
-    public int Limit => _semaphoreSupport.Limit;
-
-    /// <inheritdoc />
-    public TimeSpan? LimitationTimeSpan => _semaphoreSupport.LimitationTimeSpan;
+    public TimeSpan? LimitationTimeSpan => SemaphoreSupport.LimitationTimeSpan;
 
     /// <inheritdoc />
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ThrottleAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
-    }
-
-    internal async Task<TActivityReturns> ThrottleAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken)
-    {
-        await _semaphoreSupport.RaiseAsync(cancellationToken);
-        var result = await methodAsync(this, cancellationToken);
-        await _semaphoreSupport.LowerAsync(cancellationToken);
-        return result;
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        ThenMethodAsync = methodAsync;
+        return ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
     }
 }

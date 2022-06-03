@@ -128,7 +128,7 @@ internal interface IWorkflowInformation
     /// <summary>
     /// Get the instance id for the specified <paramref name="activityInformation"/>, either existing or a newly created.
     /// </summary>
-    string GetOrCreateInstanceId(IActivityInformation activityInformation);
+    string GetOrCreateActivityInstanceId(IActivityInformation activityInformation);
 
     /// <summary>
     /// Load information about this workflow instance

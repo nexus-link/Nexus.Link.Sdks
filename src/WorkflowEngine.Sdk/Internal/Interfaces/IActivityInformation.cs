@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -17,12 +18,14 @@ internal interface IActivityInformation
     /// <summary>
     /// If the current activity is a child activity, then this is the parent activity for this child, otherwise null.
     /// </summary>
+    [JsonIgnore]
     [CanBeNull]
     IInternalActivity Parent { get; }
 
     /// <summary>
     /// The previous activity
     /// </summary>
+    [JsonIgnore]
     [CanBeNull]
     IInternalActivity Previous { get; }
 
@@ -40,6 +43,11 @@ internal interface IActivityInformation
     /// The title for this activity form
     /// </summary>
     public string FormTitle { get; }
+
+    /// <summary>
+    /// The identity of the activity instance
+    /// </summary>
+    string InstanceId { get; }
 
     /// <summary>
     /// The type for this activity form

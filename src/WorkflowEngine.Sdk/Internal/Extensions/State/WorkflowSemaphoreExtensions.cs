@@ -29,7 +29,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(source, nameof(source));
             InternalContract.RequireValidated(source, nameof(source));
-            target.WorkflowFormId = source.WorkflowFormId.ToGuid();
+            target.WorkflowFormId = source.WorkflowFormId?.ToGuid();
             target.ResourceIdentifier = source.ResourceIdentifier;
             return target;
         }
@@ -61,9 +61,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             InternalContract.RequireNotNull(target, nameof(target));
             InternalContract.RequireNotNull(semaphore, nameof(semaphore));
             InternalContract.RequireValidated(semaphore, nameof(semaphore));
+            InternalContract.RequireNotNull(source, nameof(source));
+            InternalContract.RequireValidated(source, nameof(source));
 
             target.WorkflowInstanceId = source.WorkflowInstanceId.ToGuid();
             target.WorkflowSemaphoreId = semaphore.Id;
+            target.ParentActivityInstanceId = source.ParentActivityInstanceId?.ToGuid();
+            target.ParentIteration = source.ParentIteration;
             return target;
         }
     }

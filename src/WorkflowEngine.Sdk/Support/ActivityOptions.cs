@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -48,6 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// When an activity throws an exception, the alert handler is called. It gives the workflow programmer
         /// a possibility to publish an event or similar.
         /// </summary>
+        [JsonIgnore]
         public ActivityExceptionAlertMethodAsync ExceptionAlertHandler { get; set; }
 
         /// <summary>

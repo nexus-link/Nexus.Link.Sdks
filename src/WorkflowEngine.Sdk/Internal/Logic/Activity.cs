@@ -34,9 +34,11 @@ internal class Activity : ActivityBase, IInternalActivity
     protected IActivityExecutor ActivityExecutor { get; }
 
     [Obsolete("Please use Options.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
+    [JsonIgnore]
     public double AsyncRequestPriority => Options.AsyncRequestPriority;
 
     [Obsolete("Please use Options.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
+    [JsonIgnore]
     public ActivityExceptionAlertMethodAsync ExceptionAlertHandler => Options.ExceptionAlertHandler;
 
     /// <inheritdoc />

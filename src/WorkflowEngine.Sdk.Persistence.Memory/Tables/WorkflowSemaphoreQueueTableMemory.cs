@@ -16,7 +16,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
             UniqueConstraintMethods += item => new WorkflowSemaphoreQueueRecordUnique
             {
                 WorkflowSemaphoreId = item.WorkflowSemaphoreId,
-                WorkflowInstanceId = item.WorkflowInstanceId
+                WorkflowInstanceId = item.WorkflowInstanceId,
+                ParentActivityInstanceId = item.ParentActivityInstanceId,
+                ParentIteration = item.ParentIteration
             };
         }
     }

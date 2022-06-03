@@ -25,7 +25,6 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     {
         InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
         ActivityInformation = activityInformation;
-        ActivityInstanceId = ActivityInformation.Workflow.GetOrCreateInstanceId(activityInformation);
 
         Form = ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
         Version = ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
@@ -39,7 +38,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
                 FulcrumAssert.IsNotNull(parentActivity.InternalIteration, CodeLocation.AsString());
                 FulcrumAssert.IsGreaterThan(0, parentActivity.InternalIteration!.Value, CodeLocation.AsString());
                 NestedIterations.Add(parentActivity.InternalIteration.Value);
-                NestedPosition = $"{parentActivity.NestedPosition}.{ActivityInformation.Position}";
+                NestedPosition = $"{parentActivity.NestedPosition}[{parentActivity.InternalIteration.Value}].{ActivityInformation.Position}";
             }
             catch (FulcrumAssertionFailedException e)
             {
@@ -52,6 +51,9 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         {
             NestedPosition = $"{ActivityInformation.Position}";
         }
+
+        Instance.AbsolutePosition = NestedPosition;
+        InternalIteration = 0;
     }
 
     /// <inheritdoc />
@@ -86,19 +88,19 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
 
     public string NestedPosition { get; }
 
-    private static readonly AsyncLocal<int?> InternalIterationAsAsyncLocal = new AsyncLocal<int?>();
+    private readonly AsyncLocal<int?> _internalIterationAsAsyncLocal = new AsyncLocal<int?>();
 
     /// <inheritdoc />
     public int? InternalIteration
     {
-        get => InternalIterationAsAsyncLocal.Value;
-        set => InternalIterationAsAsyncLocal.Value = value;
+        get => _internalIterationAsAsyncLocal.Value;
+        set => _internalIterationAsAsyncLocal.Value = value;
     }
 
     public IActivityInformation ActivityInformation { get; protected set; }
 
     /// <inheritdoc />
-    public string ActivityInstanceId { get; }
+    public string ActivityInstanceId => ActivityInformation.InstanceId;
 
     /// <inheritdoc />
     [Obsolete("Please use Options.FailUrgency. Compilation warning since 2021-11-19.")]

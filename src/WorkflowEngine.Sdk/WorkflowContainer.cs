@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -27,6 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public string WorkflowFormTitle { get; }
 
         /// <inheritdoc />
+        [JsonIgnore]
         public WorkflowVersionCollection WorkflowVersionCollection { get; }
 
         private readonly Dictionary<string, ActivityDefinition> _activityDefinitions = new();

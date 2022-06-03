@@ -26,6 +26,29 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
+        public async Task ForEachParallel_NoResult_CorrectLoopIteration()
+        {
+            // Arrange
+            var actualLoopIterations = new Dictionary<int, int>();
+            var expectedLoopIteration = new List<int> { 1, 2, 3};
+            var activity = new ActivityForEachParallel<int>(_activityInformationMock, expectedLoopIteration,
+                (i, a, _) =>
+                {
+                    actualLoopIterations.Add(i, a.LoopIteration);
+                    return Task.CompletedTask;
+                });
+
+            // Act
+            await activity.ForEachParallelAsync();
+
+            // Assert
+            foreach (var (i, actualLoopIteration) in actualLoopIterations)
+            {
+                actualLoopIteration.ShouldBe(i);
+            }
+        }
+
+        [Fact]
         public async Task ForEachParallel_NoResult_Given_Summation_Gives_CorrectSum()
         {
             // Arrange
@@ -34,13 +57,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var values = new List<int> { 1, 2, 3, 4, 5, 99 };
             var activity = new ActivityForEachParallel<int>(_activityInformationMock, values,
                 (i, a, ct) =>
-            {
-                lock (lockObject)
                 {
-                    if (i == a.LoopIteration) actualValue += i;
-                }
-                return Task.CompletedTask;
-            });
+                    lock (lockObject)
+                    {
+                        if (i == a.LoopIteration) actualValue += i;
+                    }
+                    return Task.CompletedTask;
+                });
 
             // Act
             await activity.ForEachParallelAsync();

@@ -1,6 +1,7 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.EntityAttributes;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Core.Storage.Model;
 
@@ -48,6 +49,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         public bool? ExceptionAlertHandled { get; set; }
 
         public string ContextAsJson { get; set; }
+
+        /// <summary>
+        /// The nested position of this activity in the activity hierarchy
+        /// </summary>
+        public string AbsolutePosition { get; set; }
 
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")

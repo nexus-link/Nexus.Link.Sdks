@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
@@ -36,6 +37,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// The default options for all created activities.
         /// </summary>
         public ActivityOptions DefaultActivityOptions { get; } = new();
+
+        /// <inheritdoc />
+        public void SetDebugMode()
+        {
+            InternalContract.Require(FulcrumApplication.IsInDevelopment, $"Only use {nameof(SetDebugMode)} when you are in development.");
+            DefaultActivityOptions.AsyncRequestPriority = 1.0;
+            DefaultActivityOptions.LogCreateThreshold = LogSeverityLevel.Verbose;
+            DefaultActivityOptions.LogPurgeStrategy = LogPurgeStrategyEnum.None;
+            DefaultActivityOptions.LogPurgeThreshold = LogSeverityLevel.None;
+            DefaultActivityOptions.MaxTotalRunTimeSpan = TimeSpan.FromHours(1);
+            DefaultActivityOptions.PostponeAfterTimeSpan = TimeSpan.FromHours(1);
+            DefaultActivityOptions.ActivityMaxExecutionTimeSpan = null;
+        }
 
         /// <inheritdoc />
         public CancellationToken ReducedTimeCancellationToken { get; private set; }

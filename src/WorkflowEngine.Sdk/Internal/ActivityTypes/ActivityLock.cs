@@ -1,70 +1,49 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityLock" />
-internal class ActivityLock : Activity, IActivityLock
+internal class ActivityLock : ActivityLockOrThrottle<IActivityLock, IActivityLockThen>, IActivityLock, IActivityLockThen
 {
-    private readonly ISemaphoreSupport _semaphoreSupport;
-
     public ActivityLock(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
-        : base(activityInformation)
+        : base(activityInformation, semaphoreSupport)
     {
-        InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
-        _semaphoreSupport = semaphoreSupport;
-        _semaphoreSupport.Activity = this;
+        InternalContract.RequireNotNull(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.RequireValidated(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.Require(!semaphoreSupport.IsThrottle, $"The parameter {semaphoreSupport} was supposed to have {nameof(semaphoreSupport.IsThrottle)} == false");
     }
 
     /// <inheritdoc />
-    public string ResourceIdentifier => _semaphoreSupport.ResourceIdentifier;
-
-    /// <inheritdoc />
+    [Obsolete($"Please use {nameof(Then)}. Obsolete since 2022-06-01")]
     public Task ExecuteAsync(ActivityMethodAsync<IActivityLock> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), cancellationToken);
-    }
-
-    internal async Task InternalExecuteAsync(ActivityMethodAsync<IActivityLock> methodAsync, CancellationToken cancellationToken)
-    {
-        await _semaphoreSupport.RaiseAsync(cancellationToken);
-        await methodAsync(this, cancellationToken);
-        await _semaphoreSupport.LowerAsync(cancellationToken);
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        ThenMethodAsync = methodAsync;
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(LockOrThrottleAsync, cancellationToken);
     }
 }
 
-internal class ActivityLock<TActivityReturns> : Activity<TActivityReturns>, IActivityLock<TActivityReturns>
+internal class ActivityLock<TActivityReturns> : ActivityLockOrThrottle<TActivityReturns, IActivityLock<TActivityReturns>, IActivityLockThen<TActivityReturns>>, IActivityLock<TActivityReturns>, IActivityLockThen<TActivityReturns>
 {
-    private readonly ISemaphoreSupport _semaphoreSupport;
-
     public ActivityLock(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync, ISemaphoreSupport semaphoreSupport)
-        : base(activityInformation, defaultValueMethodAsync)
+        : base(activityInformation, defaultValueMethodAsync, semaphoreSupport)
     {
-        InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
-        _semaphoreSupport = semaphoreSupport;
-        _semaphoreSupport.Activity = this;
+        InternalContract.RequireNotNull(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.RequireValidated(semaphoreSupport, nameof(semaphoreSupport));
+        InternalContract.Require(!semaphoreSupport.IsThrottle, $"The parameter {semaphoreSupport} was supposed to have {nameof(semaphoreSupport.IsThrottle)} == false");
     }
-
-    /// <inheritdoc />
-    public string ResourceIdentifier => _semaphoreSupport.ResourceIdentifier;
 
     /// <inheritdoc />
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLock<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => InternalExecuteAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
-    }
-
-    private async Task<TActivityReturns> InternalExecuteAsync(ActivityMethodAsync<IActivityLock<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken)
-    {
-        await _semaphoreSupport.RaiseAsync(cancellationToken);
-        var result = await methodAsync(this, cancellationToken);
-        await _semaphoreSupport.LowerAsync(cancellationToken);
-        return result;
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        ThenMethodAsync = methodAsync;
+        return ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
     }
 }

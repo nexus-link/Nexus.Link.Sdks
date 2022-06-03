@@ -73,8 +73,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         [Validation.NotDefault]
         public Guid WorkflowInstanceId { get; set; }
 
+        /// <summary>
+        /// The activity instance that is waiting for semaphore <see cref="WorkflowSemaphoreQueueRecordSearch.WorkflowSemaphoreId"/>
+        /// </summary>
+        public Guid? ParentActivityInstanceId { get; set; }
+
+        /// <summary>
+        /// The parent iteration for the activity that raised this semaphore, or null if no parent exists.
+        /// </summary>
+        public int? ParentIteration { get; set; }
+
         /// <inheritdoc />
-        public override string ToString() => $"{WorkflowSemaphoreId} for workflow {WorkflowInstanceId}";
+        public override string ToString() => $"{WorkflowSemaphoreId} for workflow {WorkflowInstanceId} and activity {ParentActivityInstanceId}";
     }
 
     /// <summary>

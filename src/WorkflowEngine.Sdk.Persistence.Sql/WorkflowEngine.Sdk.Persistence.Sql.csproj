@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.1.0</Version>
+    <Version>2.3.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,6 +57,16 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.3.0 Add
+      3.2.0 AddedAddAdded AbsolutePosition to ActivityInstanceRecord
+      3.2.0 Added
+      2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
+      2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
+      2.0.4 Bump
+      2.0.3 Corrected order of dropping tables in patch 10 rollback
+      2.0.1 Bump 
+      3.2.0 Added
+      2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
       2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
       2.0.4 Bump
       2.0.3 Corrected order of dropping tables in patch 10 rollback
@@ -125,6 +135,10 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch09_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch10 - Semaphore.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch10_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch12 - semaphore activity.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch12_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch13 - absolute position.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch13_rollback.sql" />
   </ItemGroup>
 
 </Project>

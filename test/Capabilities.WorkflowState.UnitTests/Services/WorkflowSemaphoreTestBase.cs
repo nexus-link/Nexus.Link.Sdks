@@ -6,6 +6,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Shouldly;
 using Xunit;
+#pragma warning disable CS1591
 
 namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
 {
@@ -29,6 +30,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -49,6 +51,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -70,6 +73,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -94,6 +98,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromSeconds(-1), // Expired
                 Limit = 1
             };
@@ -117,6 +122,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = Guid.NewGuid().ToGuidString(),
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(60),
                 Limit = 1
             };
@@ -138,6 +144,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -168,6 +175,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -200,6 +208,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
@@ -241,6 +250,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
                 WorkflowFormId = Guid.NewGuid().ToGuidString(),
                 ResourceIdentifier = Guid.NewGuid().ToGuidString(),
                 WorkflowInstanceId = initialInstanceId,
+                ParentActivityInstanceId = Guid.NewGuid().ToGuidString(),
                 ExpirationTime = TimeSpan.FromMinutes(1),
                 Limit = 1
             };
