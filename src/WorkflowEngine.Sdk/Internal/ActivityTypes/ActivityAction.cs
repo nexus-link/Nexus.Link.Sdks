@@ -82,7 +82,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
+         return ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
     internal async Task<TActivityReturns> ActionAsync(CancellationToken cancellationToken = default)

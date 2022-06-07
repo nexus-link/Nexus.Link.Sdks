@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.14.1 Made WorkflowVersionCollection class internal. The reroute to AM part of the code is now more obvious
       6.14.0 Added WorkflowImplementation.SetDebugMode()
       6.13.2 Fix: Base semaphore activity identity on the parent activity, not on the activity that raises the semaphore
       6.13.1 Fix: Ignore JSON serialization for some fields to prevent self referencing loops

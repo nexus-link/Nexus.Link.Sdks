@@ -2,6 +2,8 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace WorkflowEngine.Sdk.UnitTests.TestSupport
@@ -11,7 +13,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public TestWorkflowContainer(IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowCapabilities = workflowCapabilities;
-            WorkflowVersionCollection = new WorkflowVersionCollection(this);
+            _workflowVersionCollection = new WorkflowVersionCollection(this);
         }
 
         /// <inheritdoc />
@@ -25,9 +27,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 
         /// <inheritdoc />
         public string WorkflowFormTitle => "Workflow form title";
-
-        /// <inheritdoc />
-        public WorkflowVersionCollection WorkflowVersionCollection { get; }
+        
+        private readonly WorkflowVersionCollection _workflowVersionCollection;
 
         public ActivityDefinition GetActivityDefinition(string activityFormId) => new ActivityDefinition
         {

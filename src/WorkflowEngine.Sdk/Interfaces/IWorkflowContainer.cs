@@ -28,11 +28,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         string WorkflowFormTitle { get; }
 
         /// <summary>
-        /// The collection of all implementations of this workflow
-        /// </summary>
-        WorkflowVersionCollection WorkflowVersionCollection { get; }
-
-        /// <summary>
         /// Get the activity definition for a specific activity, i.e. the activity type and title.
         /// </summary>
         /// <param name="activityFormId">The identifier for the activity</param>

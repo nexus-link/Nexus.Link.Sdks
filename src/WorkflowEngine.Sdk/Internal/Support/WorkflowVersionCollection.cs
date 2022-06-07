@@ -10,9 +10,9 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
-namespace Nexus.Link.WorkflowEngine.Sdk
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
-    public class WorkflowVersionCollection
+    internal class WorkflowVersionCollection
     {
         public IWorkflowContainer WorkflowContainer { get; }
         public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowContainer.WorkflowCapabilities;
@@ -27,9 +27,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public async Task<IWorkflowImplementation<TResponse>> SelectWorkflowVersionAsync<TResponse>(int minVersion, int? maxVersion = null, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireGreaterThanOrEqualTo(0, minVersion, nameof(minVersion));
+            ThrowIfNotManagedAsynchronousRequest();
             var majorVersion = await SelectMajorVersionAsync(minVersion, maxVersion, cancellationToken);
             FulcrumAssert.IsTrue(_versions.ContainsKey(majorVersion), CodeLocation.AsString());
-
             var implementationCandidate = _versions[majorVersion];
             FulcrumAssert.IsNotNull(implementationCandidate, CodeLocation.AsString());
             InternalContract.Require(majorVersion >= minVersion,
@@ -50,6 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         public async Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, int? maxVersion = null, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireGreaterThanOrEqualTo(0, minVersion, nameof(minVersion));
+            ThrowIfNotManagedAsynchronousRequest();
             var majorVersion = await SelectMajorVersionAsync(minVersion, maxVersion, cancellationToken);
             FulcrumAssert.IsTrue(_versions.ContainsKey(majorVersion), CodeLocation.AsString());
 
@@ -58,6 +59,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             InternalContract.Require(implementation != null,
                 $"The implementation {implementationCandidate} does not implement {nameof(IWorkflowImplementation)}.");
             return implementation!.CreateWorkflowInstance();
+        }
+
+        private static void ThrowIfNotManagedAsynchronousRequest()
+        {
+            if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
+            {
+                throw new RequestPostponedException
+                {
+                    TryAgain = true,
+                    TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
+                };
+            }
         }
 
         private async Task<int> SelectMajorVersionAsync(int minVersion, int? maxVersion = null, CancellationToken cancellationToken = default)
@@ -90,14 +103,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk
 
         private async Task<WorkflowVersion> GetWorkflowVersionAsync(CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
-            {
-                throw new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
-                };
-            }
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             var workflowInstanceId = FulcrumApplication.Context.ExecutionId;
             var workflowInstance =

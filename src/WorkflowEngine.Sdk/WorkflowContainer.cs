@@ -7,6 +7,8 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
@@ -27,9 +29,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <inheritdoc />
         public string WorkflowFormTitle { get; }
 
-        /// <inheritdoc />
-        [JsonIgnore]
-        public WorkflowVersionCollection WorkflowVersionCollection { get; }
+        private readonly WorkflowVersionCollection _workflowVersionCollection;
 
         private readonly Dictionary<string, ActivityDefinition> _activityDefinitions = new();
 
@@ -41,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             WorkflowCapabilityName = capabilityName;
             WorkflowFormTitle = workflowTitle;
             WorkflowFormId = workflowId.ToGuidString();
-            WorkflowVersionCollection = new WorkflowVersionCollection(this);
+            _workflowVersionCollection = new WorkflowVersionCollection(this);
             WorkflowCapabilities = workflowCapabilities;
         }
 
@@ -51,7 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use AddImplementation. Obsolete since 2022-02-10")]
         protected void AddWorkflowVersion(IWorkflowImplementationBase workflowImplementation)
         {
-            WorkflowVersionCollection.AddWorkflowVersion(workflowImplementation);
+            _workflowVersionCollection.AddWorkflowVersion(workflowImplementation);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         protected void AddImplementation(IWorkflowImplementationBase workflowImplementation)
         {
-            WorkflowVersionCollection.AddWorkflowVersion(workflowImplementation);
+            _workflowVersionCollection.AddWorkflowVersion(workflowImplementation);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use SelectImplementationAsync. Obsolete since 2022-02-10")]
         public Task<IWorkflowImplementation<TWorkflowResult>> SelectWorkflowVersionAsync<TWorkflowResult>(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion, cancellationToken);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         public Task<IWorkflowImplementation<TWorkflowResult>> SelectImplementationAsync<TWorkflowResult>(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion, cancellationToken);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use SelectImplementationAsync. Obsolete since 2022-02-10")]
         public Task<IWorkflowImplementation<TWorkflowResult>> SelectWorkflowVersionAsync<TWorkflowResult>(int minVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use the overload with a maxVersion parameter. Obsolete since 2022-05-05.")]
         public Task<IWorkflowImplementation<TWorkflowResult>> SelectImplementationAsync<TWorkflowResult>(int minVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, null, cancellationToken);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use SelectImplementationAsync. Obsolete since 2022-02-10")]
         public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion, cancellationToken);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         public Task<IWorkflowImplementation> SelectImplementationAsync(int minVersion, int maxVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion, cancellationToken);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use SelectImplementationAsync. Obsolete since 2022-02-10")]
         public Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// </summary>
         public Task<IWorkflowImplementation> SelectImplementationAsync(int minVersion, CancellationToken cancellationToken = default)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
+            return _workflowVersionCollection.SelectWorkflowVersionAsync(minVersion, null, cancellationToken);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Use SelectImplementationAsync. Compilation warning since 2021-11-12. Will be Compilation error after 2021-12-01")]
         public IWorkflowImplementation<TWorkflowResult> SelectWorkflowVersion<TWorkflowResult>(int minVersion, int maxVersion)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion).Result;
+            return _workflowVersionCollection.SelectWorkflowVersionAsync<TWorkflowResult>(minVersion, maxVersion).Result;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Use SelectImplementationAsync. Compilation warning since 2021-11-12. Will be Compilation error after 2021-12-01")]
         public IWorkflowImplementation SelectWorkflowVersion(int minVersion, int maxVersion)
         {
-            return WorkflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion).Result;
+            return _workflowVersionCollection.SelectWorkflowVersionAsync(minVersion, maxVersion).Result;
         }
 
         /// <inheritdoc />
