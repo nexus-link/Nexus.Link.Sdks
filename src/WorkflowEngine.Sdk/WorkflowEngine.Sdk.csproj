@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.14.1</Version>
+    <Version>6.14.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.14.2 Now throws FulcrumResourceLockedException instead of FulcrumTryAgainException
       6.14.1 Made WorkflowVersionCollection class internal. The reroute to AM part of the code is now more obvious
       6.14.0 Added WorkflowImplementation.SetDebugMode()
       6.13.2 Fix: Base semaphore activity identity on the parent activity, not on the activity that raises the semaphore

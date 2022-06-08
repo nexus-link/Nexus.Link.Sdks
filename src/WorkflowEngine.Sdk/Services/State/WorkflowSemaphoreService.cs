@@ -278,7 +278,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 // The queue record already exists, try again
             }
         }
-        throw new FulcrumTryAgainException($"Could not get or create a semaphore queue item ({recordCreate}) in three retries.");
+        throw new FulcrumResourceLockedException($"Could not get or create a semaphore queue item ({recordCreate}) in three retries, due to racing conditions.");
     }
 
     private async Task<WorkflowSemaphoreRecord> GetOrCreateSemaphoreRecordAndLockAsync(
@@ -319,6 +319,6 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 cancellationToken);
         }
 
-        throw new FulcrumTryAgainException($"Could not get or create a semaphore {recordCreate} in three retries.");
+        throw new FulcrumResourceLockedException($"Could not get or create a semaphore {recordCreate} in three retries, due to racing conditions.");
     }
 }
