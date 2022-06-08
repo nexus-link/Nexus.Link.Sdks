@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.15.3" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.15.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,9 +57,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.3.0 Add
-      3.2.0 AddedAddAdded AbsolutePosition to ActivityInstanceRecord
-      3.2.0 Added
+      2.3.1 Bump
+      2.3.0 Added AbsolutePosition to ActivityInstanceRecord
       2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
       2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
       2.0.4 Bump

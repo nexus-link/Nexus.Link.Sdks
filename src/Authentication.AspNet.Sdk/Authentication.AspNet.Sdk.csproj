@@ -39,7 +39,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.1.3</Version>
+      <Version>3.1.4</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -49,7 +49,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.1.3 Bump
+        3.1.4 Bump
         3.1.0 TokenValidationHandler now supports ReentryAuthentication
         3.0.8 Bump
         3.0.2 Symbols

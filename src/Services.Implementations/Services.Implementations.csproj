@@ -32,7 +32,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>3.4.12</Version>
+    <Version>3.4.13</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -42,7 +42,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.4.12 Bump
+      3.4.13 Bump
       3.4.5 Symbols
       3.4.4 Bump
       3.4.1 Fixed an issue where EventSubscriptionHandler swallowed exceptions
