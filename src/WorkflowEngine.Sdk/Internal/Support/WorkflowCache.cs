@@ -225,17 +225,73 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
 
-            await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
+            var shouldFireEvent = _summary.Instance == null;
 
-            await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
+            await _workflowFormCache.SaveAsync((id, item) =>
+            {
+                if (!shouldFireEvent) {
+                    if (_summary.Form.Title != item.Title) shouldFireEvent = true;
+                }
+                
+                _summary.Form = item;
+            }, cancellationToken);
 
-            await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, cancellationToken);
+            await _workflowVersionCache.SaveAsync((id, item) =>
+            {
+                if (!shouldFireEvent)
+                {
+                    if (_summary.Version.MajorVersion != item.MajorVersion) shouldFireEvent = true;
+                }
+
+                _summary.Version = item;
+            }, cancellationToken);
+
+            await _workflowInstanceCache.SaveAsync((id, item) =>
+            {
+                if (!shouldFireEvent)
+                {
+                    if (_summary.Instance.Title != item.Title ||
+                        _summary.Instance.State != item.State ||
+                        _summary.Instance.FinishedAt != item.FinishedAt)
+                    {
+                        shouldFireEvent = true;
+                    }
+                }
+
+                _summary.Instance = item;
+            }, cancellationToken);
 
             await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
 
             await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, cancellationToken);
 
             await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
+
+            if (shouldFireEvent)
+            {
+                await FireWorkflowInstanceChangedEventAsync(cancellationToken);
+            }
+        }
+
+        private async Task FireWorkflowInstanceChangedEventAsync(CancellationToken cancellationToken = default)
+        {
+            if (_stateCapability.WorkflowEventService != null)
+            {
+                //var @event = new WorkflowInstanceChangedV1
+                //{
+                //    Timestamp = DateTimeOffset.Now,
+                //    Payload = new()
+                //    {
+                //        WorkflowInstanceId = _summary.Instance.Id,
+                //        ChangedAt = DateTimeOffset.Now, // TODO: take from _summary.Instance
+                //        SourceClientId = _stateCapability.WorkflowEventService.SourceClientId
+                //    }
+                //};
+                //await _stateCapability.WorkflowEventService.FireWorkflowInstanceChangedAsync(@event, cancellationToken);
+
+                // TODO: take ChangedAt from _summary.Instance
+                await _stateCapability.WorkflowEventService.FireWorkflowInstanceChangedAsync(_summary.Instance.Id, DateTimeOffset.Now, cancellationToken);
+            }
         }
 
         public ActivityForm GetActivityForm(string formId)

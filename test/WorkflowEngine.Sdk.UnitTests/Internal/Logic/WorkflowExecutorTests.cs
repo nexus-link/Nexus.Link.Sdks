@@ -33,6 +33,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             _configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
             _workflowCapabilities = new WorkflowCapabilities(_configurationTables, _runtimeTables, _armMock);
+            // TODO: queue
         }
 
         [Fact]

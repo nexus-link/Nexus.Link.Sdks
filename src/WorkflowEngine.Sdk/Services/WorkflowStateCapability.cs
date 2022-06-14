@@ -1,6 +1,8 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Events;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
@@ -22,6 +24,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             WorkflowSemaphore = new WorkflowSemaphoreService(requestMgmtCapability, runtimeTables);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability,
+            string sourceClientId, IWritableQueue<WorkflowInstanceChangedV1> eventQueue)
+        : this(configurationTables, runtimeTables, requestMgmtCapability)
+        {
+            if (sourceClientId != null && eventQueue != null)
+            {
+                WorkflowEventService = new WorkflowEventService(sourceClientId, eventQueue, Log); // TODO: Log in this way?
+            }
+        }
+
         /// <inheritdoc />
         public IActivityInstanceService ActivityInstance { get; }
 
@@ -36,5 +51,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         /// <inheritdoc />
         public IWorkflowSemaphoreService WorkflowSemaphore { get; }
+
+        /// <inheritdoc />
+        public IWorkflowEventService WorkflowEventService { get; }
     }
 }
