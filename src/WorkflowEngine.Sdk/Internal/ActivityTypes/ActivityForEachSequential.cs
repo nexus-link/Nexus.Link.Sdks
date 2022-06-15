@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -20,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="ActivityForEachSequential{TItem}" />
 internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEachSequential<TItem>
 {
-    private readonly ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
+    private ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
@@ -48,24 +43,22 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
         ActivityForEachSequentialMethodAsync<TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         WorkflowStatic.Context.ParentActivity = this;
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachSequentialAsync(methodAsync, ct),
-            cancellationToken);
+        _methodAsync = methodAsync;
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ForEachSequentialAsync, cancellationToken);
     }
 
-    internal Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    internal async Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        return ForEachSequentialAsync(_methodAsync, cancellationToken);
-    }
-
-    private async Task ForEachSequentialAsync(ActivityForEachSequentialMethodAsync<TItem> method, CancellationToken cancellationToken)
-    {
         foreach (var item in Items)
         {
             LoopIteration++;
-            await method(item, this, cancellationToken)
+#pragma warning disable CS0618 // Type or member is obsolete
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         }
     }
@@ -81,7 +74,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 internal class ActivityForEachSequential<TMethodReturns, TItem> :
     LoopActivity<IList<TMethodReturns>, TMethodReturns>, IActivityForEachSequential<TMethodReturns, TItem>
 {
-    private readonly ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
+    private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
@@ -107,33 +100,29 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     /// <inheritdoc/>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public Task<IList<TMethodReturns>> ExecuteAsync(
-        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> method,
+        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
         ChildCounter = 0;
         WorkflowStatic.Context.ParentActivity = this;
+        _methodAsync = methodAsync;
         return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachSequentialAsync(method, ct),
+            ForEachSequentialAsync,
             _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
             cancellationToken);
     }
 
-    internal Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    internal async Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        return ForEachSequentialAsync(_methodAsync, cancellationToken);
-    }
-
-    private async Task<IList<TMethodReturns>> ForEachSequentialAsync(
-        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
-        CancellationToken cancellationToken)
-    {
         var resultList = new List<TMethodReturns>();
         foreach (var item in Items)
         {
             LoopIteration++;
-            var result = await methodAsync(item, this, cancellationToken)
+#pragma warning disable CS0618
+            var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
+#pragma warning restore CS0618
             resultList.Add(result);
         }
 
@@ -144,7 +133,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     protected override async Task<IList<TMethodReturns>> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
         var result = await ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachSequentialAsync(_methodAsync, ct),
+            ForEachSequentialAsync,
             _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
             cancellationToken);
         return result;

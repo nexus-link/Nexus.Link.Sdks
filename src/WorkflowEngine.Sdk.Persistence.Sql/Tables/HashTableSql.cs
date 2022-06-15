@@ -5,7 +5,7 @@ using Nexus.Link.Libraries.SqlServer.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
 {
-    /// <inheritdoc cref="IReentryTokenTable" />
+    /// <inheritdoc cref="IHashTable" />
     public class HashTableSql : CrudSql<HashRecordCreate, HashRecord>, IHashTable
     {
         /// <inheritdoc />

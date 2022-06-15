@@ -15,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
         /// <summary>
         /// Controller
         /// </summary>
-        public ActivityRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("Workflows"))
+        public ActivityRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("Activities"))
         {
         }
 

@@ -1,29 +1,27 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 
-internal abstract class ActivityLockOrThrottle<TLockOrThrottle, TLockOrThrottleThen> : Activity, IExecutableActivity
+internal abstract class LockOrThrottleActivity<TLockOrThrottle, TLockOrThrottleThen> : Activity, IExecutableActivity
     where TLockOrThrottleThen : class where TLockOrThrottle : class
 {
     protected ISemaphoreSupport SemaphoreSupport { get; }
     protected ActivityMethodAsync<TLockOrThrottle> ThenMethodAsync { get; set; }
     protected ActivityMethodAsync<TLockOrThrottle> ElseMethodAsync { get; set; }
 
-    public ActivityLockOrThrottle(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
+    protected LockOrThrottleActivity(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
         SemaphoreSupport = semaphoreSupport;
         SemaphoreSupport.Activity = this;
-        SetContext("elseChosen", false);
+        SetInternalContext("elseChosen", false);
     }
     
     public string ResourceIdentifier => SemaphoreSupport.ResourceIdentifier;
@@ -72,24 +70,24 @@ internal abstract class ActivityLockOrThrottle<TLockOrThrottle, TLockOrThrottleT
 
     protected internal async Task LockOrThrottleAsync(CancellationToken cancellationToken)
     {
-        var elseChosen = GetContext<bool>("elseChosen");
+        var elseChosen = GetInternalContext<bool>("elseChosen");
         if (elseChosen)
         {
-            await ElseMethodAsync(this as TLockOrThrottle, cancellationToken);
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => ElseMethodAsync(this as TLockOrThrottle, ct), "Else", cancellationToken);
             return;
         }
         try
         {
-            await SemaphoreSupport.RaiseAsync(cancellationToken);
+            await LogicExecutor.ExecuteWithReturnValueAsync(ct => SemaphoreSupport.RaiseAsync(ct), SemaphoreSupport.IsThrottle ? "Throttle" : "Lock", cancellationToken);
         }
         catch (RequestPostponedException)
         {
             if (ElseMethodAsync == null) throw;
-            SetContext("elseChosen", true);
-            await ElseMethodAsync(this as TLockOrThrottle, cancellationToken);
+            SetInternalContext("elseChosen", true);
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => ElseMethodAsync(this as TLockOrThrottle, ct), "Else", cancellationToken);
             return;
         }
-        await ThenMethodAsync(this as TLockOrThrottle, cancellationToken);
+        await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => ThenMethodAsync(this as TLockOrThrottle, ct), "Then", cancellationToken);
         await SemaphoreSupport.LowerAsync(cancellationToken);
     }
 }
@@ -107,7 +105,7 @@ internal class ActivityLockOrThrottle<TActivityReturns, TLockOrThrottle, TLockOr
         InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
         SemaphoreSupport = semaphoreSupport;
         SemaphoreSupport.Activity = this;
-        SetContext("elseChosen", false);
+        SetInternalContext("elseChosen", false);
     }
 
     public string ResourceIdentifier => SemaphoreSupport.ResourceIdentifier;
@@ -145,24 +143,24 @@ internal class ActivityLockOrThrottle<TActivityReturns, TLockOrThrottle, TLockOr
         return ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
-    protected async Task<TActivityReturns> LockOrThrottleAsync(CancellationToken cancellationToken)
+    protected internal async Task<TActivityReturns> LockOrThrottleAsync(CancellationToken cancellationToken)
     {
-        var elseChosen = GetContext<bool>("elseChosen");
+        var elseChosen = GetInternalContext<bool>("elseChosen");
         if (elseChosen)
         {
-            return await ElseMethodAsync(this as TLockOrThrottle, cancellationToken);
+            return await LogicExecutor.ExecuteWithReturnValueAsync(ct => ElseMethodAsync(this as TLockOrThrottle, ct), "Else", cancellationToken);
         }
         try
         {
-            await SemaphoreSupport.RaiseAsync(cancellationToken);
+            await LogicExecutor.ExecuteWithReturnValueAsync(ct => SemaphoreSupport.RaiseAsync(ct), SemaphoreSupport.IsThrottle ? "Throttle" : "Lock", cancellationToken);
         }
         catch (RequestPostponedException)
         {
             if (ElseMethodAsync == null) throw;
-            SetContext("elseChosen", true);
-            return await ElseMethodAsync(this as TLockOrThrottle, cancellationToken);
+            SetInternalContext("elseChosen", true);
+            return await LogicExecutor.ExecuteWithReturnValueAsync(ct => ElseMethodAsync(this as TLockOrThrottle, ct), "Else", cancellationToken);
         }
-        var result = await ThenMethodAsync(this as TLockOrThrottle, cancellationToken);
+        var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => ThenMethodAsync(this as TLockOrThrottle, ct), "Then", cancellationToken);
         await SemaphoreSupport.LowerAsync(cancellationToken);
         return result;
     }

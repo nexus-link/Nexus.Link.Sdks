@@ -22,12 +22,13 @@ internal class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>,
         ActivityMethodAsync<IActivityCondition<TActivityReturns>, TActivityReturns> methodAsync,
         CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), DefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => LogicExecutor.ExecuteWithReturnValueAsync(t => methodAsync(this, t), "Condition", ct),
+            DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc/>
     public Task<TActivityReturns> ExecuteAsync(ActivityMethod<IActivityCondition<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( _ => Task.FromResult(method(this)), DefaultValueMethodAsync, cancellationToken);
+        return ExecuteAsync( (a, _) => Task.FromResult(method(a)), cancellationToken);
     }
 }

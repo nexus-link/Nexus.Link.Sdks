@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -10,42 +11,42 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <summary>
-/// Make the workflow sleep for a time span of <see cref="TimeToSleep"/>.
+/// Make the workflow sleep until a specific time.
 /// </summary>
 internal class ActivitySleep: Activity, IActivitySleep
 {
     internal const string ContextSleepUntil = "SleepUntil";
-    public TimeSpan TimeToSleep { get; }
+
+    public ActivitySleep(IActivityInformation activityInformation, DateTimeOffset sleepUntil)
+        : base(activityInformation)
+    {
+        SetInternalContext(ContextSleepUntil, sleepUntil);
+    }
 
     public ActivitySleep(IActivityInformation activityInformation, TimeSpan timeToSleep)
         : base(activityInformation)
     {
-        TimeToSleep = timeToSleep;
+        if (TryGetInternalContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil)) return;
+        sleepUntil = DateTimeOffset.UtcNow.Add(timeToSleep);
+        SetInternalContext(ContextSleepUntil, sleepUntil);
     }
 
     /// <inheritdoc />
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        if (Instance.HasCompleted) return;
-        var now = DateTimeOffset.UtcNow;
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(_ => SleepAsync(now), cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(SleepAsync, cancellationToken);
     }
 
-    internal async Task SleepAsync(DateTimeOffset now)
+    internal async Task SleepAsync(CancellationToken cancellationToken = default)
     {
-        var success = TryGetContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil);
-        if (!success)
-        {
-            sleepUntil = now.Add(TimeToSleep);
-            SetContext(ContextSleepUntil, sleepUntil);
-        }
-
-        if (sleepUntil > DateTimeOffset.UtcNow)
+        var success = TryGetInternalContext<DateTimeOffset>(ContextSleepUntil, out var sleepUntil);
+        FulcrumAssert.IsTrue(success, CodeLocation.AsString());
+        if (sleepUntil >= DateTimeOffset.UtcNow)
         {
             throw new RequestPostponedException
             {
                 TryAgain = true,
-                TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(now)
+                TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(DateTimeOffset.UtcNow)
             };
         }
 

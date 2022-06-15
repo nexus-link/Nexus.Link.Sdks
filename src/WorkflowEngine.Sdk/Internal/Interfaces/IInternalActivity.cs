@@ -11,8 +11,9 @@ internal interface IInternalActivity : IInternalActivityBase, IActivity
 {
     ActivityInstance Instance { get; }
     ActivityVersion Version { get; }
-    void MaybePurgeLogs();
-    Task SafeAlertExceptionAsync(CancellationToken cancellationToken);
+    void PromoteOrPurgeLogs();
+    Task SafeAlertExceptionAsync(CancellationToken cancellationToken); 
+    ILogicExecutor LogicExecutor { get; }
 }
 
 internal interface IInternalActivity<TActivityReturns> : IInternalActivity

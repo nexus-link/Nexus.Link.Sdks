@@ -63,7 +63,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public LogSeverityLevel LogCreateThreshold { get; set; } = LogSeverityLevel.Warning;
 
         /// <summary>
-        /// Log with this severity level or lower will be affected by the <see cref="LogPurgeStrategy"/>.
+        /// Logs with this severity level or lower will be affected by the <see cref="LogPurgeStrategy"/>.
         /// </summary>
         public LogSeverityLevel LogPurgeThreshold { get; set; } = LogSeverityLevel.Information;
 
@@ -80,6 +80,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// <summary>
         /// If this method returns true, the exception is ignored.
         /// </summary>
+        [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
         public ActivityExceptionHandlerAsync ExceptionHandler { get; set; }
 
         // TODO: Create a new WorkflowOptions and move this option there
@@ -109,7 +110,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
             LogCreateThreshold = source.LogCreateThreshold;
             LogPurgeThreshold = source.LogPurgeThreshold;
             LogPurgeStrategy = source.LogPurgeStrategy;
+#pragma warning disable CS0618
             ExceptionHandler = source.ExceptionHandler;
+#pragma warning restore CS0618
             PostponeAfterTimeSpan = source.PostponeAfterTimeSpan;
             MaxTotalRunTimeSpan = source.MaxTotalRunTimeSpan;
             return this;

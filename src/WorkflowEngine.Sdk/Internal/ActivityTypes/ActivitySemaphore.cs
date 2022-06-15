@@ -25,6 +25,7 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
     /// </summary>
     /// <param name="activityInformation"></param>
     /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
+    [Obsolete($"Please use {nameof(ActivityLock)} to lock within a workflow form and {nameof(ActivityThrottle)} to reduce the number of concurrent calls to a common resource (over all workflows).")]
     public ActivitySemaphore(IActivityInformation activityInformation, string resourceIdentifier)
         : base(activityInformation)
     {
@@ -34,37 +35,44 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
     }
 
     /// <inheritdoc />
-    public Task RaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken = default)
+    [Obsolete($"Please use {nameof(ActivityLock)} to lock within a workflow form and {nameof(ActivityThrottle)} to reduce the number of concurrent calls to a common resource (over all workflows). Obsolete since 2022-06-15.")]
+    public async Task RaiseAsync(TimeSpan expiresAfter, CancellationToken cancellationToken = default)
     {
-        return RaiseWithLimitAsync(1, expiresAfter, cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalRaiseWithLimitAsync(1, expiresAfter, ct), cancellationToken);
     }
 
     /// <inheritdoc />
+    [Obsolete($"Please use {nameof(ActivityLock)} to lock within a workflow form and {nameof(ActivityThrottle)} to reduce the number of concurrent calls to a common resource (over all workflows). Obsolete since 2022-06-15.")]
     public async Task RaiseWithLimitAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken = default)
+    {
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => InternalRaiseWithLimitAsync(limit, expiresAfter, ct), cancellationToken);
+    }
+    internal async Task InternalRaiseWithLimitAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
         if (Instance.HasCompleted && Instance.State == ActivityStateEnum.Success)
         {
-            var success = TryGetContext<string>(ContextSemaphoreHolderId, out var semaphoreHolderId);
+            var success = TryGetInternalContext<string>(ContextSemaphoreHolderId, out var semaphoreHolderId);
             if (!success)
             {
                 // The semaphore has been lowered
                 return;
             }
-            await ActivityInformation.Workflow.SemaphoreService.ExtendAsync(semaphoreHolderId, null, cancellationToken);
+
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(
+                ct => ActivityInformation.Workflow.SemaphoreService.ExtendAsync(semaphoreHolderId, null, ct), "Extend",
+                cancellationToken);
             lock (RaisedActivitySemaphores)
             {
                 RaisedActivitySemaphores[CalculatedKey] = this;
             }
         }
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(
-            ct => InternalRaiseAsync(limit, expiresAfter, ct),
-            cancellationToken);
+        await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => RaiseAsync(limit, expiresAfter, ct), "Raise", cancellationToken);
     }
 
     private string CalculatedKey => $"{WorkflowInstanceId}.{ActivityInformation.Parent?.ActivityInstanceId}.{ResourceIdentifier}";
 
-    private async Task InternalRaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
+    private async Task RaiseAsync(int limit, TimeSpan expiresAfter, CancellationToken cancellationToken)
     {
         InternalContract.RequireGreaterThanOrEqualTo(1, limit, nameof(limit));
         var semaphoreCreate = new WorkflowSemaphoreCreate
@@ -78,32 +86,38 @@ internal class ActivitySemaphore : Activity, IActivitySemaphore
             ExpirationTime = expiresAfter
         };
         var semaphoreHolderId = await ActivityInformation.Workflow.SemaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
+        FulcrumAssert.IsNotNull(semaphoreHolderId, CodeLocation.AsString());
         lock (RaisedActivitySemaphores)
         {
-            SetContext(ContextSemaphoreHolderId, semaphoreHolderId);
+            SetInternalContext(ContextSemaphoreHolderId, semaphoreHolderId);
             RaisedActivitySemaphores[CalculatedKey] = this;
         }
     }
 
     /// <inheritdoc />
+    [Obsolete($"Please use {nameof(ActivityLock)} to lock within a workflow form and {nameof(ActivityThrottle)} to reduce the number of concurrent calls to a common resource (over all workflows). Obsolete since 2022-06-15.")]
     public Task LowerAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(InternalLowerAsync, cancellationToken);
     }
 
-    private Task InternalLowerAsync(CancellationToken cancellationToken)
+    internal async Task InternalLowerAsync(CancellationToken cancellationToken = default)
     {
         string semaphoreHolderId;
+        Activity raisedActivitySemaphore;
         lock (RaisedActivitySemaphores)
         {
-            var found = RaisedActivitySemaphores.TryGetValue(CalculatedKey, out var raisedActivitySemaphore);
+            var found = RaisedActivitySemaphores.TryGetValue(CalculatedKey, out raisedActivitySemaphore);
             FulcrumAssert.IsTrue(found, CodeLocation.AsString());
-            var success = raisedActivitySemaphore!.TryGetContext(ContextSemaphoreHolderId, out semaphoreHolderId);
+            var success = raisedActivitySemaphore!.TryGetInternalContext(ContextSemaphoreHolderId, out semaphoreHolderId);
             FulcrumAssert.IsTrue(success, CodeLocation.AsString());
             FulcrumAssert.IsNotNullOrWhiteSpace(semaphoreHolderId, CodeLocation.AsString());
-            raisedActivitySemaphore.RemoveContext(ContextSemaphoreHolderId);
+        }
+        await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => ActivityInformation.Workflow.SemaphoreService.LowerAsync(semaphoreHolderId, ct), "Lower", cancellationToken);
+        lock (RaisedActivitySemaphores)
+        {
+            raisedActivitySemaphore.RemoveInternalContext(ContextSemaphoreHolderId);
             RaisedActivitySemaphores.Remove(CalculatedKey);
         }
-        return ActivityInformation.Workflow.SemaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);
     }
 }

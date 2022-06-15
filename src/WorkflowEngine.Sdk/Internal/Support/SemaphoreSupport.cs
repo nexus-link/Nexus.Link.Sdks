@@ -64,7 +64,7 @@ internal class SemaphoreSupport : ISemaphoreSupport
     public async Task<string> RaiseAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(Activity, CodeLocation.AsString());
-        if (Activity.TryGetContext<string>(ContextKey, out var semaphoreHolderId))
+        if (Activity.TryGetInternalContext<string>(ContextKey, out var semaphoreHolderId))
         {
             await Activity.ActivityInformation.Workflow.SemaphoreService.ExtendAsync(semaphoreHolderId, null, cancellationToken);
         }
@@ -84,7 +84,7 @@ internal class SemaphoreSupport : ISemaphoreSupport
             };
             semaphoreHolderId =
                 await Activity.ActivityInformation.Workflow.SemaphoreService.RaiseAsync(semaphoreCreate, cancellationToken);
-            Activity.SetContext(ContextKey, semaphoreHolderId);
+            Activity.SetInternalContext(ContextKey, semaphoreHolderId);
         }
         return semaphoreHolderId;
     }
@@ -98,7 +98,7 @@ internal class SemaphoreSupport : ISemaphoreSupport
             return;
         }
         FulcrumAssert.IsNotNull(Activity, CodeLocation.AsString());
-        if (!Activity.TryGetContext<string>(ContextKey, out var semaphoreHolderId)) return;
+        if (!Activity.TryGetInternalContext<string>(ContextKey, out var semaphoreHolderId)) return;
         FulcrumAssert.IsNotNullOrWhiteSpace(semaphoreHolderId, CodeLocation.AsString());
         await Activity.ActivityInformation.Workflow.SemaphoreService.LowerAsync(semaphoreHolderId, cancellationToken);
     }

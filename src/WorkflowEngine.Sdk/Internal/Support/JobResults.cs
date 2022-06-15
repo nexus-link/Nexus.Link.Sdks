@@ -37,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             catch (Exception e)
             {
                 throw new FulcrumContractException(
-                    $"The job result was of type {Results[index].TypeName}, which can't be converted to the type ({typeof(T).Name}).");
+                    $"The job result was of type {Results[index].TypeName}, which can't be converted to the type ({typeof(T).Name}): {e.Message}");
             }
         }
     }

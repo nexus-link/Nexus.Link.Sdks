@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -14,6 +14,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivitySwitch{TSwitchValue}" />
 internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchValue>
+    where TSwitchValue : IComparable, IComparable<TSwitchValue>
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TSwitchValue> _defaultMethod;
@@ -48,11 +49,17 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
 
     internal async Task SwitchAsync(CancellationToken cancellationToken = default)
     {
-        var switchValue = await SwitchValueMethodAsync(this, cancellationToken);
-        var found = _caseMethods.TryGetValue(switchValue, out var methodAsync);
-        if (!found) methodAsync = _defaultMethod;
+        var switchValue = await LogicExecutor.ExecuteWithReturnValueAsync(ct => SwitchValueMethodAsync(this, cancellationToken), "Switch", cancellationToken);
+        var caseValue = switchValue?.ToString();
+        ActivitySwitchMethodAsync<TSwitchValue> methodAsync = null;
+        var found = switchValue != null && _caseMethods.TryGetValue(switchValue, out methodAsync);
+        if (!found)
+        {
+            methodAsync = _defaultMethod;
+            caseValue = "default";
+        }
         if (methodAsync == null) return;
-        await methodAsync(this, cancellationToken);
+        await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, ct), $"Case {caseValue}", cancellationToken);
     }
 
     /// <inheritdoc />
@@ -65,6 +72,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
 internal class ActivitySwitch<TActivityReturns, TSwitchValue> : 
     Activity<TActivityReturns>,
     IActivitySwitch<TActivityReturns, TSwitchValue>
+    where TSwitchValue : IComparable, IComparable<TSwitchValue>
 {
     private readonly Dictionary<TSwitchValue, ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue>> _caseMethods = new();
     private ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> _defaultMethod;
@@ -115,11 +123,24 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> :
 
     internal async Task<TActivityReturns> SwitchAsync(CancellationToken cancellationToken = default)
     {
-        var switchValue = await SwitchValueMethodAsync(this, cancellationToken);
-        var found = _caseMethods.TryGetValue(switchValue, out var methodAsync);
-        if (!found) methodAsync = _defaultMethod;
-        InternalContract.Require(methodAsync != null, $"Could not match {switchValue} with any of the case values.");
-        return await methodAsync!(this, cancellationToken);
+        var switchValue = await LogicExecutor.ExecuteWithReturnValueAsync(ct => SwitchValueMethodAsync(this, ct), "Switch", cancellationToken);
+        var caseValue = switchValue?.ToString();
+        ActivitySwitchMethodAsync<TActivityReturns, TSwitchValue> methodAsync = null;
+        var found = switchValue != null && _caseMethods.TryGetValue(switchValue, out methodAsync);
+        if (!found)
+        {
+            methodAsync = _defaultMethod;
+            caseValue = "default";
+        }
+
+        if (methodAsync == null)
+        {
+            throw new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError, 
+                $"The switch value was {switchValue}, but that could not be matched with any of the case values and there was no default catch.",
+                "The workflow has a bug in it (a switch with no corresponding case). Please report this to the workflow developer.");
+        }
+
+        return await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync!(this, ct), $"Case {caseValue}", cancellationToken);
     }
 
     /// <inheritdoc />

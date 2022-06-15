@@ -64,9 +64,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
         public IActivityFlow SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync)
         {
+#pragma warning disable CS0618
             ActivityInformation.Options.ExceptionHandler = exceptionHandlerAsync;
+#pragma warning restore CS0618
             return this;
         }
 
@@ -272,6 +275,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
@@ -287,6 +291,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
@@ -302,6 +307,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             try
@@ -469,6 +475,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use {nameof(Lock)} to lock within a workflow form and {nameof(Throttle)} to reduce the number of concurrent calls to a common resource (over all workflows).")]
         public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Semaphore, $"The activity was declared as {ActivityInformation.Type}.");
@@ -521,6 +528,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
         public IActivityFlow<TActivityReturns> SetExceptionHandler(ActivityExceptionHandlerAsync exceptionHandlerAsync)
         {
             ActivityInformation.Options.ExceptionHandler = exceptionHandlerAsync;
@@ -835,6 +843,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
@@ -850,6 +859,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
@@ -865,6 +875,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc />
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
             try

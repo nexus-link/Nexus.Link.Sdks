@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -71,25 +68,25 @@ internal class ActivityIf : Activity, IActivityIf, IActivityIfElse
         return this;
     }
 
-    internal async Task IfThenElse(CancellationToken cancellationToken)
+    internal async Task IfThenElseAsync(CancellationToken cancellationToken = default)
     {
-        var condition = await ConditionMethodAsync(this, cancellationToken);
+        var condition = await LogicExecutor.ExecuteWithReturnValueAsync(ct => ConditionMethodAsync(this, ct), "If", cancellationToken);
         if (condition)
         {
             if (_thenMethodAsync == null) return;
-            await _thenMethodAsync(this, cancellationToken);
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _thenMethodAsync(this, ct), "Then", cancellationToken);
         }
         else
         {
-            if (_elseMethodAsync == null) return;
-            await _elseMethodAsync(this, cancellationToken);
+            if (_elseMethodAsync == null) return; 
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _elseMethodAsync(this, ct), "Else", cancellationToken);
         }
     }
 
     /// <inheritdoc />
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(IfThenElse, cancellationToken);
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(IfThenElseAsync, cancellationToken);
     }
 }
 
@@ -162,20 +159,20 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
         return this;
     }
 
-    internal async Task<TActivityReturns> IfThenElse(CancellationToken cancellationToken)
+    internal async Task<TActivityReturns> IfThenElseAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
         InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");
 
-        var condition = await ConditionMethodAsync(this, cancellationToken);
+        var condition = await LogicExecutor.ExecuteWithReturnValueAsync(ct => ConditionMethodAsync(this, ct), "If", cancellationToken);
         TActivityReturns result;
         if (condition)
         {
-            result = await _thenMethodAsync!(this, cancellationToken);
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _thenMethodAsync(this, ct), "Then", cancellationToken);
         }
         else
         {
-            result = await _elseMethodAsync!(this, cancellationToken);
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _elseMethodAsync(this, ct), "Else", cancellationToken);
         }
 
         return result;
@@ -186,6 +183,6 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     {
         InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
         InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");
-        return ActivityExecutor.ExecuteWithReturnValueAsync(IfThenElse, DefaultValueMethodAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(IfThenElseAsync, DefaultValueMethodAsync, cancellationToken);
     }
 }

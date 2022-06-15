@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -12,6 +13,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
 
 internal static class MiscExtensions
 {
+    [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
     public static async Task CatchExitExceptionAsync(this Task task, LoopActivity activity, CancellationToken cancellationToken)
     {
         try
@@ -20,13 +22,16 @@ internal static class MiscExtensions
         }
         catch (WorkflowImplementationShouldNotCatchThisException outerException)
         {
+#pragma warning disable CS0618
             if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
+#pragma warning restore CS0618
             FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
             var e = innerException.ActivityFailedException;
             await activity.LogInformationAsync($"Ignoring exception in iteration {activity.LoopIteration}: {e.TechnicalMessage}", e, cancellationToken);
         }
     }
 
+    [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
     public static async Task<TActivityReturns> CatchExitExceptionAsync<TActivityReturns>(this Task<TActivityReturns> task, LoopActivity<TActivityReturns> activity, CancellationToken cancellationToken)
     {
         try
@@ -35,7 +40,9 @@ internal static class MiscExtensions
         }
         catch (WorkflowImplementationShouldNotCatchThisException outerException)
         {
+#pragma warning disable CS0618
             if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
+#pragma warning restore CS0618
             FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
             var e = innerException.ActivityFailedException;
             var result = await activity.DefaultValueMethodAsync(cancellationToken);
@@ -44,6 +51,7 @@ internal static class MiscExtensions
         }
     }
 
+    [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
     public static async Task<TMethodReturns>  CatchExitExceptionAsync<TActivityReturns, TMethodReturns>(this Task<TMethodReturns> task, LoopActivity<TActivityReturns, TMethodReturns> activity, CancellationToken cancellationToken)
     {
         try
@@ -52,7 +60,9 @@ internal static class MiscExtensions
         }
         catch (WorkflowImplementationShouldNotCatchThisException outerException)
         {
+#pragma warning disable CS0618
             if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
+#pragma warning restore CS0618
             FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
             var e = innerException.ActivityFailedException;
             var result = await activity.DefaultValueMethodAsync(cancellationToken);

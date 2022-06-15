@@ -21,7 +21,7 @@ public interface IActivityLoopUntilTrueBase : IActivity, ILoopActivity
     /// Get the loop argument with name <paramref name="name"/>.
     /// </summary>
     /// <typeparam name="T">The type of the argument.</typeparam>
-    [Obsolete("Please use the GetContext() or TryGetContext() method. Obsolete since 2022-05-01.")]
+    [Obsolete("Please use the GetInternalContext() or TryGetContext() method. Obsolete since 2022-05-01.")]
     T GetLoopArgument<T>(string name);
 
     /// <summary>

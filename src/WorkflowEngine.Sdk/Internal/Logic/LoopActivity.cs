@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -79,7 +80,8 @@ internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activit
 internal abstract class LoopActivity<TActivityReturns> : LoopActivity<TActivityReturns, TActivityReturns>
 {
     /// <inheritdoc />
-    protected LoopActivity(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync) : base(activityInformation, defaultValueMethodAsync)
+    protected LoopActivity(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync) 
+        : base(activityInformation, defaultValueMethodAsync)
     {
     }
 }

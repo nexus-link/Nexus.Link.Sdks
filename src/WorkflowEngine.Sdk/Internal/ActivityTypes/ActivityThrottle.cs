@@ -2,18 +2,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityThrottle" />
-internal class ActivityThrottle : ActivityLockOrThrottle<IActivityThrottle, IActivityThrottleThen>, IActivityThrottle, IActivityThrottleThen
+internal class ActivityThrottle : LockOrThrottleActivity<IActivityThrottle, IActivityThrottleThen>, IActivityThrottle, IActivityThrottleThen
 {
     public ActivityThrottle(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
         : base(activityInformation, semaphoreSupport)
@@ -30,6 +27,7 @@ internal class ActivityThrottle : ActivityLockOrThrottle<IActivityThrottle, IAct
     public TimeSpan? LimitationTimeSpan => SemaphoreSupport.LimitationTimeSpan;
 
     /// <inheritdoc />
+    [Obsolete($"Please use {nameof(Then)}. Obsolete since 2022-06-01")]
     public Task ExecuteAsync(ActivityMethodAsync<IActivityThrottle> methodAsync, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -55,6 +53,7 @@ internal class ActivityThrottle<TActivityReturns> : ActivityLockOrThrottle<TActi
     public TimeSpan? LimitationTimeSpan => SemaphoreSupport.LimitationTimeSpan;
 
     /// <inheritdoc />
+    [Obsolete($"Please use {nameof(Then)}. Obsolete since 2022-06-01")]
     public Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityThrottle<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));

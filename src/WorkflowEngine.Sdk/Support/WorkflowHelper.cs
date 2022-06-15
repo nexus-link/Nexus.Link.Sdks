@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -30,12 +28,66 @@ public class WorkflowHelper
             {
                 await task;
             }
+#pragma warning disable CS0618
+            catch (IgnoreAndExitToParentException)
+            {
+                // Ignore the exception by not adding it to the list exceptionTasksFulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
+            }
+#pragma warning restore CS0618
+            catch (RequestPostponedException e)
+            {
+                outException ??= new RequestPostponedException();
+                outException.AddWaitingForIds(e.WaitingForRequestIds);
+                if (!outException.TryAgain)
+                {
+                    outException.TryAgain = e.TryAgain;
+                    var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
+                                              || e.TryAgainAfterMinimumTimeSpan.HasValue &&
+                                              e.TryAgainAfterMinimumTimeSpan <
+                                              outException.TryAgainAfterMinimumTimeSpan;
+                    if (replaceCurrentValue)
+                    {
+                        outException.TryAgainAfterMinimumTimeSpan = e.TryAgainAfterMinimumTimeSpan;
+                    }
+                }
+            }
+            // TODO: Remove?
+            //catch (WorkflowImplementationShouldNotCatchThisException outerException)
+            //{
+            //    if (outerException.InnerException is IgnoreAndExitToParentException)
+            //    {
+            //        // Ignore the exception by not adding it to the list exceptionTasksFulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
+            //    }
+            //    else if (outerException.InnerException is RequestPostponedException rpe)
+            //    {
+            //        outException ??= new RequestPostponedException();
+            //        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
+            //        if (!outException.TryAgain)
+            //        {
+            //            outException.TryAgain = rpe.TryAgain;
+            //            var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
+            //                                      || rpe.TryAgainAfterMinimumTimeSpan.HasValue &&
+            //                                      rpe.TryAgainAfterMinimumTimeSpan <
+            //                                      outException.TryAgainAfterMinimumTimeSpan;
+            //            if (replaceCurrentValue)
+            //            {
+            //                outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        exceptionTasks.Add(task);
+            //    }
+            //}
             catch (WorkflowImplementationShouldNotCatchThisException outerException)
             {
+#pragma warning disable CS0618
                 if (outerException.InnerException is IgnoreAndExitToParentException)
                 {
                     // Ignore the exception by not adding it to the list exceptionTasksFulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
                 }
+#pragma warning restore CS0618
                 else if (outerException.InnerException is RequestPostponedException rpe)
                 {
                     outException ??= new RequestPostponedException();

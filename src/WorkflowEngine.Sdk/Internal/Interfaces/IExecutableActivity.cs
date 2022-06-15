@@ -1,11 +1,13 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 /// <summary>
-/// An activity that can either be r
+/// An activity that can be executed
 /// </summary>
 public interface IExecutableActivity : IActivity
 {
@@ -14,8 +16,9 @@ public interface IExecutableActivity : IActivity
     /// </summary>
     Task ExecuteAsync(CancellationToken cancellationToken = default);
 }
+
 /// <summary>
-/// An activity that can either be r
+/// An activity that can be executed
 /// </summary>
 public interface IExecutableActivity<TActivityReturns> : IActivity
 {
@@ -25,5 +28,6 @@ public interface IExecutableActivity<TActivityReturns> : IActivity
     /// <returns>
     /// The result from the completed activity.
     /// </returns>
+
     Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default);
 }

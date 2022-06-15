@@ -134,7 +134,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 mergedToken.Token.ThrowIfCancellationRequested();
                 await LowerAsync(handler.Id.ToGuidString(), mergedToken.Token);
             }
-            catch (FulcrumTryAgainException e)
+            catch (FulcrumTryAgainException)
             {
                 var sleep = !queue.Any();
                 // The semaphore was locked by another process, enqueue to try later

@@ -192,7 +192,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var recordToCreate = DataGenerator.DefaultActivityFormCreate;
             var recordToUpdate =
                 await ConfigurationTables.ActivityForm.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
-            recordToUpdate.Type = ActivityTypeEnum.Condition.ToString();
+            recordToUpdate.Type = ActivityTypeEnum.If.ToString();
 
             // Act
             await ConfigurationTables.ActivityForm.UpdateAndReturnAsync(id, recordToUpdate)

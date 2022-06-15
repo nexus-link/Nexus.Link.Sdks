@@ -157,6 +157,11 @@ internal interface IWorkflowInformation
     /// </summary>
     IActivityExecutor GetActivityExecutor(Activity activity);
 
+    /// <summary>
+    /// Get an activity executor for <paramref name="activity"/>
+    /// </summary>
+    ILogicExecutor GetLogicExecutor(IInternalActivity activity);
+
     bool TryGetActivity(string activityId, out Activity activity);
 
     bool TryGetActivity<TActivityReturns>(string activityId, out Activity<TActivityReturns> activity);
@@ -173,7 +178,7 @@ internal interface IWorkflowInformation
     /// Whenever a workflow is called again, this timer is reset. It is used to know how long time
     /// the current run is taking.
     /// </summary>
-    Stopwatch TimeSinceExecutionStarted { get; }
+    Stopwatch TimeSinceCurrentRunStarted { get; }
 
     /// <summary>
     /// A string representation of the workflow that is detailed enough for logging.

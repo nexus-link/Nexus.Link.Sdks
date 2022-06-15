@@ -6,8 +6,8 @@ using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -26,9 +26,10 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         InternalContract.RequireNotNull(activityInformation, nameof(activityInformation));
         ActivityInformation = activityInformation;
 
-        Form = ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
-        Version = ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
+        // TODO: Currently these things have to be done in this order, because there is magic inside ActivityInstanceId. Should be changed.
         Instance = ActivityInformation.Workflow.GetActivityInstance(ActivityInstanceId);
+        Version = ActivityInformation.Workflow.GetActivityVersionByFormId(ActivityInformation.FormId);
+        Form = ActivityInformation.Workflow.GetActivityForm(ActivityInformation.FormId);
         var parentActivity = ActivityInformation.Parent;
         if (parentActivity != null)
         {
@@ -78,7 +79,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     public override string ToString() => ActivityTitle;
 
     /// <inheritdoc />
-    public string ToLogString() => $"{ActivityTitle} (instance id: {ActivityInstanceId})";
+    public string ToLogString() => $"{ActivityTitle} {Instance?.State} (instance id: {ActivityInstanceId})";
 
     public IDictionary<string, JToken> ContextDictionary => Instance.ContextDictionary;
 
@@ -95,6 +96,34 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     {
         get => _internalIterationAsAsyncLocal.Value;
         set => _internalIterationAsAsyncLocal.Value = value;
+    }
+
+    private static string InternalContextIdentifier = "A05CF82F-ADF2-4A0E-8715-78C560421689";
+
+    private string GetInternalContextKey(string key) => $"{key}-{InternalContextIdentifier}";
+
+    /// <inheritdoc />
+    public void SetInternalContext<T>(string key, T value)
+    {
+        SetContext(GetInternalContextKey(key), value);
+    }
+
+    /// <inheritdoc />
+    public void RemoveInternalContext(string key)
+    {
+        RemoveContext(GetInternalContextKey(key));
+    }
+
+    /// <inheritdoc />
+    public T GetInternalContext<T>(string key)
+    {
+        return GetContext<T>(GetInternalContextKey(key));
+    }
+
+    /// <inheritdoc />
+    public bool TryGetInternalContext<T>(string key, out T value)
+    {
+        return TryGetContext(GetInternalContextKey(key), out value);
     }
 
     public IActivityInformation ActivityInformation { get; protected set; }
@@ -114,7 +143,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
 
     /// <inheritdoc />
     public ActivityOptions Options => ActivityInformation.Options;
-    
+
     public string ActivityFormId => ActivityInformation.FormId;
 
     /// <summary>
@@ -140,11 +169,18 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     }
 
     /// <inheritdoc />
+    public void MarkAsSuccess<T>(T result)
+    {
+        MarkAsSuccess();
+        Instance.ResultAsJson = result.ToJsonString();
+    }
+
+    /// <inheritdoc />
     public void SetContext<T>(string key, T value)
     {
         InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));
         FulcrumAssert.IsNotNull(ContextDictionary, CodeLocation.AsString());
-        ContextDictionary[key] = JToken.FromObject(value);
+        ContextDictionary[key] = value == null ? JValue.CreateNull() : JToken.FromObject(value);
     }
 
     /// <inheritdoc />
@@ -190,5 +226,16 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         Instance.ExceptionCategory = exception.ExceptionCategory;
         Instance.ExceptionTechnicalMessage = exception.TechnicalMessage;
         Instance.ExceptionFriendlyMessage = exception.FriendlyMessage;
+    }
+
+    /// <inheritdoc />
+    public void MarkFailedForRetry()
+    {
+        FulcrumAssert.AreEqual(ActivityStateEnum.Failed, Instance.State, CodeLocation.AsString());
+        Instance.State = ActivityStateEnum.Executing;
+        Instance.FinishedAt = null;
+        Instance.ExceptionCategory = null;
+        Instance.ExceptionTechnicalMessage = null;
+        Instance.ExceptionFriendlyMessage = null;
     }
 }
