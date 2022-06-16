@@ -32,5 +32,11 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         {
             ActivityFormId = activityFormId, Title = "Title", Type = ActivityTypeEnum.Action
         };
+
+        /// <inheritdoc />
+        public void AddImplementation(IWorkflowImplementationBase workflowImplementation)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

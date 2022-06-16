@@ -6,15 +6,15 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     public class AsyncRequestMgmtMock : IAsyncRequestMgmtCapability
     {
-        public Mock<IRequestService> RequestServiceMock { get; }
-        public Mock<IRequestResponseService> RequestResponseServiceMock { get; }
+        public Mock<IRequestService> RequestServiceMoq { get; }
+        public Mock<IRequestResponseService> RequestResponseServiceMoq { get; }
 
         public AsyncRequestMgmtMock()
         {
-            RequestServiceMock = new Mock<IRequestService>();
-            Request = RequestServiceMock.Object;
-            RequestResponseServiceMock = new Mock<IRequestResponseService>();
-            RequestResponse = RequestResponseServiceMock.Object;
+            RequestServiceMoq = new Mock<IRequestService>();
+            Request = RequestServiceMoq.Object;
+            RequestResponseServiceMoq = new Mock<IRequestResponseService>();
+            RequestResponse = RequestResponseServiceMoq.Object;
         }
         /// <inheritdoc />
         public IRequestService Request { get; }

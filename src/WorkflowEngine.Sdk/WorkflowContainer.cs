@@ -54,10 +54,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             _workflowVersionCollection.AddWorkflowVersion(workflowImplementation);
         }
 
-        /// <summary>
-        /// Add a <paramref name="workflowImplementation"/> to this container.
-        /// </summary>
-        protected void AddImplementation(IWorkflowImplementationBase workflowImplementation)
+        /// <inheritdoc />
+        public void AddImplementation(IWorkflowImplementationBase workflowImplementation)
         {
             _workflowVersionCollection.AddWorkflowVersion(workflowImplementation);
         }

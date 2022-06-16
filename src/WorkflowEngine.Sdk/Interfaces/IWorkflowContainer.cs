@@ -32,5 +32,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="activityFormId">The identifier for the activity</param>
         ActivityDefinition GetActivityDefinition(string activityFormId);
+
+        /// <summary>
+        /// Add a <paramref name="workflowImplementation"/> to this container.
+        /// </summary>
+        void AddImplementation(IWorkflowImplementationBase workflowImplementation);
     }
 }

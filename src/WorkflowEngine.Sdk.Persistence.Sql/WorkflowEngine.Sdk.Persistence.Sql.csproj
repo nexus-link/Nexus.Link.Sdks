@@ -20,7 +20,7 @@
 
   <!-- Publish symbols -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.4.0</Version>
+    <Version>2.4.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,6 +57,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.4.1 Bump
       2.4.0 Added an index for Log.TimeStamp
       2.3.0 Added AbsolutePosition to ActivityInstanceRecord
       2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord

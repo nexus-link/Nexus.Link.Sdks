@@ -76,9 +76,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 
             var activityInstanceService = _workflowStateCapability.ActivityInstance;
             FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
+            var workflowInstanceService = _workflowStateCapability.WorkflowInstance;
+            FulcrumAssert.IsNotNull(workflowInstanceService, CodeLocation.AsString());
 
             var activityInstance = await activityInstanceService.ReadAsync(id, cancellationToken);
             if (activityInstance == null) throw new FulcrumNotFoundException(id);
+            FulcrumAssert.IsValidated(activityInstance, CodeLocation.AsString());
+
+            var workflowInstance = await workflowInstanceService.ReadAsync(activityInstance.WorkflowInstanceId, cancellationToken);
+            FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
+
+            if (workflowInstance.State != WorkflowStateEnum.Halted)
+            {
+                throw new FulcrumBusinessRuleException(
+                    $"You can only retry workflows that are in state {nameof(WorkflowStateEnum.Halted)}," +
+                    $" but workflow {workflowInstance.Id} is in state {workflowInstance.State}.");
+            }
 
             activityInstance.State = ActivityStateEnum.Waiting;
             activityInstance.ResultAsJson = null;
@@ -86,9 +99,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             activityInstance.ExceptionTechnicalMessage = null;
             activityInstance.ExceptionFriendlyMessage = null;
             activityInstance.AsyncRequestId = null;
-            // TODO: item.ExceptionAlertHandled = null
-
+            activityInstance.ExceptionAlertHandled = false;
             await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
+
+            workflowInstance.State = WorkflowStateEnum.Waiting;
+            await workflowInstanceService.UpdateAsync(id, workflowInstance, cancellationToken);
+
             await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log
