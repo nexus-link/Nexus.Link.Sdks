@@ -36,6 +36,7 @@ internal abstract class LoopActivity : Activity, ILoopActivity, IExecutableActiv
     {
         WorkflowStatic.Context.ParentActivity = this;
         await InternalExecuteAsync(cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
     }
 
     protected abstract Task InternalExecuteAsync(CancellationToken cancellationToken = default);
@@ -70,7 +71,9 @@ internal abstract class LoopActivity<TActivityReturns> : Activity<TActivityRetur
     {
         LoopIteration = 0;
         WorkflowStatic.Context.ParentActivity = this;
-        return await InternalExecuteAsync(cancellationToken);
+        var result =await InternalExecuteAsync(cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
+        return result;
     }
 
     protected abstract Task<TActivityReturns> InternalExecuteAsync(CancellationToken cancellationToken = default);

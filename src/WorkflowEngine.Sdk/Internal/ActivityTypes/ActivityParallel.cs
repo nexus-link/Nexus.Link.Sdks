@@ -71,6 +71,7 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
         JobNumber = 0;
         WorkflowStatic.Context.ParentActivity = this;
         var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ParallelAsync, DefaultValueMethodAsync, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
         return result;
     }
 

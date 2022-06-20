@@ -39,14 +39,15 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 
     /// <inheritdoc/>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public Task ExecuteAsync(
+    public async Task ExecuteAsync(
         ActivityForEachSequentialMethodAsync<TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        WorkflowStatic.Context.ParentActivity = this;
         _methodAsync = methodAsync;
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ForEachSequentialAsync, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = this;
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ForEachSequentialAsync, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
     }
 
     internal async Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
@@ -100,15 +101,17 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
 
     /// <inheritdoc/>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public Task<IList<TMethodReturns>> ExecuteAsync(
+    public async Task<IList<TMethodReturns>> ExecuteAsync(
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
         ChildCounter = 0;
-        WorkflowStatic.Context.ParentActivity = this;
         _methodAsync = methodAsync;
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken)
+        WorkflowStatic.Context.ParentActivity = this;
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken)
             .CatchExitExceptionAsync(this, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
+        return result;
     }
 
     internal async Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)

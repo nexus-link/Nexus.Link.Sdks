@@ -58,9 +58,10 @@ internal class ActivityLoopUntilTrue : LoopActivity, IActivityLoopUntilTrue
         ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync,
         CancellationToken cancellationToken = default)
     {
-        WorkflowStatic.Context.ParentActivity = this;
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        WorkflowStatic.Context.ParentActivity = this;
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
     }
 
     internal async Task LoopUntilAsync(CancellationToken cancellationToken)
@@ -157,8 +158,10 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : LoopActivity<TActivityR
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         WorkflowStatic.Context.ParentActivity = this;
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken)
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken)
             .CatchExitExceptionAsync(this, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
+        return result;
     }
 
     /// <inheritdoc />
