@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.15.3</Version>
+    <Version>6.15.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,7 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.15.4 Now resets the parent activity to null after a loop has been completed.
+      6.15.4 Now resets the parent activity to null after a loop has been completed
       6.15.3 Added runtime error if a default value was given for ForEachParallel or ForEachSequential
       6.15.2 ForEachSequenctial() had the wrong generic signature
       6.15.1 ActivityService.RetryAsync() now verifies that the WorkflowInstance has state Halted and it updates the state to Waiting
