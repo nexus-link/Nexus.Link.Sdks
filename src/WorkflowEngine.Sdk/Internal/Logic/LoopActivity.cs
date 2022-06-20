@@ -42,10 +42,10 @@ internal abstract class LoopActivity : Activity, ILoopActivity, IExecutableActiv
 }
 
 /// <inheritdoc cref="ILoopActivity" />
-internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activity<TMethodReturns>, ILoopActivity, IExecutableActivity<TActivityReturns>
+internal abstract class LoopActivity<TActivityReturns> : Activity<TActivityReturns>, ILoopActivity, IExecutableActivity<TActivityReturns>
 {
     protected LoopActivity(IActivityInformation activityInformation,
-        ActivityDefaultValueMethodAsync<TMethodReturns> defaultValueMethodAsync)
+        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
     }
@@ -74,14 +74,4 @@ internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activit
     }
 
     protected abstract Task<TActivityReturns> InternalExecuteAsync(CancellationToken cancellationToken = default);
-}
-
-/// <inheritdoc cref="ILoopActivity" />
-internal abstract class LoopActivity<TActivityReturns> : LoopActivity<TActivityReturns, TActivityReturns>
-{
-    /// <inheritdoc />
-    protected LoopActivity(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync) 
-        : base(activityInformation, defaultValueMethodAsync)
-    {
-    }
 }

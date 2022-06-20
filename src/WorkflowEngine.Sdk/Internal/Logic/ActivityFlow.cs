@@ -930,7 +930,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             try
             {
-                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items);
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items);
             }
             catch (Exception e)
             {
@@ -946,7 +946,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
-                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, DefaultValueForNotUrgentFail, items, methodAsync);
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, methodAsync);
             }
             catch (Exception e)
             {

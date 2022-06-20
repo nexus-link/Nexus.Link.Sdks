@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WorkflowLogic\**" />
+    <EmbeddedResource Remove="WorkflowLogic\**" />
+    <None Remove="WorkflowLogic\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -34,11 +40,6 @@
     <ProjectReference Include="..\..\src\WorkflowEngine.Sdk\WorkflowEngine.Sdk.csproj" />
     <ProjectReference Include="..\Capabilities.WorkflowConfiguration.UnitTests\Capabilities.WorkflowConfiguration.UnitTests.csproj" />
     <ProjectReference Include="..\Capabilities.WorkflowState.UnitTests\Capabilities.WorkflowState.UnitTests.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SystemTests\TestSupport\Workflows\" />
-    <Folder Include="WorkflowLogic\" />
   </ItemGroup>
 
 </Project>

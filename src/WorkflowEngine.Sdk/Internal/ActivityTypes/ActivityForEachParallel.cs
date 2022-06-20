@@ -113,7 +113,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), EmptyDictionaryAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc />

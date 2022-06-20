@@ -198,10 +198,7 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
         do
         {
             LoopIteration++;
-#pragma warning disable CS0618
-            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), "Do", cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
-#pragma warning restore CS0618
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), "Do", cancellationToken);
         } while (await GetWhileConditionAsync(cancellationToken));
 
         return result;

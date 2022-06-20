@@ -72,24 +72,25 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 
 /// <inheritdoc cref="ActivityForEachSequential{TMethodReturns, TItem}" />
 internal class ActivityForEachSequential<TMethodReturns, TItem> :
-    LoopActivity<IList<TMethodReturns>, TMethodReturns>, IActivityForEachSequential<TMethodReturns, TItem>
+    LoopActivity<IList<TMethodReturns>>, IActivityForEachSequential<TMethodReturns, TItem>
 {
     private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync, IEnumerable<TItem> items)
-        : base(activityInformation, getDefaultValueAsync)
+        IActivityInformation activityInformation, IEnumerable<TItem> items)
+        : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
     }
+
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
+        IActivityInformation activityInformation,
         IEnumerable<TItem> items,
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync)
-        : base(activityInformation, getDefaultValueAsync)
+        : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -106,10 +107,8 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         ChildCounter = 0;
         WorkflowStatic.Context.ParentActivity = this;
         _methodAsync = methodAsync;
-        return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ForEachSequentialAsync,
-            _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
-            cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken)
+            .CatchExitExceptionAsync(this, cancellationToken);
     }
 
     internal async Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
@@ -119,10 +118,8 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         foreach (var item in Items)
         {
             LoopIteration++;
-#pragma warning disable CS0618
-            var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
-#pragma warning restore CS0618
+            var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct),
+                $"Item{LoopIteration}", cancellationToken);
             resultList.Add(result);
         }
 
@@ -132,10 +129,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     /// <inheritdoc />
     protected override async Task<IList<TMethodReturns>> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
-        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(
-            ForEachSequentialAsync,
-            _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
-            cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken);
         return result;
     }
 }

@@ -130,15 +130,6 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : LoopActivity<TActivityR
         _loopArguments[name] = value;
     }
 
-    /// <inheritdoc/>
-    [Obsolete("Please use the ExecuteAsync() method without a method parameter in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public async Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
-    {
-        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-        WorkflowStatic.Context.ParentActivity = this;
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
-    }
-
     internal async Task<TActivityReturns> LoopUntilAsync(CancellationToken cancellationToken)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
@@ -153,12 +144,21 @@ internal class ActivityLoopUntilTrue<TActivityReturns> : LoopActivity<TActivityR
         {
             LoopIteration++;
             // TODO: Verify that we don't use the same values each iteration
-            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(this, ct), "Loop", cancellationToken)
-                    .CatchExitExceptionAsync(this, cancellationToken);
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(this, ct), "Loop", cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
         } while (EndLoop != true);
 
         return result;
+    }
+
+    /// <inheritdoc/>
+    [Obsolete("Please use the ExecuteAsync() method without a method parameter in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
+    public async Task<TActivityReturns> ExecuteAsync(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync, CancellationToken cancellationToken = default)
+    {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        WorkflowStatic.Context.ParentActivity = this;
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(ct => LoopUntilAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken)
+            .CatchExitExceptionAsync(this, cancellationToken);
     }
 
     /// <inheritdoc />

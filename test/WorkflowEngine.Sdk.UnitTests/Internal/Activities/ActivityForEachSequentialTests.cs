@@ -13,7 +13,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 {
     public class ActivityForEachSequentialTests : ActivityTestsBase
     {
-        public ActivityForEachSequentialTests() :base(nameof(ActivityForEachSequentialTests))
+        public ActivityForEachSequentialTests() : base(nameof(ActivityForEachSequentialTests))
         {
         }
 
@@ -48,7 +48,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task ForEachSequential_Given_Summation_Gives_CorrectSum()
+        public async Task ForEachSequentialAsync_Given_Summation_Gives_CorrectSum()
         {
             // Arrange
             var logicExecutor = new LogicExecutorMock();
@@ -72,15 +72,37 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             // Assert
             actualValue.ShouldBe(15);
         }
+
+        #region Legacy
+#pragma warning disable CS0618
+
+
+        [Fact]
+        public async Task Legacy_Execute_Given_ManyItems_Gives_1Call()
+        {
+            // Arrange
+            var values = new List<int> { 3, 2, 1 };
+            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values);
+
+            // Act
+            await activity.ExecuteAsync((_, _, _) => Task.CompletedTask);
+
+            // Assert
+            _activityExecutorMock
+                .Verify(ae => ae.ExecuteWithoutReturnValueAsync(activity.ForEachSequentialAsync, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+#pragma warning restore CS0618
+        #endregion
         #endregion
 
         #region Return value
         [Fact]
-        public async Task Execute_Result_Given_ManyItems_Gives_1Call()
+        public async Task RV_Execute_Result_Given_ManyItems_Gives_1Call()
         {
             // Arrange
             var values = new List<int> { 3, 2, 1, 0 };
-            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, GetDefaultValueAsync, values, (_,_,_) => Task.FromResult("a"));
+            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult("a"));
 
             // Act
             await activity.ExecuteAsync();
@@ -89,7 +111,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             _activityExecutorMock.Verify(
                 ae => ae.ExecuteWithReturnValueAsync(
                     activity.ForEachSequentialAsync,
-                    It.IsAny<ActivityDefaultValueMethodAsync<IList<string>>>(), 
+                    It.IsAny<ActivityDefaultValueMethodAsync<IList<string>>>(),
                     It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -98,24 +120,24 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 1, 2, 3, 4, 5, 99 };
-            var activity = new ActivityForEachSequential<int,int>(_activityInformationMock, null, values, (_,_, _) => Task.FromResult(1));
+            var activity = new ActivityForEachSequential<int, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult(1));
 
             // Act
             await activity.ForEachSequentialAsync();
 
             // Assert
-            _logicExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync(It.IsAny < InternalActivityMethodAsync<int>>(), It.Is<string>(s => s.StartsWith("Item")), It.IsAny<CancellationToken>()), Times.Exactly(values.Count));
+            _logicExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(), It.Is<string>(s => s.StartsWith("Item")), It.IsAny<CancellationToken>()), Times.Exactly(values.Count));
         }
 
 
         [Fact]
-        public async Task ForEachSequential_Result_Given_PartNumbers_Gives_CorrectResult()
+        public async Task RV_ForEachSequential_Result_Given_PartNumbers_Gives_CorrectResult()
         {
             // Arrange
             var logicExecutor = new LogicExecutorMock();
             _workflowInformationMock.LogicExecutor = logicExecutor;
             var values = new List<int> { 3, 2, 1, 99 };
-            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, GetDefaultValueAsync, values,
+            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, values,
                 async (i, a, ct) =>
                 {
                     await Task.Delay(1, ct);
@@ -130,13 +152,29 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             result.ShouldBe(new[] { "1: 3", "2: 2", "3: 1", "4: 99" });
         }
 
+        #region Legacy
+#pragma warning disable CS0618
+        [Fact]
+        public async Task Legacy_Execute_Result_Given_ManyItems_Gives_1Call()
+        {
+            // Arrange
+            var values = new List<int> { 3, 2, 1, 0 };
+            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, values);
+
+            // Act
+            await activity.ExecuteAsync((_, _, _) => Task.FromResult("a"));
+
+            // Assert
+            _activityExecutorMock.Verify(
+                ae => ae.ExecuteWithReturnValueAsync(
+                    activity.ForEachSequentialAsync,
+                    It.IsAny<ActivityDefaultValueMethodAsync<IList<string>>>(),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
+#pragma warning restore CS0618
         #endregion
 
-
-        private Task<string> GetDefaultValueAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
 

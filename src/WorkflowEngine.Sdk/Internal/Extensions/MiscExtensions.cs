@@ -50,24 +50,4 @@ internal static class MiscExtensions
             return result;
         }
     }
-
-    [Obsolete("This will not be supported. Please use Action+Catch. Obsolete since 2022-06-15.")]
-    public static async Task<TMethodReturns>  CatchExitExceptionAsync<TActivityReturns, TMethodReturns>(this Task<TMethodReturns> task, LoopActivity<TActivityReturns, TMethodReturns> activity, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await task;
-        }
-        catch (WorkflowImplementationShouldNotCatchThisException outerException)
-        {
-#pragma warning disable CS0618
-            if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
-#pragma warning restore CS0618
-            FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
-            var e = innerException.ActivityFailedException;
-            var result = await activity.DefaultValueMethodAsync(cancellationToken);
-            await activity.LogInformationAsync($"Ignoring exception in iteration {activity.LoopIteration}, using the default value.", new { Exception = e, Result = result }, cancellationToken);
-            return result;
-        }
-    }
 }
