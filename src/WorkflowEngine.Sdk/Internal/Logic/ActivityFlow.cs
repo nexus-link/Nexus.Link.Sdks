@@ -895,6 +895,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachParallel)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
                 return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod);
@@ -912,6 +913,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachParallel)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
                 return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync);
@@ -928,6 +930,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
                 return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items);
@@ -944,6 +947,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
                 return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, methodAsync);
