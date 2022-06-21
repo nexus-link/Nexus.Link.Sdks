@@ -47,8 +47,14 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
 
         /// <summary>
         /// This feature gets the first found <see cref="Constants.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// It also gets the first found <see cref="Constants.ParentExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
         /// </summary>
         public SaveExecutionIdOptions SaveExecutionId { get; } = new();
+
+        /// <summary>
+        /// This feature saves information about the request before the execution 
+        /// </summary>
+        public SaveExecutionInformationOptions SaveExecutionInformation { get; } = new();
 
         /// <summary>
         /// This feature reads the <see cref="Constants.NexusTestContextHeaderName"/> header from the request and saves it to the execution context.

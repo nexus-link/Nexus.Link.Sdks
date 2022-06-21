@@ -207,7 +207,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         internal Task<TWorkflowResult> InternalExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
         {
             var limitedTimeCancellationToken = new CancellationTokenSource(DefaultActivityOptions.MaxTotalRunTimeSpan);
-            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            using var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
             ReducedTimeCancellationToken = mergedToken.Token;
             return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
@@ -215,7 +215,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         internal Task InternalExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
         {
             var limitedTimeCancellationToken = new CancellationTokenSource(DefaultActivityOptions.MaxTotalRunTimeSpan);
-            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            using var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
             ReducedTimeCancellationToken = mergedToken.Token;
             return _workflowExecutor.ExecuteAsync(workflowImplementation, cancellationToken);
         }
