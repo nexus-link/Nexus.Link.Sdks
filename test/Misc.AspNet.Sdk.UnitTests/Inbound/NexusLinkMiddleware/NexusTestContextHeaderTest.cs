@@ -18,7 +18,8 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
         [TestInitialize]
         public void TestCaseInitialize()
         {
-            FulcrumApplicationHelper.UnitTestSetup(typeof(NexusTestContextHeaderTest).FullName);
+            FulcrumApplicationHelper.UnitTestSetup(typeof(NexusTestContextHeaderTest).FullName); 
+            FulcrumApplication.Context.NexusTestContext = null;
 
             var options = new NexusLinkMiddlewareOptions();
             options.Features.SaveNexusTestContext.Enabled = true;
@@ -33,10 +34,9 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
         public async Task Header_Is_Setup_On_Context()
         {
             const string headerValue = "v1; test-id: abc-123";
-            const string url = "https://example.com";
 
             var context = new DefaultHttpContext();
-            context.SetRequest(url);
+            context.SetRequest();
             context.Request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
             await _itemUnderTest.InvokeAsync(context);
             _foundContext.ShouldBe(headerValue);
@@ -45,9 +45,8 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
         [TestMethod]
         public async Task No_Header_Is_Setup_On_Context()
         {
-            const string url = "https://example.com";
             var context = new DefaultHttpContext();
-            context.SetRequest(url);
+            context.SetRequest();
             await _itemUnderTest.InvokeAsync(context);
             _foundContext.ShouldBeNull();
         }
@@ -56,10 +55,9 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
         public async Task Json_Value_Can_Be_Used()
         {
             var headerValue = JsonConvert.SerializeObject(new { Id = "123" });
-            const string url = "https://example.com";
 
             var context = new DefaultHttpContext();
-            context.SetRequest(url);
+            context.SetRequest();
             context.Request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
             await _itemUnderTest.InvokeAsync(context);
             _foundContext.ShouldBe(headerValue);
