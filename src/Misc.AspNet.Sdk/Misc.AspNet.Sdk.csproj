@@ -54,7 +54,7 @@
     <Authors>XLENT Link</Authors>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageLanguage>en-US</PackageLanguage>
-    <Description>SDK for Nexus Link Async Manager.</Description>
+    <Description>SDK for misc Nexus Link AspNet related things.</Description>
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
