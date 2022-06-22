@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -613,4 +612,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         }
     }
 }
-#endif

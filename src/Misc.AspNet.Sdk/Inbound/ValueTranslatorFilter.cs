@@ -15,28 +15,13 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Translation;
 using Nexus.Link.Libraries.Web.AspNet.Logging;
-#if NETCOREAPP
-
-#else
-using System.Web.Http.Filters;
-using System.Web.Http.Controllers;
-using Newtonsoft.Json.Linq;
-using Nexus.Link.Libraries.Core.Json;
-using System.Net.Http;
-using System.Text;
-using Nexus.Link.Libraries.Web.Logging;
-#endif
 
 namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 {
-#if NETCOREAPP
     /// <summary>
     /// Filter to translate values through a value translator
     /// </summary>
     public class ValueTranslatorFilter : IAsyncActionFilter, IAsyncResultFilter
-#else
-    public class ValueTranslatorFilter : ActionFilterAttribute
-#endif
     {
         /// <summary>
         /// The service that does the actual translation.
@@ -66,7 +51,6 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
         }
 
-#if NETCOREAPP
         /// <summary>
         /// This is the logic for the filter
         /// </summary>
@@ -117,87 +101,6 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             await next();
         }
-#else
-        public override async Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
-        {
-            var translator = GetTranslator(actionContext);
-            if (translator != null)
-            {
-                var methodInfo = FindControllerMethod(actionContext);
-
-                // TODO: Generalize to Decorate() method
-                if (methodInfo != null)
-                {
-                    try
-                    {
-                        DecorateUserId(translator);
-                        DecorateArguments(methodInfo.GetParameters(), actionContext.ActionArguments, translator);
-                    }
-                    catch (Exception exception)
-                    {
-                        await LogFailureAsync(actionContext.Request, actionContext.Response, exception, cancellationToken);
-                    }
-                }
-            }
-        }
-
-        private static MethodInfo FindControllerMethod(HttpActionContext actionContext)
-        {
-            MethodInfo methodInfo = null;
-            try
-            {
-                var methodInfos = actionContext.ControllerContext.Controller.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
-                foreach (var info in methodInfos)
-                {
-                    var parameterInfos = info.GetParameters();
-                    if (info.Name == actionContext.ActionDescriptor.ActionName &&
-                        parameterInfos?.Length == actionContext.ActionArguments.Count)
-                    {
-                        var i = 0;
-                        var allGood = true;
-                        foreach (var parameterInfo in parameterInfos)
-                        {
-                            var argType = actionContext.ActionArguments.ElementAt(i).Value.GetType();
-                            if (parameterInfo.ParameterType != argType)
-                            {
-                                allGood = false;
-                                break;
-                            }
-                            i++;
-                        }
-
-                        if (allGood)
-                        {
-                            methodInfo = info;
-                            break;
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                Log.LogWarning($"Unable to find Controller method {actionContext.ControllerContext.ControllerDescriptor.ControllerName}.{actionContext.ActionDescriptor.ActionName}");
-            }
-            return methodInfo;
-        }
-
-        public override async Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
-        {
-            var translator = GetTranslator(actionExecutedContext);
-            if (translator != null)
-            {
-                try
-                {
-                    await TranslateResponseAsync(actionExecutedContext, translator, cancellationToken);
-                }
-                catch (Exception exception)
-                {
-                    await LogFailureAsync(actionExecutedContext.Request, actionExecutedContext.Response, exception, cancellationToken);
-                    throw;
-                }
-            }
-        }
-#endif
 
         private ITranslator GetTranslator(object context)
         {
@@ -265,8 +168,6 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             }
         }
-
-#if NETCOREAPP
 
         private static void LogDecorationFailure(ActionExecutingContext context, Exception exception)
         {
@@ -337,52 +238,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 $"Failed to translate the response for the request {requestAsLog}. Result:\r{resultAsLog}",
                 exception);
         }
-#else
-        private static async Task LogFailureAsync(HttpRequestMessage request, HttpResponseMessage response, Exception exception, CancellationToken cancellationToken)
-        {
-            string requestAsLog;
-            string resultAsLog;
-
-            try
-            {
-                await response.Content.LoadIntoBufferAsync();
-                resultAsLog = await response.Content.ReadAsStringAsync();
-            }
-            catch (Exception e)
-            {
-                resultAsLog = $"Failed to serialize: {e}";
-            }
-
-            try
-            {
-                requestAsLog = await request.ToLogStringAsync(response, cancellationToken: cancellationToken);
-            }
-            catch (Exception)
-            {
-                requestAsLog = request.RequestUri?.ToString();
-            }
-
-            Log.LogError($"Failed to decorate the arguments for the request {requestAsLog}. Result:\r{resultAsLog}", exception);
-        }
-
-        private static async Task TranslateResponseAsync(HttpActionExecutedContext context, ITranslator translator, CancellationToken cancellationToken = default)
-        {
-            if (context.ActionContext?.Response?.Content == null) return;
-            await context.ActionContext?.Response.Content.LoadIntoBufferAsync();
-            var asString = await context.ActionContext?.Response?.Content?.ReadAsStringAsync();
-            if (string.IsNullOrWhiteSpace(asString)) return;
-
-            var objectResult = JsonHelper.SafeDeserializeObject<JObject>(asString);
-            if (objectResult == null) return;
-            var itemBeforeTranslation = objectResult;
-
-            await translator.Add(itemBeforeTranslation).ExecuteAsync(cancellationToken);
-            var itemAfterTranslation = translator.Translate(itemBeforeTranslation, itemBeforeTranslation.GetType());
-            context.ActionContext.Response.Content = new StringContent(JsonConvert.SerializeObject(itemAfterTranslation), Encoding.UTF8, "application/json");
-        }
-#endif
     }
-#if NETCOREAPP
     /// <summary>
     /// https://stackoverflow.com/questions/55990151/is-adding-addmvc-service-twice-in-configureservices-a-good-practice-in-asp-n
     /// </summary>
@@ -423,5 +279,4 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             return services;
         }
     }
-#endif
 }

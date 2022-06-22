@@ -1,17 +1,19 @@
-﻿using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Misc.AspNet.Sdk.Inbound.Options;
+﻿using Misc.Web.Sdk.Outbound.Options;
+using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.EntityAttributes;
 
-namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
+namespace Misc.Web.Sdk.Outbound
 {
     /// <summary>
-    /// Options that controls <see cref="NexusLinkMiddleware"/>
+    /// Options that controls <see cref="NexusLinkHandler"/>
     /// </summary>
-    public class NexusLinkMiddlewareOptions : IValidatable
+    public class NexusLinkHandlerOptions : IValidatable
     {
         /// <summary>
         /// The features that can be controlled.
         /// </summary>
-        public MiddlewareFeatures Features = new MiddlewareFeatures();
+        public HandlerFeatures Features = new HandlerFeatures();
+
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {

@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP
-using Nexus.Link.Libraries.Core.Application;
+﻿using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
@@ -87,4 +86,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
         }
     }
 }
-#endif

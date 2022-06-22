@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.18.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.1" />
+  </ItemGroup>
+
+</Project>
