@@ -217,18 +217,21 @@ namespace Misc.Web.Sdk.Outbound
                 }
 
                 var postponeInfo = JsonHelper.SafeDeserializeObject<RequestPostponedContent>(content);
-                if (postponeInfo?.WaitingForRequestIds == null) return;
-                var timeSpan = postponeInfo.TryAgainAfterMinimumSeconds.HasValue
-                    ? TimeSpan.FromSeconds(postponeInfo.TryAgainAfterMinimumSeconds.Value)
-                    : (TimeSpan?)null;
-                var requestPostponedException = new RequestPostponedException(postponeInfo.WaitingForRequestIds)
+                if (postponeInfo?.WaitingForRequestIds != null)
                 {
-                    TryAgain = postponeInfo.TryAgain,
-                    TryAgainAfterMinimumTimeSpan = timeSpan,
-                    ReentryAuthentication = postponeInfo.ReentryAuthentication
-                };
-                Log.LogInformation($"{requestDescription} was converted to (and threw) the exception {requestPostponedException.GetType().Name}");
-                throw requestPostponedException;
+                    var timeSpan = postponeInfo.TryAgainAfterMinimumSeconds.HasValue
+                        ? TimeSpan.FromSeconds(postponeInfo.TryAgainAfterMinimumSeconds.Value)
+                        : (TimeSpan?) null;
+                    var requestPostponedException = new RequestPostponedException(postponeInfo.WaitingForRequestIds)
+                    {
+                        TryAgain = postponeInfo.TryAgain,
+                        TryAgainAfterMinimumTimeSpan = timeSpan,
+                        ReentryAuthentication = postponeInfo.ReentryAuthentication
+                    };
+                    Log.LogInformation(
+                        $"{requestDescription} was converted to (and threw) the exception {requestPostponedException.GetType().Name}");
+                    throw requestPostponedException;
+                }
             }
 
             var fulcrumException = await ExceptionConverter.ToFulcrumExceptionAsync(response, cancellationToken);
@@ -236,16 +239,6 @@ namespace Misc.Web.Sdk.Outbound
             var severityLevel = (int)response.StatusCode >= 500 ? LogSeverityLevel.Error : LogSeverityLevel.Warning;
             Log.LogOnLevel(severityLevel, $"{requestDescription} was converted to (and threw) the exception {fulcrumException.GetType().Name}: {fulcrumException.TechnicalMessage}", fulcrumException);
             throw fulcrumException;
-        }
-
-        private static void ForwardNexusTestContext(HttpRequestMessage request)
-        {
-            if (request.Headers.TryGetValues(Constants.NexusTestContextHeaderName, out _)) return;
-            var headerValue = FulcrumApplication.Context.NexusTestContext;
-            if (!string.IsNullOrWhiteSpace(headerValue))
-            {
-                request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
-            }
         }
 
         private async Task LogRequestResponseAsync(HttpRequestMessage request, HttpResponseMessage response, TimeSpan elapsedTime, CancellationToken cancellationToken)
@@ -262,6 +255,16 @@ namespace Misc.Web.Sdk.Outbound
         private void LogRequestException(HttpRequestMessage request, Exception exception, TimeSpan elapsedTime)
         {
             Log.LogError($"OUTBOUND request-exception {request.ToLogString(elapsedTime)} | {exception.Message}", exception);
+        }
+
+        private static void ForwardNexusTestContext(HttpRequestMessage request)
+        {
+            if (request.Headers.TryGetValues(Constants.NexusTestContextHeaderName, out _)) return;
+            var headerValue = FulcrumApplication.Context.NexusTestContext;
+            if (!string.IsNullOrWhiteSpace(headerValue))
+            {
+                request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
+            }
         }
 
         private void ForwardNexusUserAuthorization(HttpRequestMessage request)
