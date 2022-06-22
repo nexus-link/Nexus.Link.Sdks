@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Misc.Web.Sdk.Outbound.Options;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
@@ -32,6 +33,31 @@ namespace Misc.Web.Sdk.Outbound
             InternalContract.RequireNotNull(options, nameof(options));
             InternalContract.RequireValidated(options, nameof(options));
             _options = options;
+        }
+
+        public async Task<HttpResponseMessage> TestSendAsync(HttpRequestMessage request, 
+            CustomSendDelegateOptions.SendAsyncMethod sendAsyncDelegate = null,
+            CancellationToken cancellationToken = default)
+        {
+            var oldEnabled = _options.Features.CustomSendDelegate.Enabled;
+            var oldSendAsyncDelegate = _options.Features.CustomSendDelegate.SendAsyncDelegate;
+
+            if (sendAsyncDelegate != null)
+            {
+                _options.Features.CustomSendDelegate.Enabled = true;
+                _options.Features.CustomSendDelegate.SendAsyncDelegate = sendAsyncDelegate;
+            }
+
+            try
+            {
+                var result = await SendAsync(request, cancellationToken);
+                return result;
+            }
+            finally
+            {
+                _options.Features.CustomSendDelegate.Enabled = oldEnabled;
+                _options.Features.CustomSendDelegate.SendAsyncDelegate = oldSendAsyncDelegate;
+            }
         }
 
         /// <summary>
