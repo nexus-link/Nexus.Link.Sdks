@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
 {
@@ -41,7 +42,7 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
             context.Request.QueryString = new QueryString("?id=23");
             if (reentryAuthentication != null)
             {
-                context.Request.Headers.Add(Constants.ReentryAuthenticationHeaderName, reentryAuthentication);
+                context.Request.Headers.Add(NexusHeaderNames.ReentryAuthenticationHeaderName, reentryAuthentication);
             }
         }
     }

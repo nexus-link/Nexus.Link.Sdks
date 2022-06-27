@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.0-alfa03" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -33,6 +33,10 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Misc.Web.Sdk\Misc.Web.Sdk.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

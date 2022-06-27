@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.AspNet.Sdk.Inbound;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using Shouldly;
 
 namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
@@ -37,7 +38,7 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
 
             var context = new DefaultHttpContext();
             context.SetRequest();
-            context.Request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
+            context.Request.Headers.Add(NexusHeaderNames.NexusTestContextHeaderName, headerValue);
             await _itemUnderTest.InvokeAsync(context);
             _foundContext.ShouldBe(headerValue);
         }
@@ -58,7 +59,7 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
 
             var context = new DefaultHttpContext();
             context.SetRequest();
-            context.Request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
+            context.Request.Headers.Add(NexusHeaderNames.NexusTestContextHeaderName, headerValue);
             await _itemUnderTest.InvokeAsync(context);
             _foundContext.ShouldBe(headerValue);
         }

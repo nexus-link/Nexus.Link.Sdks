@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj" />
+    <ProjectReference Include="..\..\src\Misc.Web.Sdk\Misc.Web.Sdk.csproj" />
   </ItemGroup>
 
 </Project>

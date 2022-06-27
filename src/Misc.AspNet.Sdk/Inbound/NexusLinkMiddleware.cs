@@ -23,6 +23,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.AspNet.Sdk.Extensions;
 using Nexus.Link.Misc.AspNet.Sdk.Inbound.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using HttpRequest = Microsoft.AspNetCore.Http.HttpRequest;
 
 namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
@@ -214,7 +215,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ManagedAsynchronousRequestId, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ManagedAsynchronousRequestId, out var executionIds))
             {
                 return null;
             }
@@ -257,7 +258,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             var reentryAuthentication = await reentryService.CreateAsync(context, deleteAfter, cancellationToken);
             if (reentryAuthentication == null) return;
             FulcrumAssert.IsNotNullOrWhiteSpace(reentryAuthentication, CodeLocation.AsString());
-            requestCreate.Headers.Add(Constants.ReentryAuthenticationHeaderName, reentryAuthentication);
+            requestCreate.Headers.Add(NexusHeaderNames.ReentryAuthenticationHeaderName, reentryAuthentication);
             FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
         }
 
@@ -265,18 +266,18 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
         #region SaveNexusTestContextToContext
         /// <summary>
-        /// Get the <see cref="Constants.NexusTestContextHeaderName"/>.
+        /// Get the <see cref="NexusHeaderNames.NexusTestContextHeaderName"/>.
         /// </summary>
         private static string GetNexusTestContextFromHeader(HttpContext context)
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.NexusTestContextHeaderName, out var values);
+            var headerValueExists = request!.Headers.TryGetValue(NexusHeaderNames.NexusTestContextHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;
             if (valuesAsArray.Length == 1) return valuesAsArray[0];
-            var message = $"There was more than one {Constants.NexusTestContextHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
+            var message = $"There was more than one {NexusHeaderNames.NexusTestContextHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
             Log.LogWarning(message);
             return valuesAsArray[0];
         }
@@ -305,7 +306,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.FulcrumCorrelationIdHeaderName, out var correlationIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.FulcrumCorrelationIdHeaderName, out var correlationIds))
             {
                 return null;
             }
@@ -327,7 +328,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ExecutionIdHeaderName, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ExecutionIdHeaderName, out var executionIds))
             {
                 return null;
             }
@@ -346,7 +347,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ParentExecutionIdHeaderName, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ParentExecutionIdHeaderName, out var executionIds))
             {
                 return null;
             }
@@ -564,18 +565,18 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
         #region SaveReentryAuthentication
         /// <summary>
-        /// Get the <see cref="Constants.ReentryAuthenticationHeaderName"/>.
+        /// Get the <see cref="NexusHeaderNames.ReentryAuthenticationHeaderName"/>.
         /// </summary>
         private static string GetNexusReentryAuthenticationFromHeader(HttpContext context)
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.ReentryAuthenticationHeaderName, out var values);
+            var headerValueExists = request.Headers.TryGetValue(NexusHeaderNames.ReentryAuthenticationHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;
             if (valuesAsArray.Length == 1) return valuesAsArray[0];
-            var message = $"There was more than one {Constants.ReentryAuthenticationHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
+            var message = $"There was more than one {NexusHeaderNames.ReentryAuthenticationHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
             Log.LogWarning(message);
             return valuesAsArray[0];
         }

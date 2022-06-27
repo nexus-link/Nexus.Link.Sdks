@@ -16,81 +16,6 @@
             </summary>
             <param name="settings"></param>
         </member>
-        <member name="T:Nexus.Link.Misc.Web.Sdk.NexusHttpSender">
-            <summary>
-            Convenience client for making REST calls
-            </summary>
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions">
-            <summary>
-            The options for the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> for this <see cref="T:Nexus.Link.Misc.Web.Sdk.NexusHttpSender"/>.
-            The constructor will initialize it according to <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> SetNexusLinkDefaults().
-            </summary>
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient">
-            <summary>
-            This is the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> that is used for all HTTP calls.
-            It is always initialized to a new HttpClient with <see cref="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler"/> as handler.
-            That handler has <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> as options.
-            </summary>
-            <remarks>
-            
-            You can modify its behavior by modifying the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> or replace
-            this HTTP client entirely with your own HTTP client. If you replace it, <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/>
-            will be set to null.
-            </remarks>
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.BaseUri">
-            <inheritdoc />
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.Credentials">
-            <summary>
-            Credentials that are used when sending requests to the service.
-            </summary>
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SerializationSettings">
-            <summary>
-            Json settings when serializing to strings
-            </summary>
-        </member>
-        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.DeserializationSettings">
-            <summary>
-            Json settings when de-serializing from strings
-            </summary>
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <summary></summary>
-            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
-            <param name="credentials">The credentials used when making the HTTP calls.</param>
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.#ctor(System.Net.Http.HttpClient,System.String,Microsoft.Rest.ServiceClientCredentials)">
-            <summary></summary>
-            <param name="httpClient">Use this as the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/>.</param>
-            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
-            <param name="credentials">The credentials used when making the HTTP calls.</param>
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.CreateHttpSender(System.String)">
-            <summary>
-            The new http sender will share the same <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> and the same <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/>.
-            </summary>
-            <param name="relativeUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync``2(System.Net.Http.HttpMethod,System.String,``1,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync``1(System.Net.Http.HttpMethod,System.String,``0,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync(System.Net.Http.HttpMethod,System.String,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.GetAbsoluteUrl(System.String)">
-            <inheritdoc />
-        </member>
         <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler">
             <summary>
             This handler contains all the Nexus Link handlers.
@@ -409,6 +334,154 @@
             </summary>
         </member>
         <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ThrowFulcrumExceptionOnFailOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusContextNames">
+            <summary>
+            The names for context variables
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusContextNames.NexusUserAuthorizationKeyName">
+            <summary>
+            Key for setting up user authorization token on async local context
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusContextNames.TranslatedUserIdKey">
+            <summary>
+            Key for setting up translated user id on async local context
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames">
+            <summary>
+            Known header names
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.FulcrumCorrelationIdHeaderName">
+            <summary>
+            Standard correlation id header
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.ExecutionIdHeaderName">
+            <summary>
+            The header for the Async Manager execution id
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.ManagedAsynchronousRequestId">
+            <summary>
+            The header for the Async Manager execution id
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.ParentExecutionIdHeaderName">
+            <summary>
+            The header for the Async Manager execution id
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.ReentryAuthenticationHeaderName">
+            <summary>
+            The header for the Async Manager reentry authentication, <see cref="P:Nexus.Link.Libraries.Web.Error.RequestPostponedContent.ReentryAuthentication"/>.
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.PreferHeaderName">
+            <summary>
+            Standard correlation id header
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.PreferRespondAsyncHeaderValue">
+            <summary>
+            Standard correlation id header
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.NexusTestContextHeaderName">
+            <summary>
+            Header to indicate that a request is done in test mode
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.NexusUserAuthorizationHeaderName">
+            <summary>
+            For propagating end user authentication token
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support.NexusHeaderNames.NexusTranslatedUserIdHeaderName">
+            <summary>
+            For propagating a translated user id
+            </summary>
+            <remarks>
+            Setup by the Business API and used in capability providers
+            </remarks>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender">
+            <summary>
+            Convenience client for making REST calls
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions">
+            <summary>
+            The options for the <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.HttpClient"/> for this <see cref="T:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender"/>.
+            The constructor will initialize it according to <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions"/> SetNexusLinkDefaults().
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.HttpClient">
+            <summary>
+            This is the <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.HttpClient"/> that is used for all HTTP calls.
+            It is always initialized to a new HttpClient with <see cref="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler"/> as handler.
+            That handler has <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions"/> as options.
+            </summary>
+            <remarks>
+            
+            You can modify its behavior by modifying the <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions"/> or replace
+            this HTTP client entirely with your own HTTP client. If you replace it, <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions"/>
+            will be set to null.
+            </remarks>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.BaseUri">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.Credentials">
+            <summary>
+            Credentials that are used when sending requests to the service.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.SerializationSettings">
+            <summary>
+            Json settings when serializing to strings
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.DeserializationSettings">
+            <summary>
+            Json settings when de-serializing from strings
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <summary></summary>
+            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
+            <param name="credentials">The credentials used when making the HTTP calls.</param>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.#ctor(System.Net.Http.HttpClient,System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <summary></summary>
+            <param name="httpClient">Use this as the <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.HttpClient"/>.</param>
+            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
+            <param name="credentials">The credentials used when making the HTTP calls.</param>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.CreateHttpSender(System.String)">
+            <summary>
+            The new http sender will share the same <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.HttpClient"/> and the same <see cref="P:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.NexusLinkHandlerOptions"/>.
+            </summary>
+            <param name="relativeUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.SendRequestAsync``2(System.Net.Http.HttpMethod,System.String,``1,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.SendRequestAsync``1(System.Net.Http.HttpMethod,System.String,``0,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.SendRequestAsync(System.Net.Http.HttpMethod,System.String,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.RestClientHelper.NexusHttpSender.GetAbsoluteUrl(System.String)">
             <inheritdoc />
         </member>
     </members>

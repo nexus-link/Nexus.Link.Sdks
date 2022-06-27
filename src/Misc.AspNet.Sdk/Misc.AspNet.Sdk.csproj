@@ -45,6 +45,9 @@
   <ItemGroup>
     <Folder Include="Inbound\Options\Support\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Misc.Web.Sdk\Misc.Web.Sdk.csproj" />
+  </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Misc.AspNet.Sdk</PackageId>

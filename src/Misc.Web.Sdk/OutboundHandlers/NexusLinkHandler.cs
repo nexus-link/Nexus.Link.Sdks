@@ -19,6 +19,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
 {
@@ -454,48 +455,48 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
         private void ForwardExecutionInformation(HttpRequestMessage request)
         {
             if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
-                && !request.Headers.TryGetValues(Constants.ParentExecutionIdHeaderName, out _))
+                && !request.Headers.TryGetValues(NexusHeaderNames.ParentExecutionIdHeaderName, out _))
             {
-                request.Headers.Add(Constants.ParentExecutionIdHeaderName, FulcrumApplication.Context.ExecutionId);
+                request.Headers.Add(NexusHeaderNames.ParentExecutionIdHeaderName, FulcrumApplication.Context.ExecutionId);
             }
 
-            if (!request.Headers.TryGetValues(Constants.ExecutionIdHeaderName, out _))
+            if (!request.Headers.TryGetValues(NexusHeaderNames.ExecutionIdHeaderName, out _))
             {
-                request.Headers.Add(Constants.ExecutionIdHeaderName, FulcrumApplication.Context.ChildExecutionId);
+                request.Headers.Add(NexusHeaderNames.ExecutionIdHeaderName, FulcrumApplication.Context.ChildExecutionId);
             }
         }
 
         private static void ForwardNexusTestContext(HttpRequestMessage request)
         {
-            if (request.Headers.TryGetValues(Constants.NexusTestContextHeaderName, out _)) return;
+            if (request.Headers.TryGetValues(NexusHeaderNames.NexusTestContextHeaderName, out _)) return;
             var headerValue = FulcrumApplication.Context.NexusTestContext;
             if (!string.IsNullOrWhiteSpace(headerValue))
             {
-                request.Headers.Add(Constants.NexusTestContextHeaderName, headerValue);
+                request.Headers.Add(NexusHeaderNames.NexusTestContextHeaderName, headerValue);
             }
         }
 
         private void ForwardNexusUserAuthorization(HttpRequestMessage request)
         {
             var options = _options.Features.ForwardNexusUserAuthorization;
-            var userAuthorization = options.ContextValueProvider.GetValue<string>(Constants.NexusUserAuthorizationKeyName);
+            var userAuthorization = options.ContextValueProvider.GetValue<string>(NexusContextNames.NexusUserAuthorizationKeyName);
 
             if (string.IsNullOrWhiteSpace(userAuthorization)) return;
-            if (!request.Headers.TryGetValues(Constants.NexusUserAuthorizationHeaderName, out _))
+            if (!request.Headers.TryGetValues(NexusHeaderNames.NexusUserAuthorizationHeaderName, out _))
             {
-                request.Headers.Add(Constants.NexusUserAuthorizationHeaderName, userAuthorization);
+                request.Headers.Add(NexusHeaderNames.NexusUserAuthorizationHeaderName, userAuthorization);
             }
         }
 
         private void ForwardNexusTranslatedUserId(HttpRequestMessage request)
         {
             var options = _options.Features.ForwardNexusTranslatedUserId;
-            var translatedUserId = options.ContextValueProvider.GetValue<string>(Constants.TranslatedUserIdKey);
+            var translatedUserId = options.ContextValueProvider.GetValue<string>(NexusContextNames.TranslatedUserIdKey);
 
             if (string.IsNullOrWhiteSpace(translatedUserId)) return;
-            if (!request.Headers.TryGetValues(Constants.NexusTranslatedUserIdHeaderName, out _))
+            if (!request.Headers.TryGetValues(NexusHeaderNames.NexusTranslatedUserIdHeaderName, out _))
             {
-                request.Headers.Add(Constants.NexusTranslatedUserIdHeaderName, translatedUserId);
+                request.Headers.Add(NexusHeaderNames.NexusTranslatedUserIdHeaderName, translatedUserId);
             }
         }
 
@@ -513,8 +514,8 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
             }
             else
             {
-                if (request.Headers.TryGetValues(Constants.FulcrumCorrelationIdHeaderName, out _)) return;
-                request.Headers.Add(Constants.FulcrumCorrelationIdHeaderName,
+                if (request.Headers.TryGetValues(NexusHeaderNames.FulcrumCorrelationIdHeaderName, out _)) return;
+                request.Headers.Add(NexusHeaderNames.FulcrumCorrelationIdHeaderName,
                     FulcrumApplication.Context.CorrelationId);
             }
         }

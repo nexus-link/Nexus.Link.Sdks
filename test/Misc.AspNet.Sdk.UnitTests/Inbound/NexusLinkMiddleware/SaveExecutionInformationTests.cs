@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Core.Platform.Configurations;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.AspNet.Sdk.Inbound;
 using Nexus.Link.Misc.AspNet.Sdk.Inbound.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using Shouldly;
 
 #pragma warning disable CS0618
@@ -47,9 +48,9 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
             var context = new DefaultHttpContext();
             context.SetRequest();
             var expectedExecutionId = Guid.NewGuid().ToString();
-            context.Request.Headers.Add(Constants.ExecutionIdHeaderName, expectedExecutionId);
+            context.Request.Headers.Add(NexusHeaderNames.ExecutionIdHeaderName, expectedExecutionId);
             var expectedParentExecutionId = Guid.NewGuid().ToString();
-            context.Request.Headers.Add(Constants.ParentExecutionIdHeaderName, expectedParentExecutionId);
+            context.Request.Headers.Add(NexusHeaderNames.ParentExecutionIdHeaderName, expectedParentExecutionId);
 
             //
             // Act

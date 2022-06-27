@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Xml;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
     /// <summary>
     /// A factory class to create delegating handlers for outgoing HTTP requests.
     /// </summary>
+    [Obsolete($"Please use {nameof(NexusLinkHandler)} and {nameof(NexusLinkHandlerOptions)} with SetNexusLinkDefaults()." +
+              $"Obsolete since 2022-06-27.")]
     public static class OutboundPipeFactory
     {
 

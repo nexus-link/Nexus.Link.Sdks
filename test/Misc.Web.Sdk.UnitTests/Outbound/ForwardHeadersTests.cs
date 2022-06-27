@@ -9,6 +9,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using Shouldly;
 
 namespace Misc.Web.Sdk.UnitTests.Outbound
@@ -37,7 +38,7 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
-            var headerName = Constants.FulcrumCorrelationIdHeaderName;
+            var headerName = NexusHeaderNames.FulcrumCorrelationIdHeaderName;
             HttpRequestHeaders actualHeaders = null;
             _options.Features.ForwardCorrelationId.Enabled = enabled;
             FulcrumApplication.Context.CorrelationId = headerValue;
@@ -76,7 +77,7 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
-            var headerName = Constants.NexusTestContextHeaderName;
+            var headerName = NexusHeaderNames.NexusTestContextHeaderName;
             HttpRequestHeaders actualHeaders = null;
             _options.Features.ForwardNexusTestContext.Enabled = enabled;
             FulcrumApplication.Context.NexusTestContext = headerValue;
@@ -115,7 +116,7 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
-            var headerName = Constants.ParentExecutionIdHeaderName;
+            var headerName = NexusHeaderNames.ParentExecutionIdHeaderName;
             HttpRequestHeaders actualHeaders = null;
             _options.Features.ForwardExecutionInformation.Enabled = enabled;
             FulcrumApplication.Context.ExecutionId = headerValue;
@@ -154,7 +155,7 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
-            var headerName = Constants.ExecutionIdHeaderName;
+            var headerName = NexusHeaderNames.ExecutionIdHeaderName;
             HttpRequestHeaders actualHeaders = null;
             _options.Features.ForwardExecutionInformation.Enabled = enabled;
             FulcrumApplication.Context.ChildExecutionId = headerValue;
@@ -187,20 +188,20 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         /// Given that "NexusTranslatedUserId" is setup on context, we expect it propagated as a header
         /// </summary>
         [DataTestMethod]
-        [DataRow(true, Constants.TranslatedUserIdKey, Constants.NexusTranslatedUserIdHeaderName, "D2CFE93C-AFDA-418E-87C2-4D6CC2CFDE5F")]
-        [DataRow(false, Constants.TranslatedUserIdKey, Constants.NexusTranslatedUserIdHeaderName, "9F49D6FD-82E0-4A6B-B967-1E48EB664018")]
-        [DataRow(true, Constants.NexusUserAuthorizationKeyName, Constants.NexusUserAuthorizationHeaderName, "50250962-EFC9-4D9E-A19F-E9DA61F3A30F")]
-        [DataRow(false, Constants.NexusUserAuthorizationKeyName, Constants.NexusUserAuthorizationHeaderName, "0A43A3E1-FF63-4A02-8599-D85E5EB4B35A")]
+        [DataRow(true, NexusContextNames.TranslatedUserIdKey, NexusHeaderNames.NexusTranslatedUserIdHeaderName, "D2CFE93C-AFDA-418E-87C2-4D6CC2CFDE5F")]
+        [DataRow(false, NexusContextNames.TranslatedUserIdKey, NexusHeaderNames.NexusTranslatedUserIdHeaderName, "9F49D6FD-82E0-4A6B-B967-1E48EB664018")]
+        [DataRow(true, NexusContextNames.NexusUserAuthorizationKeyName, NexusHeaderNames.NexusUserAuthorizationHeaderName, "50250962-EFC9-4D9E-A19F-E9DA61F3A30F")]
+        [DataRow(false, NexusContextNames.NexusUserAuthorizationKeyName, NexusHeaderNames.NexusUserAuthorizationHeaderName, "0A43A3E1-FF63-4A02-8599-D85E5EB4B35A")]
         public async Task HeadersWithHeaderNameKey_RespectsEnabled_ProducesExpectedResult(bool enabled, string headerNameKey, string headerName, string headerValue)
         {
             // Arrange
             HttpRequestHeaders actualHeaders = null;
             switch (headerNameKey)
             {
-                case Constants.TranslatedUserIdKey:
+                case NexusContextNames.TranslatedUserIdKey:
                     _options.Features.ForwardNexusTranslatedUserId.Enabled = enabled;
                     break;
-                case Constants.NexusUserAuthorizationKeyName:
+                case NexusContextNames.NexusUserAuthorizationKeyName:
                     _options.Features.ForwardNexusUserAuthorization.Enabled = enabled;
                     break;
             }

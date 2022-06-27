@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using Nexus.Link.WorkflowEngine.Sdk.AspNet.Extensions;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
@@ -105,7 +106,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ManagedAsynchronousRequestId, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ManagedAsynchronousRequestId, out var executionIds))
             {
                 return null;
             }
