@@ -1,0 +1,415 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nexus.Link.Misc.Web.Sdk</name>
+    </assembly>
+    <members>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.Json.JsonExtensions">
+            <summary>
+            Extensions for JSON
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.Json.JsonExtensions.AddNexusWeb(Newtonsoft.Json.JsonSerializerSettings)">
+            <summary>
+            Set the serializer settings the way we expect them to behave in Nexus Link.
+            Typically chain this to <see cref="M:Nexus.Link.Libraries.Core.Json.JsonExtensions.SetAsNexusLink(Newtonsoft.Json.JsonSerializerSettings)"/>
+            </summary>
+            <param name="settings"></param>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.NexusHttpSender">
+            <summary>
+            Convenience client for making REST calls
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions">
+            <summary>
+            The options for the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> for this <see cref="T:Nexus.Link.Misc.Web.Sdk.NexusHttpSender"/>.
+            The constructor will initialize it according to <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> SetNexusLinkDefaults().
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient">
+            <summary>
+            This is the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> that is used for all HTTP calls.
+            It is always initialized to a new HttpClient with <see cref="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler"/> as handler.
+            That handler has <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> as options.
+            </summary>
+            <remarks>
+            
+            You can modify its behavior by modifying the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/> or replace
+            this HTTP client entirely with your own HTTP client. If you replace it, <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/>
+            will be set to null.
+            </remarks>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.BaseUri">
+            <inheritdoc />
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.Credentials">
+            <summary>
+            Credentials that are used when sending requests to the service.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SerializationSettings">
+            <summary>
+            Json settings when serializing to strings
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.DeserializationSettings">
+            <summary>
+            Json settings when de-serializing from strings
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.#ctor(System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <summary></summary>
+            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
+            <param name="credentials">The credentials used when making the HTTP calls.</param>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.#ctor(System.Net.Http.HttpClient,System.String,Microsoft.Rest.ServiceClientCredentials)">
+            <summary></summary>
+            <param name="httpClient">Use this as the <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/>.</param>
+            <param name="baseUri">The base URL that all HTTP calls methods will refer to.</param>
+            <param name="credentials">The credentials used when making the HTTP calls.</param>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.CreateHttpSender(System.String)">
+            <summary>
+            The new http sender will share the same <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.HttpClient"/> and the same <see cref="P:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.NexusLinkHandlerOptions"/>.
+            </summary>
+            <param name="relativeUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync``2(System.Net.Http.HttpMethod,System.String,``1,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync``1(System.Net.Http.HttpMethod,System.String,``0,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendRequestAsync(System.Net.Http.HttpMethod,System.String,System.Collections.Generic.Dictionary{System.String,System.Collections.Generic.List{System.String}},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.NexusHttpSender.GetAbsoluteUrl(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler">
+            <summary>
+            This handler contains all the Nexus Link handlers.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler.#ctor(Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandlerOptions)">
+            <summary>
+            This handler contains all the Nexus Link handlers.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler.TestSendAsync(System.Net.Http.HttpRequestMessage,Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions.SendAsyncMethod,System.Threading.CancellationToken)">
+            <summary>
+            This is for testing this class. It temporarily sets the <see cref="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions.SendAsyncDelegate"/>
+            to <paramref name="sendAsyncDelegate"/> and executes <see cref="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Adds a Fulcrum ForwardCorrelationId to the requests before sending it.
+            </summary>
+            <param name="request"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler.MaybeRerouteAsynchronousRequestsAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            If the request is in an asynchronous context, the request will be sent over an <see cref="T:Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.IAsyncRequestMgmtCapability"/>.
+            </summary>
+            <exception cref="T:Nexus.Link.Libraries.Web.Error.Logic.RequestPostponedException">
+            Thrown after the request has been sent for asynchronous handling and when a response is not available.
+            </exception>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandlerOptions">
+            <summary>
+            Options that controls <see cref="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler"/>
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandlerOptions.Features">
+            <summary>
+            The features that can be controlled.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandlerOptions.SetNexusLinkDefaults">
+            <summary>
+            Set the default values as recommended by Nexus Link
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandlerOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions">
+            <summary>
+            Use a custom send delegate instead of the default one. This comes handy for testing.
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions.SendAsyncMethod">
+            <summary>
+            The delegate type for the send async method.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions.SendAsyncDelegate">
+            <summary>
+            The custom delegate to use instead of the next HTTP SendAsync method.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.CustomSendDelegateOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.Feature">
+            <summary>
+            Base class for features
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.Feature.Enabled">
+            <summary>
+            Set this to true if you want to enable the feature
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardCorrelationIdOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardCorrelationIdOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardExecutionInformationOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardExecutionInformationOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusTestContextOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusTestContextHeaderName"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusTestContextOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusTranslatedUserIdOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusTranslatedUserIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusTranslatedUserIdOptions.ContextValueProvider">
+            <summary>
+            The context value provider where the header value is taken from
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusTranslatedUserIdOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusUserAuthorizationOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusUserAuthorizationHeaderName"/>
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusUserAuthorizationOptions.ContextValueProvider">
+            <summary>
+            The context value provider where the header value is taken from
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ForwardNexusUserAuthorizationOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures">
+            <summary>
+            All the features for <see cref="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.NexusLinkHandler"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ForwardCorrelationId">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ForwardNexusTranslatedUserId">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusTranslatedUserIdHeaderName"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ForwardNexusUserAuthorization">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusUserAuthorizationHeaderName"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ForwardNexusTestContext">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.NexusUserAuthorizationHeaderName"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ForwardExecutionInformation">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.SaveExecutionInformation">
+            <summary>
+            Forward headers <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.ExecutionIdHeaderName"/> and <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.ExecutionIdHeaderName"/>
+            and save information about the call.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.LogRequestAndResponse">
+            <summary>
+            Logs the request and the response
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.RerouteAsynchronousRequests">
+            <summary>
+            Logs the request and the response
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.CustomSendDelegate">
+            <summary>
+            Use a custom send delegate instead of the default one. This comes handy for testing.
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.ThrowFulcrumExceptionOnFail">
+            <summary>
+            Any non-successful response will be thrown as a <see cref="T:Nexus.Link.Libraries.Core.Error.Logic.FulcrumException"/>.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.HandlerFeatures.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.LogRequestAndResponseOptions">
+            <summary>
+            Logs the request and the response
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.LogRequestAndResponseOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.RerouteAsynchronousRequestsOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.RerouteAsynchronousRequestsOptions.AsyncRequestMgmtCapability">
+            <summary>
+            The async request management capability that can take care of asynchronous requests.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.RerouteAsynchronousRequestsOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.SaveBeforeExecutionAsyncMethod">
+            <summary>
+            A delegate to save information about a request execution before the actual execution
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.SaveAfterExecutionAsyncMethod">
+            <summary>
+            A delegate to save information about a request execution after the actual execution
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.SaveBeforeExecutionAsyncDelegate">
+            <summary>
+            The method that will deal with the actual saving
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.SaveAfterExecutionAsyncDelegate">
+            <summary>
+            The method that will deal with the actual saving
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.BeforeExecution">
+            <summary>
+            Information about a request execution before the actual execution
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.BeforeExecution.ExecutionId">
+            <summary>
+            The current execution id
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.BeforeExecution.ParentExecutionId">
+            <summary>
+            The execution id that created this <see cref="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.BeforeExecution.ExecutionId"/>, i.e. the parent of the execution id
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.BeforeExecution.RequestDescription">
+            <summary>
+            A summary of the request. For a REST request, this could be the HTTP Method and an anonymous version of the URL.
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum">
+            <summary>
+            The different result types of a execution
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum.Accepted">
+            <summary>
+            The request has been accepted. No information yet on success/fail
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum.Success">
+            <summary>
+            The request has completed and was successful.
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum.Failure">
+            <summary>
+            The request execution has completed and failed. We can't say whether it is a temporary failure or not.
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum.TemporaryFailure">
+            <summary>
+            The request execution has completed and failed. This is a temporary failure, i.e the execution can be retried.
+            </summary>
+        </member>
+        <member name="F:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.ExecutionResultEnum.PermanentFailure">
+            <summary>
+            The request execution has completed and failed. This is a permanent failure, i.e. no use in retrying,
+            unless you change the request somehow.
+            </summary>
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.AfterExecution">
+            <summary>
+            Information about a request execution before the actual execution
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.AfterExecution.ExecutionId">
+            <summary>
+            The current execution id
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.AfterExecution.Result">
+            <summary>
+            The result for this execution
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.AfterExecution.ResponseDescription">
+            <summary>
+            A summary of the response. For a REST request, this could be the HTTP status code and description, e.g. "200 OK".
+            </summary>
+        </member>
+        <member name="P:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.AfterExecution.Elapsed">
+            <summary>
+            The time span for executing the request.
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.SaveExecutionInformationOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ThrowFulcrumExceptionOnFailOptions">
+            <summary>
+            Forward header <see cref="F:Nexus.Link.Libraries.Web.Pipe.Constants.FulcrumCorrelationIdHeaderName"/>
+            </summary>
+        </member>
+        <member name="M:Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options.ThrowFulcrumExceptionOnFailOptions.Validate(System.String,System.String)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

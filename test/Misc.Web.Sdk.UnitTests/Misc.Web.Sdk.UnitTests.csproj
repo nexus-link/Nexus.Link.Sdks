@@ -2,11 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
-
     <IsPackable>false</IsPackable>
-
-    <AssemblyName>Misc.Web.Sdk.UnitTests</AssemblyName>
-
+    <AssemblyName>Nexus.Link.Misc.Web.Sdk.UnitTests</AssemblyName>
     <RootNamespace>Misc.Web.Sdk.UnitTests</RootNamespace>
   </PropertyGroup>
 
