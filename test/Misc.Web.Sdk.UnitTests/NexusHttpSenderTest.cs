@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Misc.Web.Sdk;
+using Nexus.Link.Misc.Web.Sdk.RestClientHelper;
 using Shouldly;
 
 namespace Misc.Web.Sdk.UnitTests

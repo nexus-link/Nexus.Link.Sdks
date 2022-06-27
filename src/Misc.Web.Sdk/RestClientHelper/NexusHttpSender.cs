@@ -14,7 +14,7 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 using Nexus.Link.Misc.Web.Sdk.Json;
 using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
 
-namespace Nexus.Link.Misc.Web.Sdk
+namespace Nexus.Link.Misc.Web.Sdk.RestClientHelper
 {
     /// <summary>
     /// Convenience client for making REST calls
