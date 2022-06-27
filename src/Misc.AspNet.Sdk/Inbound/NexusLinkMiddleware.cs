@@ -84,14 +84,13 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         public virtual async Task InvokeAsync(HttpContext context)
         {
             var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Task saveBeforeExecutionTask = null;
             var cancellationToken = context.RequestAborted;
+            CancellationTokenSource manualToken = new CancellationTokenSource();
+
+            stopwatch.Start();
             // Enable multiple reads of the content
             context.Request.EnableBuffering();
-
-            Task saveBeforeExecutionTask = null;
-            CancellationTokenSource manualToken = new CancellationTokenSource();
-            using var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(manualToken.Token, cancellationToken);
             var executionId = ExtractExecutionIdFromHeader(context);
             if (string.IsNullOrWhiteSpace(executionId)) executionId = Guid.NewGuid().ToGuidString();
             try
@@ -118,7 +117,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
                 if (Options.Features.SaveExecutionInformation.Enabled)
                 {
-                    await SafeSaveExecutionInformationBeforeAsync(executionId, parentExecutionId, context, manualToken.Token);
+                    saveBeforeExecutionTask = SafeSaveExecutionInformationBeforeAsync(executionId, parentExecutionId, context, manualToken.Token);
                 }
 
                 if (Options.Features.SaveTenantConfiguration.Enabled)

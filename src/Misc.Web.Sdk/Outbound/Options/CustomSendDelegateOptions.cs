@@ -3,9 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.EntityAttributes;
-using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
 {
     /// <summary>
     /// Use a custom send delegate instead of the default one. This comes handy for testing.

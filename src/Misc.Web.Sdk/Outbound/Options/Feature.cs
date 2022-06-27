@@ -1,4 +1,4 @@
-﻿namespace Misc.Web.Sdk.Outbound.Options
+﻿namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
 {
     /// <summary>
     /// Base class for features

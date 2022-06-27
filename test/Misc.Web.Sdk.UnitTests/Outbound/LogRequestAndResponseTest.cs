@@ -5,10 +5,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Misc.Web.Sdk.Outbound;
-using Misc.Web.Sdk.Outbound.Options;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Misc.Web.Sdk.Outbound;
+using Nexus.Link.Misc.Web.Sdk.Outbound.Options;
 
 namespace Misc.Web.Sdk.UnitTests.Outbound
 {

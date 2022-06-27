@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Misc.Web.Sdk.Outbound.Options;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Logging;
@@ -18,8 +15,9 @@ using Nexus.Link.Libraries.Web.Error;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.Outbound.Options;
 
-namespace Misc.Web.Sdk.Outbound
+namespace Nexus.Link.Misc.Web.Sdk.Outbound
 {
     /// <summary>
     /// This handler contains all the Nexus Link handlers.
@@ -28,6 +26,9 @@ namespace Misc.Web.Sdk.Outbound
     {
         private readonly NexusLinkHandlerOptions _options;
 
+        /// <summary>
+        /// This handler contains all the Nexus Link handlers.
+        /// </summary>
         public NexusLinkHandler(NexusLinkHandlerOptions options)
         {
             InternalContract.RequireNotNull(options, nameof(options));
@@ -35,7 +36,11 @@ namespace Misc.Web.Sdk.Outbound
             _options = options;
         }
 
-        public async Task<HttpResponseMessage> TestSendAsync(HttpRequestMessage request, 
+        /// <summary>
+        /// This is for testing this class. It temporarily sets the <see cref="CustomSendDelegateOptions.SendAsyncDelegate"/>
+        /// to <paramref name="sendAsyncDelegate"/> and executes <see cref="SendAsync"/>.
+        /// </summary>
+        public async Task<HttpResponseMessage> TestSendAsync(HttpRequestMessage request,
             CustomSendDelegateOptions.SendAsyncMethod sendAsyncDelegate = null,
             CancellationToken cancellationToken = default)
         {
@@ -68,21 +73,42 @@ namespace Misc.Web.Sdk.Outbound
         /// <returns></returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            ForwardHeaders();
-            var timer = new Stopwatch();
+            var stopwatch = new Stopwatch();
             HttpResponseMessage response = null;
+            Task saveBeforeExecutionTask = null;
+            CancellationTokenSource manualToken = new CancellationTokenSource();
 
-            timer.Start(); try
+            stopwatch.Start();
+            Exception finalException = null;
+            try
             {
-                response = await SendRequestAsync();
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId))
+                    {
+                        FulcrumApplication.Context.ChildExecutionId = Guid.NewGuid().ToGuidString();
+                    }
+                    ForwardHeaders();
+                    saveBeforeExecutionTask = SafeSaveExecutionInformationBeforeAsync(request, manualToken.Token);
+                    response = await SendRequestAsync();
+                }
+                catch (Exception e)
+                {
+                    stopwatch.Stop();
+                    HandleExceptionsAndMaybeThrowNewException(e);
+                    throw;
+                }
             }
             catch (Exception e)
             {
-                timer.Stop();
-                HandleExceptionsAndMaybeThrowNewException(e);
-                throw;
+                finalException = e;
             }
-            timer.Stop();
+            finally
+            {
+                await SafeFinallySaveExecutionInformation(stopwatch, request, response, finalException, saveBeforeExecutionTask, manualToken);
+            }
+
+            stopwatch.Stop();
             await HandleResponseAsync();
             return response;
 
@@ -107,6 +133,11 @@ namespace Misc.Web.Sdk.Outbound
                 {
                     ForwardNexusTestContext(request);
                 }
+
+                if (_options.Features.HandleExecutionInformation.Enabled)
+                {
+                    ForwardExecutionId(request);
+                }
             }
 
             async Task<HttpResponseMessage> SendRequestAsync()
@@ -129,7 +160,7 @@ namespace Misc.Web.Sdk.Outbound
             {
                 if (_options.Features.LogRequestAndResponse.Enabled)
                 {
-                    await LogRequestResponseAsync(request, response, timer.Elapsed, cancellationToken);
+                    await LogRequestResponseAsync(request, response, stopwatch.Elapsed, cancellationToken);
                 }
 
                 if (_options.Features.ThrowFulcrumExceptionOnFail.Enabled)
@@ -157,7 +188,7 @@ namespace Misc.Web.Sdk.Outbound
                 {
                     if (_options.Features.LogRequestAndResponse.Enabled)
                     {
-                        LogRequestException(request, actualException, timer.Elapsed);
+                        LogRequestException(request, actualException, stopwatch.Elapsed);
                     }
                 }
             }
@@ -221,7 +252,7 @@ namespace Misc.Web.Sdk.Outbound
                 {
                     var timeSpan = postponeInfo.TryAgainAfterMinimumSeconds.HasValue
                         ? TimeSpan.FromSeconds(postponeInfo.TryAgainAfterMinimumSeconds.Value)
-                        : (TimeSpan?) null;
+                        : (TimeSpan?)null;
                     var requestPostponedException = new RequestPostponedException(postponeInfo.WaitingForRequestIds)
                     {
                         TryAgain = postponeInfo.TryAgain,
@@ -255,6 +286,129 @@ namespace Misc.Web.Sdk.Outbound
         private void LogRequestException(HttpRequestMessage request, Exception exception, TimeSpan elapsedTime)
         {
             Log.LogError($"OUTBOUND request-exception {request.ToLogString(elapsedTime)} | {exception.Message}", exception);
+        }
+
+        private async Task SafeSaveExecutionInformationBeforeAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (request == null) return;
+                var saveBeforeAsyncDelegate = _options.Features.HandleExecutionInformation.SaveBeforeExecutionAsyncDelegate;
+                if (saveBeforeAsyncDelegate == null) return;
+                if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId)) return;
+                string requestDescription = FulcrumApplication.Context.ChildRequestDescription
+                                            ?? request.ToLogString();
+                var beforeExecution = new HandleExecutionInformationOptions.BeforeExecution
+                {
+                    ExecutionId = FulcrumApplication.Context.ChildExecutionId,
+                    ParentExecutionId = FulcrumApplication.Context.ExecutionId,
+                    RequestDescription = requestDescription
+                };
+
+                try
+                {
+                    await saveBeforeAsyncDelegate(beforeExecution, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.LogWarning(
+                        $"{nameof(HandlerFeatures.HandleExecutionInformation)} failed to save information before execution: {e.ToLogString(true)}\r" +
+                        $"{JsonConvert.SerializeObject(beforeExecution)}");
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
+        private async Task SafeFinallySaveExecutionInformation(Stopwatch stopwatch, HttpRequestMessage request,
+            HttpResponseMessage response, Exception exception, Task saveBeforeExecutionTask,
+            CancellationTokenSource manualToken)
+        {
+            try
+            {
+                if (!manualToken.IsCancellationRequested) manualToken.CancelAfter(TimeSpan.FromMilliseconds(20));
+                var saveAfterExecutionTask = SafeSaveExecutionInformationAfterAsync(stopwatch, request, response, exception, manualToken.Token);
+                if (saveBeforeExecutionTask != null)
+                {
+                    // We will give the save of request execution information a few more milliseconds to finish.
+                    try
+                    {
+                        await saveBeforeExecutionTask;
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore all errors
+                    }
+                }
+
+                try
+                {
+                    await saveAfterExecutionTask;
+                }
+                catch (Exception)
+                {
+                    // Ignore all errors
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
+        private async Task SafeSaveExecutionInformationAfterAsync(Stopwatch stopwatch, HttpRequestMessage request,
+            HttpResponseMessage response, Exception exception, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var saveAfterAsyncDelegate = _options.Features.HandleExecutionInformation.SaveAfterExecutionAsyncDelegate;
+                if (saveAfterAsyncDelegate == null) return;
+                if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId)) return;
+                string responseDescription =
+                    exception?.ToLogString(true);
+                if (responseDescription == null && response != null)
+                {
+                    responseDescription = await response.ToLogStringAsync(cancellationToken);
+                }
+
+                var afterExecution = new HandleExecutionInformationOptions.AfterExecution
+                {
+                    ExecutionId = FulcrumApplication.Context.ChildExecutionId,
+                    Elapsed = stopwatch.Elapsed,
+                    ResponseDescription = responseDescription
+                };
+
+                try
+                {
+                    await saveAfterAsyncDelegate(afterExecution, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.LogWarning(
+                        $"{nameof(HandlerFeatures.HandleExecutionInformation)} failed to save information after execution: {e.ToLogString(true)}\r" +
+                        $"{JsonConvert.SerializeObject(afterExecution)}");
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
+        private void ForwardExecutionId(HttpRequestMessage request)
+        {
+            if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
+                && !request.Headers.TryGetValues(Constants.ParentExecutionIdHeaderName, out _))
+            {
+                request.Headers.Add(Constants.ParentExecutionIdHeaderName, FulcrumApplication.Context.ExecutionId);
+            }
+
+            if (request.Headers.TryGetValues(Constants.ExecutionIdHeaderName, out _))
+            {
+                request.Headers.Add(Constants.ExecutionIdHeaderName, FulcrumApplication.Context.ChildExecutionId);
+            }
         }
 
         private static void ForwardNexusTestContext(HttpRequestMessage request)

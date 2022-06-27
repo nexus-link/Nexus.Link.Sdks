@@ -1,7 +1,6 @@
 ﻿using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
 {
     /// <summary>
     /// Logs the request and the response

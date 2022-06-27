@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
 {
     /// <summary>
     /// Forward header <see cref="Constants.NexusUserAuthorizationHeaderName"/>

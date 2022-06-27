@@ -24,10 +24,7 @@ namespace Misc.AspNet.Sdk.UnitTests.Inbound.NexusLinkMiddleware
         {
             FulcrumApplicationHelper.UnitTestSetup(typeof(SaveExecutionInformationTests).FullName);
         }
-
-        /// <summary>
-        /// Make sure <see cref="SaveConfiguration"/> propagates correlation id in case of any logging. 
-        /// </summary>
+        
         [TestMethod]
         public async Task SaveBeforeAfter_Given_Enabled_Gives_Called()
         {

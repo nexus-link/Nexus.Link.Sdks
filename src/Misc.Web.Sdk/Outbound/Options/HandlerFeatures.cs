@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
 {
     /// <summary>
     /// All the features for <see cref="NexusLinkHandler"/>.
@@ -28,6 +28,12 @@ namespace Misc.Web.Sdk.Outbound.Options
         /// Forward header <see cref="Constants.NexusUserAuthorizationHeaderName"/>.
         /// </summary>
         public ForwardNexusTestContextOptions ForwardNexusTestContext { get; } = new();
+
+        /// <summary>
+        /// Forward headers <see cref="Constants.ExecutionIdHeaderName"/> and <see cref="Constants.ExecutionIdHeaderName"/>
+        /// and save information about the call.
+        /// </summary>
+        public HandleExecutionInformationOptions HandleExecutionInformation { get; } = new();
 
         /// <summary>
         /// Logs the request and the response
