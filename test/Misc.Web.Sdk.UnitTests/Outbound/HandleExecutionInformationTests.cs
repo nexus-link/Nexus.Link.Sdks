@@ -14,7 +14,7 @@ using Shouldly;
 namespace Misc.Web.Sdk.UnitTests.Outbound
 {
     [TestClass]
-    public class HandleExecutionInformationTests
+    public class SaveExecutionInformationTests
     {
         private NexusLinkHandlerOptions _options;
         private NexusLinkHandler _handler;
@@ -22,7 +22,7 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         [TestInitialize]
         public void TestCaseInitialize()
         {
-            FulcrumApplicationHelper.UnitTestSetup(typeof(HandleExecutionInformationTests).FullName);
+            FulcrumApplicationHelper.UnitTestSetup(typeof(SaveExecutionInformationTests).FullName);
             _options = new NexusLinkHandlerOptions();
             _handler = new NexusLinkHandler(_options);
         }

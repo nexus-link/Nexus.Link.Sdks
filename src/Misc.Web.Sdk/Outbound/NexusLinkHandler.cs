@@ -5,6 +5,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Extensions;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -102,6 +105,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
             catch (Exception e)
             {
                 finalException = e;
+                throw;
             }
             finally
             {
@@ -142,6 +146,8 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
 
             async Task<HttpResponseMessage> SendRequestAsync()
             {
+                response = await MaybeRerouteAsynchronousRequestsAsync(request, cancellationToken);
+                if (response != null) return response;
                 if (_options.Features.CustomSendDelegate.Enabled)
                 {
                     var sendAsyncDelegate = _options.Features.CustomSendDelegate.SendAsyncDelegate;
@@ -192,6 +198,54 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// If the request is in an asynchronous context, the request will be sent over an <see cref="IAsyncRequestMgmtCapability"/>.
+        /// </summary>
+        /// <exception cref="RequestPostponedException">
+        /// Thrown after the request has been sent for asynchronous handling and when a response is not available.
+        /// </exception>
+        private async Task<HttpResponseMessage> MaybeRerouteAsynchronousRequestsAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            if (!FulcrumApplication.Context.ExecutionIsAsynchronous) return null;
+            var asyncRequestMgmtCapability = _options.Features.RerouteAsynchronousRequests.AsyncRequestMgmtCapability;
+
+            if (FulcrumApplication.Context.AsyncRequestId != null)
+            {
+                var response = await TryGetResponseAsync(request, FulcrumApplication.Context.AsyncRequestId, cancellationToken);
+                if (response != null)
+                {
+                    Log.LogInformation($"Received a response for the asynchronous request {request.ToLogString()}");
+                    return response;
+                }
+                Log.LogVerbose($"No result when polling for a response for the asynchronous request {request.ToLogString()}");
+                throw new RequestPostponedException(FulcrumApplication.Context.AsyncRequestId);
+            }
+
+            // Send the request to AM
+            var asyncRequest = await new HttpRequestCreate().FromAsync(request, FulcrumApplication.Context.AsyncPriority, cancellationToken);
+            var requestId = await asyncRequestMgmtCapability.Request.CreateAsync(asyncRequest, cancellationToken);
+            Log.LogInformation($"Rerouted the request {request.ToLogString()} to asynchronous execution. RequestId = {requestId}");
+
+            // Remember the request id and postpone the activity.
+            throw new RequestPostponedException(requestId);
+        }
+
+        private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, string asyncRequestId, CancellationToken cancellationToken)
+        {
+            var asyncRequestMgmtCapability = _options.Features.RerouteAsynchronousRequests.AsyncRequestMgmtCapability;
+            var asyncResponse = await asyncRequestMgmtCapability.RequestResponse.ReadResponseAsync(asyncRequestId, cancellationToken);
+            if (asyncResponse == null || !asyncResponse.Metadata.RequestHasCompleted) return null;
+
+            if (asyncResponse.HttpStatus == null)
+            {
+                throw new FulcrumResourceException($"Asynchronous request service returned an exception with the name {asyncResponse.Exception.Name} and message: {asyncResponse.Exception.Message}");
+            }
+
+            var response = asyncResponse.ToHttpResponseMessage(request);
+            return response;
         }
 
         private static void ThrowFulcrumExceptionBasedOnException(HttpRequestMessage request, Exception exception)

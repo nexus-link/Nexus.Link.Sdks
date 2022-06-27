@@ -174,7 +174,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
         {
             await PrepareBeforeExecutionAsync(cancellationToken);
-            WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+            FulcrumApplication.Context.ExecutionIsAsynchronous = true;
             try
             {
                 await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
@@ -264,7 +264,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowStatic.Context.CurrentWorkflowExecutor = this;
             await PrepareBeforeExecutionAsync(cancellationToken);
-            WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+            FulcrumApplication.Context.ExecutionIsAsynchronous = true;
             try
             {
                 await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);

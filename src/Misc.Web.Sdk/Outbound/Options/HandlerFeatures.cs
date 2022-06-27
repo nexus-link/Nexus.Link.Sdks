@@ -46,6 +46,11 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
         public LogRequestAndResponseOptions LogRequestAndResponse { get; } = new();
 
         /// <summary>
+        /// Logs the request and the response
+        /// </summary>
+        public RerouteAsynchronousRequestsOptions RerouteAsynchronousRequests { get; } = new();
+
+        /// <summary>
         /// Use a custom send delegate instead of the default one. This comes handy for testing.
         /// </summary>
         public CustomSendDelegateOptions CustomSendDelegate { get; } = new();
