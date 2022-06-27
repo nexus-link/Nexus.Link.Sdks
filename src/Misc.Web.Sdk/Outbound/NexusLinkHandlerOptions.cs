@@ -31,9 +31,9 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
             Features.LogRequestAndResponse.Enabled = true;
 
             // Handle execution information
-            Features.HandleExecutionInformation.Enabled = true;
-            Features.HandleExecutionInformation.SaveBeforeExecutionAsyncDelegate = null;
-            Features.HandleExecutionInformation.SaveAfterExecutionAsyncDelegate = null;
+            Features.SaveExecutionInformation.Enabled = true;
+            Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate = null;
+            Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate = null;
 
             // This is up to the implementor
             Features.CustomSendDelegate.Enabled = false;

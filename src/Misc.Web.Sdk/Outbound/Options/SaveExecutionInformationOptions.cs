@@ -13,7 +13,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
     /// <summary>
     /// Forward header <see cref="Constants.FulcrumCorrelationIdHeaderName"/>
     /// </summary>
-    public class HandleExecutionInformationOptions : Feature, IValidatable
+    public class SaveExecutionInformationOptions : Feature, IValidatable
     {
         /// <summary>
         /// A delegate to save information about a request execution before the actual execution

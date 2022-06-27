@@ -33,6 +33,8 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             // Log request and response
             Features.LogRequestAndResponse.Enabled = true;
 
+            Features.SaveExecutionInformation.Enabled = false;
+
             // Use batch logs to filter out chatty logs when successful
             Features.BatchLog.Enabled = true;
             Features.BatchLog.FlushAsLateAsPossible = true;

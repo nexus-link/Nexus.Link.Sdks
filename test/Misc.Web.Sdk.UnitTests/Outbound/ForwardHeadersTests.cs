@@ -111,13 +111,13 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         [DataTestMethod]
         [DataRow(true)]
         [DataRow(false)]
-        public async Task HandleExecutionId_ParentHeader_RespectsEnabled_ProducesExpectedResult(bool enabled)
+        public async Task ForwardExecutionInformation_ParentHeader_RespectsEnabled_ProducesExpectedResult(bool enabled)
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
             var headerName = Constants.ParentExecutionIdHeaderName;
             HttpRequestHeaders actualHeaders = null;
-            _options.Features.HandleExecutionInformation.Enabled = enabled;
+            _options.Features.ForwardExecutionInformation.Enabled = enabled;
             FulcrumApplication.Context.ExecutionId = headerValue;
             var request = new HttpRequestMessage(HttpMethod.Post, "http://example.com/");
 
@@ -150,13 +150,13 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
         [DataTestMethod]
         [DataRow(true)]
         [DataRow(false)]
-        public async Task HandleExecutionId_Header_RespectsEnabled_ProducesExpectedResult(bool enabled)
+        public async Task ForwardExecutionInformation_Header_RespectsEnabled_ProducesExpectedResult(bool enabled)
         {
             // Arrange
             var headerValue = Guid.NewGuid().ToGuidString();
             var headerName = Constants.ExecutionIdHeaderName;
             HttpRequestHeaders actualHeaders = null;
-            _options.Features.HandleExecutionInformation.Enabled = enabled;
+            _options.Features.ForwardExecutionInformation.Enabled = enabled;
             FulcrumApplication.Context.ChildExecutionId = headerValue;
             var request = new HttpRequestMessage(HttpMethod.Post, "http://example.com/");
 

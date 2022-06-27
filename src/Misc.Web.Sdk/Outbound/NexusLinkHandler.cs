@@ -134,9 +134,9 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                     ForwardNexusTestContext(request);
                 }
 
-                if (_options.Features.HandleExecutionInformation.Enabled)
+                if (_options.Features.ForwardExecutionInformation.Enabled)
                 {
-                    ForwardExecutionId(request);
+                    ForwardExecutionInformation(request);
                 }
             }
 
@@ -293,12 +293,12 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
             try
             {
                 if (request == null) return;
-                var saveBeforeAsyncDelegate = _options.Features.HandleExecutionInformation.SaveBeforeExecutionAsyncDelegate;
+                var saveBeforeAsyncDelegate = _options.Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate;
                 if (saveBeforeAsyncDelegate == null) return;
                 if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId)) return;
                 string requestDescription = FulcrumApplication.Context.ChildRequestDescription
                                             ?? request.ToLogString();
-                var beforeExecution = new HandleExecutionInformationOptions.BeforeExecution
+                var beforeExecution = new SaveExecutionInformationOptions.BeforeExecution
                 {
                     ExecutionId = FulcrumApplication.Context.ChildExecutionId,
                     ParentExecutionId = FulcrumApplication.Context.ExecutionId,
@@ -312,7 +312,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                 catch (Exception e)
                 {
                     Log.LogWarning(
-                        $"{nameof(HandlerFeatures.HandleExecutionInformation)} failed to save information before execution: {e.ToLogString(true)}\r" +
+                        $"{nameof(HandlerFeatures.SaveExecutionInformation)} failed to save information before execution: {e.ToLogString(true)}\r" +
                         $"{JsonConvert.SerializeObject(beforeExecution)}");
                 }
             }
@@ -363,7 +363,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
         {
             try
             {
-                var saveAfterAsyncDelegate = _options.Features.HandleExecutionInformation.SaveAfterExecutionAsyncDelegate;
+                var saveAfterAsyncDelegate = _options.Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate;
                 if (saveAfterAsyncDelegate == null) return;
                 if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId)) return;
                 string responseDescription =
@@ -373,7 +373,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                     responseDescription = await response.ToLogStringAsync(cancellationToken);
                 }
 
-                var afterExecution = new HandleExecutionInformationOptions.AfterExecution
+                var afterExecution = new SaveExecutionInformationOptions.AfterExecution
                 {
                     ExecutionId = FulcrumApplication.Context.ChildExecutionId,
                     Elapsed = stopwatch.Elapsed,
@@ -387,7 +387,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                 catch (Exception e)
                 {
                     Log.LogWarning(
-                        $"{nameof(HandlerFeatures.HandleExecutionInformation)} failed to save information after execution: {e.ToLogString(true)}\r" +
+                        $"{nameof(HandlerFeatures.SaveExecutionInformation)} failed to save information after execution: {e.ToLogString(true)}\r" +
                         $"{JsonConvert.SerializeObject(afterExecution)}");
                 }
             }
@@ -397,7 +397,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
             }
         }
 
-        private void ForwardExecutionId(HttpRequestMessage request)
+        private void ForwardExecutionInformation(HttpRequestMessage request)
         {
             if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
                 && !request.Headers.TryGetValues(Constants.ParentExecutionIdHeaderName, out _))
@@ -405,7 +405,7 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound
                 request.Headers.Add(Constants.ParentExecutionIdHeaderName, FulcrumApplication.Context.ExecutionId);
             }
 
-            if (request.Headers.TryGetValues(Constants.ExecutionIdHeaderName, out _))
+            if (!request.Headers.TryGetValues(Constants.ExecutionIdHeaderName, out _))
             {
                 request.Headers.Add(Constants.ExecutionIdHeaderName, FulcrumApplication.Context.ChildExecutionId);
             }

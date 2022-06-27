@@ -33,14 +33,14 @@ namespace Misc.Web.Sdk.UnitTests.Outbound
             //
             // Arrange
             //
-            HandleExecutionInformationOptions.BeforeExecution actualBefore = null;
-            HandleExecutionInformationOptions.AfterExecution actualAfter = null;
+            SaveExecutionInformationOptions.BeforeExecution actualBefore = null;
+            SaveExecutionInformationOptions.AfterExecution actualAfter = null;
 
             // Create a handler with options
-            _options.Features.HandleExecutionInformation.Enabled = true;
-            _options.Features.HandleExecutionInformation.SaveBeforeExecutionAsyncDelegate =
+            _options.Features.SaveExecutionInformation.Enabled = true;
+            _options.Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate =
                 (before, _) => Task.FromResult(actualBefore = before);
-            _options.Features.HandleExecutionInformation.SaveAfterExecutionAsyncDelegate =
+            _options.Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate =
                 (after, _) => Task.FromResult(actualAfter = after);
 
             // Set context

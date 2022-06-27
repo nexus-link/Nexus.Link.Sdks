@@ -30,10 +30,15 @@ namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
         public ForwardNexusTestContextOptions ForwardNexusTestContext { get; } = new();
 
         /// <summary>
+        /// Forward header <see cref="Constants.FulcrumCorrelationIdHeaderName"/>.
+        /// </summary>
+        public ForwardExecutionInformationOptions ForwardExecutionInformation { get; } = new();
+
+        /// <summary>
         /// Forward headers <see cref="Constants.ExecutionIdHeaderName"/> and <see cref="Constants.ExecutionIdHeaderName"/>
         /// and save information about the call.
         /// </summary>
-        public HandleExecutionInformationOptions HandleExecutionInformation { get; } = new();
+        public SaveExecutionInformationOptions SaveExecutionInformation { get; } = new();
 
         /// <summary>
         /// Logs the request and the response
