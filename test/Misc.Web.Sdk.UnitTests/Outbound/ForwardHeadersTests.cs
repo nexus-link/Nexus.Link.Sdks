@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Pipe;
-using Nexus.Link.Misc.Web.Sdk.Outbound;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
 using Shouldly;
 
 namespace Misc.Web.Sdk.UnitTests.Outbound

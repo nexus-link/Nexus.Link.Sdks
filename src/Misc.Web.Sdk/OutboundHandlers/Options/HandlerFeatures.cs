@@ -2,7 +2,7 @@
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options
 {
     /// <summary>
     /// All the features for <see cref="NexusLinkHandler"/>.

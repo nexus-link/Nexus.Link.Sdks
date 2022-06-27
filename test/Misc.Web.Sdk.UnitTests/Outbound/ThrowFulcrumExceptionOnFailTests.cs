@@ -14,7 +14,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
-using Nexus.Link.Misc.Web.Sdk.Outbound;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
 using Shouldly;
 
 namespace Misc.Web.Sdk.UnitTests.Outbound

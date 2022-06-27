@@ -1,7 +1,7 @@
 ﻿using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options
 {
     /// <summary>
     /// Forward header <see cref="Constants.NexusTestContextHeaderName"/>

@@ -18,9 +18,9 @@ using Nexus.Link.Libraries.Web.Error;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
-using Nexus.Link.Misc.Web.Sdk.Outbound.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
 {
     /// <summary>
     /// This handler contains all the Nexus Link handlers.

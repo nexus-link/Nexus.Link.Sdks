@@ -1,7 +1,8 @@
 ﻿using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Misc.Web.Sdk.Outbound.Options;
+using Nexus.Link.Libraries.Core.Json;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
 {
     /// <summary>
     /// Options that controls <see cref="NexusLinkHandler"/>

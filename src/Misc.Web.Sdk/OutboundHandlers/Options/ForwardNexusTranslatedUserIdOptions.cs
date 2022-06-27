@@ -2,19 +2,17 @@
 using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options
 {
     /// <summary>
     /// Forward header <see cref="Constants.NexusTranslatedUserIdHeaderName"/>
     /// </summary>
     public class ForwardNexusTranslatedUserIdOptions : Feature, IValidatable
     {
-        public IContextValueProvider ContextValueProvider { get; }
-
-        public ForwardNexusTranslatedUserIdOptions()
-        {
-            ContextValueProvider = new AsyncLocalContextValueProvider();
-        }
+        /// <summary>
+        /// The context value provider where the header value is taken from
+        /// </summary>
+        public IContextValueProvider ContextValueProvider { get; } = new AsyncLocalContextValueProvider();
 
         /// <inheritdoc />
         public void Validate(string errorLocation, string propertyPath = "")

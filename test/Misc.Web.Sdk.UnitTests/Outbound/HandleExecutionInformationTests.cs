@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.Pipe;
-using Nexus.Link.Misc.Web.Sdk.Outbound;
-using Nexus.Link.Misc.Web.Sdk.Outbound.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options;
 using Shouldly;
 
 #pragma warning disable CS0618

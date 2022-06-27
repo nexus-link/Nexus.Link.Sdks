@@ -2,13 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Context;
 using Nexus.Link.Libraries.Core.EntityAttributes;
 using Nexus.Link.Libraries.Web.Pipe;
 
-namespace Nexus.Link.Misc.Web.Sdk.Outbound.Options
+namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options
 {
     /// <summary>
     /// Forward header <see cref="Constants.FulcrumCorrelationIdHeaderName"/>
