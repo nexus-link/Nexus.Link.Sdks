@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.7.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0-alfa06" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0-alfa07" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>3.0.14-alfa01</Version>
+    <Version>3.0.14-alfa02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

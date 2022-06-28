@@ -17,7 +17,6 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
-using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options;
 using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
@@ -33,11 +32,12 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
         /// <summary>
         /// This handler contains all the Nexus Link handlers.
         /// </summary>
-        public NexusLinkHandler(NexusLinkHandlerOptions options)
+        public NexusLinkHandler(NexusLinkHandlerOptions options, HttpMessageHandler innerHandler = null)
         {
             InternalContract.RequireNotNull(options, nameof(options));
             InternalContract.RequireValidated(options, nameof(options));
             _options = options;
+            InnerHandler = innerHandler ?? new HttpClientHandler();
         }
 
         /// <summary>
@@ -454,15 +454,37 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
 
         private void ForwardExecutionInformation(HttpRequestMessage request)
         {
-            if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
-                && !request.Headers.TryGetValues(NexusHeaderNames.ParentExecutionIdHeaderName, out _))
+            if (_options.Features.ForwardExecutionInformation.SimpleForward)
             {
-                request.Headers.Add(NexusHeaderNames.ParentExecutionIdHeaderName, FulcrumApplication.Context.ExecutionId);
-            }
+                if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ParentExecutionId)
+                    && !request.Headers.TryGetValues(NexusHeaderNames.ParentExecutionIdHeaderName, out _))
+                {
+                    request.Headers.Add(NexusHeaderNames.ParentExecutionIdHeaderName,
+                        FulcrumApplication.Context.ExecutionId);
+                }
 
-            if (!request.Headers.TryGetValues(NexusHeaderNames.ExecutionIdHeaderName, out _))
+                if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
+                    && !request.Headers.TryGetValues(NexusHeaderNames.ExecutionIdHeaderName, out _))
+                {
+                    request.Headers.Add(NexusHeaderNames.ExecutionIdHeaderName,
+                        FulcrumApplication.Context.ExecutionId);
+                }
+            }
+            else
             {
-                request.Headers.Add(NexusHeaderNames.ExecutionIdHeaderName, FulcrumApplication.Context.ChildExecutionId);
+                if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId)
+                    && !request.Headers.TryGetValues(NexusHeaderNames.ParentExecutionIdHeaderName, out _))
+                {
+                    request.Headers.Add(NexusHeaderNames.ParentExecutionIdHeaderName,
+                        FulcrumApplication.Context.ExecutionId);
+                }
+
+                if (!string.IsNullOrWhiteSpace(FulcrumApplication.Context.ChildExecutionId)
+                    && !request.Headers.TryGetValues(NexusHeaderNames.ExecutionIdHeaderName, out _))
+                {
+                    request.Headers.Add(NexusHeaderNames.ExecutionIdHeaderName,
+                        FulcrumApplication.Context.ChildExecutionId);
+                }
             }
         }
 

@@ -114,6 +114,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 {
                     FulcrumApplication.Context.ParentExecutionId = parentExecutionId;
                     FulcrumApplication.Context.ExecutionId = executionId;
+                    FulcrumApplication.Context.ChildExecutionId = null;
                 }
 
                 if (Options.Features.SaveExecutionInformation.Enabled)

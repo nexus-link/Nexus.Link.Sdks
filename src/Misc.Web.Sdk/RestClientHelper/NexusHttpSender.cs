@@ -82,7 +82,7 @@ namespace Nexus.Link.Misc.Web.Sdk.RestClientHelper
                 InternalContract.Fail($"The format of {nameof(baseUri)} ({baseUri}) is not correct: {e.Message}");
             }
 
-            var options = new NexusLinkHandlerOptions().SetNexusLinkDefaults();
+            var options = new NexusLinkHandlerOptions();
             var handler = new NexusLinkHandler(options);
             HttpClient = new HttpClient(handler);
             NexusLinkHandlerOptions = options;

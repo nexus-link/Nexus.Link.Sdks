@@ -24,6 +24,9 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
             Features.ForwardNexusTranslatedUserId.Enabled = true;
             Features.ForwardNexusTestContext.Enabled = true;
             Features.ForwardCorrelationId.Enabled = true;
+            Features.ForwardExecutionInformation.Enabled = true;
+            Features.ForwardExecutionInformation.SimpleForward = false;
+            ;
 
             // Convert HTTP status codes to FulcrumException
             Features.ThrowFulcrumExceptionOnFail.Enabled = true;
@@ -32,9 +35,7 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers
             Features.LogRequestAndResponse.Enabled = true;
 
             // Handle execution information
-            Features.SaveExecutionInformation.Enabled = true;
-            Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate = null;
-            Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate = null;
+            Features.SaveExecutionInformation.Enabled = false;
 
             // This is up to the implementor
             Features.CustomSendDelegate.Enabled = false;

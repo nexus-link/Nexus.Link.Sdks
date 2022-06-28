@@ -295,6 +295,9 @@ internal class ActivityExecutor : IActivityExecutor
     {
         try
         {
+            FulcrumApplication.Context.AsyncPriority = Activity.Options.AsyncRequestPriority;
+            FulcrumApplication.Context.AsyncRequestId = Activity.Instance?.AsyncRequestId;
+            FulcrumApplication.Context.ChildRequestDescription = Activity.ActivityTitle;
             return await ExecuteUnderTimeLimitsAsync(methodAsync, cancellationToken);
         }
         catch (ActivityFailedException) // Also covers WorkflowFailedException

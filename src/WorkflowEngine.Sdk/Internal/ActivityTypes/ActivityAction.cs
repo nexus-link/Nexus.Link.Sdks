@@ -96,9 +96,6 @@ internal class ActivityAction : Activity, IActivityAction
     internal async Task ActionAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        FulcrumApplication.Context.AsyncPriority = Options.AsyncRequestPriority;
-        FulcrumApplication.Context.AsyncRequestId = Instance?.AsyncRequestId;
-        FulcrumApplication.Context.ChildRequestDescription = ActivityTitle;
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
         try
         {

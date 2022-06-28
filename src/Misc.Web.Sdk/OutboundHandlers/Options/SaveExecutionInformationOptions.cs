@@ -26,12 +26,14 @@ namespace Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Options
         /// <summary>
         /// The method that will deal with the actual saving
         /// </summary>
-        public SaveBeforeExecutionAsyncMethod SaveBeforeExecutionAsyncDelegate;
+        [Validation.NotNull(TriggerPropertyName = nameof(Enabled))]
+        public SaveBeforeExecutionAsyncMethod SaveBeforeExecutionAsyncDelegate { get; set; }
 
         /// <summary>
         /// The method that will deal with the actual saving
         /// </summary>
-        public SaveAfterExecutionAsyncMethod SaveAfterExecutionAsyncDelegate;
+        [Validation.NotNull(TriggerPropertyName = nameof(Enabled))]
+        public SaveAfterExecutionAsyncMethod SaveAfterExecutionAsyncDelegate { get; set; }
 
         /// <summary>
         /// Information about a request execution before the actual execution

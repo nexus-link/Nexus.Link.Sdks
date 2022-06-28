@@ -25,7 +25,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             Features.SaveNexusTestContext.Enabled = true;
             Features.SaveClientTenant.Enabled = true;
             Features.SaveCorrelationId.Enabled = true;
-            Features.SaveTenantConfiguration.Enabled = true;
+            Features.SaveTenantConfiguration.Enabled = false;
 
             // This is only used by workflow engine users
             Features.RedirectAsynchronousRequests.Enabled = false;
