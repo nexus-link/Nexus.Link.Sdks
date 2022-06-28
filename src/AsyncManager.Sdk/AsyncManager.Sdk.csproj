@@ -37,15 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.0-alfa01" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0-alfa07" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.0-alfa04" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>3.2.6-alfa03</Version>
+    <Version>3.2.6-alfa04</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

@@ -31,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0-alfa07" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.4" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.0-alfa04" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.3.0" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.3.1" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,7 +64,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.16.0-alfa08</Version>
+    <Version>6.16.0-alfa10</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
