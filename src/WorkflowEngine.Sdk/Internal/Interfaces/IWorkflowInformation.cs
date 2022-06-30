@@ -138,7 +138,7 @@ internal interface IWorkflowInformation
     /// <summary>
     /// Load information about this workflow instance
     /// </summary>
-    Task LoadAsync(CancellationToken cancellationToken);
+    Task LoadAsync(string executionId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Save the current workflow instance to storage.

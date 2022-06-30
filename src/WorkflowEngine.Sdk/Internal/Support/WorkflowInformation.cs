@@ -126,9 +126,9 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Task LoadAsync(CancellationToken cancellationToken)
+    public Task LoadAsync(string executionId, CancellationToken cancellationToken)
     {
-        return _workflowCache.LoadAsync(cancellationToken);
+        return _workflowCache.LoadAsync(executionId, cancellationToken);
     }
 
     /// <inheritdoc />

@@ -161,7 +161,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public Task LoadAsync(CancellationToken cancellationToken)
+        public Task LoadAsync(string contextExecutionId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

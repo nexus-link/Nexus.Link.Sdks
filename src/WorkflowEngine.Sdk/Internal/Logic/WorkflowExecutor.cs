@@ -43,9 +43,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
-            WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId.ToGuidString();
-            WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
-            await WorkflowInformation.LoadAsync(cancellationToken);
+            await WorkflowInformation.LoadAsync(FulcrumApplication.Context.ExecutionId, cancellationToken);
+            WorkflowStatic.Context.WorkflowInstanceId = WorkflowInformation.InstanceId;
             if (WorkflowInformation.InstanceExists() && WorkflowInformation.WorkflowInstanceService != null)
             {
                 _workflowDistributedLock = await WorkflowInformation.WorkflowInstanceService.ClaimDistributedLockAsync(
@@ -56,7 +55,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
             WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
             WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
-            FulcrumAssert.AreEqual(WorkflowInformation.ExecutionId, FulcrumApplication.Context.ExecutionId);
             await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
             if (WorkflowInformation.Instance.CancelledAt != null)
@@ -172,7 +170,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.DefaultActivityOptions.AsyncRequestPriority = priority;
         }
 
-        public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
+        public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken = default)
         {
             await PrepareBeforeExecutionAsync(cancellationToken);
             FulcrumApplication.Context.ExecutionIsAsynchronous = true;
@@ -261,7 +259,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             await WorkflowInformation.LogService.DeleteWorkflowChildrenAsync(workflowInstance.Id, WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
-        public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
+        public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken = default)
         {
             WorkflowStatic.Context.CurrentWorkflowExecutor = this;
             await PrepareBeforeExecutionAsync(cancellationToken);

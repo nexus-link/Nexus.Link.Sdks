@@ -235,8 +235,9 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             var cancellationToken = context.RequestAborted;
             var requestCreate = await new HttpRequestCreate().FromAsync(context.Request, 0.5, cancellationToken);
             FulcrumAssert.IsNotNull(requestCreate, CodeLocation.AsString());
-            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
+            MaybeAddExecutionIdHeaderToRequest(requestCreate);
             await MaybeAddReentryAuthenticationToRequestAsync(context, requestCreate, cancellationToken);
+            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
             var requestId = await requestService.CreateAsync(requestCreate, cancellationToken);
             FulcrumAssert.IsNotNullOrWhiteSpace(requestId, CodeLocation.AsString());
             var urls = requestService.GetEndpoints(requestId);
@@ -247,6 +248,13 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 PollingUrl = urls.PollingUrl,
                 RegisterCallbackUrl = urls.RegisterCallbackUrl
             };
+        }
+
+        private static void MaybeAddExecutionIdHeaderToRequest(HttpRequestCreate requestCreate)
+        {
+            if (requestCreate.Headers.TryGetValue(NexusHeaderNames.ExecutionIdHeaderName, out _)) return;
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
+            requestCreate.Headers[NexusHeaderNames.ExecutionIdHeaderName] = FulcrumApplication.Context.ExecutionId;
         }
 
         private async Task MaybeAddReentryAuthenticationToRequestAsync(HttpContext context, HttpRequestCreate requestCreate,

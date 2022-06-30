@@ -31,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         }
 
         /// <summary>
-        /// If non-null, contains information about the current parent id.
+        /// If non-null, contains information about the current parent activity.
         /// </summary>
         public Activity ParentActivity
         {
@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         }
 
         /// <summary>
-        /// If non-null, contains information about the current parent id.
+        /// If non-null, contains information about the latest activity.
         /// </summary>
         public Activity LatestActivity
         {
