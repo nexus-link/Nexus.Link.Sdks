@@ -13,7 +13,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
     {
         public WorkflowInstanceTableMemory()
         {
-
             UniqueConstraintMethods += item => new WorkflowInstanceRecordUnique()
             {
                 ExecutionId = item.ExecutionId ?? Guid.NewGuid().ToGuidString() // Simulate not caring about null
@@ -27,6 +26,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
             {
                 InternalContract.RequireAreEqual(oldItem.WorkflowVersionId, item.WorkflowVersionId,
                     $"{nameof(item)}.{nameof(item.WorkflowVersionId)}");
+                InternalContract.RequireAreEqual(oldItem.ExecutionId, item.ExecutionId,
+                    $"{nameof(item)}.{nameof(item.ExecutionId)}");
             }
 
             return await base.UpdateAndReturnAsync(id, item, cancellationToken);

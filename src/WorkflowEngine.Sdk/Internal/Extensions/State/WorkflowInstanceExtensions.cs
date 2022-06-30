@@ -40,6 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
 
             ((WorkflowInstanceRecordCreate) target).From(source);
             target.Id = source.Id.ToGuid();
+            target.ExecutionId = source.ExecutionId;
             target.Etag = source.Etag;
             return target;
         }
@@ -56,6 +57,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.Id = source.Id.ToGuidString();
             target.Etag = source.Etag;
             target.WorkflowVersionId = source.WorkflowVersionId.ToGuidString();
+            target.ExecutionId = source.ExecutionId;
             target.Title = source.Title;
             target.InitialVersion = source.InitialVersion;
             target.StartedAt = source.StartedAt;
