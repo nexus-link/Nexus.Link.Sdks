@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
@@ -105,6 +106,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     StartedAt = DateTimeOffset.UtcNow,
                     InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
                     Title = _workflowInformation.InstanceTitle,
+                    ExecutionId = FulcrumApplication.Context.ExecutionId,
                     State = WorkflowStateEnum.Executing
                 };
                 return _summary;

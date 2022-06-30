@@ -56,6 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
             WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
             WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
+            FulcrumAssert.AreEqual(WorkflowInformation.ExecutionId, FulcrumApplication.Context.ExecutionId);
             await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
             if (WorkflowInformation.Instance.CancelledAt != null)

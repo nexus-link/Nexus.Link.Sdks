@@ -47,6 +47,9 @@ internal class WorkflowInformation : IWorkflowInformation
     private string _instanceTitle;
 
     /// <inheritdoc />
+    public string ExecutionId => _workflowCache.Instance.ExecutionId;
+
+    /// <inheritdoc />
     public string InstanceTitle
     {
         get { return _instanceTitle ??= _workflowImplementation.GetInstanceTitle(); }

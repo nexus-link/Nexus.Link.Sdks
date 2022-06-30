@@ -59,6 +59,11 @@ internal interface IWorkflowInformation
     WorkflowInstance Instance { get; }
 
     /// <summary>
+    /// The execution ID for this workflow instance
+    /// </summary>
+    string ExecutionId { get; }
+
+    /// <summary>
     /// The title for the current workflow instance
     /// </summary>
     string InstanceTitle { get; }

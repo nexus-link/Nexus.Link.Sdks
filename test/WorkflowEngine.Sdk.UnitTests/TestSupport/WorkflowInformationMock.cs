@@ -67,6 +67,9 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public WorkflowInstance Instance { get; set; } = new WorkflowInstance();
 
         /// <inheritdoc />
+        public string ExecutionId => "56878D57-BEFE-4682-B7DE-6CF09B422E4E";
+
+        /// <inheritdoc />
         public string InstanceTitle { get; set; } = "Instance title";
 
         /// <inheritdoc />
