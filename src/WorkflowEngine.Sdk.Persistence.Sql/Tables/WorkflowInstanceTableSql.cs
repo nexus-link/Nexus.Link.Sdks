@@ -17,6 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             CustomColumnNames = new List<string>
             {
                 nameof(WorkflowInstanceRecord.WorkflowVersionId),
+                nameof(WorkflowInstanceRecord.ExecutionId),
                 nameof(WorkflowInstanceRecord.Title),
                 nameof(WorkflowInstanceRecord.InitialVersion),
                 nameof(WorkflowInstanceRecord.StartedAt),

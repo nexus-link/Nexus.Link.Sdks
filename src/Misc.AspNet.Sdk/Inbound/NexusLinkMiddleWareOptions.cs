@@ -1,4 +1,5 @@
-﻿using Nexus.Link.Libraries.Core.Assert;
+﻿using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Misc.AspNet.Sdk.Inbound.Options;
 
@@ -33,11 +34,17 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             // Log request and response
             Features.LogRequestAndResponse.Enabled = true;
 
+            // We don't yet have support for this
             Features.SaveExecutionInformation.Enabled = false;
+            Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate = null;
+            Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate = null;
 
             // Use batch logs to filter out chatty logs when successful
-            Features.BatchLog.Enabled = true;
-            Features.BatchLog.FlushAsLateAsPossible = true;
+            // The default is false, because you must set
+            // FulcrumApplication.Setup.SynchronousFastLogger = new BatchLogger(<your logger>)
+            // before you can enable this.
+            Features.BatchLog.Enabled = false;
+            Features.BatchLog.FlushAsLateAsPossible = false;
             Features.BatchLog.Threshold = LogSeverityLevel.Warning;
 
             // Convert exceptions to the proper HTTP status code and content

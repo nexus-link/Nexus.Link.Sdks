@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
@@ -10,6 +11,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class WorkflowInstanceTableMemory : CrudMemory<WorkflowInstanceRecordCreate, WorkflowInstanceRecord, Guid>, IWorkflowInstanceTable
     {
+        public WorkflowInstanceTableMemory()
+        {
+
+            UniqueConstraintMethods += item => new WorkflowInstanceRecordUnique()
+            {
+                ExecutionId = item.ExecutionId ?? Guid.NewGuid().ToGuidString() // Simulate not caring about null
+            };
+        }
         public override async Task<WorkflowInstanceRecord> UpdateAndReturnAsync(Guid id, WorkflowInstanceRecord item,
             CancellationToken cancellationToken = new CancellationToken())
         {
