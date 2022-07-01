@@ -180,7 +180,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
                 var totalExecution = DateTimeOffset.UtcNow.Subtract(WorkflowInformation.StartedAt);
-                await this.LogInformationAsync($"Workflow successful, total execution time was {totalExecution.TotalSeconds} s.", result, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful, total execution time was {totalExecution.ToLogString()}.", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -202,7 +202,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution, this run took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution, this run took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed.ToLogString()}.", WorkflowInformation.Instance, cancellationToken);
                     await PurgeLogsAsync(cancellationToken);
                 }
             }
