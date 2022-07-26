@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -20,7 +15,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="ActivityForEachSequential{TItem}" />
 internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEachSequential<TItem>
 {
-    private readonly ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
+    private ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
@@ -44,28 +39,27 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 
     /// <inheritdoc/>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public Task ExecuteAsync(
+    public async Task ExecuteAsync(
         ActivityForEachSequentialMethodAsync<TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
+        InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        _methodAsync = methodAsync;
         WorkflowStatic.Context.ParentActivity = this;
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => ForEachSequentialAsync(methodAsync, ct),
-            cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ForEachSequentialAsync, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
     }
 
-    internal Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    internal async Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        return ForEachSequentialAsync(_methodAsync, cancellationToken);
-    }
-
-    private async Task ForEachSequentialAsync(ActivityForEachSequentialMethodAsync<TItem> method, CancellationToken cancellationToken)
-    {
         foreach (var item in Items)
         {
             LoopIteration++;
-            await method(item, this, cancellationToken)
+#pragma warning disable CS0618 // Type or member is obsolete
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         }
     }
@@ -79,24 +73,25 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 
 /// <inheritdoc cref="ActivityForEachSequential{TMethodReturns, TItem}" />
 internal class ActivityForEachSequential<TMethodReturns, TItem> :
-    LoopActivity<IList<TMethodReturns>, TMethodReturns>, IActivityForEachSequential<TMethodReturns, TItem>
+    LoopActivity<IList<TMethodReturns>>, IActivityForEachSequential<TMethodReturns, TItem>
 {
-    private readonly ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
+    private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync, IEnumerable<TItem> items)
-        : base(activityInformation, getDefaultValueAsync)
+        IActivityInformation activityInformation, IEnumerable<TItem> items)
+        : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
     }
+
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync,
+        IActivityInformation activityInformation,
         IEnumerable<TItem> items,
         ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync)
-        : base(activityInformation, getDefaultValueAsync)
+        : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -106,34 +101,28 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
 
     /// <inheritdoc/>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public Task<IList<TMethodReturns>> ExecuteAsync(
-        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> method,
+    public async Task<IList<TMethodReturns>> ExecuteAsync(
+        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken = default)
     {
         ChildCounter = 0;
+        _methodAsync = methodAsync;
         WorkflowStatic.Context.ParentActivity = this;
-        return ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachSequentialAsync(method, ct),
-            _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
-            cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken)
+            .CatchExitExceptionAsync(this, cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
+        return result;
     }
 
-    internal Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
+    internal async Task<IList<TMethodReturns>> ForEachSequentialAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        return ForEachSequentialAsync(_methodAsync, cancellationToken);
-    }
-
-    private async Task<IList<TMethodReturns>> ForEachSequentialAsync(
-        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync,
-        CancellationToken cancellationToken)
-    {
         var resultList = new List<TMethodReturns>();
         foreach (var item in Items)
         {
             LoopIteration++;
-            var result = await methodAsync(item, this, cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
+            var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct),
+                $"Item{LoopIteration}", cancellationToken);
             resultList.Add(result);
         }
 
@@ -143,10 +132,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     /// <inheritdoc />
     protected override async Task<IList<TMethodReturns>> InternalExecuteAsync(CancellationToken cancellationToken = default)
     {
-        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(
-            ct => ForEachSequentialAsync(_methodAsync, ct),
-            _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()),
-            cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ForEachSequentialAsync, DefaultValueMethodAsync, cancellationToken);
         return result;
     }
 }

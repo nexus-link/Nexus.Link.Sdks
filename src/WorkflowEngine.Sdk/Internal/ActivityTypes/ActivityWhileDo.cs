@@ -1,12 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
@@ -24,22 +22,12 @@ internal class ActivityWhileDo : LoopActivity, IActivityWhileDo
         _conditionMethodAsync = conditionMethodAsync;
     }
 
-    internal async Task WhileDoAsync(ActivityMethodAsync<IActivityWhileDo> methodAsync, CancellationToken cancellationToken)
+    public ActivityWhileDo(IActivityInformation activityInformation,
+        ActivityConditionMethod<IActivityWhileDo> conditionMethod)
+        : base(activityInformation)
     {
-        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        do
-        {
-            LoopIteration++;
-            await methodAsync(this, cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
-        } while (await _conditionMethodAsync!(this, cancellationToken));
-    }
-
-    /// <inheritdoc />
-    protected override async Task InternalExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
-        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => WhileDoAsync(_methodAsync, ct), cancellationToken);
+        InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+        _conditionMethodAsync = (a, _) => Task.FromResult(conditionMethod(a));
     }
 
     /// <inheritdoc />
@@ -63,6 +51,26 @@ internal class ActivityWhileDo : LoopActivity, IActivityWhileDo
         };
         return this;
     }
+
+    /// <inheritdoc />
+    protected override async Task InternalExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(WhileDoAsync, cancellationToken);
+    }
+
+    internal async Task WhileDoAsync(CancellationToken cancellationToken = default)
+    {
+        InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
+        do
+        {
+            LoopIteration++;
+#pragma warning disable CS0618
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), $"Do{LoopIteration}", cancellationToken)
+                .CatchExitExceptionAsync(this, cancellationToken);
+#pragma warning restore CS0618
+        } while (await LogicExecutor.ExecuteWithReturnValueAsync(ct=> _conditionMethodAsync!(this, ct), "While", cancellationToken));
+    }
 }
 
 /// <inheritdoc cref="IActivityWhileDo{TActivityReturns}" />
@@ -78,6 +86,15 @@ internal class ActivityWhileDo<TActivityReturns> : LoopActivity<TActivityReturns
     {
         InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
         _conditionMethodAsync = conditionMethodAsync;
+    }
+
+    public ActivityWhileDo(IActivityInformation activityInformation,
+        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
+        ActivityConditionMethod<IActivityWhileDo<TActivityReturns>> conditionMethod)
+        : base(activityInformation, defaultValueMethodAsync)
+    {
+        InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
+        _conditionMethodAsync = (a, _) => Task.FromResult(conditionMethod(a));
     }
 
     /// <inheritdoc />
@@ -110,16 +127,15 @@ internal class ActivityWhileDo<TActivityReturns> : LoopActivity<TActivityReturns
         return await ActivityExecutor.ExecuteWithReturnValueAsync(WhileDoAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
-    internal async Task<TActivityReturns> WhileDoAsync(CancellationToken cancellationToken)
+    internal async Task<TActivityReturns> WhileDoAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must call the {nameof(Do)} method.");
         TActivityReturns result;
         do
         {
             LoopIteration++;
-            result = await _methodAsync!(this, cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
-        } while (await _conditionMethodAsync!(this, cancellationToken));
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), $"Do{LoopIteration}", cancellationToken);
+        } while (await LogicExecutor.ExecuteWithReturnValueAsync(ct => _conditionMethodAsync!(this, ct), "While", cancellationToken));
 
         return result;
     }

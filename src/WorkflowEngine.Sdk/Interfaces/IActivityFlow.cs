@@ -73,9 +73,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <returns></returns>
         IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null);
 
-        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync);
-        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
-        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
+        IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
 
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue LoopUntil();
@@ -185,9 +188,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <returns></returns>
         IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan);
 
-        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync);
-        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod);
-        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue);
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
+        IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
+            where TSwitchValue : IComparable, IComparable<TSwitchValue>;
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
         IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod);

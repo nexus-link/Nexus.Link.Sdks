@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -20,18 +22,22 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IInternalActivity" />
-internal class Activity : ActivityBase, IInternalActivity
+internal abstract class Activity : ActivityBase, IInternalActivity
 {
-
     protected Activity(IActivityInformation activityInformation)
         : base(activityInformation)
     {
         ActivityExecutor = ActivityInformation.Workflow.GetActivityExecutor(this);
+        LogicExecutor = ActivityInformation.Workflow.GetLogicExecutor(this);
         ActivityInformation.Workflow.AddActivity(this);
         WorkflowStatic.Context.LatestActivity = this;
     }
 
+    [JsonIgnore]
     protected IActivityExecutor ActivityExecutor { get; }
+
+    [JsonIgnore]
+    public ILogicExecutor LogicExecutor { get; }
 
     [Obsolete("Please use Options.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
     [JsonIgnore]
@@ -83,7 +89,16 @@ internal class Activity : ActivityBase, IInternalActivity
         return ActivityInformation.GetArgument<T>(parameterName);
     }
 
-    public void MaybePurgeLogs()
+    /// <inheritdoc />
+    public ActivityFailedException GetException()
+    {
+        if (Instance.State != ActivityStateEnum.Failed) return null;
+        FulcrumAssert.IsNotNull(Instance.ExceptionCategory, CodeLocation.AsString());
+        return new ActivityFailedException(Instance.ExceptionCategory!.Value, Instance.ExceptionTechnicalMessage,
+            Instance.ExceptionFriendlyMessage);
+    }
+
+    public void PromoteOrPurgeLogs()
     {
         var purge = false;
         switch (Options.LogPurgeStrategy)
@@ -102,10 +117,9 @@ internal class Activity : ActivityBase, IInternalActivity
                     CodeLocation.AsString());
         }
 
-        if (!purge) return;
         foreach (var logCreate in ActivityInformation.Logs)
         {
-            if ((int)logCreate.SeverityLevel <= (int)Options.LogPurgeThreshold) continue;
+            if (purge && (int)logCreate.SeverityLevel <= (int)Options.LogPurgeThreshold) continue;
             ActivityInformation.Workflow.Logs.Add(logCreate);
         }
     }
@@ -150,7 +164,6 @@ internal class Activity : ActivityBase, IInternalActivity
 /// <inheritdoc cref="Activity" />
 internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>
 {
-
     public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
 
     protected Activity(IActivityInformation activityInformation,

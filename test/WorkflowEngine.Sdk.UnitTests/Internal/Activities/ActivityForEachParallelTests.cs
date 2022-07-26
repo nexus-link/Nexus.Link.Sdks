@@ -1,130 +1,165 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
-namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
+namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities;
+
+public class ActivityForEachParallelTests : ActivityTestsBase
 {
-    public class ActivityForEachParallelTests
+    public ActivityForEachParallelTests() : base(nameof(ActivityForEachParallelTests))
     {
-        private readonly Mock<IActivityExecutor> _activityExecutorMock;
-        private readonly ActivityInformationMock _activityInformationMock;
+    }
 
-        public ActivityForEachParallelTests()
+    #region No return value
+
+    [Fact]
+    public async Task Execute_Given_ManyItems_Gives_1Call()
+    {
+        // Arrange
+        var values = new List<int> { 3, 2, 1 };
+        var activity = new ActivityForEachParallel<int>(_activityInformationMock, values, (_, _, _) => Task.CompletedTask);
+
+        // Act
+        await activity.ExecuteAsync();
+
+        // Assert
+        _activityExecutorMock
+            .Verify(ae => ae.ExecuteWithoutReturnValueAsync(activity.ForEachParallelAsync, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ForEachParallel_Given_ThreeItems_Gives3Calls()
+    {
+        // Arrange
+        var expectedLoopIteration = new List<int> { 1, 2, 3 };
+        var activity = new ActivityForEachParallel<int>(_activityInformationMock, expectedLoopIteration,
+            (_, _, _) => Task.CompletedTask);
+
+        // Act
+        await activity.ForEachParallelAsync();
+
+        // Assert
+        _logicExecutorMock.Verify(e => e.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.Is<string>(s => s.StartsWith("Item")), It.IsAny<CancellationToken>()), Times.Exactly(expectedLoopIteration.Count));
+    }
+
+    [Fact]
+    public async Task ForEachParallel_Given_ItemsInOrder_CorrectLoopOrder()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var actualLoopIterations = new ConcurrentDictionary<int, int>();
+        var expectedLoopIteration = new List<int> { 1, 2, 3 };
+        var activity = new ActivityForEachParallel<int>(_activityInformationMock, expectedLoopIteration, async (i, a, ct) =>
         {
-            FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityForEachParallelTests));
-            _activityExecutorMock = new Mock<IActivityExecutor>();
-            var workflowInformationMock = new WorkflowInformationMock(_activityExecutorMock.Object);
-            _activityInformationMock = new ActivityInformationMock(workflowInformationMock);
+            await TaskHelper.RandomDelayAsync(TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(5), ct);
+            actualLoopIterations.TryAdd(i, a.LoopIteration);
+        });
+
+        // Act
+        await activity.ForEachParallelAsync();
+
+        // Assert
+        foreach (var (i, actualLoopIteration) in actualLoopIterations)
+        {
+            actualLoopIteration.ShouldBe(i);
         }
+    }
 
-        [Fact]
-        public async Task ForEachParallel_NoResult_CorrectLoopIteration()
-        {
-            // Arrange
-            var actualLoopIterations = new Dictionary<int, int>();
-            var expectedLoopIteration = new List<int> { 1, 2, 3};
-            var activity = new ActivityForEachParallel<int>(_activityInformationMock, expectedLoopIteration,
-                (i, a, _) =>
-                {
-                    actualLoopIterations.Add(i, a.LoopIteration);
-                    return Task.CompletedTask;
-                });
-
-            // Act
-            await activity.ForEachParallelAsync();
-
-            // Assert
-            foreach (var (i, actualLoopIteration) in actualLoopIterations)
+    [Fact]
+    public async Task ForEachParallel_NoResult_Given_Summation_Gives_CorrectSum()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var actualValue = 0;
+        var lockObject = new object();
+        var values = new List<int> { 1, 2, 3, 4, 5, 99 };
+        var activity = new ActivityForEachParallel<int>(_activityInformationMock, values,
+            (i, a, _) =>
             {
-                actualLoopIteration.ShouldBe(i);
-            }
-        }
-
-        [Fact]
-        public async Task ForEachParallel_NoResult_Given_Summation_Gives_CorrectSum()
-        {
-            // Arrange
-            var actualValue = 0;
-            var lockObject = new object();
-            var values = new List<int> { 1, 2, 3, 4, 5, 99 };
-            var activity = new ActivityForEachParallel<int>(_activityInformationMock, values,
-                (i, a, ct) =>
+                lock (lockObject)
                 {
-                    lock (lockObject)
-                    {
-                        if (i == a.LoopIteration) actualValue += i;
-                    }
-                    return Task.CompletedTask;
-                });
+                    if (i == a.LoopIteration) actualValue += i;
+                }
+                return Task.CompletedTask;
+            });
 
-            // Act
-            await activity.ForEachParallelAsync();
+        // Act
+        await activity.ForEachParallelAsync();
 
-            // Assert
-            actualValue.ShouldBe(15);
-        }
+        // Assert
+        actualValue.ShouldBe(15);
+    }
+    #endregion
 
-        [Fact]
-        public async Task ForEachParallel_Result_Given_PartNumbers_Gives_CorrectResult()
-        {
-            // Arrange
-            var values = new List<int> { 3, 2, 1, 99 };
-            var activity = new ActivityForEachParallel<string, int>(_activityInformationMock, values,
-                i => i.ToString(),
-                async (_, a, ct) =>
+    #region Result value
+
+    [Fact]
+    public async Task RV_Execute_Given_ManyItems_Gives_1Call()
+    {
+        // Arrange
+        var values = new List<int> { 3, 2, 1, 0 };
+        var activity = new ActivityForEachParallel<string, int>(_activityInformationMock, values, i => i.ToString(), (_, _, _) => Task.FromResult("a"));
+
+        // Act
+        await activity.ExecuteAsync();
+
+        // Assert
+        _activityExecutorMock.Verify(
+            ae => ae.ExecuteWithReturnValueAsync(
+                activity.ForEachParallelAsync,
+                It.IsAny<ActivityDefaultValueMethodAsync<IDictionary<string, string>>>(),
+                It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task RV_ForEachParallel_Given_ThreeItems_Gives3Calls()
+    {
+        // Arrange
+        var expectedLoopIteration = new List<int> { 1, 2, 3 };
+        var activity = new ActivityForEachParallel<int, int>(_activityInformationMock, expectedLoopIteration, item => item.ToString(), (_, _, _) => Task.FromResult(1));
+
+        // Act
+        await activity.ForEachParallelAsync();
+
+        // Assert
+        _logicExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(), It.Is<string>(s => s.StartsWith("Item")), It.IsAny<CancellationToken>()), Times.Exactly(expectedLoopIteration.Count));
+    }
+
+    [Fact]
+    public async Task RV_ForEachParallel_Given_PartNumbers_Gives_CorrectResult()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var values = new List<int> { 3, 2, 1, 99 };
+        var activity = new ActivityForEachParallel<string, int>(_activityInformationMock, values,
+            i => i.ToString(),
+            async (_, a, ct) =>
             {
                 await Task.Delay(1, ct);
                 return a.LoopIteration.ToString();
             });
 
-            // Act
-            var result = await activity.ForEachParallelAsync();
+        // Act
+        var result = await activity.ForEachParallelAsync();
 
-            // Assert
-            result.Count.ShouldBe(4);
-            result.Values.ShouldBe(new []{"1", "2", "3", "4"});
-        }
-
-        [Fact]
-        public async Task Execute_Result_Given_ManyItems_Gives_1Call()
-        {
-            // Arrange
-            var values = new List<int> { 3, 2, 1, 0 };
-            var activity = new ActivityForEachParallel<string, int>(_activityInformationMock, values, i => i.ToString(), (_,_,_) => Task.FromResult("a"));
-
-            // Act
-            await activity.ExecuteAsync();
-
-            // Assert
-            _activityExecutorMock.Verify(
-                ae => ae.ExecuteWithReturnValueAsync(
-                    It.IsAny<InternalActivityMethodAsync<IDictionary<string, string>>>(),
-                    It.IsAny<ActivityDefaultValueMethodAsync<IDictionary<string, string>>>(), 
-                    It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task Execute_NoResult_Given_ManyItems_Gives_1Call()
-        {
-            // Arrange
-            var values = new List<int> { 3, 2, 1 };
-            var activity = new ActivityForEachParallel<int>(_activityInformationMock, values, (_, _, _) => Task.CompletedTask);
-
-            // Act
-            await activity.ExecuteAsync();
-
-            // Assert
-            _activityExecutorMock
-                .Verify(ae => ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()), Times.Once);
-        }
+        // Assert
+        result.Count.ShouldBe(4);
+        result.Values.ShouldBe(new[] { "1", "2", "3", "4" });
     }
-}
 
+
+
+    #endregion
+}

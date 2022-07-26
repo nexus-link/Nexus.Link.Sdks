@@ -43,7 +43,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var expectedRequestId = Guid.NewGuid();
             FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new RequestPostponedException());
+                _ => throw new RequestPostponedException());
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
@@ -64,7 +64,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var expectedTechnicalMessage = Guid.NewGuid().ToGuidString();
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException()));
+                _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException()));
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
@@ -81,7 +81,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var expectedTechnicalMessage = Guid.NewGuid().ToGuidString();
             var expectedFriendlyMessage = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, expectedTechnicalMessage, expectedFriendlyMessage)));
+                _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, expectedTechnicalMessage, expectedFriendlyMessage)));
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
@@ -101,13 +101,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             FulcrumApplication.Context.ExecutionId = Guid.NewGuid().ToGuidString();
             FulcrumApplication.Context.ReentryAuthentication = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => Task.CompletedTask);
+                _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new Exception());
+                _ => throw new Exception());
             information = new WorkflowInformation(implementation);
             executor = new WorkflowExecutor(information);
 
@@ -123,13 +123,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             FulcrumApplication.Context.ExecutionId = Guid.NewGuid().ToString();
             FulcrumApplication.Context.ReentryAuthentication = Guid.NewGuid().ToGuidString();
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => Task.CompletedTask);
+                _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
-                ct => throw new WorkflowImplementationShouldNotCatchThisException(new Exception()));
+                _ => throw new WorkflowImplementationShouldNotCatchThisException(new Exception()));
             information = new WorkflowInformation(implementation);
             executor = new WorkflowExecutor(information);
 

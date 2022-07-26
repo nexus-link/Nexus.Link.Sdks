@@ -4,7 +4,7 @@ using Nexus.Link.Libraries.Crud.MemoryStorage;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables;
 
-/// <inheritdoc cref="IReentryTokenTable" />
+/// <inheritdoc cref="IHashTable" />
 public class HashTableMemory : CrudMemory<HashRecordCreate, HashRecord, Guid>, IHashTable
 {
 }

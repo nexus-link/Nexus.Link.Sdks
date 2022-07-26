@@ -47,7 +47,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 throw new FulcrumNotFoundException($"{FormTitle} has a parameter named {parameterName}, but {InstanceTitle} had no argument for that parameter." +
                                                    $" Found these: {string.Join(", ", ArgumentNames())}");
-                return default;
             }
 
             if (argument.Value != null)

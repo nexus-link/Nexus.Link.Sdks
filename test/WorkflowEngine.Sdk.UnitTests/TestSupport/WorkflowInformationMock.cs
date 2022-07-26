@@ -26,14 +26,16 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         private ActivityVersion _activityVersion;
         private ActivityForm _activityForm;
 
-        public WorkflowInformationMock(IActivityExecutor activityExecutor, CancellationToken reducedCancellationToken = default)
+        public WorkflowInformationMock(IActivityExecutor activityExecutor, ILogicExecutor logicExecutor, CancellationToken reducedTimeCancellationToken = default)
         {
-            TimeSinceExecutionStarted = new();
-            TimeSinceExecutionStarted.Start();
-            Executor = activityExecutor;
-            ReducedTimeCancellationToken = reducedCancellationToken;
+            TimeSinceCurrentRunStarted = new();
+            TimeSinceCurrentRunStarted.Start();
+            ActivityExecutor = activityExecutor;
+            LogicExecutor = logicExecutor;
+            ReducedTimeCancellationToken = reducedTimeCancellationToken;
         }
-        public IActivityExecutor Executor { get; set; }
+        public IActivityExecutor ActivityExecutor { get; set; }
+        public ILogicExecutor LogicExecutor { get; set; }
 
         public IMethodMock MethodMock { get; set; }
 
@@ -180,7 +182,10 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public IActivityExecutor GetActivityExecutor(Activity activity) => Executor;
+        public IActivityExecutor GetActivityExecutor(Activity activity) => ActivityExecutor;
+
+        /// <inheritdoc />
+        public ILogicExecutor GetLogicExecutor(IInternalActivity activity) => LogicExecutor;
 
         /// <inheritdoc />
         public bool TryGetActivity(string activityId, out Activity activity)
@@ -221,10 +226,10 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public CancellationToken ReducedTimeCancellationToken { get; }
+        public CancellationToken ReducedTimeCancellationToken { get; set; }
 
         /// <inheritdoc />
-        public Stopwatch TimeSinceExecutionStarted { get; }
+        public Stopwatch TimeSinceCurrentRunStarted { get; }
 
         /// <inheritdoc />
         public string ToLogString()
@@ -234,7 +239,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
             {
                 title = InstanceTitle;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 title = FormTitle;
             }

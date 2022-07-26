@@ -66,7 +66,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
         foreach (var item in Items)
         {
             LoopIteration++;
-            var task = methodAsync(item, this, cancellationToken);
+            var task = LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);
             taskList.Add(task);
         }
 
@@ -113,7 +113,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
     public Task<IDictionary<string, TMethodReturns>> ExecuteAsync(ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), EmptyDictionaryAsync, cancellationToken);
+        return ActivityExecutor.ExecuteWithReturnValueAsync(ct => ForEachParallelAsync(methodAsync, ct), DefaultValueMethodAsync, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -130,7 +130,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     }
 
     private Task<IDictionary<string, TMethodReturns>> ForEachParallelAsync(
-        ActivityForEachParallelMethodAsync<TMethodReturns, TItem> method,
+        ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync,
         CancellationToken cancellationToken)
     {
         var taskDictionary = new Dictionary<string, Task<TMethodReturns>>();
@@ -147,7 +147,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
                 InternalContract.Require(false, $"The {nameof(_getKeyMethod)} method failed. You must make it safe, so that it never fails.");
             }
             InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
-            var task = method(item, this, cancellationToken);
+            var task = LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);
             taskDictionary.Add(key!, task);
         }
         return AggregateResultsAndPostponeExceptionsAsync(taskDictionary, cancellationToken);
@@ -166,7 +166,9 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             }
             catch (WorkflowImplementationShouldNotCatchThisException outerException)
             {
+#pragma warning disable CS0618
                 if (outerException.InnerException is not IgnoreAndExitToParentException innerException) throw;
+#pragma warning restore CS0618
                 FulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
                 var e = innerException.ActivityFailedException;
                 await this.LogInformationAsync($"Ignoring exception for parallel job {key}", e, cancellationToken);

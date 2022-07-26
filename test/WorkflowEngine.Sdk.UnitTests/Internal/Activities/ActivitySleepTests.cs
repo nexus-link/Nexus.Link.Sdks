@@ -2,32 +2,34 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
-using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 {
-    public class ActivitySleepTests
+    public class ActivitySleepTests : ActivityTestsBase
     {
-        private readonly Mock<IActivityExecutor> _activityExecutorMock;
-        private readonly ActivityInformationMock _activityInformationMock;
-        public ActivitySleepTests()
+        public ActivitySleepTests() : base(nameof(ActivitySleepTests))
         {
-            FulcrumApplicationHelper.UnitTestSetup(nameof(ActivitySleepTests));
-            _activityExecutorMock = new Mock<IActivityExecutor>();
-            var workflowInformationMock = new WorkflowInformationMock(_activityExecutorMock.Object);
-            _activityInformationMock = new ActivityInformationMock(workflowInformationMock);
         }
 
         [Fact]
-        public async Task Sleep_Given_NormalSleep_Gives_ExceptionWithSleepTime()
+        public async Task Execute_Given_Normal_Gives_ActivityExecutorActivated()
+        {
+            // Arrange
+            var activity = new ActivitySleep(_activityInformationMock, TimeSpan.FromSeconds(1));
+
+            // Act
+            await activity.ExecuteAsync();
+
+            // Assert
+            _activityExecutorMock.Verify(e => e.ExecuteWithoutReturnValueAsync(activity.SleepAsync, It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Sleep_Given_PositiveTimeSpan_Gives_ExceptionWithSleepTime()
         {
             // Arrange
             var timeSpan = TimeSpan.FromSeconds(10);
@@ -35,7 +37,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var now = DateTimeOffset.UtcNow;
 
             // Act
-            var exception = await activity.SleepAsync(now)
+            var exception = await activity.SleepAsync()
                 .ShouldThrowAsync<RequestPostponedException>();
 
             // Assert
@@ -46,19 +48,42 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         }
 
         [Fact]
-        public async Task Execute_Given_Timeout_Gives_NoException()
+        public async Task Sleep_Given_FutureTime_Gives_ExceptionWithSleepTime()
         {
             // Arrange
             var timeSpan = TimeSpan.FromSeconds(10);
-            var activity = new ActivitySleep(_activityInformationMock, timeSpan);
-            _activityExecutorMock.Setup(ae => ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<DateTimeOffset>>(), null, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(DateTimeOffset.UtcNow.Subtract(timeSpan));
+            var activity = new ActivitySleep(_activityInformationMock, DateTimeOffset.UtcNow.Add(timeSpan));
+            var now = DateTimeOffset.UtcNow;
 
             // Act
-            await activity.ExecuteAsync().ShouldNotThrowAsync();
+            var exception = await activity.SleepAsync()
+                .ShouldThrowAsync<RequestPostponedException>();
 
-            // Act
-            await activity.ExecuteAsync();
+            // Assert
+            exception.ShouldNotBeNull();
+            exception.TryAgainAfterMinimumTimeSpan.ShouldNotBeNull();
+            exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeGreaterThan(timeSpan.Subtract(TimeSpan.FromSeconds(1)));
+            exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeLessThanOrEqualTo(timeSpan.Add(TimeSpan.FromSeconds(1)));
+        }
+
+        [Fact]
+        public async Task Execute_Given_OldTime_Gives_NoException()
+        {
+            // Arrange
+            var activity = new ActivitySleep(_activityInformationMock, DateTimeOffset.UtcNow);
+
+            // Act && Assert
+            await activity.SleepAsync().ShouldNotThrowAsync();
+        }
+
+        [Fact]
+        public async Task Execute_Given_ZeroTimeSpan_Gives_NoException()
+        {
+            // Arrange
+            var activity = new ActivitySleep(_activityInformationMock, TimeSpan.Zero);
+
+            // Act && Assert
+            await activity.SleepAsync().ShouldNotThrowAsync();
         }
     }
 }

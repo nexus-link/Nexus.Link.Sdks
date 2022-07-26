@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -35,16 +36,17 @@ internal abstract class LoopActivity : Activity, ILoopActivity, IExecutableActiv
     {
         WorkflowStatic.Context.ParentActivity = this;
         await InternalExecuteAsync(cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
     }
 
     protected abstract Task InternalExecuteAsync(CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc cref="ILoopActivity" />
-internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activity<TMethodReturns>, ILoopActivity, IExecutableActivity<TActivityReturns>
+internal abstract class LoopActivity<TActivityReturns> : Activity<TActivityReturns>, ILoopActivity, IExecutableActivity<TActivityReturns>
 {
     protected LoopActivity(IActivityInformation activityInformation,
-        ActivityDefaultValueMethodAsync<TMethodReturns> defaultValueMethodAsync)
+        ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
     }
@@ -69,17 +71,10 @@ internal abstract class LoopActivity<TActivityReturns, TMethodReturns> : Activit
     {
         LoopIteration = 0;
         WorkflowStatic.Context.ParentActivity = this;
-        return await InternalExecuteAsync(cancellationToken);
+        var result =await InternalExecuteAsync(cancellationToken);
+        WorkflowStatic.Context.ParentActivity = null;
+        return result;
     }
 
     protected abstract Task<TActivityReturns> InternalExecuteAsync(CancellationToken cancellationToken = default);
-}
-
-/// <inheritdoc cref="ILoopActivity" />
-internal abstract class LoopActivity<TActivityReturns> : LoopActivity<TActivityReturns, TActivityReturns>
-{
-    /// <inheritdoc />
-    protected LoopActivity(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync) : base(activityInformation, defaultValueMethodAsync)
-    {
-    }
 }

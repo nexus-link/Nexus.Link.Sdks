@@ -90,19 +90,24 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
 
     internal async Task DoWhileOrUntilAsync(CancellationToken cancellationToken = default)
     {
-        InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} method.");
+        InternalContract.Require(_conditionMethodAsync != null, $"You must call the {nameof(Until)} or the {nameof(While)} method.");
         do
         {
             LoopIteration++;
-            await _methodAsync(this, cancellationToken)
+#pragma warning disable CS0618 // Type or member is obsolete
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), "Do", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
+#pragma warning restore CS0618 // Type or member is obsolete
         } while (await GetWhileConditionAsync(cancellationToken));
     }
 
     internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken = default)
     {
-        var condition = await _conditionMethodAsync(this, cancellationToken);
-        return _isWhileCondition ? condition : !condition;
+        if (_isWhileCondition)
+        {
+            return await LogicExecutor.ExecuteWithReturnValueAsync(ct => _conditionMethodAsync(this, ct), "While", cancellationToken);
+        }
+        return await LogicExecutor.ExecuteWithReturnValueAsync(async ct => !await _conditionMethodAsync(this, ct), "Until", cancellationToken);
     }
 }
 
@@ -120,12 +125,6 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
-    }
-
-    internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken)
-    {
-        var condition = await _conditionMethodAsync(this, cancellationToken);
-        return _isWhileCondition ? condition : !condition;
     }
 
     /// <inheritdoc />
@@ -199,10 +198,18 @@ internal class ActivityDoWhileOrUntil<TActivityReturns> : LoopActivity<TActivity
         do
         {
             LoopIteration++;
-            result = await _methodAsync(this, cancellationToken)
-                .CatchExitExceptionAsync(this, cancellationToken);
+            result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), "Do", cancellationToken);
         } while (await GetWhileConditionAsync(cancellationToken));
 
         return result;
+    }
+
+    internal async Task<bool> GetWhileConditionAsync(CancellationToken cancellationToken = default)
+    {
+        if (_isWhileCondition)
+        {
+            return await LogicExecutor.ExecuteWithReturnValueAsync(ct => _conditionMethodAsync(this, ct), "While", cancellationToken);
+        }
+        return await LogicExecutor.ExecuteWithReturnValueAsync(async ct => !await _conditionMethodAsync(this, ct), "Until", cancellationToken);
     }
 }

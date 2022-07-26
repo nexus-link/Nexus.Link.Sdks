@@ -1,7 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -13,7 +17,6 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public ActivityMock(IActivityInformation activityInformation) : base(activityInformation)
         {
-            ActivityStartedAt = DateTimeOffset.UtcNow;
         }
 
         public int MaybePurgeLogsCalled { get; private set; }
@@ -25,16 +28,6 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         {
             return Task.CompletedTask;
         }
-
-        /// <inheritdoc />
-        public string ActivityTitle { get; set; }
-
-        /// <inheritdoc />
-        public DateTimeOffset ActivityStartedAt { get; set; }
-
-        /// <inheritdoc />
-        [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)} or {nameof(IActivityParallel.JobNumber)}.", true)]
-        public int? Iteration => InternalIteration;
 
         /// <inheritdoc />
         public T GetArgument<T>(string parameterName)
@@ -49,7 +42,16 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public void MaybePurgeLogs()
+        public ActivityFailedException GetException()
+        {
+            if (Instance.State != ActivityStateEnum.Failed) return null;
+            FulcrumAssert.IsNotNull(Instance.ExceptionCategory, CodeLocation.AsString());
+            return new ActivityFailedException(Instance.ExceptionCategory!.Value, Instance.ExceptionTechnicalMessage,
+                Instance.ExceptionFriendlyMessage);
+        }
+
+        /// <inheritdoc />
+        public void PromoteOrPurgeLogs()
         {
             MaybePurgeLogsCalled++;
         }
@@ -60,9 +62,12 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
             SafeAlertExceptionCalled++;
             return Task.CompletedTask;
         }
+
+        /// <inheritdoc />
+        public ILogicExecutor LogicExecutor => ActivityInformation.Workflow.GetLogicExecutor(this);
     }
 
-    /// <inheritdoc cref="ActivityMock" />
+    /// <inheritdoc cref="ActivityMock{TActivity}" />
     internal class ActivityMock<TActivityReturns> : ActivityMock, IInternalActivity<TActivityReturns>
     {
         public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }

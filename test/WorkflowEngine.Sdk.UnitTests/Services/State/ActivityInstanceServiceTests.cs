@@ -25,16 +25,16 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.State
                         It.IsAny<HttpMethod>(),
                         It.IsAny<string>(), null,
                         It.IsAny<CancellationToken>()))
-                    .ReturnsAsync((HttpMethod method, string relativeUrl,
-                        Dictionary<string, List<string>> customHeaders,
-                        CancellationToken cancellationToken) =>
+                    .ReturnsAsync((HttpMethod _, string _,
+                        Dictionary<string, List<string>> _,
+                        CancellationToken _) =>
                     {
 
                         return new HttpResponseMessage(HttpStatusCode.OK);
                     });
                 _httpSenderMock.Setup(sender => sender.CreateHttpSender(
                         It.IsAny<string>()))
-                    .Returns((string relativeUrl) => _httpSenderMock.Object);
+                    .Returns((string _) => _httpSenderMock.Object);
                 return _httpSenderMock.Object;
             }
         }

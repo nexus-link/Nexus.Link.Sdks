@@ -1,8 +1,6 @@
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
@@ -34,5 +32,11 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         {
             ActivityFormId = activityFormId, Title = "Title", Type = ActivityTypeEnum.Action
         };
+
+        /// <inheritdoc />
+        public void AddImplementation(IWorkflowImplementationBase workflowImplementation)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

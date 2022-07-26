@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -16,6 +15,7 @@ using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.Internal.Activities;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
+#pragma warning disable CS0618
 
 namespace WorkflowEngine.Sdk.UnitTests.Internal.Support
 {
@@ -33,7 +33,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Support
             var runtimeTablesMemory = new RuntimeTablesMemory();
             var activityExecutorMock = new Mock<IActivityExecutor>();
             var methodMock = new Mock<IMethodMock>();
-            var workflowInformationMock = new WorkflowInformationMock(activityExecutorMock.Object)
+            var workflowInformationMock = new WorkflowInformationMock(activityExecutorMock.Object, null)
             {
                 SemaphoreService = new WorkflowSemaphoreService(null, runtimeTablesMemory),
                 MethodMock = methodMock.Object

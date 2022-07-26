@@ -18,16 +18,19 @@ internal class ActivityCondition<TActivityReturns> : Activity<TActivityReturns>,
     }
 
     /// <inheritdoc/>
-    public Task<TActivityReturns> ExecuteAsync(
+    public async Task<TActivityReturns> ExecuteAsync(
         ActivityMethodAsync<IActivityCondition<TActivityReturns>, TActivityReturns> methodAsync,
         CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( ct => methodAsync(this, ct), DefaultValueMethodAsync, cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync( ct => LogicExecutor.ExecuteWithReturnValueAsync(t => methodAsync(this, t), "Condition", ct),
+            DefaultValueMethodAsync, cancellationToken);
+        return result;
     }
 
     /// <inheritdoc/>
-    public Task<TActivityReturns> ExecuteAsync(ActivityMethod<IActivityCondition<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken = default)
+    public async Task<TActivityReturns> ExecuteAsync(ActivityMethod<IActivityCondition<TActivityReturns>, TActivityReturns> method, CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync( _ => Task.FromResult(method(this)), DefaultValueMethodAsync, cancellationToken);
+        var result = await ExecuteAsync( (a, _) => Task.FromResult(method(a)), cancellationToken);
+        return result;
     }
 }

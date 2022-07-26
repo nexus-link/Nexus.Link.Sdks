@@ -20,17 +20,17 @@ namespace WorkflowEngine.Sdk.UnitTests.Interfaces
             FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
             FulcrumApplication.Setup.SynchronousFastLogger = new ConsoleLogger();
 
-            var workflowInformationMock = new WorkflowInformationMock(null);
+            var workflowInformationMock = new WorkflowInformationMock(null, null);
             _activityInformation = new ActivityInformationMock(workflowInformationMock);
             _activityMock = new ActivityMock(_activityInformation);
             _executor = new ActivityExecutor(_activityMock);
-            workflowInformationMock.Executor = _executor;
+            workflowInformationMock.ActivityExecutor = _executor;
 
-            var workflowInformationResultMock = new WorkflowInformationMock(null);
+            var workflowInformationResultMock = new WorkflowInformationMock(null, null);
             _activityInformationResult = new ActivityInformationMock(workflowInformationResultMock);
             _activityMockResult = new ActivityMock<int>(_activityInformationResult, null);
             _executorResult = new ActivityExecutor(_activityMockResult);
-            workflowInformationResultMock.Executor = _executorResult;
+            workflowInformationResultMock.ActivityExecutor = _executorResult;
         }
     }
 }

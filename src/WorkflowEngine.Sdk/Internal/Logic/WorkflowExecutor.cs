@@ -83,20 +83,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowInformation.AggregateActivityInformation();
             await WorkflowInformation.SaveAsync(cancellationToken);
-            try
-            {
-                // Save the logs
-                foreach (var logCreate in WorkflowInformation.Logs)
-                {
-                    await WorkflowInformation.LogService.CreateAsync(logCreate, cancellationToken);
-                }
-            }
-            catch (Exception)
-            {
-                if (FulcrumApplication.IsInDevelopment) throw;
-                // Don't let logging problems get in our way
-            }
-
+            
             // Release semaphores
             if (WorkflowInformation.Instance.State == WorkflowStateEnum.Success ||
                 WorkflowInformation.Instance.State == WorkflowStateEnum.Failed)
@@ -111,6 +98,49 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
                 await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
                     _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, cancellationToken);
+            }
+
+            // Log and possibly purge logs
+            try
+            {
+                var purge = false;
+                switch (WorkflowInformation.DefaultActivityOptions.LogPurgeStrategy)
+                {
+                    case LogPurgeStrategyEnum.AfterActivitySuccess:
+                        break;
+                    case LogPurgeStrategyEnum.AfterWorkflowSuccess:
+                        purge = WorkflowInformation.Instance.State == WorkflowStateEnum.Success;
+                        break;
+                    case LogPurgeStrategyEnum.AfterWorkflowReturn:
+                        purge = true;
+                        break;
+                    case LogPurgeStrategyEnum.AfterWorkflowComplete:
+                        purge = WorkflowInformation.Instance.IsComplete;
+                        break;
+                }
+
+                // Save the logs
+                foreach (var logCreate in WorkflowInformation.Logs)
+                {
+                    if (purge && (int) logCreate.SeverityLevel <=
+                        (int) WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold) continue;
+                    await WorkflowInformation.LogService.CreateAsync(logCreate, cancellationToken);
+                }
+
+                if (purge)
+                {
+                    await WorkflowInformation.LogService.DeleteWorkflowChildrenAsync(WorkflowInformation.InstanceId,
+                        WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                if (FulcrumApplication.IsInDevelopment) throw;
+                // Don't let logging problems get in our way
             }
         }
         public void DefineParameter<T>(string name)
@@ -150,7 +180,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
-                await this.LogInformationAsync($"Workflow successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", result, cancellationToken);
+                var totalExecution = DateTimeOffset.UtcNow.Subtract(WorkflowInformation.StartedAt);
+                await this.LogInformationAsync($"Workflow successful, total execution time was {totalExecution.TotalSeconds} s.", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -160,9 +191,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             finally
             {
                 // Please note! We will not honor the original cancellation token here, because it is very important
-                // that we save the state. We will give ourselves 10 seconds, no matter what the original
+                // that we save the state. We will give ourselves 30 seconds, no matter what the original
                 // cancellation token thinks
-                var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                var timeLeftToFinish = CalculateTimeLeftToFinish();
+                if (timeLeftToFinish < TimeSpan.FromSeconds(30)) timeLeftToFinish = TimeSpan.FromSeconds(30); 
+                var limitedTimeCancellationToken = new CancellationTokenSource(timeLeftToFinish);
                 cancellationToken = limitedTimeCancellationToken.Token;
                 try
                 {
@@ -170,9 +203,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution, this run took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
                     await PurgeLogsAsync(cancellationToken);
                 }
+            }
+
+            TimeSpan CalculateTimeLeftToFinish()
+            {
+                TimeSpan timeLeftToFinish;
+                if (FulcrumApplication.IsInDevelopment)
+                {
+                    var remainingTime =
+                        WorkflowInformation.DefaultActivityOptions.MaxTotalRunTimeSpan.Subtract(WorkflowInformation
+                            .TimeSinceCurrentRunStarted.Elapsed);
+                    timeLeftToFinish = remainingTime;
+                }
+                else
+                {
+                    timeLeftToFinish = TimeSpan.FromSeconds(100).Subtract(WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed)
+                        .Subtract(TimeSpan.FromSeconds(2));
+                }
+
+                return timeLeftToFinish;
             }
         }
 
@@ -218,11 +270,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess();
-                await this.LogInformationAsync($"Workflow {WorkflowInformation} successful, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                await this.LogInformationAsync($"Workflow {WorkflowInformation} successful, execution took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
             }
             catch (Exception e)
             {
-                await this.LogVerboseAsync($"Workflow {WorkflowInformation} throw exception (often normal), execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                await this.LogVerboseAsync($"Workflow {WorkflowInformation} throw exception (often normal), execution took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
 
                 throw await HandleAndCreateAsync(e, cancellationToken);
             }
@@ -234,7 +286,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogVerboseAsync($"End workflow {WorkflowInformation} execution, execution took {WorkflowInformation.TimeSinceExecutionStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogVerboseAsync($"End workflow {WorkflowInformation} execution, execution took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
                 }
             }
         }

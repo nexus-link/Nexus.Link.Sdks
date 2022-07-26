@@ -80,7 +80,6 @@ public interface IActivityBase
     /// <summary>
     /// Remove an activity context key-value.
     /// </summary>
-    /// <typeparam name="T">The type of the data in the parameter.</typeparam>
     /// <param name="key">The name of the part of the context that we want to access.</param>
     /// <remarks>
     /// The activity context is made available for arbitrary use by the implementor. It is

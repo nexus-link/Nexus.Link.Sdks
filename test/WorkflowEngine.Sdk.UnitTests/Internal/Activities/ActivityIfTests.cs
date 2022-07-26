@@ -1,189 +1,202 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
 namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 {
-    public class ActivityIfTests
+    public class ActivityIfTests : ActivityTestsBase
     {
-        private readonly Mock<IActivityExecutor> _activityExecutorMock;
-        private readonly ActivityInformationMock _activityInformationMock;
-
-        public ActivityIfTests()
+        public ActivityIfTests() : base(nameof(ActivityIfTests))
         {
-            FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityIfTests));
-            _activityExecutorMock = new Mock<IActivityExecutor>();
-            var workflowInformationMock = new WorkflowInformationMock(_activityExecutorMock.Object);
-            _activityInformationMock = new ActivityInformationMock(workflowInformationMock);
-            _activityExecutorMock.Setup(ae =>
-                    ae.ExecuteWithoutReturnValueAsync(It.IsAny<InternalActivityMethodAsync>(), It.IsAny<CancellationToken>()))
-                .Returns((InternalActivityMethodAsync m, CancellationToken ct) => m(ct));
-            _activityExecutorMock.Setup(ae =>
-                    ae.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(), It.IsAny<ActivityDefaultValueMethodAsync<int>>(), It.IsAny<CancellationToken>()))
-                .Returns((InternalActivityMethodAsync<int> m, ActivityDefaultValueMethodAsync<int> d, CancellationToken ct) => m(ct));
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExecuteWithNoResult_Given_Condition_Gives_CallsThenOrElse(bool condition)
+        #region No return value
+        [Fact]
+        public async Task Execute_Given_Normal_Gives_ActivityExecutorActivated()
         {
             // Arrange
-            var thenExecuted = false;
-            var elseExecuted = false;
-            var activity = new ActivityIf(_activityInformationMock, (a, ct) => Task.FromResult(condition));
-            activity.Then((a, ct) => {
-                thenExecuted = true;
-                return Task.CompletedTask;
-            });
-            activity.Else((a, ct) => {
-                elseExecuted = true;
-                return Task.CompletedTask;
-            });
+            var activity = new ActivityIf(_activityInformationMock, (_, _) => Task.FromResult(true));
 
             // Act
             await activity.ExecuteAsync();
 
             // Assert
-            thenExecuted.ShouldBe(condition);
-            elseExecuted.ShouldBe(!condition);
+            _activityExecutorMock.Verify(e => e.ExecuteWithoutReturnValueAsync(activity.IfThenElseAsync, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ExecuteWithNoResult_Given_NoElse_Gives_CallsThenIfTrue(bool condition)
+        public async Task IfThenElse_Given_Condition_Gives_CallsThenOrElse(bool condition)
         {
             // Arrange
-            var thenExecuted = false;
-            var activity = new ActivityIf(_activityInformationMock, (a, ct) => Task.FromResult(condition));
-            activity.Then((a, ct) => {
-                thenExecuted = true;
-                return Task.CompletedTask;
-            });
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityIf(_activityInformationMock, (_, _) => Task.FromResult(condition));
+            activity.Then((_, _) => Task.CompletedTask);
+            activity.Else((_, _) => Task.CompletedTask);
+
+            // Act
+            await activity.IfThenElseAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("If");
+            logicExecutor.ExecuteWithReturnValueCounter["If"].ShouldBe(1);
+            if (condition)
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Then");
+                logicExecutor.ExecuteWithoutReturnValueCounter["Then"].ShouldBe(1);
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Else");
+            }
+            else
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Then");
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Else");
+                logicExecutor.ExecuteWithoutReturnValueCounter["Else"].ShouldBe(1);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task IfThenElse_Given_NoThen_Gives_CallsElseButNotThen(bool condition)
+        {
+            // Arrange
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityIf(_activityInformationMock, (_, _) => Task.FromResult(condition));
+            activity.Else((_, _) => Task.CompletedTask);
+
+            // Act
+            await activity.IfThenElseAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("If");
+            logicExecutor.ExecuteWithReturnValueCounter["If"].ShouldBe(1);
+            logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Then");
+            if (condition)
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Else");
+            }
+            else
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Else");
+                logicExecutor.ExecuteWithoutReturnValueCounter["Else"].ShouldBe(1);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task IfThenElse_Given_NoElse_Gives_CallsThenButNotElse(bool condition)
+        {
+            // Arrange
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityIf(_activityInformationMock, (_, _) => Task.FromResult(condition));
+            activity.Then((_, _) => Task.CompletedTask);
+
+            // Act
+            await activity.IfThenElseAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("If");
+            logicExecutor.ExecuteWithReturnValueCounter["If"].ShouldBe(1);
+            logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Else");
+            if (condition)
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Then");
+                logicExecutor.ExecuteWithoutReturnValueCounter["Then"].ShouldBe(1);
+            }
+            else
+            {
+                logicExecutor.ExecuteWithoutReturnValueCounter.ShouldNotContainKey("Then");
+            }
+        }
+        #endregion
+
+        #region Return value
+        [Fact]
+        public async Task RV_Execute_Given_Normal_Gives_ActivityExecutorActivated()
+        {
+            // Arrange
+            var activity = new ActivityIf<int>(_activityInformationMock, null, (_, _) => Task.FromResult(true));
+            activity.Then((_, _) => Task.FromResult(1));
+            activity.Else((_, _) => Task.FromResult(2));
 
             // Act
             await activity.ExecuteAsync();
 
             // Assert
-            thenExecuted.ShouldBe(condition);
+            _activityExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync(activity.IfThenElseAsync, null, It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExecuteWithNoResult_Given_NoThen_Gives_CallsElseIfFalse(bool condition)
+        [Fact]
+        public async Task RV_Execute_Given_NoThen_Gives_Throws()
         {
             // Arrange
-            var elseExecuted = false;
-            var activity = new ActivityIf(_activityInformationMock, (a, ct) => Task.FromResult(condition));
-            activity.Else((a, ct) => {
-                elseExecuted = true;
-                return Task.CompletedTask;
-            });
+            var activity = new ActivityIf<int>(_activityInformationMock, null, (_, _) => Task.FromResult(true));
+            activity.Else((_, _) => Task.FromResult(1));
 
-            // Act
-            await activity.ExecuteAsync();
-
-            // Assert
-            elseExecuted.ShouldBe(!condition);
+            // Act && Assert
+            // TODO: Why doesn't the following work?
+            // await activity.ExecuteAsync()
+            //    .ShouldThrowAsync<FulcrumContractException>();
+            await Should.ThrowAsync<FulcrumContractException>(() => activity.ExecuteAsync());
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExecuteWithResult_Given_Condition_Gives_CallsThenOrElse(bool condition)
+        [Fact]
+        public async Task RV_Execute_Given_NoElse_Gives_Throws()
         {
             // Arrange
-            var thenExecuted = false;
-            var elseExecuted = false;
-            const int thenResult = 1;
-            const int elseResult = 2;
-            var activity = new ActivityIf<int>(_activityInformationMock, null, (a, ct) => Task.FromResult(condition));
-            activity.Then((a, ct) => {
-                thenExecuted = true;
-                return Task.FromResult(thenResult);
-            });
-            activity.Else((a, ct) => {
-                elseExecuted = true;
-                return Task.FromResult(elseResult);
-            });
-
-            // Act
-            var result = await activity.ExecuteAsync();
-
-            // Assert
-            thenExecuted.ShouldBe(condition);
-            elseExecuted.ShouldBe(!condition);
-            result.ShouldBe(condition ? thenResult : elseResult);
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task ExecuteWithResult_Given_NoElse_Gives_Throws(bool condition)
-        {
-            // Arrange
-            var activity = new ActivityIf<int>(_activityInformationMock, null, (a, ct) => Task.FromResult(condition));
-            activity.Then((a, ct) => Task.FromResult(1));
+            var activity = new ActivityIf<int>(_activityInformationMock, null, (_, _) => Task.FromResult(true));
+            activity.Then((_, _) => Task.FromResult(1));
 
             // Act & Assert
-            // TODO: Why doesn't this work?
-            //await activity.ExecuteAsync()
-            //    .ShouldThrowAsync<FulcrumContractException>();
-            try
-            {
-                await activity.ExecuteAsync();
-                FulcrumAssert.Fail(CodeLocation.AsString());
-            }
-            catch (FulcrumContractException)
-            {
-                // OK
-            }
-            catch (Exception)
-            {
-                FulcrumAssert.Fail(CodeLocation.AsString());
-            }
+            // TODO: Why doesn't the following work?
+            //var exception = await activity.ExecuteAsync()
+            //    .ShouldThrowAsync<Exception>();
+            await Should.ThrowAsync<FulcrumContractException>(() => activity.ExecuteAsync());
         }
 
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task ExecuteWithResult_Given_NoThen_Gives_Throws(bool condition)
+        public async Task RV_IfThenElse_Given_Condition_Gives_CallsThenOrElse(bool condition)
         {
             // Arrange
-            var activity = new ActivityIf<int>(_activityInformationMock, null, (a, ct) => Task.FromResult(condition));
-            activity.Else((a, ct) => Task.FromResult(1));
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityIf<int>(_activityInformationMock, null, (_, _) => Task.FromResult(condition));
+            activity.Then((_, _) => Task.FromResult(1));
+            activity.Else((_, _) => Task.FromResult(2));
 
-            // Act & Assert
-            // TODO: Why doesn't this work?
-            //await activity.ExecuteAsync()
-            //    .ShouldThrowAsync<FulcrumContractException>();
-            try
+            // Act
+            await activity.IfThenElseAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("If");
+            logicExecutor.ExecuteWithReturnValueCounter["If"].ShouldBe(1);
+            if (condition)
             {
-                await activity.ExecuteAsync();
-                FulcrumAssert.Fail(CodeLocation.AsString());
+                logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("Then");
+                logicExecutor.ExecuteWithReturnValueCounter["Then"].ShouldBe(1);
+                logicExecutor.ExecuteWithReturnValueCounter.ShouldNotContainKey("Else");
             }
-            catch (FulcrumContractException)
+            else
             {
-                // OK
-            }
-            catch (Exception)
-            {
-                FulcrumAssert.Fail(CodeLocation.AsString());
+                logicExecutor.ExecuteWithReturnValueCounter.ShouldNotContainKey("Then");
+                logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("Else");
+                logicExecutor.ExecuteWithReturnValueCounter["Else"].ShouldBe(1);
             }
         }
+
+        #endregion
     }
 }
 

@@ -29,8 +29,8 @@ internal class WorkflowInformation : IWorkflowInformation
 
     public WorkflowInformation(IWorkflowImplementationBase workflowImplementation)
     {
-        TimeSinceExecutionStarted = new();
-        TimeSinceExecutionStarted.Start();
+        TimeSinceCurrentRunStarted = new();
+        TimeSinceCurrentRunStarted.Start();
         _workflowImplementation = workflowImplementation;
         _workflowCache = new WorkflowCache(this, workflowImplementation.WorkflowContainer.WorkflowCapabilities);
     }
@@ -153,6 +153,12 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public ILogicExecutor GetLogicExecutor(IInternalActivity activity)
+    {
+        return new LogicExecutor(activity);
+    }
+
+    /// <inheritdoc />
     public bool TryGetActivity(string activityId, out Activity activity)
     {
         return _workflowCache.TryGetActivity(activityId, out activity);
@@ -194,7 +200,7 @@ internal class WorkflowInformation : IWorkflowInformation
     public CancellationToken ReducedTimeCancellationToken => _workflowImplementation.ReducedTimeCancellationToken;
 
     /// <inheritdoc />
-    public Stopwatch TimeSinceExecutionStarted { get; }
+    public Stopwatch TimeSinceCurrentRunStarted { get; }
 
     /// <inheritdoc />
     public string ToLogString()
@@ -204,7 +210,7 @@ internal class WorkflowInformation : IWorkflowInformation
         {
             title = InstanceTitle;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             title = FormTitle;
         }

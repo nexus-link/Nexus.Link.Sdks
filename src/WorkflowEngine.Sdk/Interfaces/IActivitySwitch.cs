@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -11,7 +12,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <param name="activity">The current <see cref="IActivitySwitch{TSwitchValue}"/>.</param>
 /// <param name="cancellationToken"></param>
 /// <returns></returns>
-public delegate Task ActivitySwitchMethodAsync<TSwitchValue>(IActivitySwitch<TSwitchValue> activity, CancellationToken cancellationToken);
+public delegate Task ActivitySwitchMethodAsync<TSwitchValue>(IActivitySwitch<TSwitchValue> activity, CancellationToken cancellationToken)
+    where TSwitchValue : IComparable, IComparable<TSwitchValue>;
 
 /// <summary>
 /// The implementation method for an if activity with a return value.
@@ -20,7 +22,8 @@ public delegate Task ActivitySwitchMethodAsync<TSwitchValue>(IActivitySwitch<TSw
 /// <param name="cancellationToken"></param>
 /// <typeparam name="TMethodReturns">The type of the returned value from the method</typeparam>
 /// <typeparam name="TSwitchValue">The type for the value that we will switch over.</typeparam>
-public delegate Task<TMethodReturns> ActivitySwitchMethodAsync<TMethodReturns, TSwitchValue>(IActivitySwitch<TMethodReturns, TSwitchValue> activity, CancellationToken cancellationToken);
+public delegate Task<TMethodReturns> ActivitySwitchMethodAsync<TMethodReturns, TSwitchValue>(IActivitySwitch<TMethodReturns, TSwitchValue> activity, CancellationToken cancellationToken)
+    where TSwitchValue : IComparable, IComparable<TSwitchValue>;
 
 /// <summary>
 /// The condition method for the if activity. Switch it returns true, the then-method is called, otherwise the else-method is called.
@@ -32,6 +35,7 @@ public delegate TSwitchValue ActivitySwitchValueMethod<out TSwitchValue>(IActivi
 /// An activity of type <see cref="ActivityTypeEnum.Switch"/>.
 /// </summary>
 public interface IActivitySwitch<TSwitchValue> : IExecutableActivity
+where TSwitchValue : IComparable, IComparable<TSwitchValue>
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.
@@ -54,6 +58,7 @@ public interface IActivitySwitch<TSwitchValue> : IExecutableActivity
 /// </summary>
 public interface IActivitySwitch<TActivityReturns, TSwitchValue> : 
     IExecutableActivity<TActivityReturns>
+    where TSwitchValue : IComparable, IComparable<TSwitchValue>
 {
     /// <summary>
     /// The method that decides if we should execute the then-method or the else-method.

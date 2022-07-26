@@ -56,7 +56,14 @@ public abstract class WorkflowFastForward : WorkflowImplementation
     public void MaybeBreak(IActivityLoopUntilTrueBase activity)
 #pragma warning restore CS0618
     {
-        MaybeBreak(activity.ActivityFormId, activity.ChildCounter);
+        MaybeBreak(activity.ActivityFormId, activity.LoopIteration);
+    }
+
+#pragma warning disable CS0618
+    public void MaybeBreak(ILoopActivity activity)
+#pragma warning restore CS0618
+    {
+        MaybeBreak(activity.ActivityFormId, activity.LoopIteration);
     }
 
     private void MaybeBreak(string activityFormId, int iteration)

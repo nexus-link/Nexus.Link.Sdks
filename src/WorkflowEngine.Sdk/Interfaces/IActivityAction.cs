@@ -9,7 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
-public interface IActivityAction : IExecutableActivity
+public interface IActivityAction : ITryCatchActivity
 {
     /// <summary>
     /// Execute the action <paramref name="methodAsync"/>.
@@ -21,7 +21,7 @@ public interface IActivityAction : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
-public interface IActivityAction<TActivityReturns> : IExecutableActivity<TActivityReturns>
+public interface IActivityAction<TActivityReturns> : ITryCatchActivity<TActivityReturns>
 {
     /// <summary>
     /// Execute the action <paramref name="methodAsync"/>.
