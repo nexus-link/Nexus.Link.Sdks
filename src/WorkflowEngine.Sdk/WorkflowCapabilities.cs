@@ -2,7 +2,7 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Events;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
 using Nexus.Link.Libraries.Core.EntityAttributes;
 using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;

@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.0" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.4.0-alpha04" />
-    <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.5" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.4.0-alpha08" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.6" />
   </ItemGroup>
 
   <PropertyGroup>

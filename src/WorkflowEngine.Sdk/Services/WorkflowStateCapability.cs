@@ -1,6 +1,6 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Events;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -33,7 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         {
             if (sourceClientId != null && eventQueue != null)
             {
-                WorkflowEventService = new WorkflowEventService(sourceClientId, eventQueue, Log); // TODO: Log in this way?
+                WorkflowMessageService = new WorkflowMessageService(sourceClientId, eventQueue, Log); // TODO: Log in this way?
             }
         }
 
@@ -53,6 +53,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         public IWorkflowSemaphoreService WorkflowSemaphore { get; }
 
         /// <inheritdoc />
-        public IWorkflowEventService WorkflowEventService { get; }
+        public IWorkflowMessageService WorkflowMessageService { get; }
     }
 }

@@ -275,7 +275,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
         private async Task FireWorkflowInstanceChangedEventAsync(CancellationToken cancellationToken = default)
         {
-            if (_stateCapability.WorkflowEventService != null)
+            if (_stateCapability.WorkflowMessageService != null)
             {
                 //var @event = new WorkflowInstanceChangedV1
                 //{
@@ -289,8 +289,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 //};
                 //await _stateCapability.WorkflowEventService.FireWorkflowInstanceChangedAsync(@event, cancellationToken);
 
-                // TODO: take ChangedAt from _summary.Instance
-                await _stateCapability.WorkflowEventService.FireWorkflowInstanceChangedAsync(_summary.Instance.Id, DateTimeOffset.Now, cancellationToken);
+                await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
             }
         }
 
