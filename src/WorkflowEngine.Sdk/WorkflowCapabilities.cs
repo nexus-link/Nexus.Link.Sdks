@@ -41,7 +41,7 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// Constructor
     /// </summary>
     public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
-    : this(configurationTables, runtimeTables, requestMgmtCapability, null, null)
+    : this(configurationTables, runtimeTables, requestMgmtCapability, null)
     {
     }
 
@@ -49,10 +49,10 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// Constructor
     /// </summary>
     public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability,
-        string sourceClientId, IWritableQueue<WorkflowInstanceChangedV1> eventQueue)
+        IWritableQueue<WorkflowInstanceChangedV1> messageQueue)
     {
         ConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
-        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, sourceClientId, eventQueue);
+        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, messageQueue);
         RequestMgmtCapability = requestMgmtCapability;
     }
 }

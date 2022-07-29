@@ -221,6 +221,14 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public async Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action)
+    {
+        // TODO: how to get old and new?
+        var x = InstanceExists();
+        await action(_workflowCache.Form, _workflowCache.Version, _workflowCache.Instance, Form, Version, Instance);
+    }
+
+    /// <inheritdoc />
     public string CapabilityName => _workflowImplementation.WorkflowContainer.WorkflowCapabilityName;
 
     /// <inheritdoc />

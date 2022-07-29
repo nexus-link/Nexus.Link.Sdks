@@ -28,10 +28,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;
         public IWorkflowInformation WorkflowInformation { get; }
+        private readonly IWorkflowEngineRequiredCapabilities _workflowCapabilities;
 
-        public WorkflowExecutor(IWorkflowInformation workflowInformation)
+        public WorkflowExecutor(IWorkflowInformation workflowInformation, IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowInformation = workflowInformation;
+            _workflowCapabilities = workflowCapabilities;
             _methodHandler = new MethodHandler(WorkflowInformation.FormTitle);
         }
 
@@ -56,7 +58,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
             WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
             WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
-            await WorkflowInformation.SaveAsync(cancellationToken);
+            // TODO: Not save here right? Otherwise, how to know if newly created? CompareAsync
+            // TODO await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
             if (WorkflowInformation.Instance.CancelledAt != null)
             {
@@ -82,6 +85,24 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
         {
             WorkflowInformation.AggregateActivityInformation();
+
+            await WorkflowInformation.CompareAsync(
+                async (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
+                {
+                    if (_workflowCapabilities.StateCapability.WorkflowMessageService != null)
+                    {
+                        var publish = newInstance == null ||
+                                      oldForm.Title != newForm.Title ||
+                                      oldVersion.MajorVersion != newVersion.MajorVersion ||
+                                      oldInstance.Title != newInstance.Title ||
+                                      oldInstance.State != newInstance.State ||
+                                      oldInstance.FinishedAt != newInstance.FinishedAt;
+                        if (publish)
+                        {
+                            await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
+                        }
+                    }
+                });
             await WorkflowInformation.SaveAsync(cancellationToken);
             
             // Release semaphores

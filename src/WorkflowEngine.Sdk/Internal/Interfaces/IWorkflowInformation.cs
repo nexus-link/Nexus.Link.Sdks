@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
@@ -185,4 +187,9 @@ internal interface IWorkflowInformation
     /// </summary>
     /// <returns></returns>
     string ToLogString();
+
+    /// <summary>
+    /// For comparing the old state of form, version and instance with the new, unsaved, state.
+    /// </summary>
+    Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action);
 }

@@ -61,16 +61,33 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public WorkflowVersion Version { get; set; } = new WorkflowVersion();
 
         /// <inheritdoc />
-        public string InstanceId { get; set; } = "44286249-FDDE-40AD-860C-89F49FF92792";
+        public string InstanceId { get => Instance.Id; set => Instance.Id = value; }
+
+        private WorkflowInstance _currentInstance = new()
+        {
+            Id = "44286249-FDDE-40AD-860C-89F49FF92792",
+            Title = "Instance title",
+            StartedAt = DateTimeOffset.Now
+        };
+
+        private WorkflowInstance _cachedInstance;
 
         /// <inheritdoc />
-        public WorkflowInstance Instance { get; set; } = new WorkflowInstance();
+        public WorkflowInstance Instance
+        {
+            get => Instance;
+            set
+            {
+
+                Instance = value;
+            }
+        } 
 
         /// <inheritdoc />
-        public string InstanceTitle { get; set; } = "Instance title";
+        public string InstanceTitle { get => Instance.Title; set => Instance.Title = value; }
 
         /// <inheritdoc />
-        public DateTimeOffset StartedAt { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset StartedAt { get => Instance.StartedAt; set => Instance.StartedAt = value; }
 
         /// <inheritdoc />
         public ILogService LogService { get; set; } = null;
@@ -166,6 +183,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         /// <inheritdoc />
         public Task SaveAsync(CancellationToken cancellationToken)
         {
+            //todo
             throw new NotImplementedException();
         }
 
@@ -247,6 +265,12 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
             var id = !string.IsNullOrWhiteSpace(InstanceId) ? $"instance id: {InstanceId}" : $"form id: {FormId}";
             var state = Instance == null ? "" : Instance.State.ToString();
             return $"{title}{state} (id)";
+        }
+
+        public async Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action)
+        {
+            // TODO: old/new versions
+            await action(Form, Version, Instance, Form, Version, Instance);
         }
     }
 }

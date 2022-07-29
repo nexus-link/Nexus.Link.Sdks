@@ -1,10 +1,15 @@
 using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Core.Queue.Logic;
+using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
@@ -23,17 +28,23 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         private readonly IConfigurationTables _configurationTables;
         private readonly IRuntimeTables _runtimeTables;
         private readonly WorkflowCapabilities _workflowCapabilities;
+        private readonly WorkflowCapabilities _workflowCapabilitiesWithEvents;
         private readonly AsyncRequestMgmtMock _armMock;
+        private readonly Mock<IWritableQueue<WorkflowInstanceChangedV1>> _messageQueueMock;
+
+        private const string SourceClientId = "mock-source";
 
         public WorkflowExecutorTests()
         {
             FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
-            
+            FulcrumApplication.Setup.ClientName = SourceClientId;
+
             _armMock = new AsyncRequestMgmtMock();
             _configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();
             _workflowCapabilities = new WorkflowCapabilities(_configurationTables, _runtimeTables, _armMock);
-            // TODO: queue
+            _messageQueueMock = new Mock<IWritableQueue<WorkflowInstanceChangedV1>>();
+            _workflowCapabilitiesWithEvents = new WorkflowCapabilities(_configurationTables, _runtimeTables, _armMock, _messageQueueMock.Object);
         }
 
         [Fact]
@@ -45,7 +56,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new RequestPostponedException());
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information);
+            var executor = new WorkflowExecutor(information, _workflowCapabilities);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -66,7 +77,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException()));
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information);
+            var executor = new WorkflowExecutor(information, _workflowCapabilities);
 
             // Act & Assert
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -83,7 +94,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, expectedTechnicalMessage, expectedFriendlyMessage)));
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information);
+            var executor = new WorkflowExecutor(information, _workflowCapabilities);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -103,13 +114,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information);
+            var executor = new WorkflowExecutor(information, _workflowCapabilities);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new Exception());
             information = new WorkflowInformation(implementation);
-            executor = new WorkflowExecutor(information);
+            executor = new WorkflowExecutor(information, _workflowCapabilities);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -125,17 +136,114 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information);
+            var executor = new WorkflowExecutor(information, _workflowCapabilities);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new Exception()));
             information = new WorkflowInformation(implementation);
-            executor = new WorkflowExecutor(information);
+            executor = new WorkflowExecutor(information, _workflowCapabilities);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
                 .ShouldThrowAsync<RequestPostponedException>();
+        }
+
+        [Fact]
+        public async Task Execute_Given_FirstTime_Fires_Event()
+        {
+            // Arrange
+            var expectedRequestId = Guid.NewGuid();
+            FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
+            var implementation = new TestWorkflowImplementation(_workflowCapabilitiesWithEvents, ct => throw new RequestPostponedException());
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information, _workflowCapabilitiesWithEvents);
+
+            var resetEvent = new ManualResetEvent(false);
+            _messageQueueMock
+                .Setup(x => x.AddMessageAsync(
+                    It.Is<WorkflowInstanceChangedV1>(message =>
+                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(),
+                            StringComparison.InvariantCultureIgnoreCase)
+                        && message.Payload.SourceClientId == SourceClientId),
+                    It.IsAny<TimeSpan?>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
+                {
+                    resetEvent.Set();
+                });
+
+            // Act
+            await executor
+                .ExecuteAsync(implementation, new CancellationToken())
+                .ShouldThrowAsync<RequestPostponedException>();
+
+            // Assert
+            resetEvent.WaitOne(300).ShouldBeTrue();
+            _messageQueueMock.VerifyAll();
+        }
+
+        [Fact]
+        public async Task Execute_Given_Instance_Changes_State_Fires_Event()
+        {
+            // Arrange
+            var expectedRequestId = Guid.NewGuid();
+            FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
+
+            var implementation = new TestWorkflowImplementation(_workflowCapabilitiesWithEvents, ct => throw new RequestPostponedException());
+            var information = new WorkflowInformation(implementation);
+            var executor = new WorkflowExecutor(information, _workflowCapabilitiesWithEvents);
+
+            var cancellationToken1 = new CancellationToken();
+            var cancellationToken2 = new CancellationToken();
+            var resetEvent1 = new ManualResetEvent(false);
+            var resetEvent2 = new ManualResetEvent(false);
+
+            _messageQueueMock
+                .Setup(x => x.AddMessageAsync(
+                    It.Is<WorkflowInstanceChangedV1>(message => 
+                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        && message.Payload.SourceClientId == SourceClientId),
+                    It.IsAny<TimeSpan?>(),
+                    It.Is<CancellationToken>(ct => ct == cancellationToken1)))
+                .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
+                {
+                    resetEvent1.Set();
+                });
+            _messageQueueMock
+                .Setup(x => x.AddMessageAsync(
+                    It.Is<WorkflowInstanceChangedV1>(message => 
+                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        && message.Payload.SourceClientId == SourceClientId),
+                    It.IsAny<TimeSpan?>(),
+                    It.Is<CancellationToken>(ct => ct == cancellationToken2)))
+                .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
+                {
+                    resetEvent2.Set();
+                });
+
+            // Act
+            await executor
+                .ExecuteAsync(implementation, cancellationToken1)
+                .ShouldThrowAsync<RequestPostponedException>();
+
+            // TODO: How to change state
+            ((TestWorkflowContainer) implementation.WorkflowContainer).SetWorkflowFormTitle(Guid.NewGuid().ToString());
+            await executor
+                .ExecuteAsync(implementation, cancellationToken2)
+                .ShouldThrowAsync<RequestPostponedException>();
+
+            // Assert
+            resetEvent1.WaitOne(300).ShouldBeTrue();
+            resetEvent2.WaitOne(300).ShouldBeTrue();
+
+            //_messageQueueMock.Verify(x => x.AddMessageAsync(
+            //    It.Is<WorkflowInstanceChangedV1>(message =>
+            //        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
+            //        && message.Payload.SourceClientId == SourceClientId),
+            //    It.IsAny<TimeSpan?>(),
+            //    cancelationToken2));
+            _messageQueueMock.VerifyAll();
         }
     }
 }

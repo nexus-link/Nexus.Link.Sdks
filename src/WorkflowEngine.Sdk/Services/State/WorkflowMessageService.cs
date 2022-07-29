@@ -41,7 +41,7 @@ public class WorkflowMessageService : IWorkflowMessageService
         {
             if (item.EventObject is WorkflowInstanceChangedV1 @event)
             {
-                await _workflowChangedEventQueue.AddMessageAsync(@event, cancellationToken: cancellationToken);
+                await _workflowChangedEventQueue.AddMessageAsync(@event, null, cancellationToken);
             }
         }
         catch (Exception e)

@@ -11,7 +11,7 @@
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.0-alpha01" />
   </ItemGroup>
 
   <ItemGroup>

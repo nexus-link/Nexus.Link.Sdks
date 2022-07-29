@@ -2,6 +2,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
@@ -27,13 +28,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         /// <summary>
         /// Constructor
         /// </summary>
-        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability,
-            string sourceClientId, IWritableQueue<WorkflowInstanceChangedV1> eventQueue)
+        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, IWritableQueue<WorkflowInstanceChangedV1> messageQueue)
         : this(configurationTables, runtimeTables, requestMgmtCapability)
         {
-            if (sourceClientId != null && eventQueue != null)
+            if (messageQueue != null)
             {
-                WorkflowMessageService = new WorkflowMessageService(sourceClientId, eventQueue, Log); // TODO: Log in this way?
+                var sourceClientId = FulcrumApplication.Setup.ClientName ?? FulcrumApplication.Setup.Name;
+                WorkflowMessageService = new WorkflowMessageService(sourceClientId, messageQueue, Log); // TODO: Log in this way?
             }
         }
 

@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.0-alpha01" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.4" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />

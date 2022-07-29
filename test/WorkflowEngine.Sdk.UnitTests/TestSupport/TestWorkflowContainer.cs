@@ -1,4 +1,5 @@
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -8,6 +9,8 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
 {
     public class TestWorkflowContainer : IWorkflowContainer
     {
+        private string _formTitle = "Workflow form title";
+
         public TestWorkflowContainer(IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             WorkflowCapabilities = workflowCapabilities;
@@ -24,7 +27,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public string WorkflowFormId => "995974ED-829B-46CC-B1B3-2121A895F5F1".ToGuidString();
 
         /// <inheritdoc />
-        public string WorkflowFormTitle => "Workflow form title";
+        public string WorkflowFormTitle => _formTitle;
         
         private readonly WorkflowVersionCollection _workflowVersionCollection;
 
@@ -37,6 +40,11 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public void AddImplementation(IWorkflowImplementationBase workflowImplementation)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void SetWorkflowFormTitle(string title)
+        {
+            _formTitle = title;
         }
     }
 }

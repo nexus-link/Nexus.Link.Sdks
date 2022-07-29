@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
@@ -13,6 +14,7 @@ using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
@@ -225,8 +227,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
 
-            var shouldFireEvent = _summary.Instance == null;
+            var shouldFireEvent = !InstanceExists();
 
+            //_workflowFormCache.ReadAsync(_summary.Form.Id)
             await _workflowFormCache.SaveAsync((id, item) =>
             {
                 if (!shouldFireEvent) {
@@ -267,29 +270,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
             await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
 
-            if (shouldFireEvent)
+            if (shouldFireEvent && _stateCapability.WorkflowMessageService != null)
             {
-                await FireWorkflowInstanceChangedEventAsync(cancellationToken);
-            }
-        }
-
-        private async Task FireWorkflowInstanceChangedEventAsync(CancellationToken cancellationToken = default)
-        {
-            if (_stateCapability.WorkflowMessageService != null)
-            {
-                //var @event = new WorkflowInstanceChangedV1
-                //{
-                //    Timestamp = DateTimeOffset.Now,
-                //    Payload = new()
-                //    {
-                //        WorkflowInstanceId = _summary.Instance.Id,
-                //        ChangedAt = DateTimeOffset.Now, // TODO: take from _summary.Instance
-                //        SourceClientId = _stateCapability.WorkflowEventService.SourceClientId
-                //    }
-                //};
-                //await _stateCapability.WorkflowEventService.FireWorkflowInstanceChangedAsync(@event, cancellationToken);
-
-                await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
+                // TODO: Remove in favor of WorkflowInformation.CompareAsync?
+                //await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
             }
         }
 
