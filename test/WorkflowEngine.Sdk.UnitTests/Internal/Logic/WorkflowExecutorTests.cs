@@ -163,9 +163,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             _messageQueueMock
                 .Setup(x => x.AddMessageAsync(
                     It.Is<WorkflowInstanceChangedV1>(message =>
-                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(),
+                        string.Equals(message.Instance.Id, expectedRequestId.ToString(),
                             StringComparison.InvariantCultureIgnoreCase)
-                        && message.Payload.SourceClientId == SourceClientId),
+                        && message.SourceClientId == SourceClientId),
                     It.IsAny<TimeSpan?>(),
                     It.IsAny<CancellationToken>()))
                 .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
@@ -202,8 +202,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             _messageQueueMock
                 .Setup(x => x.AddMessageAsync(
                     It.Is<WorkflowInstanceChangedV1>(message => 
-                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                        && message.Payload.SourceClientId == SourceClientId),
+                        string.Equals(message.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        && message.SourceClientId == SourceClientId),
                     It.IsAny<TimeSpan?>(),
                     It.Is<CancellationToken>(ct => ct == cancellationToken1)))
                 .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
@@ -213,8 +213,8 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             _messageQueueMock
                 .Setup(x => x.AddMessageAsync(
                     It.Is<WorkflowInstanceChangedV1>(message => 
-                        string.Equals(message.Payload.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                        && message.Payload.SourceClientId == SourceClientId),
+                        string.Equals(message.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                        && message.SourceClientId == SourceClientId),
                     It.IsAny<TimeSpan?>(),
                     It.Is<CancellationToken>(ct => ct == cancellationToken2)))
                 .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>

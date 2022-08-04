@@ -111,13 +111,10 @@ public class WorkflowMessageService : IWorkflowMessageService
         {
             EventObject = new WorkflowInstanceChangedV1
             {
-                Payload = new()
-                {
-                    SourceClientId = SourceClientId,
-                    Form = form,
-                    Version = version,
-                    Instance = instance
-                },
+                SourceClientId = SourceClientId,
+                Form = form,
+                Version = version,
+                Instance = instance,
                 Timestamp = DateTimeOffset.Now
             }
         };
