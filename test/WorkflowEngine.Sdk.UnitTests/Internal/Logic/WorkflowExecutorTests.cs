@@ -194,18 +194,22 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information, _workflowCapabilitiesWithEvents);
 
-            var cancellationToken1 = new CancellationToken();
-            var cancellationToken2 = new CancellationToken();
+            var cancellationToken1 = new CancellationTokenSource().Token;
+            var cancellationToken2 = new CancellationTokenSource().Token;
             var resetEvent1 = new ManualResetEvent(false);
             var resetEvent2 = new ManualResetEvent(false);
+
+            var newFormTitle = Guid.NewGuid().ToString();
 
             _messageQueueMock
                 .Setup(x => x.AddMessageAsync(
                     It.Is<WorkflowInstanceChangedV1>(message => 
                         string.Equals(message.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                        && message.SourceClientId == SourceClientId),
+                        && message.SourceClientId == SourceClientId
+                        && message.Form.Title == information.FormTitle),
                     It.IsAny<TimeSpan?>(),
-                    It.Is<CancellationToken>(ct => ct == cancellationToken1)))
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
                 .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
                 {
                     resetEvent1.Set();
@@ -214,9 +218,11 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
                 .Setup(x => x.AddMessageAsync(
                     It.Is<WorkflowInstanceChangedV1>(message => 
                         string.Equals(message.Instance.Id, expectedRequestId.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                        && message.SourceClientId == SourceClientId),
+                        && message.SourceClientId == SourceClientId
+                        && message.Form.Title == newFormTitle),
                     It.IsAny<TimeSpan?>(),
-                    It.Is<CancellationToken>(ct => ct == cancellationToken2)))
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
                 .Callback((WorkflowInstanceChangedV1 x, TimeSpan? y, CancellationToken z) =>
                 {
                     resetEvent2.Set();
@@ -228,7 +234,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
                 .ShouldThrowAsync<RequestPostponedException>();
 
             // TODO: How to change state
-            ((TestWorkflowContainer) implementation.WorkflowContainer).SetWorkflowFormTitle(Guid.NewGuid().ToString());
+            //((TestWorkflowContainer) implementation.WorkflowContainer).SetWorkflowFormTitle(newFormTitle);
+            information.Form.Title = newFormTitle;
+            
             await executor
                 .ExecuteAsync(implementation, cancellationToken2)
                 .ShouldThrowAsync<RequestPostponedException>();

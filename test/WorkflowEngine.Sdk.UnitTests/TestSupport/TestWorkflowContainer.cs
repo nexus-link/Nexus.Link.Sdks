@@ -45,6 +45,7 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         public void SetWorkflowFormTitle(string title)
         {
             _formTitle = title;
+            
         }
     }
 }

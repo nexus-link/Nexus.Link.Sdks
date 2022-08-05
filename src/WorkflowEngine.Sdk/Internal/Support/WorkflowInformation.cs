@@ -224,8 +224,11 @@ internal class WorkflowInformation : IWorkflowInformation
     public async Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action)
     {
         // TODO: how to get old and new?
-        var x = InstanceExists();
-        await action(_workflowCache.Form, _workflowCache.Version, _workflowCache.Instance, Form, Version, Instance);
+        var exists = InstanceExists();
+        var oldForm = exists ? _workflowCache.Form : null;
+        var oldVersion = exists ? _workflowCache.Version : null;
+        var oldInstance = exists ? _workflowCache.Instance : null;
+        await action(oldForm, oldVersion, oldInstance, Form, Version, Instance);
     }
 
     /// <inheritdoc />

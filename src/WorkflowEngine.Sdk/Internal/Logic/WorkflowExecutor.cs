@@ -91,15 +91,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 {
                     if (_workflowCapabilities.StateCapability.WorkflowMessageService != null)
                     {
-                        var publish = newInstance == null ||
-                                      oldForm.Title != newForm.Title ||
-                                      oldVersion.MajorVersion != newVersion.MajorVersion ||
-                                      oldInstance.Title != newInstance.Title ||
-                                      oldInstance.State != newInstance.State ||
-                                      oldInstance.FinishedAt != newInstance.FinishedAt;
+                        var publish = oldInstance == null ||
+                                      oldForm?.Title != newForm.Title ||
+                                      oldVersion?.MajorVersion != newVersion.MajorVersion ||
+                                      oldInstance?.Title != newInstance.Title ||
+                                      oldInstance?.State != newInstance.State ||
+                                      oldInstance?.FinishedAt != newInstance.FinishedAt;
                         if (publish)
                         {
-                            await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
+                            //await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
                         }
                     }
                 });

@@ -273,7 +273,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             if (shouldFireEvent && _stateCapability.WorkflowMessageService != null)
             {
                 // TODO: Remove in favor of WorkflowInformation.CompareAsync?
-                //await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
+                await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
             }
         }
 
