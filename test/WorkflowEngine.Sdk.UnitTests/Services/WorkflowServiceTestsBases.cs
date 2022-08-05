@@ -5,6 +5,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
@@ -50,6 +51,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services
             {
                 Title = "INSTANCE TITLE",
                 WorkflowVersionId = WorkflowVersionRecord.Id,
+                ExecutionId = Guid.NewGuid().ToGuidString(),
                 StartedAt = DateTimeOffset.Now,
                 InitialVersion = "1.0",
                 State = WorkflowStateEnum.Executing.ToString()

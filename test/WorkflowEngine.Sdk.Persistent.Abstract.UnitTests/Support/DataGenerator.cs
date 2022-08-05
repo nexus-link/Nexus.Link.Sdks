@@ -71,6 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
         public static WorkflowInstanceRecordCreate DefaultWorkflowInstanceCreate => new WorkflowInstanceRecordCreate
         {
             WorkflowVersionId = WorkflowVersionId,
+            ExecutionId = Guid.NewGuid().ToGuidString(),
             Title = Guid.NewGuid().ToGuidString(),
             InitialVersion = "1.1",
             StartedAt = DateTimeOffset.UtcNow,

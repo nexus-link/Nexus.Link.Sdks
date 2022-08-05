@@ -22,7 +22,8 @@ namespace Nexus.Link.Logger.Sdk
         private readonly ILogQueueHelper<LogMessage> _storageHandler;
 
         /// <param name="loggingServiceConfiguration">Access to TenantLoggingConfiguration</param>
-        public FulcrumLogger(ILeverServiceConfiguration loggingServiceConfiguration) : this(new LogQueueHelper<LogMessage>(loggingServiceConfiguration))
+        public FulcrumLogger(ILeverServiceConfiguration loggingServiceConfiguration) 
+            : this(new LogQueueHelper<LogMessage>(loggingServiceConfiguration))
         {
         }
 

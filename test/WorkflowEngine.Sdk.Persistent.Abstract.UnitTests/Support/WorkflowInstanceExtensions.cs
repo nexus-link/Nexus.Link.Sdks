@@ -34,6 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
             actual.ShouldNotBeNull();
             actual.WorkflowVersionId.ShouldBe(expected.WorkflowVersionId);
             actual.Title.ShouldBe(expected.Title);
+            actual.ExecutionId.ShouldBe(expected.ExecutionId);
             actual.CancelledAt.ShouldBe(expected.CancelledAt);
             actual.FinishedAt.ShouldBe(expected.FinishedAt);
             actual.StartedAt.ShouldBe(expected.StartedAt);

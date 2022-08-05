@@ -1,13 +1,15 @@
-﻿#if NETCOREAPP
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Contracts.Misc.Sdk.Execution;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -20,6 +22,8 @@ using Nexus.Link.Libraries.Web.AspNet.Logging;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Misc.AspNet.Sdk.Extensions;
+using Nexus.Link.Misc.AspNet.Sdk.Inbound.Options;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using HttpRequest = Microsoft.AspNetCore.Http.HttpRequest;
 
 namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
@@ -81,11 +85,15 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         public virtual async Task InvokeAsync(HttpContext context)
         {
             var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Task saveBeforeExecutionTask = null;
             var cancellationToken = context.RequestAborted;
+            CancellationTokenSource manualToken = new CancellationTokenSource();
+
+            stopwatch.Start();
             // Enable multiple reads of the content
             context.Request.EnableBuffering();
-
+            var executionId = ExtractExecutionIdFromHeader(context);
+            if (string.IsNullOrWhiteSpace(executionId)) executionId = Guid.NewGuid().ToGuidString();
             try
             {
                 if (Options.Features.SaveClientTenant.Enabled)
@@ -100,17 +108,24 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                     FulcrumApplication.Context.CorrelationId = correlationId;
                 }
 
+                var parentExecutionId = ExtractParentExecutionIdFromHeader(context);
+
                 if (Options.Features.SaveExecutionId.Enabled)
                 {
-                    var parentExecutionId = ExtractParentExecutionIdFromHeader(context);
                     FulcrumApplication.Context.ParentExecutionId = parentExecutionId;
-                    var executionId = ExtractExecutionIdFromHeader(context);
                     FulcrumApplication.Context.ExecutionId = executionId;
+                    FulcrumApplication.Context.ChildExecutionId = null;
+                }
+
+                if (Options.Features.SaveExecutionInformation.Enabled)
+                {
+                    saveBeforeExecutionTask = SafeSaveExecutionInformationBeforeAsync(executionId, parentExecutionId, context, manualToken.Token);
                 }
 
                 if (Options.Features.SaveTenantConfiguration.Enabled)
                 {
-                    var tenantConfiguration = await GetTenantConfigurationAsync(FulcrumApplication.Context.ClientTenant, context, cancellationToken);
+                    var tenantConfiguration = await GetTenantConfigurationAsync(FulcrumApplication.Context.ClientTenant,
+                        context, cancellationToken);
                     FulcrumApplication.Context.LeverConfiguration = tenantConfiguration;
                 }
 
@@ -122,7 +137,8 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
                 if (Options.Features.BatchLog.Enabled)
                 {
-                    BatchLogger.StartBatch(Options.Features.BatchLog.Threshold, Options.Features.BatchLog.FlushAsLateAsPossible);
+                    BatchLogger.StartBatch(Options.Features.BatchLog.Threshold,
+                        Options.Features.BatchLog.FlushAsLateAsPossible);
                 }
 
                 if (Options.Features.SaveReentryAuthentication.Enabled)
@@ -133,8 +149,8 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
                 if (Options.Features.RedirectAsynchronousRequests.Enabled)
                 {
-                    var parentExecutionId = ExtractManagedAsynchronousRequestIdFromHeader(context);
-                    FulcrumApplication.Context.ManagedAsynchronousRequestId = parentExecutionId;
+                    var managedAsynchronousRequestId = ExtractManagedAsynchronousRequestIdFromHeader(context);
+                    FulcrumApplication.Context.ManagedAsynchronousRequestId = managedAsynchronousRequestId;
                 }
 
                 try
@@ -152,8 +168,10 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                                 throw await RerouteToAsyncRequestMgmtAndCreateExceptionAsync(context);
                             }
                         }
+
                         throw;
                     }
+
                     if (Options.Features.LogRequestAndResponse.Enabled)
                     {
                         await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
@@ -171,6 +189,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                             await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
                         }
                     }
+
                     if (shouldThrow) throw;
                 }
             }
@@ -180,12 +199,14 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 {
                     LogException(context, exception, stopwatch.Elapsed);
                 }
+
                 throw;
             }
             finally
             {
-                if (Options.Features.BatchLog.Enabled) BatchLogger.EndBatch();
+                await SafeFinallySaveExecutionInformation(executionId, context, saveBeforeExecutionTask, manualToken);
             }
+
         }
 
         #region RedirectAsynchronousRequests
@@ -195,7 +216,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ManagedAsynchronousRequestId, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ManagedAsynchronousRequestId, out var executionIds))
             {
                 return null;
             }
@@ -214,8 +235,9 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             var cancellationToken = context.RequestAborted;
             var requestCreate = await new HttpRequestCreate().FromAsync(context.Request, 0.5, cancellationToken);
             FulcrumAssert.IsNotNull(requestCreate, CodeLocation.AsString());
-            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
+            MaybeAddExecutionIdHeaderToRequest(requestCreate);
             await MaybeAddReentryAuthenticationToRequestAsync(context, requestCreate, cancellationToken);
+            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
             var requestId = await requestService.CreateAsync(requestCreate, cancellationToken);
             FulcrumAssert.IsNotNullOrWhiteSpace(requestId, CodeLocation.AsString());
             var urls = requestService.GetEndpoints(requestId);
@@ -228,6 +250,13 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             };
         }
 
+        private static void MaybeAddExecutionIdHeaderToRequest(HttpRequestCreate requestCreate)
+        {
+            if (requestCreate.Headers.TryGetValue(NexusHeaderNames.ExecutionIdHeaderName, out _)) return;
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
+            requestCreate.Headers[NexusHeaderNames.ExecutionIdHeaderName] = FulcrumApplication.Context.ExecutionId;
+        }
+
         private async Task MaybeAddReentryAuthenticationToRequestAsync(HttpContext context, HttpRequestCreate requestCreate,
             CancellationToken cancellationToken)
         {
@@ -238,7 +267,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             var reentryAuthentication = await reentryService.CreateAsync(context, deleteAfter, cancellationToken);
             if (reentryAuthentication == null) return;
             FulcrumAssert.IsNotNullOrWhiteSpace(reentryAuthentication, CodeLocation.AsString());
-            requestCreate.Headers.Add(Constants.ReentryAuthenticationHeaderName, reentryAuthentication);
+            requestCreate.Headers.Add(NexusHeaderNames.ReentryAuthenticationHeaderName, reentryAuthentication);
             FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
         }
 
@@ -246,18 +275,18 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
         #region SaveNexusTestContextToContext
         /// <summary>
-        /// Get the <see cref="Constants.NexusTestContextHeaderName"/>.
+        /// Get the <see cref="NexusHeaderNames.NexusTestContextHeaderName"/>.
         /// </summary>
         private static string GetNexusTestContextFromHeader(HttpContext context)
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.NexusTestContextHeaderName, out var values);
+            var headerValueExists = request!.Headers.TryGetValue(NexusHeaderNames.NexusTestContextHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;
             if (valuesAsArray.Length == 1) return valuesAsArray[0];
-            var message = $"There was more than one {Constants.NexusTestContextHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
+            var message = $"There was more than one {NexusHeaderNames.NexusTestContextHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
             Log.LogWarning(message);
             return valuesAsArray[0];
         }
@@ -286,7 +315,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.FulcrumCorrelationIdHeaderName, out var correlationIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.FulcrumCorrelationIdHeaderName, out var correlationIds))
             {
                 return null;
             }
@@ -308,7 +337,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ExecutionIdHeaderName, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ExecutionIdHeaderName, out var executionIds))
             {
                 return null;
             }
@@ -327,7 +356,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
             if (request == null) return null;
-            if (!request.Headers.TryGetValue(Constants.ParentExecutionIdHeaderName, out var executionIds))
+            if (!request.Headers.TryGetValue(NexusHeaderNames.ParentExecutionIdHeaderName, out var executionIds))
             {
                 return null;
             }
@@ -339,6 +368,119 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             Log.LogWarning(message);
             return executionsArray[0];
         }
+        #endregion
+
+        #region SaveExecutionInformation
+
+        private async Task SafeSaveExecutionInformationBeforeAsync(string executionId, string parentExecutionId,
+            HttpContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var saveBeforeAsyncDelegate = Options.Features.SaveExecutionInformation.SaveBeforeExecutionAsyncDelegate;
+                if (saveBeforeAsyncDelegate == null) return;
+                if (string.IsNullOrWhiteSpace(executionId)) return;
+                string requestDescription = null;
+                if (context.Request != null)
+                {
+                    requestDescription = context.Request.ToLogString();
+                }
+
+                var beforeExecution = new SaveExecutionInformationOptions.BeforeExecution()
+                {
+                    ExecutionId = executionId,
+                    ParentExecutionId = parentExecutionId,
+                    RequestDescription = requestDescription
+                };
+
+                try
+                {
+                    await saveBeforeAsyncDelegate(beforeExecution, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.LogWarning(
+                        $"{nameof(MiddlewareFeatures.SaveExecutionInformation)} failed to save information before execution: {e.ToLogString(true)}\r" +
+                        $"{JsonConvert.SerializeObject(beforeExecution)}");
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
+        private async Task SafeSaveExecutionInformationAfterAsync(string executionId, HttpContext context, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var saveAfterAsyncDelegate = Options.Features.SaveExecutionInformation.SaveAfterExecutionAsyncDelegate;
+                if (saveAfterAsyncDelegate == null) return;
+                if (string.IsNullOrWhiteSpace(executionId)) return;
+                string responseDescription = null;
+                if (context.Response != null)
+                {
+                    responseDescription = await context.Response.ToLogStringAsync(cancellationToken);
+                }
+
+                var afterExecution = new SaveExecutionInformationOptions.AfterExecution()
+                {
+                    ExecutionId = executionId,
+                    ResponseDescription = responseDescription
+                };
+
+                try
+                {
+                    await saveAfterAsyncDelegate(afterExecution, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.LogWarning(
+                        $"{nameof(MiddlewareFeatures.SaveExecutionInformation)} failed to save information after execution: {e.ToLogString(true)}\r" +
+                        $"{JsonConvert.SerializeObject(afterExecution)}");
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
+        private async Task SafeFinallySaveExecutionInformation(string executionId, HttpContext context,
+            Task saveBeforeExecutionTask, CancellationTokenSource manualToken)
+        {
+            try
+            {
+                if (!manualToken.IsCancellationRequested) manualToken.CancelAfter(TimeSpan.FromMilliseconds(20));
+                var saveAfterExecutionTask = SafeSaveExecutionInformationAfterAsync(executionId, context, manualToken.Token);
+                if (saveBeforeExecutionTask != null)
+                {
+                    // We will give the save of request execution information a few more milliseconds to finish.
+                    try
+                    {
+                        await saveBeforeExecutionTask;
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore all errors
+                    }
+
+                    try
+                    {
+                        await saveAfterExecutionTask;
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore all errors
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore all errors
+            }
+        }
+
         #endregion
 
         #region GetTenantConfiguration
@@ -432,18 +574,18 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
         #region SaveReentryAuthentication
         /// <summary>
-        /// Get the <see cref="Constants.ReentryAuthenticationHeaderName"/>.
+        /// Get the <see cref="NexusHeaderNames.ReentryAuthenticationHeaderName"/>.
         /// </summary>
         private static string GetNexusReentryAuthenticationFromHeader(HttpContext context)
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.ReentryAuthenticationHeaderName, out var values);
+            var headerValueExists = request.Headers.TryGetValue(NexusHeaderNames.ReentryAuthenticationHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;
             if (valuesAsArray.Length == 1) return valuesAsArray[0];
-            var message = $"There was more than one {Constants.ReentryAuthenticationHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
+            var message = $"There was more than one {NexusHeaderNames.ReentryAuthenticationHeaderName} header: {string.Join(", ", valuesAsArray)}. Using the first one.";
             Log.LogWarning(message);
             return valuesAsArray[0];
         }
@@ -479,4 +621,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         }
     }
 }
-#endif

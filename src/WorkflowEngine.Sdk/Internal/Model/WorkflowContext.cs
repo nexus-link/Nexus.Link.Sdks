@@ -6,8 +6,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
     internal class WorkflowContext
     {
         public IContextValueProvider ValueProvider { get; }
-
-        private readonly OneValueProvider<bool> _executionIsAsynchronous;
+        
         private readonly OneValueProvider<string> _workflowInstanceId;
         private readonly OneValueProvider<Activity> _parentActivity;
         private readonly OneValueProvider<Activity> _latestActivity;
@@ -16,22 +15,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         public WorkflowContext(IContextValueProvider valueProvider)
         {
             ValueProvider = valueProvider;
-            _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
             _parentActivity = new OneValueProvider<Activity>(ValueProvider, "ParentActivity");
             _latestActivity = new OneValueProvider<Activity>(ValueProvider, "LatestActivity");
             _currentWorkflowExecutor = new OneValueProvider<WorkflowExecutor>(ValueProvider, "CurrentWorkflowExecutor");
-        }
-
-        /// <summary>
-        /// If this is true, then the current execution is in an truly asynchronous context,
-        /// i.e. the client is not waiting for the response, so we are for instance
-        /// free to make asynchronous calls to other servers.
-        /// </summary>
-        public bool ExecutionIsAsynchronous
-        {
-            get => _executionIsAsynchronous.GetValue();
-            set => _executionIsAsynchronous.SetValue(value);
         }
 
         /// <summary>
@@ -44,7 +31,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         }
 
         /// <summary>
-        /// If non-null, contains information about the current parent id.
+        /// If non-null, contains information about the current parent activity.
         /// </summary>
         public Activity ParentActivity
         {
@@ -53,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         }
 
         /// <summary>
-        /// If non-null, contains information about the current parent id.
+        /// If non-null, contains information about the latest activity.
         /// </summary>
         public Activity LatestActivity
         {

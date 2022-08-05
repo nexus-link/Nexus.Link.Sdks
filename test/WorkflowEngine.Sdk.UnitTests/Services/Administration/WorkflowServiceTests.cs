@@ -67,6 +67,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
             workflow.Title.ShouldContain(WorkflowFormRecord.Title);
             workflow.Title.ShouldContain($"{WorkflowVersionRecord.MajorVersion}.{WorkflowVersionRecord.MinorVersion}");
             workflow.Title.ShouldContain(WorkflowInstanceRecord.Title);
+            workflow.ExecutionId.ShouldBe(WorkflowInstanceRecord.ExecutionId);
 
             workflow.Activities.Count.ShouldBe(2);
             workflow.Activities[0].Position.ShouldBe("1");

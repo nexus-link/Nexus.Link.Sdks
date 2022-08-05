@@ -1,8 +1,8 @@
-﻿#if NETCOREAPP
-using Nexus.Link.Libraries.Core.Application;
+﻿using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
 {
@@ -41,22 +41,28 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
         public SaveTenantConfigurationOptions SaveTenantConfiguration { get; } = new();
 
         /// <summary>
-        /// This feature gets the first found <see cref="Constants.FulcrumCorrelationIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// This feature gets the first found <see cref="NexusHeaderNames.FulcrumCorrelationIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
         /// </summary>
         public SaveCorrelationIdOptions SaveCorrelationId { get; } = new();
 
         /// <summary>
-        /// This feature gets the first found <see cref="Constants.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// This feature gets the first found <see cref="NexusHeaderNames.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// It also gets the first found <see cref="NexusHeaderNames.ParentExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
         /// </summary>
         public SaveExecutionIdOptions SaveExecutionId { get; } = new();
 
         /// <summary>
-        /// This feature reads the <see cref="Constants.NexusTestContextHeaderName"/> header from the request and saves it to the execution context.
+        /// This feature saves information about the request before the execution 
+        /// </summary>
+        public SaveExecutionInformationOptions SaveExecutionInformation { get; } = new();
+
+        /// <summary>
+        /// This feature reads the <see cref="NexusHeaderNames.NexusTestContextHeaderName"/> header from the request and saves it to the execution context.
         /// </summary>
         public SaveNexusTestContextOptions SaveNexusTestContext { get; } = new();
 
         /// <summary>
-        /// This feature reads the <see cref="Constants.ReentryAuthenticationHeaderName"/> header from the request and saves it to the execution context.
+        /// This feature reads the <see cref="NexusHeaderNames.ReentryAuthenticationHeaderName"/> header from the request and saves it to the execution context.
         /// </summary>
         public SaveReentryAuthenticationOptions SaveReentryAuthentication { get; } = new();
 
@@ -81,4 +87,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
         }
     }
 }
-#endif

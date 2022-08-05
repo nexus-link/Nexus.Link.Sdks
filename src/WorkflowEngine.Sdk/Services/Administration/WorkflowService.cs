@@ -35,6 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             var workflow = new Workflow
             {
                 Id = id,
+                ExecutionId = workflowRecord.Instance.ExecutionId,
                 StartedAt = workflowRecord.Instance.StartedAt,
                 FinishedAt = workflowRecord.Instance.FinishedAt,
                 CancelledAt = workflowRecord.Instance.CancelledAt,

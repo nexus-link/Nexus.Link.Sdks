@@ -50,6 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         public async Task<IWorkflowImplementation> SelectWorkflowVersionAsync(int minVersion, int? maxVersion = null, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireGreaterThanOrEqualTo(0, minVersion, nameof(minVersion));
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
             ThrowIfNotManagedAsynchronousRequest();
             var majorVersion = await SelectMajorVersionAsync(minVersion, maxVersion, cancellationToken);
             FulcrumAssert.IsTrue(_versions.ContainsKey(majorVersion), CodeLocation.AsString());

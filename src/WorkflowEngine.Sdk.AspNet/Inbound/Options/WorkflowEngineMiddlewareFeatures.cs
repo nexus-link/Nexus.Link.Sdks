@@ -1,16 +1,18 @@
-﻿using Nexus.Link.Libraries.Core.Application;
+﻿using System;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound.Options
 {
-    // TODO: Move all features into a class, Feature
+    [Obsolete("Please use Nexus.Link.Misc.AspNet.Sdk.Inbound.NexusLinkMiddleware. Obsolete since 2022-04-07.")]
     public class WorkflowEngineMiddlewareFeatures : IValidatable
     {
         /// 
 
         /// <summary>
-        /// This feature gets the first found <see cref="Constants.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// This feature gets the first found <see cref="NexusHeaderNames.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
         /// </summary>
         public RedirectAsynchronousRequestsOptions RedirectAsynchronousRequests{ get; } = new();
 
