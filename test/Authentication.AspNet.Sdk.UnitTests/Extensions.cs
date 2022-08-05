@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using AuthenticationToken = Nexus.Link.Libraries.Core.Platform.Authentication.AuthenticationToken;
 
 namespace Authentication.AspNet.Sdk.UnitTests
@@ -23,7 +24,7 @@ namespace Authentication.AspNet.Sdk.UnitTests
             };
             if (reentryAuthentication != null)
             {
-                request.Headers.Add(Constants.ReentryAuthenticationHeaderName, reentryAuthentication);
+                request.Headers.Add(NexusHeaderNames.ReentryAuthenticationHeaderName, reentryAuthentication);
             }
 
             if (token != null)
