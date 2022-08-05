@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 using UnitTests.Support;
 using Xunit;
 using Xunit.Abstractions;
@@ -56,7 +57,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
         {
             using var httpClient = _factory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = TestStartup.AuthorizationHeader;
-            httpClient.DefaultRequestHeaders.Add(Constants.NexusUserAuthorizationHeaderName, $"Bearer {TestStartup.UserAuthorizationHeader}");
+            httpClient.DefaultRequestHeaders.Add(NexusHeaderNames.NexusUserAuthorizationHeaderName, $"Bearer {TestStartup.UserAuthorizationHeader}");
 
             var response = await httpClient.GetAsync("api/home/information");
             var result = await response.Content.ReadAsStringAsync();
@@ -76,7 +77,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
 
             using var httpClient = _factory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = TestStartup.AuthorizationHeader;
-            httpClient.DefaultRequestHeaders.Add(Constants.NexusUserAuthorizationHeaderName, TestStartup.UserAuthorizationHeader);
+            httpClient.DefaultRequestHeaders.Add(NexusHeaderNames.NexusUserAuthorizationHeaderName, TestStartup.UserAuthorizationHeader);
 
             var response = await httpClient.GetAsync("api/home/fetchdata");
             var result = await response.Content.ReadAsStringAsync();

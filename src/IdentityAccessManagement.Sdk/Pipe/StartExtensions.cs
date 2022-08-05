@@ -16,6 +16,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Pipe;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace IdentityAccessManagement.Sdk.Pipe
 {
@@ -119,7 +120,7 @@ namespace IdentityAccessManagement.Sdk.Pipe
         {
             var userAuthorization = ExtractUserAuthorizationFromHeader(context);
             if (userAuthorization == null) return;
-            FulcrumApplication.Context.ValueProvider.SetValue(Constants.NexusUserAuthorizationKeyName, userAuthorization);
+            FulcrumApplication.Context.ValueProvider.SetValue(NexusContextNames.NexusUserAuthorizationKeyName, userAuthorization);
         }
 
         private static string ExtractUserAuthorizationFromHeader(HttpContext context)
@@ -145,9 +146,9 @@ namespace IdentityAccessManagement.Sdk.Pipe
 
         private static void SaveUserAuthorizationHeaderToExecutionContext(HttpContext context)
         {
-            var headerValue = context.Request.Headers[Constants.NexusUserAuthorizationHeaderName];
+            var headerValue = context.Request.Headers[NexusHeaderNames.NexusUserAuthorizationHeaderName];
             if (string.IsNullOrWhiteSpace(headerValue)) return;
-            FulcrumApplication.Context.ValueProvider.SetValue(Constants.NexusUserAuthorizationKeyName, headerValue.FirstOrDefault());
+            FulcrumApplication.Context.ValueProvider.SetValue(NexusContextNames.NexusUserAuthorizationKeyName, headerValue.FirstOrDefault());
 
             var bearerToken = headerValue.FirstOrDefault();
             if (bearerToken == null || !bearerToken.StartsWith("Bearer "))

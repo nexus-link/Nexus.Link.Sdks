@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Pipe;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
+using Nexus.Link.Misc.Web.Sdk.OutboundHandlers.Support;
 
 namespace IdentityAccessManagement.Sdk.UnitTest
 {
@@ -53,7 +54,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
         [Route("data")]
         public string Data()
         {
-            return Request.Headers[Constants.NexusUserAuthorizationHeaderName];
+            return Request.Headers[NexusHeaderNames.NexusUserAuthorizationHeaderName];
         }
     }
 }

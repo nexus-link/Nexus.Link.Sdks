@@ -478,7 +478,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete($"Please use {nameof(Lock)} to lock within a workflow form and {nameof(Throttle)} to reduce the number of concurrent calls to a common resource (over all workflows).")]
         public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Semaphore, $"The activity was declared as {ActivityInformation.Type}.");
+#pragma warning restore CS0618 // Type or member is obsolete
             try
             {
                 return new ActivitySemaphore(ActivityInformation, resourceIdentifier);
