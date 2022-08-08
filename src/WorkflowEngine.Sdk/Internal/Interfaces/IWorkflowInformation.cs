@@ -188,8 +188,13 @@ internal interface IWorkflowInformation
     /// <returns></returns>
     string ToLogString();
 
-    /// <summary>
-    /// For comparing the old state of form, version and instance with the new, unsaved, state.
-    /// </summary>
-    Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action);
+    ///// <summary>
+    ///// For comparing the old state of form, version and instance with the new, unsaved, state.
+    ///// </summary>
+    //Task CompareAsync(Func<WorkflowForm, WorkflowVersion, WorkflowInstance, WorkflowForm, WorkflowVersion, WorkflowInstance, Task> action);
+
+    //AfterSaveDelegate AfterSaveAsync { get; set; }
+
+    //delegate Task AfterSaveDelegate(WorkflowForm oldForm, WorkflowVersion oldVersion, WorkflowInstance oldInstance,
+    //    WorkflowForm newForm, WorkflowVersion newVersion, WorkflowInstance newInstance);
 }

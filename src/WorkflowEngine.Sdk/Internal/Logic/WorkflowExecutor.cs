@@ -86,23 +86,23 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowInformation.AggregateActivityInformation();
 
-            await WorkflowInformation.CompareAsync(
-                async (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
-                {
-                    if (_workflowCapabilities.StateCapability.WorkflowMessageService != null)
-                    {
-                        var publish = oldInstance == null ||
-                                      oldForm?.Title != newForm.Title ||
-                                      oldVersion?.MajorVersion != newVersion.MajorVersion ||
-                                      oldInstance?.Title != newInstance.Title ||
-                                      oldInstance?.State != newInstance.State ||
-                                      oldInstance?.FinishedAt != newInstance.FinishedAt;
-                        if (publish)
-                        {
-                            //await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
-                        }
-                    }
-                });
+            //await WorkflowInformation.CompareAsync(
+            //    async (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
+            //    {
+            //        if (_workflowCapabilities.StateCapability.WorkflowMessageService != null)
+            //        {
+            //            var publish = oldInstance == null ||
+            //                          oldForm?.Title != newForm.Title ||
+            //                          oldVersion?.MajorVersion != newVersion.MajorVersion ||
+            //                          oldInstance?.Title != newInstance.Title ||
+            //                          oldInstance?.State != newInstance.State ||
+            //                          oldInstance?.FinishedAt != newInstance.FinishedAt;
+            //            if (publish)
+            //            {
+            //                //await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
+            //            }
+            //        }
+            //    });
             await WorkflowInformation.SaveAsync(cancellationToken);
             
             // Release semaphores

@@ -2,9 +2,8 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
+using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.EntityAttributes;
-using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services;
@@ -48,11 +47,10 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// <summary>
     /// Constructor
     /// </summary>
-    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability,
-        IWritableQueue<WorkflowInstanceChangedV1> messageQueue)
+    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
     {
         ConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
-        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, messageQueue);
+        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, workflowOptions);
         RequestMgmtCapability = requestMgmtCapability;
     }
 }

@@ -15,6 +15,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
@@ -85,6 +86,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 if (_summary != null) return _summary;
                 _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
+                // TODO: should we not store in cache after _summary.Form ??= ...?
                 RememberData(true);
                 _summary.Form ??= new WorkflowForm
                 {
@@ -109,6 +111,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     Title = _workflowInformation.InstanceTitle,
                     State = WorkflowStateEnum.Executing
                 };
+                RememberData(true); // TODO
                 return _summary;
             }, cancellationToken);
 
@@ -121,7 +124,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             RememberData(false);
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
+                // TODO: What has changed; probably _summary.*
+                var oldForm = _workflowFormCache.GetStored(_summary.Form.Id);
+                var oldVersion = _workflowVersionCache.GetStored(_summary.Version.Id);
+                var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
+                //var oldForm = _summary.Form;
+                //var oldVersion = _summary.Version;
+                //var oldInstance = _summary.Instance;
+                // TODO: Problem with ETag == null
                 await InternalSaveAsync(ct);
+
+                if (_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync != null)
+                {
+                    try
+                    {
+                        // Fail handling is deferred to implementor. E.g., if using AM, the AM SDK will provide retry mechanism.
+                        await _stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync(
+                            oldForm, oldVersion, oldInstance, _summary.Form, _summary.Version, _summary.Instance);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogError($"Error at {nameof(_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync)}: {e.Message}. Giving up.");
+                    }
+                }
+
                 return _summary;
             }, cancellationToken);
         }
@@ -227,39 +253,40 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
 
-            var shouldFireEvent = !InstanceExists();
+            //var shouldFireEvent = !InstanceExists();
 
             //_workflowFormCache.ReadAsync(_summary.Form.Id)
             await _workflowFormCache.SaveAsync((id, item) =>
             {
-                if (!shouldFireEvent) {
-                    if (_summary.Form.Title != item.Title) shouldFireEvent = true;
-                }
-                
+                //if (!shouldFireEvent)
+                //{
+                //    if (_summary.Form.Title != item.Title) shouldFireEvent = true;
+                //}
+
                 _summary.Form = item;
             }, cancellationToken);
 
             await _workflowVersionCache.SaveAsync((id, item) =>
             {
-                if (!shouldFireEvent)
-                {
-                    if (_summary.Version.MajorVersion != item.MajorVersion) shouldFireEvent = true;
-                }
+                //if (!shouldFireEvent)
+                //{
+                //    if (_summary.Version.MajorVersion != item.MajorVersion) shouldFireEvent = true;
+                //}
 
                 _summary.Version = item;
             }, cancellationToken);
 
             await _workflowInstanceCache.SaveAsync((id, item) =>
             {
-                if (!shouldFireEvent)
-                {
-                    if (_summary.Instance.Title != item.Title ||
-                        _summary.Instance.State != item.State ||
-                        _summary.Instance.FinishedAt != item.FinishedAt)
-                    {
-                        shouldFireEvent = true;
-                    }
-                }
+                //if (!shouldFireEvent)
+                //{
+                //    if (_summary.Instance.Title != item.Title ||
+                //        _summary.Instance.State != item.State ||
+                //        _summary.Instance.FinishedAt != item.FinishedAt)
+                //    {
+                //        shouldFireEvent = true;
+                //    }
+                //}
 
                 _summary.Instance = item;
             }, cancellationToken);
@@ -270,11 +297,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
             await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
 
-            if (shouldFireEvent && _stateCapability.WorkflowMessageService != null)
-            {
-                // TODO: Remove in favor of WorkflowInformation.CompareAsync?
-                await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
-            }
+            //if (shouldFireEvent && _stateCapability.WorkflowMessageService != null)
+            //{
+            //    // TODO: Remove in favor of WorkflowInformation.CompareAsync?
+            //    await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
+            //}
         }
 
         public ActivityForm GetActivityForm(string formId)

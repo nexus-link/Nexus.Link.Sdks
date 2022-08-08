@@ -1,6 +1,5 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Queue.Model;
@@ -16,26 +15,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         /// <summary>
         /// Constructor
         /// </summary>
-        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
         {
-            WorkflowInstance = new WorkflowInstanceService(runtimeTables);
+            WorkflowInstance = new WorkflowInstanceService(runtimeTables, workflowOptions);
             ActivityInstance = new ActivityInstanceService(runtimeTables, requestMgmtCapability);
             Log = new LogService(runtimeTables);
             WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables, requestMgmtCapability);
             WorkflowSemaphore = new WorkflowSemaphoreService(requestMgmtCapability, runtimeTables);
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, IWritableQueue<WorkflowInstanceChangedV1> messageQueue)
-        : this(configurationTables, runtimeTables, requestMgmtCapability)
-        {
-            if (messageQueue != null)
-            {
-                var sourceClientId = FulcrumApplication.Setup.ClientName ?? FulcrumApplication.Setup.Name;
-                WorkflowMessageService = new WorkflowMessageService(sourceClientId, messageQueue, Log); // TODO: Log in this way?
-            }
         }
 
         /// <inheritdoc />
@@ -52,8 +38,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         /// <inheritdoc />
         public IWorkflowSemaphoreService WorkflowSemaphore { get; }
-
-        /// <inheritdoc />
-        public IWorkflowMessageService WorkflowMessageService { get; }
     }
 }

@@ -20,9 +20,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         /// <summary>
         /// Constructor
         /// </summary>
-        public WorkflowInstanceService(IRuntimeTables runtimeTables)
+        public WorkflowInstanceService(IRuntimeTables runtimeTables, WorkflowOptions defaultWorkflowOptions)
         {
             _runtimeTables = runtimeTables;
+            // TODO: DI on WorkflowOptions
+            DefaultWorkflowOptions = defaultWorkflowOptions ?? new WorkflowOptions();
         }
 
         /// <inheritdoc />
@@ -100,5 +102,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             return _runtimeTables.WorkflowInstance.ReleaseDistributedLockAsync(idAsGuid, lockIdAsGuid,
                 cancellationToken);
         }
+
+        public WorkflowOptions DefaultWorkflowOptions { get; }
     }
 }
