@@ -63,7 +63,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             MinorVersion = minorVersion;
             WorkflowContainer = workflowContainer;
 
-            _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this), WorkflowContainer.WorkflowCapabilities);
+            _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this));
         }
 
         /// <summary>

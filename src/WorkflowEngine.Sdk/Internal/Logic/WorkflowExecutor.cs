@@ -28,12 +28,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         private readonly MethodHandler _methodHandler;
         private Lock<string> _workflowDistributedLock;
         public IWorkflowInformation WorkflowInformation { get; }
-        private readonly IWorkflowEngineRequiredCapabilities _workflowCapabilities;
 
-        public WorkflowExecutor(IWorkflowInformation workflowInformation, IWorkflowEngineRequiredCapabilities workflowCapabilities)
+        public WorkflowExecutor(IWorkflowInformation workflowInformation)
         {
             WorkflowInformation = workflowInformation;
-            _workflowCapabilities = workflowCapabilities;
             _methodHandler = new MethodHandler(WorkflowInformation.FormTitle);
         }
 
@@ -58,6 +56,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
             WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
             WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
+            await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
             if (WorkflowInformation.Instance.CancelledAt != null)
             {

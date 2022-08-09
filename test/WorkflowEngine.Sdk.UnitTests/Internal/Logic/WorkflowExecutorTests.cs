@@ -47,7 +47,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new RequestPostponedException());
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information, _workflowCapabilities);
+            var executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -68,7 +68,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFastForwardBreakException()));
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information, _workflowCapabilities);
+            var executor = new WorkflowExecutor(information);
 
             // Act & Assert
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -85,7 +85,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, expectedTechnicalMessage, expectedFriendlyMessage)));
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information, _workflowCapabilities);
+            var executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -105,13 +105,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information, _workflowCapabilities);
+            var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new Exception());
             information = new WorkflowInformation(implementation);
-            executor = new WorkflowExecutor(information, _workflowCapabilities);
+            executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
@@ -127,13 +127,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => Task.CompletedTask);
             var information = new WorkflowInformation(implementation);
-            var executor = new WorkflowExecutor(information, _workflowCapabilities);
+            var executor = new WorkflowExecutor(information);
             await executor.ExecuteAsync(implementation, new CancellationToken());
             var instance = await _runtimeTables.WorkflowInstance.ReadAsync(FulcrumApplication.Context.ExecutionId.ToGuid());
             implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new WorkflowImplementationShouldNotCatchThisException(new Exception()));
             information = new WorkflowInformation(implementation);
-            executor = new WorkflowExecutor(information, _workflowCapabilities);
+            executor = new WorkflowExecutor(information);
 
             // Act
             var exception = await executor.ExecuteAsync(implementation, new CancellationToken())

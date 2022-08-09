@@ -39,15 +39,8 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// <summary>
     /// Constructor
     /// </summary>
-    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
-    : this(configurationTables, runtimeTables, requestMgmtCapability, null)
-    {
-    }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
+    /// TODO: Testa i examples om det är brytande med WorkflowOptions i konstruktorn
+    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions = null)
     {
         ConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
         StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, workflowOptions);

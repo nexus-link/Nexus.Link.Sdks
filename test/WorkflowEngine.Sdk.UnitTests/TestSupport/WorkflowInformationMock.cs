@@ -51,10 +51,10 @@ internal class WorkflowInformationMock : IWorkflowInformation
     public string CapabilityName => Form.CapabilityName;
 
     /// <inheritdoc />
-    public string FormId => Form.Id;
+    public string FormId => Form?.Id;
 
     /// <inheritdoc />
-    public string FormTitle => Form.Title;
+    public string FormTitle => Form?.Title;
 
     /// <inheritdoc />
     public WorkflowForm Form { get; set; } = new()
@@ -256,6 +256,8 @@ internal class WorkflowInformationMock : IWorkflowInformation
 
     /// <inheritdoc />
     public Stopwatch TimeSinceCurrentRunStarted { get; }
+
+    public WorkflowOptions WorkflowOptions { get; set; } = new();
 
     /// <inheritdoc />
     public string ToLogString()

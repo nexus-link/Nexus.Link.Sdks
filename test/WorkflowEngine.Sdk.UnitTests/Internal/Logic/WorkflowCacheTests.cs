@@ -20,20 +20,18 @@ public class WorkflowCacheTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private readonly WorkflowCapabilities _workflowCapabilities;
-    private readonly WorkflowOptions _workflowOptions;
 
     private WorkflowForm _form;
     private WorkflowVersion _version;
     private WorkflowInstance _instance;
-    
+
 
     public WorkflowCacheTests(ITestOutputHelper testOutputHelper)
     {
         FulcrumApplicationHelper.UnitTestSetup(nameof(WorkflowCacheTests));
 
         _testOutputHelper = testOutputHelper;
-        _workflowOptions = new WorkflowOptions();
-        _workflowCapabilities = new WorkflowCapabilities(new ConfigurationTablesMemory(), new RuntimeTablesMemory(), new AsyncRequestMgmtMock(), _workflowOptions);
+        _workflowCapabilities = new WorkflowCapabilities(new ConfigurationTablesMemory(), new RuntimeTablesMemory(), new AsyncRequestMgmtMock());
 
     }
 
@@ -47,7 +45,7 @@ public class WorkflowCacheTests
     {
         // Arrange
         var resetEvent = new ManualResetEvent(false);
-        
+
         await CreateWorkflowComponentsAsync();
 
         const WorkflowStateEnum newState = WorkflowStateEnum.Success;
@@ -56,7 +54,8 @@ public class WorkflowCacheTests
         const string newInstanceTitle = "new i title";
         var newFinishedAt = DateTimeOffset.Now;
 
-        _workflowOptions.AfterSaveAsync = (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
+        IWorkflowInformation workflowInformation = new WorkflowInformationMock(_form, _version, _instance);
+        workflowInformation.WorkflowOptions.AfterSaveAsync = (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
         {
             try
             {
@@ -81,8 +80,6 @@ public class WorkflowCacheTests
             }
             return Task.CompletedTask;
         };
-        
-        IWorkflowInformation workflowInformation = new WorkflowInformationMock(_form, _version, _instance);
         var cache = new WorkflowCache(workflowInformation, _workflowCapabilities);
         await cache.LoadAsync(default);
 
@@ -95,7 +92,7 @@ public class WorkflowCacheTests
         await cache.SaveAsync();
 
         // Assert
-        resetEvent.WaitOne(100).ShouldBeTrue($"There is probably an error in {nameof(_workflowOptions.AfterSaveAsync)}. Look for an error message below.");
+        resetEvent.WaitOne(100).ShouldBeTrue($"There is probably an error in {nameof(workflowInformation.WorkflowOptions.AfterSaveAsync)}. Look for an error message below.");
     }
 
     private async Task CreateWorkflowComponentsAsync()

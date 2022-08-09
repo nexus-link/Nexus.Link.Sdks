@@ -128,12 +128,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
                 await InternalSaveAsync(ct);
 
-                if (_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync != null)
+                if (_workflowInformation.WorkflowOptions.AfterSaveAsync != null)
                 {
                     try
                     {
                         // Fail handling is deferred to implementor. E.g., if using AM, the AM SDK will provide retry mechanism.
-                        await _stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync(
+                        await _workflowInformation.WorkflowOptions.AfterSaveAsync(
                             oldForm, oldVersion, oldInstance, _summary.Form, _summary.Version, _summary.Instance);
                     }
                     catch (Exception e)

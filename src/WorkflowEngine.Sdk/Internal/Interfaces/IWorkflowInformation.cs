@@ -182,6 +182,8 @@ internal interface IWorkflowInformation
     /// </summary>
     Stopwatch TimeSinceCurrentRunStarted { get; }
 
+    WorkflowOptions WorkflowOptions { get; }
+
     /// <summary>
     /// A string representation of the workflow that is detailed enough for logging.
     /// </summary>
