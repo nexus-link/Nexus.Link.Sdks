@@ -39,7 +39,6 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// <summary>
     /// Constructor
     /// </summary>
-    /// TODO: Testa i examples om det är brytande med WorkflowOptions i konstruktorn
     public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions = null)
     {
         ConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
