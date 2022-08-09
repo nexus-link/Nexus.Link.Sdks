@@ -101,18 +101,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         /// </summary>
         public TimeSpan MaxTotalRunTimeSpan { get; set; } = TimeSpan.FromSeconds(60.0);
 
-        //// TODO: Create a new WorkflowOptions and move this option there
-        ///// <summary>
-        ///// TODO
-        ///// </summary>
-        //public AfterSaveDelegate AfterSaveAsync { get; set; }
-
-        ///// <summary>
-        ///// TODO
-        ///// </summary>
-        //public delegate Task AfterSaveDelegate(WorkflowForm oldForm, WorkflowVersion oldVersion, WorkflowInstance oldInstance,
-        //    WorkflowForm newForm, WorkflowVersion newVersion, WorkflowInstance newInstance);
-
         /// <summary>
         /// Copy the options from <paramref name="source"/>.
         /// </summary>
@@ -129,7 +117,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
 #pragma warning restore CS0618
             PostponeAfterTimeSpan = source.PostponeAfterTimeSpan;
             MaxTotalRunTimeSpan = source.MaxTotalRunTimeSpan;
-            //AfterSaveAsync = source.AfterSaveAsync;
             return this;
         }
     }

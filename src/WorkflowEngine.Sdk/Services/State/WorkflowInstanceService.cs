@@ -23,7 +23,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         public WorkflowInstanceService(IRuntimeTables runtimeTables, WorkflowOptions defaultWorkflowOptions)
         {
             _runtimeTables = runtimeTables;
-            // TODO: DI on WorkflowOptions
             DefaultWorkflowOptions = defaultWorkflowOptions ?? new WorkflowOptions();
         }
 
