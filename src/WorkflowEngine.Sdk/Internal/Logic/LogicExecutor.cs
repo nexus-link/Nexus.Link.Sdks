@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
@@ -108,13 +107,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 {
                     data = new
                     {
-                        ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                        ElapsedTime = stopwatch.Elapsed.ToLogString(),
                         Result = result
                     };
                 }
                 else
                 {
-                    data = new { ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2") };
+                    data = new { ElapsedTime = stopwatch.Elapsed.ToLogString() };
                 }
                 await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} returned.", data, cancellationToken);
 
@@ -126,7 +125,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} threw",
                     new
                     {
-                        ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                        ElapsedTime = stopwatch.Elapsed.ToLogString(),
                         Exception = $"{e.GetType().Name}: {e.Message}",
                     }, cancellationToken);
                 throw;

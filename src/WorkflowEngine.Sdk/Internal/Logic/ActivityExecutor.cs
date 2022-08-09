@@ -198,7 +198,7 @@ internal class ActivityExecutor : IActivityExecutor
                 await Activity.LogWarningAsync($"Activity {Activity.ToLogString()} failed with category {Activity.Instance.ExceptionCategory}",
                     new
                     {
-                        ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                        ElapsedTime = stopwatch.Elapsed.ToLogString(),
                         ActivityFailedException = new
                         {
                             Category = Activity.Instance.ExceptionCategory,
@@ -211,8 +211,8 @@ internal class ActivityExecutor : IActivityExecutor
             stopwatch.Stop();
             await Activity.LogVerboseAsync($"End activity {Activity.ToLogString()}.",
                 hasResult
-                    ? new { ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"), Result = result, ActivityInstance = Activity.Instance }
-                    : new { ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"), ActivityInstance = Activity.Instance },
+                    ? new { ElapsedTime = stopwatch.Elapsed.ToLogString(), Result = result, ActivityInstance = Activity.Instance }
+                    : new { ElapsedTime = stopwatch.Elapsed.ToLogString(), ActivityInstance = Activity.Instance },
                 cancellationToken);
         }
     }
@@ -266,7 +266,7 @@ internal class ActivityExecutor : IActivityExecutor
             await Activity.LogWarningAsync($"Activity {Activity.ToLogString()} failed: {e.GetType().Name} {e.ExceptionCategory} {e.Message}",
                 new
                 {
-                    ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                    ElapsedTime = stopwatch.Elapsed.ToLogString(),
                     Exception = new
                     {
                         TypeName = e.GetType().Name,
@@ -295,6 +295,9 @@ internal class ActivityExecutor : IActivityExecutor
     {
         try
         {
+            FulcrumApplication.Context.AsyncPriority = Activity.Options.AsyncRequestPriority;
+            FulcrumApplication.Context.AsyncRequestId = Activity.Instance?.AsyncRequestId;
+            FulcrumApplication.Context.ChildRequestDescription = Activity.ActivityTitle;
             return await ExecuteUnderTimeLimitsAsync(methodAsync, cancellationToken);
         }
         catch (ActivityFailedException) // Also covers WorkflowFailedException
@@ -343,8 +346,8 @@ internal class ActivityExecutor : IActivityExecutor
         var postponeAfter = Activity.ActivityInformation.Options.PostponeAfterTimeSpan;
         if (currentRunTimeSoFar > postponeAfter)
         {
-            await Activity.LogVerboseAsync($"The workflow execution has run for {currentRunTimeSoFar.TotalSeconds:F2} s," +
-                                           $" passing the limit of {postponeAfter.TotalSeconds:F2} s.", Activity, cancellationToken);
+            await Activity.LogVerboseAsync($"The workflow execution has run for {currentRunTimeSoFar.ToLogString()}," +
+                                           $" passing the limit of {postponeAfter.ToLogString()}.", Activity, cancellationToken);
             throw new OperationCanceledException("This exception will eventually be converted to a RequestPostponed exception.");
         }
 

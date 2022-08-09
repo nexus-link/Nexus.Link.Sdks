@@ -59,6 +59,11 @@ internal interface IWorkflowInformation
     WorkflowInstance Instance { get; }
 
     /// <summary>
+    /// The execution ID for this workflow instance
+    /// </summary>
+    string ExecutionId { get; }
+
+    /// <summary>
     /// The title for the current workflow instance
     /// </summary>
     string InstanceTitle { get; }
@@ -133,7 +138,7 @@ internal interface IWorkflowInformation
     /// <summary>
     /// Load information about this workflow instance
     /// </summary>
-    Task LoadAsync(CancellationToken cancellationToken);
+    Task LoadAsync(string executionId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Save the current workflow instance to storage.

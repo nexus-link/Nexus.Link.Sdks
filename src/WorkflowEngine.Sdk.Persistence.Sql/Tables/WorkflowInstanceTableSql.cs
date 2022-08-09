@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -17,6 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             CustomColumnNames = new List<string>
             {
                 nameof(WorkflowInstanceRecord.WorkflowVersionId),
+                nameof(WorkflowInstanceRecord.ExecutionId),
                 nameof(WorkflowInstanceRecord.Title),
                 nameof(WorkflowInstanceRecord.InitialVersion),
                 nameof(WorkflowInstanceRecord.StartedAt),
@@ -32,6 +36,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
             UpdateCanUseOutput = false
         })
         {
+        }
+
+        /// <inheritdoc />
+        public async Task<WorkflowInstanceRecord> ReadByExecutionIdAsync(string executionId, CancellationToken cancellationToken = default)
+        {
+            var search = new SearchDetails<WorkflowInstanceRecord>(new WorkflowInstanceRecordUnique
+            {
+                ExecutionId = executionId
+            });
+            var instance = await FindUniqueAsync(search, cancellationToken);
+            return instance;
         }
     }
 }

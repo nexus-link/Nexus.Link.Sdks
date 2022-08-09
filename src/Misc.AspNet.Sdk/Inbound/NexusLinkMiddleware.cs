@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -81,11 +80,15 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         public virtual async Task InvokeAsync(HttpContext context)
         {
             var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Task saveBeforeExecutionTask = null;
             var cancellationToken = context.RequestAborted;
+            CancellationTokenSource manualToken = new CancellationTokenSource();
+
+            stopwatch.Start();
             // Enable multiple reads of the content
             context.Request.EnableBuffering();
-
+            var executionId = ExtractExecutionIdFromHeader(context);
+            if (string.IsNullOrWhiteSpace(executionId)) executionId = Guid.NewGuid().ToGuidString();
             try
             {
                 if (Options.Features.SaveClientTenant.Enabled)
@@ -100,17 +103,19 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                     FulcrumApplication.Context.CorrelationId = correlationId;
                 }
 
+                var parentExecutionId = ExtractParentExecutionIdFromHeader(context);
+
                 if (Options.Features.SaveExecutionId.Enabled)
                 {
-                    var parentExecutionId = ExtractParentExecutionIdFromHeader(context);
                     FulcrumApplication.Context.ParentExecutionId = parentExecutionId;
-                    var executionId = ExtractExecutionIdFromHeader(context);
                     FulcrumApplication.Context.ExecutionId = executionId;
+                    FulcrumApplication.Context.ChildExecutionId = null;
                 }
 
                 if (Options.Features.SaveTenantConfiguration.Enabled)
                 {
-                    var tenantConfiguration = await GetTenantConfigurationAsync(FulcrumApplication.Context.ClientTenant, context, cancellationToken);
+                    var tenantConfiguration = await GetTenantConfigurationAsync(FulcrumApplication.Context.ClientTenant,
+                        context, cancellationToken);
                     FulcrumApplication.Context.LeverConfiguration = tenantConfiguration;
                 }
 
@@ -122,7 +127,8 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
                 if (Options.Features.BatchLog.Enabled)
                 {
-                    BatchLogger.StartBatch(Options.Features.BatchLog.Threshold, Options.Features.BatchLog.FlushAsLateAsPossible);
+                    BatchLogger.StartBatch(Options.Features.BatchLog.Threshold,
+                        Options.Features.BatchLog.FlushAsLateAsPossible);
                 }
 
                 if (Options.Features.SaveReentryAuthentication.Enabled)
@@ -133,8 +139,8 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
 
                 if (Options.Features.RedirectAsynchronousRequests.Enabled)
                 {
-                    var parentExecutionId = ExtractManagedAsynchronousRequestIdFromHeader(context);
-                    FulcrumApplication.Context.ManagedAsynchronousRequestId = parentExecutionId;
+                    var managedAsynchronousRequestId = ExtractManagedAsynchronousRequestIdFromHeader(context);
+                    FulcrumApplication.Context.ManagedAsynchronousRequestId = managedAsynchronousRequestId;
                 }
 
                 try
@@ -152,8 +158,10 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                                 throw await RerouteToAsyncRequestMgmtAndCreateExceptionAsync(context);
                             }
                         }
+
                         throw;
                     }
+
                     if (Options.Features.LogRequestAndResponse.Enabled)
                     {
                         await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
@@ -171,6 +179,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                             await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
                         }
                     }
+
                     if (shouldThrow) throw;
                 }
             }
@@ -180,12 +189,21 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 {
                     LogException(context, exception, stopwatch.Elapsed);
                 }
+
                 throw;
             }
             finally
             {
-                if (Options.Features.BatchLog.Enabled) BatchLogger.EndBatch();
+                try
+                {
+                    if (Options.Features.BatchLog.Enabled) BatchLogger.EndBatch();
+                }
+                catch (Exception)
+                {
+                    // Silently catch logging exceptions
+                }
             }
+
         }
 
         #region RedirectAsynchronousRequests
@@ -214,8 +232,9 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             var cancellationToken = context.RequestAborted;
             var requestCreate = await new HttpRequestCreate().FromAsync(context.Request, 0.5, cancellationToken);
             FulcrumAssert.IsNotNull(requestCreate, CodeLocation.AsString());
-            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
+            MaybeAddExecutionIdHeaderToRequest(requestCreate);
             await MaybeAddReentryAuthenticationToRequestAsync(context, requestCreate, cancellationToken);
+            FulcrumAssert.IsValidated(requestCreate, CodeLocation.AsString());
             var requestId = await requestService.CreateAsync(requestCreate, cancellationToken);
             FulcrumAssert.IsNotNullOrWhiteSpace(requestId, CodeLocation.AsString());
             var urls = requestService.GetEndpoints(requestId);
@@ -226,6 +245,13 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 PollingUrl = urls.PollingUrl,
                 RegisterCallbackUrl = urls.RegisterCallbackUrl
             };
+        }
+
+        private static void MaybeAddExecutionIdHeaderToRequest(HttpRequestCreate requestCreate)
+        {
+            if (requestCreate.Headers.TryGetValue(Constants.ExecutionIdHeaderName, out _)) return;
+            FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
+            requestCreate.Headers[Constants.ExecutionIdHeaderName] = FulcrumApplication.Context.ExecutionId;
         }
 
         private async Task MaybeAddReentryAuthenticationToRequestAsync(HttpContext context, HttpRequestCreate requestCreate,
@@ -252,7 +278,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.NexusTestContextHeaderName, out var values);
+            var headerValueExists = request!.Headers.TryGetValue(Constants.NexusTestContextHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;
@@ -479,4 +505,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         }
     }
 }
-#endif

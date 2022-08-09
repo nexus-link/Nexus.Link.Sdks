@@ -21,7 +21,7 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.30.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory</PackageId>
-    <Version>2.1.2</Version>
+    <Version>2.2.0-alfa01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -39,6 +39,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.2.0 Added WorkflowInstance.ExecutionId
       2.1.2 Bump
       2.1.1 Added AcivityInstanceId to WorkflowSemaphoreQueueRecord
       2.0.3 Bump
