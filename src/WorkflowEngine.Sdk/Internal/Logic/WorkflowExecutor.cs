@@ -58,8 +58,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
             WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
             WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
-            // TODO: Not save here right? Otherwise, how to know if newly created? CompareAsync
-            // TODO await WorkflowInformation.SaveAsync(cancellationToken);
             // TODO: Unit test for cancelled
             if (WorkflowInformation.Instance.CancelledAt != null)
             {
@@ -86,23 +84,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             WorkflowInformation.AggregateActivityInformation();
 
-            //await WorkflowInformation.CompareAsync(
-            //    async (oldForm, oldVersion, oldInstance, newForm, newVersion, newInstance) =>
-            //    {
-            //        if (_workflowCapabilities.StateCapability.WorkflowMessageService != null)
-            //        {
-            //            var publish = oldInstance == null ||
-            //                          oldForm?.Title != newForm.Title ||
-            //                          oldVersion?.MajorVersion != newVersion.MajorVersion ||
-            //                          oldInstance?.Title != newInstance.Title ||
-            //                          oldInstance?.State != newInstance.State ||
-            //                          oldInstance?.FinishedAt != newInstance.FinishedAt;
-            //            if (publish)
-            //            {
-            //                //await _workflowCapabilities.StateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(newForm, newVersion, newInstance, cancellationToken);
-            //            }
-            //        }
-            //    });
             await WorkflowInformation.SaveAsync(cancellationToken);
             
             // Release semaphores

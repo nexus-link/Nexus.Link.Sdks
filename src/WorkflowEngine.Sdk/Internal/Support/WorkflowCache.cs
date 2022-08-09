@@ -86,7 +86,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 if (_summary != null) return _summary;
                 _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
-                // TODO: should we not store in cache after _summary.Form ??= ...?
                 RememberData(true);
                 _summary.Form ??= new WorkflowForm
                 {
@@ -111,7 +110,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     Title = _workflowInformation.InstanceTitle,
                     State = WorkflowStateEnum.Executing
                 };
-                RememberData(true); // TODO
                 return _summary;
             }, cancellationToken);
 
@@ -124,14 +122,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             RememberData(false);
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
-                // TODO: What has changed; probably _summary.*
                 var oldForm = _workflowFormCache.GetStored(_summary.Form.Id);
                 var oldVersion = _workflowVersionCache.GetStored(_summary.Version.Id);
                 var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
-                //var oldForm = _summary.Form;
-                //var oldVersion = _summary.Version;
-                //var oldInstance = _summary.Instance;
-                // TODO: Problem with ETag == null
+
                 await InternalSaveAsync(ct);
 
                 if (_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync != null)
@@ -253,55 +247,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
 
-            //var shouldFireEvent = !InstanceExists();
+            await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
 
-            //_workflowFormCache.ReadAsync(_summary.Form.Id)
-            await _workflowFormCache.SaveAsync((id, item) =>
-            {
-                //if (!shouldFireEvent)
-                //{
-                //    if (_summary.Form.Title != item.Title) shouldFireEvent = true;
-                //}
+            await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
 
-                _summary.Form = item;
-            }, cancellationToken);
-
-            await _workflowVersionCache.SaveAsync((id, item) =>
-            {
-                //if (!shouldFireEvent)
-                //{
-                //    if (_summary.Version.MajorVersion != item.MajorVersion) shouldFireEvent = true;
-                //}
-
-                _summary.Version = item;
-            }, cancellationToken);
-
-            await _workflowInstanceCache.SaveAsync((id, item) =>
-            {
-                //if (!shouldFireEvent)
-                //{
-                //    if (_summary.Instance.Title != item.Title ||
-                //        _summary.Instance.State != item.State ||
-                //        _summary.Instance.FinishedAt != item.FinishedAt)
-                //    {
-                //        shouldFireEvent = true;
-                //    }
-                //}
-
-                _summary.Instance = item;
-            }, cancellationToken);
+            await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, cancellationToken);
 
             await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
 
             await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, cancellationToken);
 
             await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
-
-            //if (shouldFireEvent && _stateCapability.WorkflowMessageService != null)
-            //{
-            //    // TODO: Remove in favor of WorkflowInformation.CompareAsync?
-            //    await _stateCapability.WorkflowMessageService.PublishWorkflowInstanceChangedMessageAsync(_summary.Form, _summary.Version, _summary.Instance, cancellationToken);
-            //}
         }
 
         public ActivityForm GetActivityForm(string formId)
