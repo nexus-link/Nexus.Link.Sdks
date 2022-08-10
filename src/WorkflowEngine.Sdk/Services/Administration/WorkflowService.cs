@@ -35,6 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             var workflow = new Workflow
             {
                 Id = id,
+                State = workflowRecord.Instance.State,
                 ExecutionId = workflowRecord.Instance.ExecutionId,
                 StartedAt = workflowRecord.Instance.StartedAt,
                 FinishedAt = workflowRecord.Instance.FinishedAt,
@@ -42,9 +43,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                 Title = $"{workflowRecord.Form.Title} {workflowRecord.Version.MajorVersion}.{workflowRecord.Version.MinorVersion}: {workflowRecord.Instance.Title}",
                 Activities = await BuildActivityTreeAsync(null, workflowRecord.ActivityTree)
             };
-
-            // TODO: state på hela workflow
-            // TODO: Annan enum som sätts på WorkflowInstanceRecord när den ändras
 
             return workflow;
         }
