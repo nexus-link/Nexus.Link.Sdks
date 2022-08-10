@@ -46,11 +46,11 @@ public class RetryTests : Base
 
         // Assert
         LogicMoq.Verify();
-        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadByExecutionIdAsync(ExecutionId);
         workflowInstance.ShouldNotBeNull();
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Halted.ToString());
 
-        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(WorkflowInstanceId, 10)).ToArray();
+        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(workflowInstance.Id, 10)).ToArray();
         activityInstances.ShouldNotBeNull();
         activityInstances.Length.ShouldBe(1);
         var activityInstance = activityInstances[0];
@@ -83,15 +83,15 @@ public class RetryTests : Base
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Verify execute
-        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadByExecutionIdAsync(ExecutionId);
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Halted.ToString());
-        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(WorkflowInstanceId, 10)).ToArray();
+        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(workflowInstance.Id, 10)).ToArray();
         var activityInstance = activityInstances[0];
         var activityInstanceId = activityInstance.Id;
         activityInstance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
 
         // Prepare for retry
-        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(WorkflowInstanceId.ToGuidString(), It.IsAny<CancellationToken>()))
+        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(workflowInstance.Id.ToGuidString(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask)
             .Verifiable();
 
@@ -135,19 +135,19 @@ public class RetryTests : Base
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Verify execute
-        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadByExecutionIdAsync(ExecutionId);
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Halted.ToString());
-        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(WorkflowInstanceId, 10)).ToArray();
+        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(workflowInstance.Id, 10)).ToArray();
         var activityInstance = activityInstances[0];
         var activityInstanceId = activityInstance.Id;
         activityInstance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
 
         // Prepare for retry
-        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(WorkflowInstanceId.ToGuidString(), It.IsAny<CancellationToken>()))
+        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(ExecutionId.ToGuidString(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask)
             .Verifiable();
         workflowInstance.State = workflowState.ToString();
-        await RuntimeTables.WorkflowInstance.UpdateAndReturnAsync(WorkflowInstanceId, workflowInstance);
+        await RuntimeTables.WorkflowInstance.UpdateAndReturnAsync(workflowInstance.Id, workflowInstance);
 
         //
         // Act & Assert
@@ -181,15 +181,15 @@ public class RetryTests : Base
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Verify execute
-        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadByExecutionIdAsync(ExecutionId);
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Halted.ToString());
-        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(WorkflowInstanceId, 10)).ToArray();
+        var activityInstances = (await RuntimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(workflowInstance.Id, 10)).ToArray();
         var activityInstance = activityInstances[0];
         var activityInstanceId = activityInstance.Id;
         activityInstance.State.ShouldBe(ActivityStateEnum.Failed.ToString());
 
         // Prepare for retry
-        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(WorkflowInstanceId.ToGuidString(), It.IsAny<CancellationToken>()))
+        AsyncRequestMgmtMock.RequestServiceMoq.Setup(rs => rs.RetryAsync(workflowInstance.Id.ToGuidString(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask)
             .Verifiable();
 
@@ -198,7 +198,7 @@ public class RetryTests : Base
         
         // Verify retry
         AsyncRequestMgmtMock.RequestServiceMoq.Verify();
-        workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(workflowInstance.Id);
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Waiting.ToString());
         activityInstance = await RuntimeTables.ActivityInstance.ReadAsync(activityInstanceId);
         activityInstance.State.ShouldBe(ActivityStateEnum.Waiting.ToString());
@@ -218,7 +218,7 @@ public class RetryTests : Base
         //
         // Assert
         //
-        workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(workflowInstance.Id);
         workflowInstance.State.ShouldBe(WorkflowStateEnum.Success.ToString());
     }
 }

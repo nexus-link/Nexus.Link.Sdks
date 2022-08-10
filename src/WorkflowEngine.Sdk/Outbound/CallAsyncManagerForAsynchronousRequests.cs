@@ -1,10 +1,11 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.AsyncManager.Sdk.Extensions;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Extensions;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
@@ -40,7 +41,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (!WorkflowStatic.Context.ExecutionIsAsynchronous)
+            if (!FulcrumApplication.Context.ExecutionIsAsynchronous)
             {
                 return await base.SendAsync(request, cancellationToken);
             }

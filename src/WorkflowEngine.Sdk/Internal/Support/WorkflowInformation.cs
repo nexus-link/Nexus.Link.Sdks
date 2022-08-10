@@ -49,6 +49,9 @@ internal class WorkflowInformation : IWorkflowInformation
     private string _instanceTitle;
 
     /// <inheritdoc />
+    public string ExecutionId => _workflowCache.Instance.ExecutionId;
+
+    /// <inheritdoc />
     public string InstanceTitle
     {
         get { return _instanceTitle ??= _workflowImplementation.GetInstanceTitle(); }
@@ -125,9 +128,9 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Task LoadAsync(CancellationToken cancellationToken)
+    public Task LoadAsync(string executionId, CancellationToken cancellationToken)
     {
-        return _workflowCache.LoadAsync(cancellationToken);
+        return _workflowCache.LoadAsync(executionId, cancellationToken);
     }
 
     /// <inheritdoc />

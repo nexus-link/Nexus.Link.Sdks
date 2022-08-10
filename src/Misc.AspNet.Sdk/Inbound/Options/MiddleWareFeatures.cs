@@ -1,5 +1,4 @@
-﻿#if NETCOREAPP
-using Nexus.Link.Libraries.Core.Application;
+﻿using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Pipe;
@@ -47,6 +46,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
 
         /// <summary>
         /// This feature gets the first found <see cref="Constants.ExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
+        /// It also gets the first found <see cref="Constants.ParentExecutionIdHeaderName"/> header from the request and saves it to the <see cref="FulcrumApplication.Context"/>.
         /// </summary>
         public SaveExecutionIdOptions SaveExecutionId { get; } = new();
 
@@ -81,4 +81,3 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound.Options
         }
     }
 }
-#endif

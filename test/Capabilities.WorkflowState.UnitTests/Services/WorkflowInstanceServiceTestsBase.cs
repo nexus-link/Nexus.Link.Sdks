@@ -27,6 +27,7 @@ namespace Nexus.Link.Capabilities.WorkflowState.UnitTests.Services
             var itemToCreate = new WorkflowInstanceCreate
             {
                 WorkflowVersionId = workflowVersionId,
+                ExecutionId = Guid.NewGuid().ToGuidString(),
                 InitialVersion = Guid.NewGuid().ToGuidString(),
                 StartedAt = DateTimeOffset.Now,
                 Title = Guid.NewGuid().ToGuidString()

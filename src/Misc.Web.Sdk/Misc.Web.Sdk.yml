@@ -13,14 +13,14 @@ trigger:
     - dev
   paths:
     include:
-    - 'src/Misc.AspNet.Sdk/*'
+    - 'src/Misc.Web.Sdk/*'
 
 jobs:
 - template: 'templates/netcore/v1/jobs/nuget.yml@azure-devops-tools'
   parameters:
-    jobName: 'Misc_AspNet_Sdk'
-    testProjectsPath: '**/test/Misc.AspNet.Sdk.UnitTests/*.csproj'
-    nugetProjectsPath: 'src/Misc.AspNet.Sdk/*.csproj'
+    jobName: 'Misc_Web_Sdk'
+    testProjectsPath: '**/test/Misc.Web.Sdk.UnitTests/*.csproj'
+    nugetProjectsPath: 'src/Misc.Web.Sdk/*.csproj'
     nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
     publishVstsFeed: 'Nexus Libs/nexus-nugets'

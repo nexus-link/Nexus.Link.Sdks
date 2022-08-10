@@ -88,9 +88,13 @@ internal class WorkflowInformationMock : IWorkflowInformation
     public WorkflowInstance Instance { get; set; } = new()
     {
         Id = "44286249-FDDE-40AD-860C-89F49FF92792",
+        ExecutionId = "49433D40-8757-4189-8A4A-F3F8E43A027A",
         Title = "Instance title",
         StartedAt = DateTimeOffset.Now
     };
+
+    /// <inheritdoc />
+    public string ExecutionId => Instance.ExecutionId;
 
     /// <inheritdoc />
     public string InstanceTitle => Instance.Title;
@@ -172,6 +176,11 @@ internal class WorkflowInformationMock : IWorkflowInformation
         return _activityInstance;
     }
 
+        /// <inheritdoc />
+        public Task LoadAsync(string contextExecutionId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     /// <inheritdoc />
     public void AddActivity(IInternalActivity activity)
     {

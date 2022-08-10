@@ -43,9 +43,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         protected async Task PrepareBeforeExecutionAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
-            WorkflowStatic.Context.WorkflowInstanceId = FulcrumApplication.Context.ExecutionId.ToGuidString();
-            WorkflowInformation.InstanceId = WorkflowStatic.Context.WorkflowInstanceId;
-            await WorkflowInformation.LoadAsync(cancellationToken);
+            await WorkflowInformation.LoadAsync(FulcrumApplication.Context.ExecutionId, cancellationToken);
+            WorkflowStatic.Context.WorkflowInstanceId = WorkflowInformation.InstanceId;
             if (WorkflowInformation.InstanceExists() && WorkflowInformation.WorkflowInstanceService != null)
             {
                 _workflowDistributedLock = await WorkflowInformation.WorkflowInstanceService.ClaimDistributedLockAsync(
@@ -172,17 +171,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             WorkflowInformation.DefaultActivityOptions.AsyncRequestPriority = priority;
         }
 
-        public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
+        public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken = default)
         {
             await PrepareBeforeExecutionAsync(cancellationToken);
-            WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+            FulcrumApplication.Context.ExecutionIsAsynchronous = true;
             try
             {
                 await this.LogInformationAsync($"Begin workflow execution", WorkflowInformation.Instance, cancellationToken);
                 var result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
                 MarkWorkflowAsSuccess(result);
                 var totalExecution = DateTimeOffset.UtcNow.Subtract(WorkflowInformation.StartedAt);
-                await this.LogInformationAsync($"Workflow successful, total execution time was {totalExecution.TotalSeconds} s.", result, cancellationToken);
+                await this.LogInformationAsync($"Workflow successful, total execution time was {totalExecution.ToLogString()}.", result, cancellationToken);
                 return result;
             }
             catch (Exception e)
@@ -204,7 +203,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 }
                 finally
                 {
-                    await this.LogInformationAsync($"End workflow execution, this run took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed} s.", WorkflowInformation.Instance, cancellationToken);
+                    await this.LogInformationAsync($"End workflow execution, this run took {WorkflowInformation.TimeSinceCurrentRunStarted.Elapsed.ToLogString()}.", WorkflowInformation.Instance, cancellationToken);
                     await PurgeLogsAsync(cancellationToken);
                 }
             }
@@ -261,11 +260,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             await WorkflowInformation.LogService.DeleteWorkflowChildrenAsync(workflowInstance.Id, WorkflowInformation.DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
         }
 
-        public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
+        public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken = default)
         {
             WorkflowStatic.Context.CurrentWorkflowExecutor = this;
             await PrepareBeforeExecutionAsync(cancellationToken);
-            WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+            FulcrumApplication.Context.ExecutionIsAsynchronous = true;
             try
             {
                 await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -78,12 +79,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 new ActivitySaveOrder());
         }
 
-        public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)
+        public async Task<WorkflowSummary> LoadAsync(string executionId, CancellationToken cancellationToken)
         {
+            InternalContract.RequireNotNull(executionId, nameof(executionId));
             if (_summary != null) return _summary;
-            return await _semaphore.ExecuteAsync(async (ct) =>
+            return await _semaphore.ExecuteAsync(async ct =>
             {
                 if (_summary != null) return _summary;
+                var instance = await _stateCapability.WorkflowInstance.ReadByExecutionIdAsync(executionId, cancellationToken);
+                _workflowInformation.InstanceId = instance == null ? Guid.NewGuid().ToGuidString() : instance.Id;
                 _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(
                     _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
                 RememberData(true);
@@ -108,6 +112,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     StartedAt = DateTimeOffset.UtcNow,
                     InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
                     Title = _workflowInformation.InstanceTitle,
+                    ExecutionId = FulcrumApplication.Context.ExecutionId,
                     State = WorkflowStateEnum.Executing
                 };
                 return _summary;

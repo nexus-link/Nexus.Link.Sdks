@@ -1,10 +1,11 @@
-﻿using Nexus.Link.Libraries.Core.Application;
+﻿using System;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Web.Pipe;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Inbound.Options
 {
-    // TODO: Move all features into a class, Feature
+    [Obsolete("Please use Nexus.Link.Misc.AspNet.Sdk.Inbound.NexusLinkMiddleware. Obsolete since 2022-04-07.")]
     public class WorkflowEngineMiddlewareFeatures : IValidatable
     {
         /// 

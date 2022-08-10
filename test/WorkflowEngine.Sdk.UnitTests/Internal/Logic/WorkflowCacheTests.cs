@@ -81,7 +81,7 @@ public class WorkflowCacheTests
             return Task.CompletedTask;
         };
         var cache = new WorkflowCache(workflowInformation, _workflowCapabilities);
-        await cache.LoadAsync(default);
+        await cache.LoadAsync(workflowInformation.ExecutionId, default);
 
         // Act
         cache.Form.Title = newFormTitle;
@@ -117,7 +117,8 @@ public class WorkflowCacheTests
                 StartedAt = DateTimeOffset.Now,
                 Title = "x",
                 WorkflowVersionId = _version.Id,
-                InitialVersion = "1.0"
+                InitialVersion = "1.0",
+                ExecutionId = "F00F092A-340E-4559-9529-8F973D1EF4F9"
             });
     }
 }

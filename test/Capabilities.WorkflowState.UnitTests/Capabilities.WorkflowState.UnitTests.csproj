@@ -26,16 +26,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+    <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.1" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.0-alfa01" />
   </ItemGroup>
   
   <PropertyGroup>
     <PackageId>Nexus.Link.Capabilities.WorkflowState.UnitTests</PackageId>
-    <Version>2.0.1</Version>
+    <Version>2.0.2-alfa01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

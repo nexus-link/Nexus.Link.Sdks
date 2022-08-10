@@ -64,6 +64,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             return result;
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(string id, WorkflowInstance item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
@@ -102,6 +103,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
                 cancellationToken);
         }
 
+        /// <inheritdoc />
+        public async Task<WorkflowInstance> ReadByExecutionIdAsync(string executionId, CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(executionId, nameof(executionId));
+            
+            var record = await _runtimeTables.WorkflowInstance.ReadByExecutionIdAsync(executionId, cancellationToken);
+            if (record == null) return null;
+
+            var result = new WorkflowInstance().From(record);
+            FulcrumAssert.IsNotNull(result, CodeLocation.AsString());
+            FulcrumAssert.IsValidated(result, CodeLocation.AsString());
+            return result;
+        }
+
+        /// <inheritdoc />
         public WorkflowOptions DefaultWorkflowOptions { get; }
     }
 }

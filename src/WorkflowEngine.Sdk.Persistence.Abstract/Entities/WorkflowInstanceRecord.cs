@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -36,7 +37,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// <summary>
     /// Information about a specific version of a <see cref="WorkflowFormRecord"/>.
     /// </summary>
-    public class WorkflowInstanceRecordCreate : IValidatable
+    public class WorkflowInstanceRecordCreate : WorkflowInstanceRecordUnique, IValidatable
     {
         public Guid WorkflowVersionId { get; set; }
 
@@ -82,5 +83,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             }
             FulcrumValidate.IsJson(ResultAsJson, nameof(ResultAsJson), errorLocation);
         }
+    }
+
+    /// <summary>
+    /// Information about a specific version of a <see cref="WorkflowFormRecord"/>.
+    /// </summary>
+    public class WorkflowInstanceRecordUnique
+    {
+        [CanBeNull] public string ExecutionId { get; set; }
     }
 }

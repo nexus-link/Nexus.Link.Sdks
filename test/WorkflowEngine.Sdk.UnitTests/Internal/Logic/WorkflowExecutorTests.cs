@@ -42,19 +42,19 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         public async Task Execute_Given_FirstTime_Gives_CreateInstance()
         {
             // Arrange
-            var expectedRequestId = Guid.NewGuid();
-            FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
+            var expectedExecutionId = Guid.NewGuid().ToGuidString();
+            FulcrumApplication.Context.ExecutionId = expectedExecutionId;
             var implementation = new TestWorkflowImplementation(_workflowCapabilities,
                 _ => throw new RequestPostponedException());
             var information = new WorkflowInformation(implementation);
             var executor = new WorkflowExecutor(information);
 
             // Act
-            var exception = await executor.ExecuteAsync(implementation, new CancellationToken())
+            var exception = await executor.ExecuteAsync(implementation)
                 .ShouldThrowAsync<RequestPostponedException>();
 
             // Assert
-            var instance = await _runtimeTables.WorkflowInstance.ReadAsync(expectedRequestId);
+            var instance = await _runtimeTables.WorkflowInstance.ReadByExecutionIdAsync(expectedExecutionId);
             instance.ShouldNotBeNull();
         }
 

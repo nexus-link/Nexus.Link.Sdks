@@ -102,7 +102,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Support
         public TimeSpan MaxTotalRunTimeSpan { get; set; } = TimeSpan.FromSeconds(60.0);
 
         /// <summary>
-        /// Copy the options from <paramref name="source"/>.
+        /// Clone the options from <paramref name="source"/>.
         /// </summary>
         public ActivityOptions From(ActivityOptions source)
         {
