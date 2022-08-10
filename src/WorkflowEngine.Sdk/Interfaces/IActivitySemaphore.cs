@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
