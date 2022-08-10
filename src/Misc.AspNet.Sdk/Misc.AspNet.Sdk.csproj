@@ -38,8 +38,8 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.1.3" />
-    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.5" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.1" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.8" />
   </ItemGroup>
 
   <PropertyGroup>

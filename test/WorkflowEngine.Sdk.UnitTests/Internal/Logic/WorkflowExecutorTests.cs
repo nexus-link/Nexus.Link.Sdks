@@ -25,10 +25,13 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         private readonly WorkflowCapabilities _workflowCapabilities;
         private readonly AsyncRequestMgmtMock _armMock;
 
+        private const string SourceClientId = "mock-source";
+
         public WorkflowExecutorTests()
         {
             FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
-            
+            FulcrumApplication.Setup.ClientName = SourceClientId;
+
             _armMock = new AsyncRequestMgmtMock();
             _configurationTables = new ConfigurationTablesMemory();
             _runtimeTables = new RuntimeTablesMemory();

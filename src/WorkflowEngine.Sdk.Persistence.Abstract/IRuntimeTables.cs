@@ -1,4 +1,5 @@
 ﻿using Nexus.Link.Contracts.Misc.Sdk.Authentication;
+using Nexus.Link.Libraries.Crud.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract

@@ -82,6 +82,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         protected async Task AfterExecutionAsync(CancellationToken cancellationToken)
         {
             WorkflowInformation.AggregateActivityInformation();
+
             await WorkflowInformation.SaveAsync(cancellationToken);
             
             // Release semaphores

@@ -1,6 +1,8 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Libraries.Core.Queue.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
@@ -13,9 +15,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         /// <summary>
         /// Constructor
         /// </summary>
-        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
         {
-            WorkflowInstance = new WorkflowInstanceService(runtimeTables);
+            WorkflowInstance = new WorkflowInstanceService(runtimeTables, workflowOptions);
             ActivityInstance = new ActivityInstanceService(runtimeTables, requestMgmtCapability);
             Log = new LogService(runtimeTables);
             WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables, requestMgmtCapability);
