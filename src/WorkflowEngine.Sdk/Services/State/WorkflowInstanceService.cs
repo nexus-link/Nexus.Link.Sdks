@@ -115,5 +115,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             FulcrumAssert.IsValidated(result, CodeLocation.AsString());
             return result;
         }
+
+        /// <inheritdoc />
+        public WorkflowOptions DefaultWorkflowOptions { get; } = new();
     }
 }

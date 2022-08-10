@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.2.7" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.19.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
