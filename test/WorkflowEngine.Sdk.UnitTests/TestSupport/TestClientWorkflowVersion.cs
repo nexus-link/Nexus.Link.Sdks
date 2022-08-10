@@ -28,11 +28,11 @@ namespace WorkflowEngine.Sdk.UnitTests.TestSupport
         }
 
         /// <inheritdoc />
-        public override Task ExecuteWorkflowAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteWorkflowAsync(CancellationToken cancellationToken)
         {
             if (_onExecuteAsync != null)
             {
-                return _onExecuteAsync(cancellationToken);
+                await _onExecuteAsync(cancellationToken);
             }
             else
             {

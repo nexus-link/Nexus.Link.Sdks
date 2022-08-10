@@ -33,6 +33,8 @@ internal class WorkflowInformation : IWorkflowInformation
         TimeSinceCurrentRunStarted.Start();
         _workflowImplementation = workflowImplementation;
         _workflowCache = new WorkflowCache(this, workflowImplementation.WorkflowContainer.WorkflowCapabilities);
+        WorkflowOptions = new WorkflowOptions().From(workflowImplementation.WorkflowContainer.WorkflowCapabilities
+            .StateCapability.WorkflowInstance.DefaultWorkflowOptions);
     }
 
     /// <inheritdoc />
@@ -204,6 +206,8 @@ internal class WorkflowInformation : IWorkflowInformation
 
     /// <inheritdoc />
     public Stopwatch TimeSinceCurrentRunStarted { get; }
+
+    public WorkflowOptions WorkflowOptions { get; }
 
     /// <inheritdoc />
     public string ToLogString()

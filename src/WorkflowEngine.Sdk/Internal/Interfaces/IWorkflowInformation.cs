@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
@@ -184,6 +186,8 @@ internal interface IWorkflowInformation
     /// the current run is taking.
     /// </summary>
     Stopwatch TimeSinceCurrentRunStarted { get; }
+
+    WorkflowOptions WorkflowOptions { get; }
 
     /// <summary>
     /// A string representation of the workflow that is detailed enough for logging.

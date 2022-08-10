@@ -7,6 +7,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
@@ -14,6 +15,8 @@ using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
@@ -124,7 +127,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             RememberData(false);
             return await _semaphore.ExecuteAsync(async (ct) =>
             {
+                var oldForm = _workflowFormCache.GetStored(_summary.Form.Id);
+                var oldVersion = _workflowVersionCache.GetStored(_summary.Version.Id);
+                var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
+
                 await InternalSaveAsync(ct);
+
+                if (_workflowInformation.WorkflowOptions.AfterSaveAsync != null)
+                {
+                    try
+                    {
+                        // Fail handling is deferred to implementor. E.g., if using AM, the AM SDK will provide retry mechanism.
+                        await _workflowInformation.WorkflowOptions.AfterSaveAsync(
+                            oldForm, oldVersion, oldInstance, _summary.Form, _summary.Version, _summary.Instance);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogError($"Error at {nameof(_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync)}: {e.Message}. Giving up.");
+                    }
+                }
+
                 return _summary;
             }, cancellationToken);
         }
