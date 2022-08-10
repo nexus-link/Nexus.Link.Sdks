@@ -42,8 +42,9 @@ public static class StartupExtensions
                               (oldInstance.State == WorkflowStateEnum.Halted && newInstance.State != WorkflowStateEnum.Halted);
                 if (!publish) return;
 
-                var url = new Uri(workflowInspectorUrl, "api/v1/Instances/HaltedChanged");
-                var request = asyncRequestClient.CreateRequest(HttpMethod.Post, url.ToString(), 0.5)
+                var url = new Uri(workflowInspectorUrl, "api/v1/Instances/Changed");
+                var request = asyncRequestClient
+                    .CreateRequest(HttpMethod.Post, url.ToString(), 0.5)
                     .SetContentAsJson(new WorkflowInstanceChangedV1
                     {
                         Form = newForm,
