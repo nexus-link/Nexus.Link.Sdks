@@ -6,7 +6,6 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;

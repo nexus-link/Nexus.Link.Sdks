@@ -204,6 +204,14 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
             finally
             {
+                try
+                {
+                    if (Options.Features.BatchLog.Enabled) BatchLogger.EndBatch();
+                }
+                catch (Exception)
+                {
+                    // Silently catch logging exceptions
+                }
                 await SafeFinallySaveExecutionInformation(executionId, context, saveBeforeExecutionTask, manualToken);
             }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.EntityAttributes;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Core.Storage.Model;
 

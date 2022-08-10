@@ -8,7 +8,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.State
     public class WorkflowInstanceServiceTests : WorkflowInstanceServiceTestsBase<FulcrumContractException>
     {
         public WorkflowInstanceServiceTests()
-        :base(new WorkflowInstanceService(new RuntimeTablesMemory()))
+        :base(new WorkflowInstanceService(new RuntimeTablesMemory(), null))
         {
         }
     }

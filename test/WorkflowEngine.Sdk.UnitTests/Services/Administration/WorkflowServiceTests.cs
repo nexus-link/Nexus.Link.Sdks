@@ -43,7 +43,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
 
         public WorkflowServiceTests()
         {
-            var workflowInstanceService = new WorkflowInstanceService(RuntimeTables);
+            var workflowInstanceService = new WorkflowInstanceService(RuntimeTables, null);
             var asyncCap = new AsyncRequestMgmtRestClients(HttpSender);
             var workflowCap = new Mock<IWorkflowStateCapability>();
             workflowCap.Setup(x => x.WorkflowSummary).Returns(WorkflowSummaryService);

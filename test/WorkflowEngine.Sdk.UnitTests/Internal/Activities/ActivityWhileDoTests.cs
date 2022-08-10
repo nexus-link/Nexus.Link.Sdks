@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;

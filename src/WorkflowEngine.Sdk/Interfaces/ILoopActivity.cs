@@ -1,5 +1,4 @@
 ﻿using System;
-using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 
