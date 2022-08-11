@@ -9,7 +9,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
     public interface IWorkflowFormTable:
         ICreateWithSpecifiedId<WorkflowFormRecordCreate, WorkflowFormRecord, Guid>,
         IRead<WorkflowFormRecord, Guid>, 
-        IUpdateAndReturn<WorkflowFormRecord, Guid>
+        IUpdateAndReturn<WorkflowFormRecord, Guid>,
+        IReadAllWithPaging<WorkflowFormRecord, Guid>
     {
         /// <summary>
         /// Find a unique record with the specified <paramref name="capabilityName"/> and <paramref name="title"/> or null.

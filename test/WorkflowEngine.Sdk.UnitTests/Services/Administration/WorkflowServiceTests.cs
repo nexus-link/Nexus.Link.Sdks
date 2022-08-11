@@ -49,7 +49,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
             workflowCap.Setup(x => x.WorkflowSummary).Returns(WorkflowSummaryService);
             workflowCap.Setup(x => x.WorkflowInstance).Returns(workflowInstanceService);
             
-            _service = new WorkflowService(workflowCap.Object, asyncCap);
+            _service = new WorkflowService(workflowCap.Object, asyncCap, RuntimeTables);
         }
 
 

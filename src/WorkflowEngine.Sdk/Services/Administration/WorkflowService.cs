@@ -1,27 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc.Models;
+using Nexus.Link.Libraries.Core.Storage.Model;
+using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
     public class WorkflowService : IWorkflowService
     {
         private readonly IWorkflowStateCapability _stateCapability;
+        private readonly IRuntimeTables _runtimeTables;
         private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability, IRuntimeTables runtimeTables)
         {
             _stateCapability = stateCapability;
             _requestMgmtCapability = requestMgmtCapability;
+            _runtimeTables = runtimeTables;
         }
 
         /// <inheritdoc />
@@ -58,6 +66,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 
             await _stateCapability.WorkflowInstance.UpdateAsync(workflowInstanceId, item, cancellationToken);
             await _requestMgmtCapability.Request.RetryAsync(workflowInstanceId, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<PageEnvelope<Workflow>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNull(searchDetails, nameof(searchDetails));
+            InternalContract.RequireValidated(searchDetails, nameof(searchDetails));
+
+            var result = await _runtimeTables.WorkflowInstance.SearchAsync(searchDetails, offset, limit, cancellationToken);
+            return new PageEnvelope<Workflow>
+            {
+                PageInfo = result.PageInfo,
+                Data = result.Data.Select(x => new Workflow
+                {
+                    // TODO: Make From() method?
+                    Id = x.Id.ToString(),
+                    State = Enum.TryParse<WorkflowStateEnum>(x.State, out var state) ? state : WorkflowStateEnum.Executing,
+                    Title = x.Title,
+                    StartedAt = x.StartedAt,
+                    FinishedAt = x.FinishedAt,
+                    CancelledAt = x.CancelledAt
+                })
+            };
         }
 
         private async Task<List<Activity>> BuildActivityTreeAsync(Activity parent, IReadOnlyList<ActivitySummary> workflowRecordActivities)
