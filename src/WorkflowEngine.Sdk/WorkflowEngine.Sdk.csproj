@@ -73,7 +73,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-        6.17.0 ConSupport for searching/browsing instances, versions and forms
+      6.17.0 Support for searching/browsing instances, versions and forms
+      6.16.3 Bump
 	  6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
 	  6.16.1 Support for plugins for when a workflow changes
 	  6.15.4 Now resets the parent activity to null after a loop has been completed
