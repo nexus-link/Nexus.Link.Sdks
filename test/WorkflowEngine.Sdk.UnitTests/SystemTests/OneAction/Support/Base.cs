@@ -36,7 +36,7 @@ public abstract class Base
         WorkflowInstanceId = DataFixture.Create<Guid>();
         FulcrumApplication.Context.ExecutionId = WorkflowInstanceId.ToGuidString();
         FulcrumApplication.Context.ManagedAsynchronousRequestId = DataFixture.Create<Guid>().ToGuidString();
-        WorkflowMgmtCapability = new WorkflowMgmtCapability(workflowCapabilities);
+        WorkflowMgmtCapability = new WorkflowMgmtCapability(workflowCapabilities, RuntimeTables);
     }
 
 }

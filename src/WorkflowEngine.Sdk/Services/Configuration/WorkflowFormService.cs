@@ -1,9 +1,11 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -68,6 +70,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             var idAsGuid = id.ToGuid();
             var record = new WorkflowFormRecord().From(item);
             await _configurationTables.WorkflowForm.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
+        {
+            var result = await _configurationTables.WorkflowForm.ReadAllWithPagingAsync(offset, limit, cancellationToken);
+            return new PageEnvelope<WorkflowForm>
+            {
+                PageInfo = result.PageInfo,
+                Data = result.Data.Select(x => new WorkflowForm().From(x))
+            };
         }
     }
 }

@@ -1,27 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc.Models;
+using Nexus.Link.Libraries.Core.Storage.Model;
+using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
     public class WorkflowService : IWorkflowService
     {
         private readonly IWorkflowStateCapability _stateCapability;
+        private readonly IRuntimeTables _runtimeTables;
         private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
+        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability, IRuntimeTables runtimeTables)
         {
             _stateCapability = stateCapability;
             _requestMgmtCapability = requestMgmtCapability;
+            _runtimeTables = runtimeTables;
         }
 
         /// <inheritdoc />
