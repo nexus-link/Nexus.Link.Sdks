@@ -1,9 +1,7 @@
-using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -25,30 +23,16 @@ public class FormService : IFormService
     }
 
     /// <inheritdoc />
-    public async Task<Form> ReadAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-        var form = await _configurationCapability.WorkflowForm.ReadAsync(id, cancellationToken);
-        return new Form
-        {
-            Id = form.Id,
-            Title = form.Title
-        };
+        return await _configurationCapability.WorkflowForm.ReadAsync(id, cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<PageEnvelope<Form>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
+    public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
     {
-        var result = await _configurationCapability.WorkflowForm.ReadAllWithPagingAsync(offset, limit, cancellationToken);
-        return new PageEnvelope<Form>
-        {
-            PageInfo = result.PageInfo,
-            Data = result.Data.Select(x => new Form
-            {
-                Id = x.Id,
-                Title = x.Title
-            })
-        };
+        return await _configurationCapability.WorkflowForm.ReadAllWithPagingAsync(offset, limit, cancellationToken);
     }
 }

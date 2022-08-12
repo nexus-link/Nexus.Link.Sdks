@@ -41,12 +41,10 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
     }
 
     /// <inheritdoc />
-    public async Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default)
+    public async Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowInstanceSearchDetails searchDetails, int offset = 0, int? limit = null, CancellationToken cancellationToken = default)
     {
         InternalContract.RequireNotNull(searchDetails, nameof(searchDetails));
         InternalContract.RequireValidated(searchDetails, nameof(searchDetails));
-
-        await using var connection = await Database.NewSqlConnectionAsync(cancellationToken);
 
         const string selectRows = "SELECT i.*";
         const string selectCount = "SELECT count(*)";
@@ -70,22 +68,19 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
         {
             query += $" AND i.{nameof(WorkflowInstanceRecord.State)} = @{nameof(searchDetails.StateAsString)}";
         }
-        // TODO: Title
         if (!string.IsNullOrWhiteSpace(searchDetails.TitlePart))
         {
             query += $" AND lower({nameof(WorkflowInstanceRecord.Title)}) LIKE lower('%' + @{nameof(searchDetails.TitlePart)} + '%')";
         }
 
-        var orderBy = " ORDER BY " + OrderBy(searchDetails.PrimaryOrderBy, searchDetails.AscendingOrder);
-        if (searchDetails.SecondaryOrderBy != searchDetails.PrimaryOrderBy) orderBy += ", " + OrderBy(searchDetails.SecondaryOrderBy, searchDetails.AscendingOrder); // TODO: new order boolean
-        orderBy += ", Id";
+        var orderBy = " " + OrderBy(searchDetails.Order.PrimaryOrderBy, searchDetails.Order.PrimaryAscendingOrder);
+        if (searchDetails.Order.SecondaryOrderBy.HasValue && searchDetails.Order.SecondaryOrderBy != searchDetails.Order.PrimaryOrderBy)
+        {
+            orderBy += ", " + OrderBy(searchDetails.Order.SecondaryOrderBy.Value, searchDetails.Order.SecondaryAscendingOrder);
+        }
+        orderBy += $", {nameof(WorkflowInstanceRecord.Id)}";
 
-        var countResult = await connection.QuerySingleAsync<int>(selectCount + query, searchDetails);
-
-        var paging = $" OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY";
-        var result = await connection.QueryAsync<WorkflowInstanceRecord>(selectRows + query + orderBy + paging, searchDetails);
-
-        return new PageEnvelope<WorkflowInstanceRecord>(offset, limit, countResult, result);
+        return await SearchAdvancedAsync(selectCount, selectRows, query, orderBy, searchDetails, offset, limit, cancellationToken);
     }
 
     private static string OrderBy(WorkflowSearchOrderByEnum ob, bool asending)
@@ -94,7 +89,8 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
         {
             WorkflowSearchOrderByEnum.Title => nameof(WorkflowInstanceRecord.Title),
             WorkflowSearchOrderByEnum.State => nameof(WorkflowInstanceRecord.State),
-            _ => nameof(WorkflowInstanceRecord.RecordCreatedAt)
+            WorkflowSearchOrderByEnum.FinishedAt => nameof(WorkflowInstanceRecord.FinishedAt),
+            _ => nameof(WorkflowInstanceRecord.StartedAt)
         };
         result += asending ? " ASC" : " DESC";
         return result;

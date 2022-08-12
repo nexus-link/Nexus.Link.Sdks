@@ -3,6 +3,7 @@ using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
+using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {
@@ -19,6 +20,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
             Activity = new ActivityService(workflowEngineRequiredCapabilities.StateCapability, workflowEngineRequiredCapabilities.RequestMgmtCapability);
             Form = new FormService(workflowEngineRequiredCapabilities.ConfigurationCapability);
             Version = new VersionService(workflowEngineRequiredCapabilities.ConfigurationCapability);
+            Instance = new InstanceService(runtimeTables);
         }
 
         /// <inheritdoc />
@@ -26,6 +28,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         /// <inheritdoc />
         public IWorkflowService Workflow { get; }
+
+        public IInstanceService Instance { get; }
 
         /// <inheritdoc />
         public IFormService Form { get; }

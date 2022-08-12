@@ -15,6 +15,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
         ISearch<WorkflowInstanceRecord, Guid>,
         IDistributedLock<Guid>
     {
-        Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Search/filter instances
+        /// </summary>
+        Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowInstanceSearchDetails instanceSearchDetails, int offset = 0, int? limit = null, CancellationToken cancellationToken = default);
     }
 }

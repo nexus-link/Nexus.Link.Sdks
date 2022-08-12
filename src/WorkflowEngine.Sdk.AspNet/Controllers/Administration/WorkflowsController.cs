@@ -24,7 +24,7 @@ public abstract class WorkflowsController : ControllerBase, IWorkflowService
     }
 
     /// <inheritdoc />
-    [HttpGet("Instances/{id}")]
+    [HttpGet("Workflows/{id}")]
     public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
     {
         ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
@@ -34,21 +34,12 @@ public abstract class WorkflowsController : ControllerBase, IWorkflowService
     }
 
     /// <inheritdoc />
-    [HttpPost("Instances/{id}/Cancel")]
+    [HttpPost("Workflows/{id}/Cancel")]
     public async Task CancelAsync(string id, CancellationToken cancellationToken = default)
     {
         ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
         await _capability.Workflow.CancelAsync(id, cancellationToken);
     }
-
-    [HttpPost("Instances")]
-    public async Task<PageEnvelope<Workflow>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default)
-    {
-        ServiceContract.RequireNotNull(searchDetails, nameof(searchDetails));
-        ServiceContract.RequireValidated(searchDetails, nameof(searchDetails));
-
-        return await _capability.Workflow.SearchAsync(searchDetails, offset, limit, cancellationToken);
-    }
-       
+    
 }

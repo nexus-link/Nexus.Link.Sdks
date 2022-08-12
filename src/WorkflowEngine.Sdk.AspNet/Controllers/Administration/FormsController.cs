@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -22,16 +22,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
             _capability = capability;
         }
 
+        /// <inheritdoc />
         [HttpGet("Forms/{id}")]
-        public async Task<Form> ReadAsync(string id, CancellationToken cancellationToken = default)
+        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             return await _capability.Form.ReadAsync(id, cancellationToken);
         }
 
+        /// <inheritdoc />
         [HttpGet("Forms")]
-        public async Task<PageEnvelope<Form>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
+        public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireGreaterThanOrEqualTo(0, offset, nameof(offset));
 

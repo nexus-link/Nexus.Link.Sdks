@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
         /// <summary>
         /// Controller
         /// </summary>
-        public WorkflowRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("Instances"))
+        public WorkflowRestClient(IHttpSender httpSender) : base(httpSender.CreateHttpSender("Workflows"))
         {
         }
 
@@ -28,17 +28,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
 
             var relativeUrl = $"{WebUtility.UrlEncode(workflowInstanceId)}/Cancel";
             await PostNoResponseContentAsync(relativeUrl, cancellationToken: cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public async Task<PageEnvelope<Workflow>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default)
-        {
-            InternalContract.RequireNotNull(searchDetails, nameof(searchDetails));
-            InternalContract.RequireValidated(searchDetails, nameof(searchDetails));
-            InternalContract.RequireGreaterThanOrEqualTo(0, offset, nameof(offset));
-            InternalContract.RequireGreaterThan(0, limit, nameof(limit));
-
-            return await PostAsync<PageEnvelope<Workflow>, WorkflowSearchDetails>("", searchDetails, cancellationToken: cancellationToken);
         }
     }
 }

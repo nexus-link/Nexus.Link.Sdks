@@ -25,7 +25,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
             return await base.UpdateAndReturnAsync(id, item, cancellationToken);
         }
 
-        public Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowSearchDetails searchDetails, int offset = 0, int limit = 50, CancellationToken cancellationToken = default)
+        public Task<PageEnvelope<WorkflowInstanceRecord>> SearchAsync(WorkflowInstanceSearchDetails instanceSearchDetails, int offset = 0, int? limit = null,
+            CancellationToken cancellationToken = default)
         {
             // TODO: Can we join to WorkflowVersion from here?
             throw new NotImplementedException();

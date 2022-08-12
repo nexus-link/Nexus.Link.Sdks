@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 using Shouldly;
 using Xunit;
@@ -16,18 +15,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
 {
     public abstract class WorkflowServiceTests : TablesTestsBase
     {
-        private readonly IWorkflowService _workflowService;
+        private readonly IInstanceService _instanceService;
 
         private WorkflowInstanceRecord _record1Success;
         private WorkflowInstanceRecord _record2Success;
         private WorkflowInstanceRecord _record3Failed;
 
-        private Guid _formId = Guid.NewGuid();
+        private readonly Guid _formId = Guid.NewGuid();
 
         protected WorkflowServiceTests(IConfigurationTables configurationTables, IRuntimeTables runtimeTables) : base(configurationTables, runtimeTables)
         {
-            IWorkflowStateCapability stateCapability = new WorkflowStateCapability(ConfigurationTables, RuntimeTables, null, null);
-            _workflowService = new WorkflowService(stateCapability, null, runtimeTables);
+            _instanceService = new InstanceService(runtimeTables);
         }
 
         private async Task CreateDataSetAsync()
@@ -38,6 +36,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             var workflowVersionCreate1 = DataGenerator.DefaultWorkflowVersionCreate;
             var workflowVersion1 = ConfigurationTables.WorkflowVersion.CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), workflowVersionCreate1).Result;
 
+            // Note! Do not change, tests depend on it
             _record1Success = new WorkflowInstanceRecord
             {
                 WorkflowVersionId = workflowVersion1.Id,
@@ -99,7 +98,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddDays(-1),
                 State = WorkflowStateEnum.Success
@@ -118,7 +117,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddMinutes(-10)
             }, 0, 10);
@@ -135,7 +134,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddMinutes(-130),
                 To = DateTimeOffset.Now.AddMinutes(-110)
@@ -153,7 +152,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddDays(-1),
                 FormId = _formId.ToGuidString(),
@@ -170,7 +169,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddDays(-1),
                 TitlePart = "title is"
@@ -187,7 +186,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             await CreateDataSetAsync();
 
             // Act
-            var result = await _workflowService.SearchAsync(new WorkflowSearchDetails
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddDays(-1),
                 To = DateTimeOffset.Now.AddMinutes(-110),
@@ -199,6 +198,89 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             // Assert
             result.PageInfo.Returned.ShouldBe(1);
             result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record1Success.Id.ToGuidString()).ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Instances_Can_Be_Ordered_By_StartedAt_Asc()
+        {
+            // Arrange
+            await CreateDataSetAsync();
+
+            // Act
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
+            {
+                From = DateTimeOffset.Now.AddDays(-1),
+                FormId = _formId.ToGuidString(),
+                Order = new WorkflowInstanceSearchOrder
+                {
+                    PrimaryOrderBy = WorkflowSearchOrderByEnum.StartedAt,
+                    PrimaryAscendingOrder = true
+                }
+            }, 0, 10);
+
+            // Assert
+            result.PageInfo.Returned.ShouldBe(3);
+            var dataList = result.Data.ToList();
+
+            dataList[0].Id.ToGuidString().ShouldBe(_record1Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[1].Id.ToGuidString().ShouldBe(_record3Failed.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[2].Id.ToGuidString().ShouldBe(_record2Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+        }
+
+        [Fact]
+        public async Task Instances_Can_Be_Ordered_By_StartedAt_Desc()
+        {
+            // Arrange
+            await CreateDataSetAsync();
+
+            // Act
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
+            {
+                From = DateTimeOffset.Now.AddDays(-1),
+                FormId = _formId.ToGuidString(),
+                Order = new WorkflowInstanceSearchOrder
+                {
+                    PrimaryOrderBy = WorkflowSearchOrderByEnum.StartedAt,
+                    PrimaryAscendingOrder = false
+                }
+            }, 0, 10);
+
+            // Assert
+            result.PageInfo.Returned.ShouldBe(3);
+            var dataList = result.Data.ToList();
+
+            dataList[0].Id.ToGuidString().ShouldBe(_record2Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[1].Id.ToGuidString().ShouldBe(_record3Failed.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[2].Id.ToGuidString().ShouldBe(_record1Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+        }
+
+        [Fact]
+        public async Task Instances_Can_Be_Ordered_By_State_Then_StartedAt()
+        {
+            // Arrange
+            await CreateDataSetAsync();
+
+            // Act
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
+            {
+                From = DateTimeOffset.Now.AddDays(-1),
+                FormId = _formId.ToGuidString(),
+                Order = new WorkflowInstanceSearchOrder
+                {
+                    PrimaryOrderBy = WorkflowSearchOrderByEnum.State,
+                    PrimaryAscendingOrder = true,
+                    SecondaryOrderBy = WorkflowSearchOrderByEnum.StartedAt,
+                    SecondaryAscendingOrder = true
+                }
+            }, 0, 10);
+
+            // Assert
+            result.PageInfo.Returned.ShouldBe(3);
+            var dataList = result.Data.ToList();
+
+            dataList[0].Id.ToGuidString().ShouldBe(_record3Failed.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[1].Id.ToGuidString().ShouldBe(_record1Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+            dataList[2].Id.ToGuidString().ShouldBe(_record2Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
         }
     }
 }
