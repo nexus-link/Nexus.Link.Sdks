@@ -16,6 +16,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
     public abstract class WorkflowServiceTests : TablesTestsBase
     {
         private readonly IInstanceService _instanceService;
+        private readonly IFormOverviewService _formOverviewService;
 
         private WorkflowInstanceRecord _record1Success;
         private WorkflowInstanceRecord _record2Success;
@@ -26,6 +27,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
         protected WorkflowServiceTests(IConfigurationTables configurationTables, IRuntimeTables runtimeTables) : base(configurationTables, runtimeTables)
         {
             _instanceService = new InstanceService(runtimeTables);
+            _formOverviewService = new FormOverviewService(configurationTables);
         }
 
         private async Task CreateDataSetAsync()
@@ -281,6 +283,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             dataList[0].Id.ToGuidString().ShouldBe(_record3Failed.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
             dataList[1].Id.ToGuidString().ShouldBe(_record1Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
             dataList[2].Id.ToGuidString().ShouldBe(_record2Success.Id.ToGuidString(), JsonConvert.SerializeObject(dataList, Formatting.Indented));
+        }
+
+        [Fact]
+        public async Task A_List_Of_Form_Overviews_Can_Be_Fetched()
+        {
+            // Arrange
+            await CreateDataSetAsync();
+            var from = DateTimeOffset.Now.AddDays(-1);
+            var to = DateTimeOffset.Now;
+
+            // Act
+            var result = await _formOverviewService.ReadByIntervalWithPagingAsync(from, to);
+
+            // Assert
+            result.Count.ShouldBe(2);
+            var overview = result.First(x => x.Id.ToGuidString() == _formId.ToGuidString()).Overview;
+            overview.InstancesFrom.ShouldBe(from);
+            overview.InstancesTo.ShouldBe(to);
+            overview.InstanceCount.ShouldBe(3);
+            overview.ErrorCount.ShouldBe(1);
+            overview.WaitingCount.ShouldBe(0);
+            overview.ExecutingCount.ShouldBe(0);
         }
     }
 }
