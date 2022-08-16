@@ -16,8 +16,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         /// </summary>
         public WorkflowMgmtCapability(IWorkflowEngineRequiredCapabilities workflowEngineRequiredCapabilities, IRuntimeTables runtimeTables, IConfigurationTables configurationTables)
         {
-            Workflow = new WorkflowService(workflowEngineRequiredCapabilities.StateCapability, workflowEngineRequiredCapabilities.RequestMgmtCapability, runtimeTables);
+            Workflow = new WorkflowService(workflowEngineRequiredCapabilities.StateCapability, workflowEngineRequiredCapabilities.ConfigurationCapability, workflowEngineRequiredCapabilities.RequestMgmtCapability, runtimeTables);
             Activity = new ActivityService(workflowEngineRequiredCapabilities.StateCapability, workflowEngineRequiredCapabilities.RequestMgmtCapability);
+            Form = new FormService(workflowEngineRequiredCapabilities.ConfigurationCapability);
             FormOverview = new FormOverviewService(configurationTables);
             Version = new VersionService(workflowEngineRequiredCapabilities.ConfigurationCapability);
             Instance = new InstanceService(runtimeTables);
@@ -31,6 +32,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         /// <inheritdoc />
         public IInstanceService Instance { get; }
+
+        /// <inheritdoc />
+        public IFormService Form { get; }
 
         /// <inheritdoc />
         public IFormOverviewService FormOverview { get; }

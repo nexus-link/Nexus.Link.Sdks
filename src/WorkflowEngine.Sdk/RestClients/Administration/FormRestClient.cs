@@ -11,7 +11,7 @@ using Nexus.Link.Libraries.Web.RestClientHelper;
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
 {
     /// <inheritdoc cref="IFormOverviewService" />
-    public class FormRestClient : RestClient, IFormOverviewService
+    public class FormRestClient : RestClient, IFormService, IFormOverviewService
     {
         /// <summary>
         /// Constructor
@@ -28,6 +28,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
             var relativeUrl = $"?{nameof(instancesFrom)}={WebUtility.UrlEncode(instancesFrom.ToString("yyyy-MM-dd'T'HH:mm"))}" +
                               $"&{nameof(instancesTo)}={WebUtility.UrlEncode(instancesTo.ToString("yyyy-MM-dd'T'HH:mm"))}";
             return await GetAsync<List<WorkflowFormOverview>>(relativeUrl, cancellationToken: cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            var relativeUrl = WebUtility.UrlEncode(id);
+            return await GetAsync<WorkflowForm>(relativeUrl, cancellationToken: cancellationToken);
         }
     }
 }

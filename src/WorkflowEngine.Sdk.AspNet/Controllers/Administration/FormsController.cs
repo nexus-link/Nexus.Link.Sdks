@@ -11,7 +11,7 @@ using Nexus.Link.Libraries.Core.Assert;
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 {
     /// <inheritdoc cref="IWorkflowService" />
-    public abstract class FormsController : ControllerBase, IFormOverviewService
+    public abstract class FormsController : ControllerBase, IFormService, IFormOverviewService
     {
         private readonly IWorkflowMgmtCapability _capability;
 
@@ -30,6 +30,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
             ServiceContract.Require(instancesTo > instancesFrom, $"{nameof(instancesTo)} must be greater than {instancesFrom}");
 
             return await _capability.FormOverview.ReadByIntervalWithPagingAsync(instancesFrom, instancesTo, cancellationToken);
+        }
+
+
+        /// <inheritdoc />
+        [HttpGet("Forms/{id}")]
+        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
+        {
+            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+            return await _capability.Form.ReadAsync(id, cancellationToken);
         }
     }
 }

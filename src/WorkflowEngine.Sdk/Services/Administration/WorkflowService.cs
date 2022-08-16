@@ -1,35 +1,33 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc.Models;
-using Nexus.Link.Libraries.Core.Storage.Model;
-using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
     public class WorkflowService : IWorkflowService
     {
         private readonly IWorkflowStateCapability _stateCapability;
+        private readonly IWorkflowConfigurationCapability _configurationCapability;
         private readonly IRuntimeTables _runtimeTables;
         private readonly IAsyncRequestMgmtCapability _requestMgmtCapability;
 
-        public WorkflowService(IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability, IRuntimeTables runtimeTables)
+        public WorkflowService(IWorkflowStateCapability stateCapability, IWorkflowConfigurationCapability configurationCapability, IAsyncRequestMgmtCapability requestMgmtCapability, IRuntimeTables runtimeTables)
         {
             _stateCapability = stateCapability;
             _requestMgmtCapability = requestMgmtCapability;
             _runtimeTables = runtimeTables;
+            _configurationCapability = configurationCapability;
         }
 
         /// <inheritdoc />
@@ -37,18 +35,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-            var workflowRecord = await _stateCapability.WorkflowSummary.GetSummaryAsync(id, cancellationToken);
-            if (workflowRecord == null) return null;
+            var workflowSummary = await _stateCapability.WorkflowSummary.GetSummaryAsync(id, cancellationToken);
+            if (workflowSummary == null) return null;
 
             var workflow = new Workflow
             {
                 Id = id,
-                State = workflowRecord.Instance.State,
-                StartedAt = workflowRecord.Instance.StartedAt,
-                FinishedAt = workflowRecord.Instance.FinishedAt,
-                CancelledAt = workflowRecord.Instance.CancelledAt,
-                Title = $"{workflowRecord.Form.Title} {workflowRecord.Version.MajorVersion}.{workflowRecord.Version.MinorVersion}: {workflowRecord.Instance.Title}",
-                Activities = await BuildActivityTreeAsync(null, workflowRecord.ActivityTree)
+                WorkflowFormId = workflowSummary.Form.Id,
+                WorkflowVersionId = workflowSummary.Version.Id,
+                State = workflowSummary.Instance.State,
+                StartedAt = workflowSummary.Instance.StartedAt,
+                FinishedAt = workflowSummary.Instance.FinishedAt,
+                CancelledAt = workflowSummary.Instance.CancelledAt,
+                Title = $"{workflowSummary.Form.Title} {workflowSummary.Version.MajorVersion}.{workflowSummary.Version.MinorVersion}: {workflowSummary.Instance.Title}",
+                Activities = await BuildActivityTreeAsync(null, workflowSummary.ActivityTree)
             };
 
             return workflow;
