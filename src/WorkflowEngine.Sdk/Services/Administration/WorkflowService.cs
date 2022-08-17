@@ -81,6 +81,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                     Title = $"{activityRecord.Form.Title}",
                     Position = $"{(parent != null ? parent.Position + "." : "")}{activityRecord.Version.Position}",
                     State = activityRecord.Instance.State,
+                    ResultAsJson = activityRecord.Instance.ResultAsJson,
                     FriendlyErrorMessage = activityRecord.Instance.ExceptionFriendlyMessage,
                     TechnicalErrorMessage = activityRecord.Instance.ExceptionTechnicalMessage,
                     WaitingForWorkflow = await GetWaitingForWorkflowAsync(activityRecord)
