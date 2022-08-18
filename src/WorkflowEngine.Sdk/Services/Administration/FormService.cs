@@ -4,6 +4,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Storage.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 
@@ -27,5 +28,14 @@ public class FormService : IFormService
 
         return await _configurationCapability.WorkflowForm.ReadAsync(id, cancellationToken);
 
+    }
+
+    /// <inheritdoc />
+    public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
+    {
+        InternalContract.RequireGreaterThanOrEqualTo(0, offset, nameof(offset));
+        if (limit.HasValue) InternalContract.RequireGreaterThanOrEqualTo(1, limit.Value, nameof(limit));
+
+        return await _configurationCapability.WorkflowForm.ReadAllWithPagingAsync(offset, limit, cancellationToken);
     }
 }

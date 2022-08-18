@@ -7,6 +7,7 @@ using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Components.WorkflowMgmt.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Storage.Model;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 {
@@ -24,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
         }
 
         /// <inheritdoc />
-        [HttpGet("Forms")]
+        [HttpGet("FormOverviews")]
         public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default)
         {
             ServiceContract.Require(instancesTo > instancesFrom, $"{nameof(instancesTo)} must be greater than {instancesFrom}");
@@ -40,6 +41,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
             return await _capability.Form.ReadAsync(id, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        [HttpGet("Forms")]
+        public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
+        {
+            ServiceContract.RequireGreaterThanOrEqualTo(0, offset, nameof(offset));
+            if (limit.HasValue) ServiceContract.RequireGreaterThanOrEqualTo(1, limit.Value, nameof(limit));
+
+            return await _capability.Form.ReadAllWithPagingAsync(offset, limit, cancellationToken);
         }
     }
 }
