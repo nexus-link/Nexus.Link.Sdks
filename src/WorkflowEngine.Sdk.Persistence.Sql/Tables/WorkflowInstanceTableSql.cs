@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -64,9 +64,9 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
         {
             query += $" AND v.{nameof(WorkflowVersionRecord.WorkflowFormId)} = @{nameof(searchDetails.FormId)}";
         }
-        if (searchDetails.State.HasValue)
+        if (searchDetails.States != null && searchDetails.States.Any())
         {
-            query += $" AND i.{nameof(WorkflowInstanceRecord.State)} = @{nameof(searchDetails.StateAsString)}";
+            query += $" AND i.{nameof(WorkflowInstanceRecord.State)} IN ({string.Join(",", searchDetails.States.Select(x => $"'{x}'"))})";
         }
         if (!string.IsNullOrWhiteSpace(searchDetails.TitlePart))
         {

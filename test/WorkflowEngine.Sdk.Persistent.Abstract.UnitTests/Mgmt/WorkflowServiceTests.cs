@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -94,7 +95,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
         }
 
         [Fact]
-        public async Task Instances_Can_Be_Found_By_State()
+        public async Task Instances_Can_Be_Found_By_Single_State()
         {
             // Arrange
             await CreateDataSetAsync();
@@ -103,13 +104,33 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
             {
                 From = DateTimeOffset.Now.AddDays(-1),
-                State = WorkflowStateEnum.Success
+                States = new List<WorkflowStateEnum> { WorkflowStateEnum.Success }
             }, 0, 10);
 
             // Assert
             result.PageInfo.Returned.ShouldBe(2);
             result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record1Success.Id.ToGuidString()).ShouldNotBeNull();
             result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record2Success.Id.ToGuidString()).ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Instances_Can_Be_Found_By_Multiple_State()
+        {
+            // Arrange
+            await CreateDataSetAsync();
+
+            // Act
+            var result = await _instanceService.SearchAsync(new WorkflowInstanceSearchDetails
+            {
+                From = DateTimeOffset.Now.AddDays(-1),
+                States = new List<WorkflowStateEnum> { WorkflowStateEnum.Success, WorkflowStateEnum.Failed }
+            }, 0, 10);
+
+            // Assert
+            result.PageInfo.Returned.ShouldBe(3);
+            result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record1Success.Id.ToGuidString()).ShouldNotBeNull();
+            result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record2Success.Id.ToGuidString()).ShouldNotBeNull();
+            result.Data.FirstOrDefault(x => x.Id.ToGuidString() == _record3Failed.Id.ToGuidString()).ShouldNotBeNull();
         }
 
         [Fact]
@@ -193,7 +214,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
                 From = DateTimeOffset.Now.AddDays(-1),
                 To = DateTimeOffset.Now.AddMinutes(-110),
                 FormId = _formId.ToGuidString(),
-                State = WorkflowStateEnum.Success,
+                States = new List<WorkflowStateEnum> { WorkflowStateEnum.Success },
                 TitlePart = "title is"
             }, 0, 10);
 
