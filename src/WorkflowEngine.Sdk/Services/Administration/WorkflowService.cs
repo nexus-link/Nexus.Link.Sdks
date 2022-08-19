@@ -79,6 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                     StartedAt = activityRecord.Instance.StartedAt,
                     FinishedAt = activityRecord.Instance.FinishedAt,
                     Title = $"{activityRecord.Form.Title}",
+                    Type = activityRecord.Form.Type,
                     Position = $"{(parent != null ? parent.Position + "." : "")}{activityRecord.Version.Position}",
                     State = activityRecord.Instance.State,
                     ResultAsJson = activityRecord.Instance.ResultAsJson,
