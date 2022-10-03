@@ -82,12 +82,14 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
         foreach (var (index, job) in _voidJobs)
         {
             JobNumber = index;
+            Instance.IterationTitle ??= JobNumber.ToString();
             var task = ExecuteJobWithoutReturnValueAsync(job, cancellationToken);
             _voidTasks.Add(index, task);
         }
         foreach (var (index, job) in _objectJobs)
         {
             JobNumber = index;
+            Instance.IterationTitle ??= JobNumber.ToString();
             var task = ExecuteJobWithReturnValueAsync(job, cancellationToken);
             _objectTasks.Add(index, task);
         }
