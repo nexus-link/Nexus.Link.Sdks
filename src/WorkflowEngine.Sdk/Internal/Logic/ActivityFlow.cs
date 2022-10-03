@@ -466,7 +466,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
-                return new ActivityForEachSequential<TItem>(ActivityInformation, items, methodAsync, getIterationTitleMethod);
+                return new ActivityForEachSequential<TItem>(ActivityInformation, items, getIterationTitleMethod, methodAsync);
             }
             catch (Exception e)
             {

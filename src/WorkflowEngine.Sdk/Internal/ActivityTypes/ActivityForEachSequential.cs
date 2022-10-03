@@ -29,10 +29,9 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
     }
-    public ActivityForEachSequential(
-        IActivityInformation activityInformation, IEnumerable<TItem> items,
-        ActivityForEachSequentialMethodAsync<TItem> methodAsync,
-        GetIterationTitleMethod<TItem> getIterationTitleMethod)
+    public ActivityForEachSequential(IActivityInformation activityInformation, IEnumerable<TItem> items,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod,
+        ActivityForEachSequentialMethodAsync<TItem> methodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(items, nameof(items));
