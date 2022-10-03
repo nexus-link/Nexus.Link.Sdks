@@ -18,26 +18,31 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachParallel<TItem>
 {
     private readonly ActivityForEachParallelMethodAsync<TItem> _methodAsync;
+    private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachParallel(
         IActivityInformation activityInformation,
-        IEnumerable<TItem> items)
+        IEnumerable<TItem> items,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
+        _getIterationTitleMethod = getIterationTitleMethod;
     }
     public ActivityForEachParallel(
         IActivityInformation activityInformation,
         IEnumerable<TItem> items,
-        ActivityForEachParallelMethodAsync<TItem> methodAsync)
+        ActivityForEachParallelMethodAsync<TItem> methodAsync,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
+        _getIterationTitleMethod = getIterationTitleMethod;
         Items = items;
     }
 
@@ -66,6 +71,17 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
         foreach (var item in Items)
         {
             LoopIteration++;
+            try
+            {
+                Instance.IterationTitle = _getIterationTitleMethod == null
+                    ? LoopIteration.ToString()
+                    : _getIterationTitleMethod(item);
+            }
+            catch (Exception)
+            {
+                // The _getIterationTitleMethod failed, use the current iteration number
+                Instance.IterationTitle = LoopIteration.ToString();
+            }
             var task = LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);
             taskList.Add(task);
         }
@@ -79,6 +95,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     LoopActivity<IDictionary<string, TMethodReturns>>, IActivityForEachParallel<TMethodReturns, TItem>
 {
     private GetKeyMethod<TItem> _getKeyMethod;
+    private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     private readonly ActivityForEachParallelMethodAsync<TMethodReturns, TItem> _methodAsync;
 
     public IEnumerable<TItem> Items { get; }
@@ -86,19 +103,22 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachParallel(IActivityInformation activityInformation,
         IEnumerable<TItem> items,
-        GetKeyMethod<TItem> getKeyMethod)
+        GetKeyMethod<TItem> getKeyMethod, 
+        GetIterationTitleMethod<TItem> getIterationTitleMethod)
         : base(activityInformation, EmptyDictionaryAsync)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
         Items = items;
         _getKeyMethod = getKeyMethod;
+        _getIterationTitleMethod = getIterationTitleMethod;
     }
 
     public ActivityForEachParallel(IActivityInformation activityInformation,
         IEnumerable<TItem> items,
         GetKeyMethod<TItem> getKeyMethod,
-        ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync)
+        ActivityForEachParallelMethodAsync<TMethodReturns, TItem> methodAsync,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         : base(activityInformation, EmptyDictionaryAsync)
     {
         InternalContract.RequireNotNull(items, nameof(items));
@@ -107,6 +127,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         _methodAsync = methodAsync;
         Items = items;
         _getKeyMethod = getKeyMethod;
+        _getIterationTitleMethod = getIterationTitleMethod;
     }
 
     /// <inheritdoc/>
@@ -145,6 +166,17 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             catch (Exception)
             {
                 InternalContract.Require(false, $"The {nameof(_getKeyMethod)} method failed. You must make it safe, so that it never fails.");
+            }
+            try
+            {
+                Instance.IterationTitle = _getIterationTitleMethod == null
+                    ? LoopIteration.ToString()
+                    : _getIterationTitleMethod(item);
+            }
+            catch (Exception)
+            {
+                // The _getIterationTitleMethod failed, use the current iteration number
+                Instance.IterationTitle = LoopIteration.ToString();
             }
             InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
             var task = LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);

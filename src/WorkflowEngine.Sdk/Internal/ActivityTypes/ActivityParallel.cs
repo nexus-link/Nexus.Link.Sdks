@@ -33,24 +33,26 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync)
+    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync, string jobTitle = null)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
         InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
         InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
+        Instance.IterationTitle = jobTitle;
         _voidJobs.Add(index, jobAsync);
         if (index > _maxJobIndex) _maxJobIndex = index;
         return this;
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null)
+    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null, string jobTitle = null)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
         InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
         InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
+        Instance.IterationTitle = jobTitle;
         // Saving different method signatures together is complicated. Step 1: Save them as object.
         _objectJobs.Add(index, jobAsync);
         _objectTypes.Add(index, typeof(TMethodReturns));

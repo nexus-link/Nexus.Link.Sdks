@@ -93,12 +93,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityWhileDo While(bool condition);
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items);
-        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync);
+        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
+        IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
 
         [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
-        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
-        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync);
+        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
+        IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
         /// <summary>
                                                                                                      /// 
                                                                                                      /// </summary>
@@ -196,11 +196,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
             where TSwitchValue : IComparable, IComparable<TSwitchValue>;
 
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod);
-        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
+        IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
 
         [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
-        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items);
-        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync);
+        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
+        IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
     }
 }

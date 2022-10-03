@@ -21,9 +21,9 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.25.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 

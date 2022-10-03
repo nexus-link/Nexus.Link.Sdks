@@ -144,6 +144,8 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch13_rollback.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch14 - log timestamp index.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch14_rollback.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch15 - iteration title.sql" />
+    <None Remove="contentFiles\any\any\sql-scripts\patches\patch15_rollback .sql" />
   </ItemGroup>
 
 </Project>

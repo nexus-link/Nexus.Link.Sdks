@@ -54,6 +54,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// </summary>
         public string AbsolutePosition { get; set; }
 
+        /// <summary>
+        /// A title associated with an individual iteration (or parallel job).
+        /// </summary>
+        public string IterationTitle { get; set; }
+
         /// <inheritdoc />
         public virtual void Validate(string errorLocation, string propertyPath = "")
         {

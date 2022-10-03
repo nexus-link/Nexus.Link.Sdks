@@ -30,7 +30,7 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.1" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.4" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.0-alpha02" />
   </ItemGroup>
   
   <PropertyGroup>
