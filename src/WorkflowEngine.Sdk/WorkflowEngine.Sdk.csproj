@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.18.6</Version>
+    <Version>6.19.0-alpha01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.19.0 Added ActivityInstance.IterationTitle
       6.18.6 Bump
       6.18.5 Mgmt: Activity.Type
       6.18.4 Mgmt: IFormService is IReadAllWithPaging
