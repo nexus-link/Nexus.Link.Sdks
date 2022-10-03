@@ -146,9 +146,9 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var activity = new ActivityParallel(_activityInformationMock);
             const int expectedResult = 10;
             activity.AddJob(1, (_, _) => Task.FromResult(expectedResult));
-            var results = await activity.ParallelAsync();
 
             // Act
+            var results = await activity.ParallelAsync();
 
             // Assert
             var result = results.Get<int>(1);
