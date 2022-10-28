@@ -38,14 +38,14 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.25.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0-alfa02" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0-alfa04" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>3.2.6</Version>
+    <Version>3.2.7</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -55,7 +55,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.2.6 Bump
+      3.2.7 Bump
       3.2.0 UpdateRequestAuthenticationAsync
       3.1.1 Changed URL path to /Retry instead of /Ready
       3.1.0 UpdateRequestAuthenticationAsync

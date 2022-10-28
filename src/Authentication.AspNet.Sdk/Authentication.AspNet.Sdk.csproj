@@ -19,10 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.8" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.25.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0-alfa04" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0-alfa02" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.2.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0-alfa03" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
@@ -39,7 +39,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.1.4</Version>
+      <Version>3.1.5</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -49,7 +49,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.1.4 Bump
+        3.1.5 Bump
         3.1.0 TokenValidationHandler now supports ReentryAuthentication
         3.0.8 Bump
         3.0.2 Symbols
