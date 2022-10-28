@@ -402,6 +402,10 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             context.Response.StatusCode = response.StatusCode.Value;
             context.Response.ContentType = response.ContentType;
             await context.Response.WriteAsync(response.Content, cancellationToken: cancellationToken);
+            if (exception is FulcrumHttpRedirectException redirectException)
+            {
+                context.Context.Response.Headers.Add("Location", redirectException.LocationUri.OriginalString);
+            }
         }
 
         private static string CalculateReentryAuthentication(HttpRequest contextRequest)
