@@ -34,13 +34,13 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.1" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.8" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0-alfa02" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0-alfa03" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Misc.AspNet.Sdk</PackageId>
-    <Version>1.1.0-alfa01</Version>
+    <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

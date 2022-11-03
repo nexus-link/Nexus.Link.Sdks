@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.18" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Include="Moq" Version="4.18.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0-alfa04" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>

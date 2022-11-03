@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0-alfa03" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0" />
   </ItemGroup>
 
   <ItemGroup>
