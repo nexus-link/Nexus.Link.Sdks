@@ -29,7 +29,7 @@
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.IdentityAccessManagement.Sdk</PackageId>
-		<Version>0.4.17</Version>
+		<Version>0.4.18</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -39,7 +39,7 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-			0.4.17 Bump
+			0.4.18 Bump
       0.4.11 Fixed an issue where UserId used for translating userId was set in the wrong place.
 			0.4.10 Now sets UserId to context (for translatedUserId)
 			0.4.9 Now removes the bearer part of the token when trying to extract user principal from Nexus-User-Authorization
