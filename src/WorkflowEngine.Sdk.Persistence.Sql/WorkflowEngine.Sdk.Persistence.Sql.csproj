@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.0" />
+    <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.1" />
     <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.15.4" />
   </ItemGroup>
 

@@ -18,12 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.3" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>
 
@@ -33,7 +33,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>3.4.4</Version>
+      <Version>3.4.5</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -43,7 +43,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.4.4 Bump
+        3.4.5 Bump
         3.4.0 Support for IHashService
         3.3.10 Support for reset cache when creating NexusAuthenticationManager
 				3.3.9 Bump

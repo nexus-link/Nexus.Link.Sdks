@@ -8,17 +8,11 @@
     <RootNamespace>Nexus.Link.Misc.AspNet.Sdk</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup>
     <DocumentationFile>Misc.AspNet.Sdk.xml</DocumentationFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>Misc.AspNet.Sdk.xml</DocumentationFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <!-- Publish symbols -->
@@ -37,14 +31,16 @@
 
   <!-- Publish symbols -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.1" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.8" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.3.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Misc.AspNet.Sdk</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -54,7 +50,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.0.3 Bump
+      1.1.0 ConvertExceptionToResponse now can convert FulcrumHttpRedirectException to HTTP response
+      1.0.4 Bump
       1.0.0 First release
     </PackageReleaseNotes>
   </PropertyGroup>
