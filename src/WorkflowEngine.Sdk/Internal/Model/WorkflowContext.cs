@@ -9,6 +9,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 
         private readonly OneValueProvider<bool> _executionIsAsynchronous;
         private readonly OneValueProvider<string> _workflowInstanceId;
+        private readonly OneValueProvider<string> _iterationTitle;
         private readonly OneValueProvider<Activity> _parentActivity;
         private readonly OneValueProvider<Activity> _latestActivity;
         private readonly OneValueProvider<WorkflowExecutor> _currentWorkflowExecutor;
@@ -18,6 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
             ValueProvider = valueProvider;
             _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
+            _iterationTitle = new OneValueProvider<string>(ValueProvider, "IterationTitle");
             _parentActivity = new OneValueProvider<Activity>(ValueProvider, "ParentActivity");
             _latestActivity = new OneValueProvider<Activity>(ValueProvider, "LatestActivity");
             _currentWorkflowExecutor = new OneValueProvider<WorkflowExecutor>(ValueProvider, "CurrentWorkflowExecutor");
@@ -41,6 +43,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         {
             get => _workflowInstanceId.GetValue();
             set => _workflowInstanceId.SetValue(value);
+        }
+        
+        /// <summary>
+        /// Represents a description of child process in more details.
+        /// </summary>
+        public string IterationTitle
+        {
+            get => _iterationTitle.GetValue();
+            set => _iterationTitle.SetValue(value);
         }
 
         /// <summary>

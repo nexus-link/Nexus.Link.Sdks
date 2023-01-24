@@ -10,6 +10,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
@@ -73,7 +74,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
             LoopIteration++;
             try
             {
-                Instance.IterationTitle = _getIterationTitleMethod == null
+                WorkflowStatic.Context.IterationTitle = _getIterationTitleMethod == null
                     ? LoopIteration.ToString()
                     : _getIterationTitleMethod(item);
             }

@@ -62,7 +62,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
             LoopIteration++;
             try
             {
-                Instance.IterationTitle = _getIterationTitleMethod == null
+                WorkflowStatic.Context.IterationTitle = _getIterationTitleMethod == null
                     ? LoopIteration.ToString()
                     : _getIterationTitleMethod(item);
             }
