@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.2.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.AspNet</PackageId>
-    <Version>2.1.19-alfa03</Version>
+    <Version>2.3.7-alfa01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -44,7 +44,13 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.1.19 Bump 
+      2.3.6 Updated nugets to avoid versions with security risks
+      2.3.5 Bump
+      2.3.2 Mgmt: FormsController is IReadAllWithPaging
+      2.3.1 Mgmt: FormsController implements IFormService
+      2.3.0 IFormOverviewService/Controller
+      2.2.0 Support for searching/browsing instances, versions and forms
+      2.1.18 Bump
       2.1.0 netcoreapp3.1
       2.0.1 Bump
       2.0.0 Moved some middleware here.

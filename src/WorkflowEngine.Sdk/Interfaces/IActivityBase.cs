@@ -55,6 +55,11 @@ public interface IActivityBase
     string WorkflowInstanceId { get; }
 
     /// <summary>
+    /// True if the instance has completed
+    /// </summary>
+    bool HasCompleted { get; }
+
+    /// <summary>
     /// The <see cref="ActivityOptions"/> for this activity.
     /// </summary>
     ActivityOptions Options { get; }

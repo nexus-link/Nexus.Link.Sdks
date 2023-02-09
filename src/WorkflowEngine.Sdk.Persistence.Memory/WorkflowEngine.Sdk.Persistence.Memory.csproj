@@ -21,7 +21,7 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
@@ -40,7 +40,8 @@
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
       2.2.0 Added WorkflowInstance.ExecutionId
-      2.1.2 Bump
+      2.1.7 Updated nugets to avoid versions with security risks
+      2.1.6 Bump
       2.1.1 Added AcivityInstanceId to WorkflowSemaphoreQueueRecord
       2.0.3 Bump
       2.0.0 Refactored Semaphores. Not backwards compatible

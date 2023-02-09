@@ -422,12 +422,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 }
             }
 
-            var response = AspNetExceptionConverter.ToContentResult(exception);
-            FulcrumAssert.IsTrue(response.StatusCode.HasValue, CodeLocation.AsString());
-            Debug.Assert(response.StatusCode.HasValue);
-            context.Response.StatusCode = response.StatusCode.Value;
-            context.Response.ContentType = response.ContentType;
-            await context.Response.WriteAsync(response.Content, cancellationToken: cancellationToken);
+            await AspNetExceptionConverter.ConvertExceptionToResponseAsync(exception, context.Response, cancellationToken);
         }
 
         private static string CalculateReentryAuthentication(HttpRequest contextRequest)

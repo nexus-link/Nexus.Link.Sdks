@@ -31,11 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.20.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.10.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.13.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.1" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.10.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.12.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.2" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.0-alfa01" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.1.0-alfa06" />
   </ItemGroup>
@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.17.0-alfa16</Version>
+    <Version>6.20.0-alfa16</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,7 +73,17 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.17.0 Moved outbound handler CallAsyncManagerForAsynchronousRequests to NexusLinkHandler. Added ExecutionId
+      6.20.0 Moved outbound handler CallAsyncManagerForAsynchronousRequests to NexusLinkHandler. Added ExecutionId
+      6.19.1 Updated nugets to avoid versions with security risks
+      6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
+      6.18.7 Bump
+      6.18.5 Mgmt: Activity.Type
+      6.18.4 Mgmt: IFormService is IReadAllWithPaging
+      6.18.3 Mgmt: Activity.ResultAsJson
+      6.18.2 Mgmt: Workflow contains form id; FormService implementation
+      6.18.1 Fix: FormRestClient parameter names
+      6.18.0 IFormOverviewService/Controller
+      6.17.0 Support for searching/browsing instances, versions and forms
       6.16.3 Bump
       6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
       6.16.1 Support for plugins for when a workflow changes

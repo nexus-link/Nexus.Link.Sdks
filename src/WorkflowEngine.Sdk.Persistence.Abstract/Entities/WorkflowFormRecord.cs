@@ -1,4 +1,5 @@
 ﻿using System;
+using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Core.Storage.Model;
@@ -35,6 +36,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
     /// </summary>
     public class WorkflowFormRecordCreate : WorkflowFormRecordUnique
     {
+    }
+    
+    /// <summary>
+    /// Information about a workflow.
+    /// </summary>
+    public class WorkflowFormRecordOverview : WorkflowForm
+    {
+        /// <summary>
+        /// Overview of instance counts
+        /// </summary>
+        public WorkflowFormInstancesOverview Overview { get; set; }
     }
 
     /// <summary>

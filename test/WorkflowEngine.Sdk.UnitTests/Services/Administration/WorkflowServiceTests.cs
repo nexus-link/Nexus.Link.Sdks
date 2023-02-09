@@ -9,6 +9,7 @@ using Nexus.Link.Capabilities.WorkflowState.Abstract;
 using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.WorkflowEngine.Sdk.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 using Shouldly;
@@ -49,7 +50,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Services.Administration
             workflowCap.Setup(x => x.WorkflowSummary).Returns(WorkflowSummaryService);
             workflowCap.Setup(x => x.WorkflowInstance).Returns(workflowInstanceService);
             
-            _service = new WorkflowService(workflowCap.Object, asyncCap);
+            _service = new WorkflowService(workflowCap.Object, new WorkflowConfigurationCapability(ConfigurationTables), asyncCap, RuntimeTables);
         }
 
 

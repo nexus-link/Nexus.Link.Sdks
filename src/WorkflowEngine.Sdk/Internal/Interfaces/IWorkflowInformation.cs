@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;

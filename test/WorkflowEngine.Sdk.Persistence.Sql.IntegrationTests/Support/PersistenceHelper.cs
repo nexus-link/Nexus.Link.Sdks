@@ -1,6 +1,6 @@
-﻿using System.Data.SqlClient;
-using Nexus.Link.Libraries.SqlServer;
+﻿using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;
+using System.Data.SqlClient;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
 
@@ -36,6 +36,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support
                 return options;
             }
         }
+
 
         public static void DropDatabase(string connectionString)
         {
