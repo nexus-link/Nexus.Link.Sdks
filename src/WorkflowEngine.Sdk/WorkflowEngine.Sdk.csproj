@@ -37,7 +37,7 @@
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.2" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.5" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.1.6" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.19.1</Version>
+    <Version>6.20.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+	  6.20.0 Added RetryHalted in WorkflowService
       6.19.1 Updated nugets to avoid versions with security risks
       6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
       6.18.7 Bump
