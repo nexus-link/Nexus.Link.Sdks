@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.19.1</Version>
+    <Version>6.19.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.19.2 Added retry logic in SemaphoreService when calling AsyncManager
       6.19.1 Updated nugets to avoid versions with security risks
       6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
       6.18.7 Bump

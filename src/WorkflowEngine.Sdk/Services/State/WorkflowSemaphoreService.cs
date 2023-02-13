@@ -16,6 +16,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
@@ -201,16 +202,18 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
             waitingHolder.Raised = true;
             waitingHolder.ExpiresAt = DateTimeOffset.UtcNow.Add(TimeSpan.FromSeconds(waitingHolder.ExpirationAfterSeconds));
             var activatedHolder = await _runtimeTables.WorkflowSemaphoreQueue.UpdateAndReturnAsync(waitingHolder.Id, waitingHolder, cancellationToken);
-            if (activatedHolder.WorkflowInstanceId == myHolder?.WorkflowInstanceId 
+            if (activatedHolder.WorkflowInstanceId == myHolder?.WorkflowInstanceId
                 && activatedHolder.ParentActivityInstanceId == myHolder?.ParentActivityInstanceId
                 && activatedHolder.ParentIteration == myHolder?.ParentIteration)
             {
                 myHolderAsActivated = activatedHolder;
             }
             else
-            {
-                await _requestMgmtCapability.Request.RetryAsync(activatedHolder.WorkflowInstanceId.ToGuidString(),
-                    cancellationToken);
+            {                
+                await WorkflowHelper.RetryAsync(async () =>
+                    await _requestMgmtCapability.Request.RetryAsync(activatedHolder.WorkflowInstanceId.ToGuidString(), cancellationToken),
+                    3,
+                    100);
             }
         }
 
