@@ -28,10 +28,16 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.2-alpha01" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.12.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.0" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.1.6-alpha05" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.12.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.2" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.5" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.1.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.19.0</Version>
+    <Version>6.19.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -67,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.19.1 Updated nugets to avoid versions with security risks
       6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
       6.18.7 Bump
       6.18.5 Mgmt: Activity.Type
@@ -77,9 +84,9 @@
       6.18.0 IFormOverviewService/Controller
       6.17.0 Support for searching/browsing instances, versions and forms
       6.16.3 Bump
-	  6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
-	  6.16.1 Support for plugins for when a workflow changes
-	  6.15.4 Now resets the parent activity to null after a loop has been completed
+      6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
+      6.16.1 Support for plugins for when a workflow changes
+      6.15.4 Now resets the parent activity to null after a loop has been completed
       6.15.3 Added runtime error if a default value was given for ForEachParallel or ForEachSequential
       6.15.2 ForEachSequenctial() had the wrong generic signature
       6.15.1 ActivityService.RetryAsync() now verifies that the WorkflowInstance has state Halted and it updates the state to Waiting

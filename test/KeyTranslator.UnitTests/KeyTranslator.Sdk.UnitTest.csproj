@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net472;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net472;net461</TargetFrameworks>
     <AssemblyName>Xlent.Lever.KeyTranslator.Sdk.Test</AssemblyName>
     <RootNamespace>Xlent.Lever.KeyTranslator.Sdk.Test</RootNamespace>
     <IsPackable>false</IsPackable>
