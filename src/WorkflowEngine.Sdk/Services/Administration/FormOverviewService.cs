@@ -27,14 +27,16 @@ public class FormOverviewService : IFormOverviewService
     }
 
     /// <inheritdoc />
-    public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset from, DateTimeOffset to, CancellationToken cancellationToken = default)
+    /// 
+    public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset from, DateTimeOffset to, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default)
     {
-        var result = await _configurationTables.WorkflowForm.ReadByIntervalWithPagingAsync(from, to, cancellationToken);
+        var result = await _configurationTables.WorkflowForm.ReadByIntervalWithPagingAsync(from, to, filter, cancellationToken);
         return result.Select(x => new WorkflowFormOverview
         {
             Id = x.Id,
             CapabilityName = x.CapabilityName,
             Title = x.Title,
+            Version = x.Version,
             Overview = x.Overview
         }).ToList();
     }

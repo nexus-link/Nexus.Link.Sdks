@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.6.3</Version>
+    <Version>2.7.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,55 +57,56 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.6.3 Updated nugets to avoid versions with security risks
-      2.6.2 Bump
-      2.6.1 WorkflowInstanceSearchDetails.States
-      2.6.0 Forms ReadByIntervalWithPagingAsync
-      2.5.0 Support for searching/browsing instances, versions and forms
-      2.4.2 Bump
-      2.4.0 Added an index for Log.TimeStamp
-      2.3.0 Added AbsolutePosition to ActivityInstanceRecord
-      2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
-      2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
-      2.0.4 Bump
-      2.0.3 Corrected order of dropping tables in patch 10 rollback
-      2.0.1 Bump
-      3.2.0 Added
-      2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
-      2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
-      2.0.4 Bump
-      2.0.3 Corrected order of dropping tables in patch 10 rollback
-      2.0.1 Bump
-      2.0.0 Refactored Semaphores. Not backwards compatible
-      1.9.0 Added HashTable
-      1.8.1 Bump
-      1.8.0 Added WorkflowSemaphore
-      1.7.8 Changed Has*Trigger to *CanUseOutput
-      1.7.4 Removed obsolete tables, corrections due to new test cases
-      1.7.4 New logic for patching DB
-      1.7.3 Bump
-      1.7.2 Support for larger enum values in database
-      1.7.1 Now sets DistributedLockTable
-      1.7.0 netstandard2.1
-      1.6.3 Bump
-      1.6.1 Added purge threshold, changed method signatures
-      1.6.0 Purge for logs
-      1.5.0 Added support for logging
-      1.4.0 Added ActivityInstanceRecordCreate.ContextAsJson
-      1.3.3 Bump
-      1.3.2 Added DistributedLock table
-      1.2.1 Corrected UNIQUE constraint for ActivityVersion
-      1.2.0 Create and Update now returns the resulting object
-      1.1.1 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
-      1.1.0 Moved FailUrgency to ActivityVersion
-      1.0.7 FailUrgency NOT NULL
-      1.0.6 Support for Cancel workflow
-      1.0.5 Bump
-      1.0.4 CREATE CLUSTERED INDEX IX_{TableName}_RecordCreatedAt ON dbo.[{TableName}] (RecordCreatedAt)
-      1.0.3 Refactored ActivityInstance with respect to fields for failed activities.
-      1.0.2 Bugfixes
-      1.0.0 First release
-    </PackageReleaseNotes>
+		2.7.0 Edited Forms ReadByIntervalWithPagingAsync to inculde Version and FormOverview filter.
+		2.6.3 Updated nugets to avoid versions with security risks
+		2.6.2 Bump
+		2.6.1 WorkflowInstanceSearchDetails.States
+		2.6.0 Forms ReadByIntervalWithPagingAsync
+		2.5.0 Support for searching/browsing instances, versions and forms
+		2.4.2 Bump
+		2.4.0 Added an index for Log.TimeStamp
+		2.3.0 Added AbsolutePosition to ActivityInstanceRecord
+		2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
+		2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
+		2.0.4 Bump
+		2.0.3 Corrected order of dropping tables in patch 10 rollback
+		2.0.1 Bump
+		3.2.0 Added
+		2.2.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
+		2.1.0 Added patch for stored procedures (delete workflow version, delete workflow form)
+		2.0.4 Bump
+		2.0.3 Corrected order of dropping tables in patch 10 rollback
+		2.0.1 Bump
+		2.0.0 Refactored Semaphores. Not backwards compatible
+		1.9.0 Added HashTable
+		1.8.1 Bump
+		1.8.0 Added WorkflowSemaphore
+		1.7.8 Changed Has*Trigger to *CanUseOutput
+		1.7.4 Removed obsolete tables, corrections due to new test cases
+		1.7.4 New logic for patching DB
+		1.7.3 Bump
+		1.7.2 Support for larger enum values in database
+		1.7.1 Now sets DistributedLockTable
+		1.7.0 netstandard2.1
+		1.6.3 Bump
+		1.6.1 Added purge threshold, changed method signatures
+		1.6.0 Purge for logs
+		1.5.0 Added support for logging
+		1.4.0 Added ActivityInstanceRecordCreate.ContextAsJson
+		1.3.3 Bump
+		1.3.2 Added DistributedLock table
+		1.2.1 Corrected UNIQUE constraint for ActivityVersion
+		1.2.0 Create and Update now returns the resulting object
+		1.1.1 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+		1.1.0 Moved FailUrgency to ActivityVersion
+		1.0.7 FailUrgency NOT NULL
+		1.0.6 Support for Cancel workflow
+		1.0.5 Bump
+		1.0.4 CREATE CLUSTERED INDEX IX_{TableName}_RecordCreatedAt ON dbo.[{TableName}] (RecordCreatedAt)
+		1.0.3 Refactored ActivityInstance with respect to fields for failed activities.
+		1.0.2 Bugfixes
+		1.0.0 First release
+	</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 

@@ -47,6 +47,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// Overview of instance counts
         /// </summary>
         public WorkflowFormInstancesOverview Overview { get; set; }
+        /// <summary>
+        /// Version
+        /// </summary>
+        public string Version { get; set; }
     }
 
     /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Crud.MemoryStorage;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -27,7 +28,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
             return FindUniqueAsync(new SearchDetails<WorkflowFormRecord>(search), cancellationToken);
         }
 
-        public Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default)
+        public Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

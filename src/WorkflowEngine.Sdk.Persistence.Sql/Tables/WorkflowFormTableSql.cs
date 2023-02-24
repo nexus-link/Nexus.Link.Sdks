@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.SqlServer;
@@ -45,22 +48,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         }
 
         /// <inheritdoc />
-        public async Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default)
+        public async Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default)
         {
             await using var connection = await Database.NewSqlConnectionAsync(cancellationToken);
 
             const string dateRestriction = "AND StartedAt BETWEEN @instancesFrom AND @instancesTo";
-            var query = "SELECT f.Title, CAST(f.Id AS nvarchar(64)) AS Id, f.CapabilityName, v.Id AS ignored," +
-                        $"    (SELECT count(*) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id {dateRestriction}) AS InstanceCount," +
-                        $"    (SELECT count(*) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id {dateRestriction} AND State = '{WorkflowStateEnum.Executing}') AS ExecutingCount," +
-                        $"    (SELECT count(*) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id {dateRestriction} AND State = '{WorkflowStateEnum.Waiting}') AS WaitingCount," +
-                        $"    (SELECT count(*) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id {dateRestriction} AND State = '{WorkflowStateEnum.Success}') AS SucceededCount," +
-                        $"    (SELECT count(*) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id {dateRestriction} AND State IN @failedStates) AS ErrorCount" +
-                        "  FROM WorkflowForm f" +
-                        "  JOIN WorkflowVersion v ON (v.WorkflowFormId = f.Id)" +
-                        "  GROUP BY f.Title, f.Id, f.CapabilityName, v.Id" +
-                        "  ORDER BY f.Title";
-            var result = await connection.QueryAsync(query, new
+            const string versionRestriction = @"( SELECT wf.Id , wf.Majorversion , wf.MinorVersion, wf.WorkflowFormId
+                                                 FROM WorkflowVersion wf, (SELECT WorkflowFormId, max(Majorversion) v from WorkflowVersion GROUP by WorkflowFormId ) g
+                                                 WHERE wf.WorkflowFormId = g.WorkflowFormId and wf.Majorversion = g.v )";
+            const string noVersionRestriction = "WorkflowVersion";
+            const string instanceCountRestriction = " HAVING InstanceCount > 0 ";
+
+            var query = $@"SELECT Title, Id, CapabilityName, Version, InstanceCount, ExecutingCount, WaitingCount, SucceededCount, ErrorCount, ignored 
+                             FROM( SELECT f.Title, CAST(f.Id AS nvarchar(64)) AS Id, f.CapabilityName, v.Id AS ignored,
+                                        (SELECT count(Id) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id { dateRestriction}) AS InstanceCount,
+                                        (SELECT count(Id) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id { dateRestriction} AND State = '{WorkflowStateEnum.Executing}') AS ExecutingCount,
+                                        (SELECT count(Id) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id { dateRestriction} AND State = '{WorkflowStateEnum.Waiting}') AS WaitingCount,
+                                        (SELECT count(Id) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id { dateRestriction} AND State = '{WorkflowStateEnum.Success}') AS SucceededCount,
+                                        (SELECT count(Id) FROM WorkflowInstance WHERE WorkflowVersionId = v.Id { dateRestriction} AND State IN @failedStates) AS ErrorCount,
+                                        CONCAT(v.MajorVersion, '.', v.MinorVersion) as Version
+                                  FROM WorkflowForm f
+                                  JOIN {((filter == FormOverviewIncludeFilter.LatestVersion) ? versionRestriction : noVersionRestriction )} v ON(v.WorkflowFormId = f.Id) ) A
+                                  GROUP BY Title, Id, CapabilityName, Version, InstanceCount, ExecutingCount, WaitingCount, SucceededCount, ErrorCount, ignored
+                                  {((filter == FormOverviewIncludeFilter.ExcludeZeroInstanceCount) ? instanceCountRestriction : string.Empty)}
+                                  ORDER BY Title";
+        
+            var result = await connection.QueryAsync(query.ToString(), new
             {
                 instancesFrom,
                 instancesTo,
@@ -78,6 +91,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 forms.Add(new WorkflowFormRecordOverview
                 {
                     Id = row.Id,
+                    Version = row.Version,
                     CapabilityName = row.CapabilityName,
                     Title = row.Title,
                     Overview = new WorkflowFormInstancesOverview
