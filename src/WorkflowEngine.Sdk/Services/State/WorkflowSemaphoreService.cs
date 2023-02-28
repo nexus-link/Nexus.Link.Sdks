@@ -17,6 +17,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
@@ -209,11 +210,19 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 myHolderAsActivated = activatedHolder;
             }
             else
-            {                
-                await WorkflowHelper.RetryAsync(async () =>
-                    await _requestMgmtCapability.Request.RetryAsync(activatedHolder.WorkflowInstanceId.ToGuidString(), cancellationToken),
-                    3,
-                    100);
+            {
+                try
+                {
+                    await WorkflowHelper.RetryAsync(async () =>
+                        await _requestMgmtCapability.Request.RetryAsync(activatedHolder.WorkflowInstanceId.ToGuidString(), cancellationToken),
+                        3,
+                        TimeSpan.FromMilliseconds(100));
+                }
+                catch (Exception ex)
+                {
+                    Log.LogWarning($"Due to repeated exceptions, giving up on calling AsyncManager Request {nameof(_requestMgmtCapability.Request.RetryAsync)} " +
+                        $"Error occured during Workflow execution for instance: {activatedHolder.WorkflowInstanceId.ToGuidString()}", ex);
+                }
             }
         }
 

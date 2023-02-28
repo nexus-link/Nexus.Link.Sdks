@@ -134,15 +134,13 @@ public class WorkflowHelper
     /// Performs a retry operation for given function.
     /// </summary>
     /// <param name="actionToExecute">Function to execute.</param>
-    /// <param name="maxRetries">MAximum number of retrys.</param>
-    /// <param name="delayBetweenRetriesInMilliseconds">Deley between retrys.</param>
-    /// <param name="reThrowException">If end result is an exception this flag determins if exception will be re-thrown.</param>
+    /// <param name="maxRetries">Maximum number of retries.</param>
+    /// <param name="delayBetweenRetries">Deley between retries.</param>
     /// <returns></returns>
     public static async Task RetryAsync(
         Func<Task> actionToExecute,
         int maxRetries,
-        int delayBetweenRetriesInMilliseconds,
-        bool reThrowException = false)
+        TimeSpan delayBetweenRetries)
     {
         int retryCount = 0;
         while (true)
@@ -154,14 +152,14 @@ public class WorkflowHelper
             }
             catch (Exception)
             {
-                if (retryCount >= maxRetries && reThrowException)
+                if (retryCount >= maxRetries)
                 {
                     throw;
                 }
 
                 retryCount++;
                 // Exponential back-off i.e. the duration to wait between retries based on the current retry attempt.
-                await Task.Delay(TimeSpan.FromMilliseconds(delayBetweenRetriesInMilliseconds) * retryCount);
+                await Task.Delay(delayBetweenRetries * retryCount);
             }
         }
     }
