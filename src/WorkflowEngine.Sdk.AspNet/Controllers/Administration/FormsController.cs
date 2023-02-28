@@ -26,11 +26,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 
         /// <inheritdoc />
         [HttpGet("FormOverviews")]
-        public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default)
+        public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default)
         {
             ServiceContract.Require(instancesTo > instancesFrom, $"{nameof(instancesTo)} must be greater than {instancesFrom}");
 
-            return await _capability.FormOverview.ReadByIntervalWithPagingAsync(instancesFrom, instancesTo, cancellationToken);
+            return await _capability.FormOverview.ReadByIntervalWithPagingAsync(instancesFrom, instancesTo, filter, cancellationToken);
         }
 
 

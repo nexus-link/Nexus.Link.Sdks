@@ -35,9 +35,9 @@
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.12.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.11.2" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.5" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.1.6" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.12.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.6" />
+    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.19.2</Version>
+    <Version>6.21.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,261 +73,262 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.19.2 Added retry logic in SemaphoreService when calling AsyncManager
-      6.19.1 Updated nugets to avoid versions with security risks
-      6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
-      6.18.7 Bump
-      6.18.5 Mgmt: Activity.Type
-      6.18.4 Mgmt: IFormService is IReadAllWithPaging
-      6.18.3 Mgmt: Activity.ResultAsJson
-      6.18.2 Mgmt: Workflow contains form id; FormService implementation
-      6.18.1 Fix: FormRestClient parameter names
-      6.18.0 IFormOverviewService/Controller
-      6.17.0 Support for searching/browsing instances, versions and forms
-      6.16.3 Bump
-      6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
-      6.16.1 Support for plugins for when a workflow changes
-      6.15.4 Now resets the parent activity to null after a loop has been completed
-      6.15.3 Added runtime error if a default value was given for ForEachParallel or ForEachSequential
-      6.15.2 ForEachSequenctial() had the wrong generic signature
-      6.15.1 ActivityService.RetryAsync() now verifies that the WorkflowInstance has state Halted and it updates the state to Waiting
-      6.15.0 Introduced activity for try-catch. Activity type Sleep now accepts DateTimeOffset. Moved some parts of ActivityExecutor into LogicExecutor
-      6.14.3 Bump
-      6.14.2 Now throws FulcrumResourceLockedException instead of FulcrumTryAgainException
-      6.14.1 Made WorkflowVersionCollection class internal. The reroute to AM part of the code is now more obvious
-      6.14.0 Added WorkflowImplementation.SetDebugMode()
-      6.13.2 Fix: Base semaphore activity identity on the parent activity, not on the activity that raises the semaphore
-      6.13.1 Fix: Ignore JSON serialization for some fields to prevent self referencing loops
-      6.13.0 Fix: Handle multiple semaphores in the same workflow instance
-      6.12.4 Now doesn't try to convert circular objects when logging. Found a particularly nasty bug that only happened in loops of loops
-      6.12.2 ActivityFlow now catches errors that happens in the constructors of all the Activity types. Tried to establish better loggin messages at some cruicial points
-      6.12.1 New strategy for dealing with OperationCancelled where we restrict the time for activities.
-      To control that, we introduced two new settings: MaxTotalRunTimeSpan and PostponeAfterTimeSpan. Also minor logging adjustments
-      6.11.3 Added early fail if the reduced cancellation token has a cancellation request
-      6.11.2 ActivityPostponedException now inherits from RequestPostponedException.
-      Now has a reduced time for the activity methods to protect the workflow engine from early cancellation.
-      Fixed a bug in Sleep that made it always succeed, even when it shouldn't
-      6.11.1 Missing interface for IActivityParallel
-      6.11.0 Introduced SetExceptionHandler. Renamed SetDeadLine to SetDeadline. Fixed a bug in ActivitySemaphore
-      6.10.1 BackgroundActivity can now return handle sub-activities that are hidden by parent activities
-      6.10.0 Added activity SetDeadline(). Now throws FulcrumNotFoundException if a workflow parameter is undefined. Refactored BackgroundActivity
-      6.9.2 Fixed eternal loop bug + another serious bug where we lost track of all activities, resulting in the workflow thinking it has completed successfully
-      6.9.1 Tried again to fix the bug that we tried to fix in 6.7.5. The change needed was in Libraries.Crud (fixed in 3.13.0)
-      6.9.0 Tried to syntactially hinder bad activity flows like If().Then().Then()
-      6.8.0 Refactored how we work with ParentActivity and PreviousActivity. Introduced LoopIteration and JobNumber as replacements for Iteration
-      6.7.5 Now saves the ActivityInstance in an ordered fashion, to avoid foreign key constraints within the table
-      6.7.4 Unit tests + correcting bug for IActivity.Iteration
-      6.7.3 Now saves the ActivityVersions in an ordered fashion, to avoid foreign key constraints within the table
-      6.7.2 Renamed IActivityDoWhileOrUntil
-      6.7.1 Missing Iteration
-      6.7.0 Added ActivityDoUntil and ActivityWhileDo
-      6.6.2 Consolidated missing activity type ActivityLoopUntilTrue
-      6.6.0 Consolidated how ExecuteAsync() should work for activities, to enable BeginAsync()+EndAsync()
-      6.5.2 More logic around the lowering of a Throttle semaphore
-      6.5.1 Bump
-      6.5.0 Added ActivityLock and ActivityThrottle
-      6.4.3 Corrected a casting bug for parallel jobs that return a value
-      6.4.2 Now lowers all the semaphores of a workflow instance when it finishes with either state success or state failed
-      6.4.1 Added missing overloads
-      6.4.0 ActivityExecutor now understands FulcrumExceptions. Added ActivityIf and ActivitySwitch. Added SetMaxExecutionTimeSpan
-      6.3.1 Refactored ActivityExecutor to make the code more consistent and readable
-      6.3.0 Introduced lazy logging, i.e. log storage is delayed until the workflow is postponed or completed
-      6.2.0 Refactored to make it easier to do unit tests
-      6.1.0 Added Parallel. Fixed ActivitySleep bug, which could make it sleep forever
-      6.0.0 Refactored Semaphores and modified Sleep. Semaphore is not backwards compatible
-      5.7.2 Bump
-      5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
-      5.7.0 Added the Sleep activity
-      5.6.0 IActivity now has WorkflowStartedAt and ActivityStartedAt properties
-      5.5.10 Bump
-      5.5.6 Now validates WorkflowSummary before returning it
-      5.5.5 Added logging in CallAsyncManagerForAsynchronousRequests
-      5.5.3 Now enforce IActivityForEachParallel to have a key method
-      5.5.2 Fixed bug for WorkflowFailedException
-      5.5.1 Consolidated service contracts
-      5.5.0 Implemented IWorkflowMgmtCapability
-      5.4.6 Corrected bugs found when unit testing
-      5.4.5 When the semaphore has been lowered, we no longer try to extend the expiration time
-      5.4.4 Corrected ActivitySemaphore interface
-      5.4.0 Added ActititySemaphore
-      5.3.0 Added WorkflowHelper.WhenAllActivities
-      5.2.2 Minor changes.
-      5.2.0 Changes inspired by writing the public documentation
-      5.1.11 Bump
-      5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
-      5.1.9 Made all classes that not need to be visible internal instead of public
-      5.1.8 Bump
-      5.1.6 Changed how we deal with database patching.
-      5.1.5 Now uses ToGuidString()
-      5.1.4 Missing inheritence to Activity{T}
-      5.1.3 ActivityAction{T} now inherits from Activity{T}
-      5.1.2 Support for larger enum values in database
-      5.1.1 Introduced IActivity{T}
-      5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
-      5.0.2 Introduced IWorkflowEngineRequiredCapabilities
-      5.0.1 Bump
-      5.0.0 New Contract repo
-      4.8.4 Bump
-      4.8.2 Added LogPurgeSeverityLevelThreshold
-      4.8.1 Option for PurgeLogStrategy
-      4.7.0 ActivityOption, option for LogSeverityLevelThreshold
-      4.6.3 Indented logging, made the logging available to the workflow programmer through IActivity
-      4.6.1 Added log for successful workflow
-      4.6.0 Added support for logging
-      4.5.0 Added support for activity context dictionary
-      4.4.2 Added backward compatibility
-      4.4.1 Extended IActivity
-      4.4.0 Refactored SelectWorkflowVersionAsync
-      4.3.2 Bump
-      4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
-      4.2.0 Introduced more settings for activities and a default value for them on workflow level
-      4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
-      4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
-      3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
-      3.3.0 Support for IDistributedLock
-      3.2.0 New fields for WorkflowInstance
-      3.1.0 Support for setting Success and Failed on an ActivityInstance
-      3.0.0 New capability contract structure.
-      2.0.1 Changed som method signatures
-      2.0.0 Refactored. One breaking change: You need to specify the activity position when calling the CreateActivity() method
-      1.12.5 Fixed bug in ActivityExecutor
-      1.12.4 Performance optimizations
-      1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
-      1.12.2 Fix in rest clients paths
-      1.12.0 Now preloads activity information when a workflow starts
-      1.11.2 Case confusion
-      1.11.1 Renamed some classes
-      1.11.0 Moved FailUrgency to ActivityVersion
-      1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data
-      1.9.0 Made SetParent and SetPrevious obsolete
-      1.8.3 Refactored ActivityForEachParallel
-      1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
-      1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
-      1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
-      1.7.0 Support for retry activity
-      1.6.0 Support for Cancel workflow
-      1.5.0 Service contract changes, mostly removing child things
-      1.4.0 Added error handling
-      1.3.0 Implemented WorkflowService and Workflow
-      1.2.0 Refactored ActivityInstance with respect to fields for failed activities
-      1.1.0-New syntax for flow programming
-      1.0.5 First release
-      6.13.0 Fix: Handle multiple semaphores in the same workflow instance
-      6.12.4 Now doesn't try to convert circular objects when logging. Found a particularly nasty bug that only happened in loops of loops
-      6.12.2 ActivityFlow now catches errors that happens in the constructors of all the Activity types. Tried to establish better loggin messages at some cruicial points
-      6.12.1 New strategy for dealing with OperationCancelled where we restrict the time for activities.
-      To control that, we introduced two new settings: MaxTotalRunTimeSpan and PostponeAfterTimeSpan. Also minor logging adjustments
-      6.11.3 Added early fail if the reduced cancellation token has a cancellation request
-      6.11.2 ActivityPostponedException now inherits from RequestPostponedException.
-      Now has a reduced time for the activity methods to protect the workflow engine from early cancellation.
-      Fixed a bug in Sleep that made it always succeed, even when it shouldn't
-      6.11.1 Missing interface for IActivityParallel
-      6.11.0 Introduced SetExceptionHandler. Renamed SetDeadLine to SetDeadline. Fixed a bug in ActivitySemaphore
-      6.10.1 BackgroundActivity can now return handle sub-activities that are hidden by parent activities
-      6.10.0 Added activity SetDeadline(). Now throws FulcrumNotFoundException if a workflow parameter is undefined. Refactored BackgroundActivity
-      6.9.2 Fixed eternal loop bug + another serious bug where we lost track of all activities, resulting in the workflow thinking it has completed successfully
-      6.9.1 Tried again to fix the bug that we tried to fix in 6.7.5. The change needed was in Libraries.Crud (fixed in 3.13.0)
-      6.9.0 Tried to syntactially hinder bad activity flows like If().Then().Then()
-      6.8.0 Refactored how we work with ParentActivity and PreviousActivity. Introduced LoopIteration and JobNumber as replacements for Iteration
-      6.7.5 Now saves the ActivityInstance in an ordered fashion, to avoid foreign key constraints within the table
-      6.7.4 Unit tests + correcting bug for IActivity.Iteration
-      6.7.3 Now saves the ActivityVersions in an ordered fashion, to avoid foreign key constraints within the table
-      6.7.2 Renamed IActivityDoWhileOrUntil
-      6.7.1 Missing Iteration
-      6.7.0 Added ActivityDoUntil and ActivityWhileDo
-      6.6.2 Consolidated missing activity type ActivityLoopUntilTrue
-      6.6.0 Consolidated how ExecuteAsync() should work for activities, to enable BeginAsync()+EndAsync()
-      6.5.2 More logic around the lowering of a Throttle semaphore
-      6.5.1 Bump
-      6.5.0 Added ActivityLock and ActivityThrottle
-      6.4.3 Corrected a casting bug for parallel jobs that return a value
-      6.4.2 Now lowers all the semaphores of a workflow instance when it finishes with either state success or state failed
-      6.4.1 Added missing overloads
-      6.4.0 ActivityExecutor now understands FulcrumExceptions. Added ActivityIf and ActivitySwitch. Added SetMaxExecutionTimeSpan
-      6.3.1 Refactored ActivityExecutor to make the code more consistent and readable
-      6.3.0 Introduced lazy logging, i.e. log storage is delayed until the workflow is postponed or completed
-      6.2.0 Refactored to make it easier to do unit tests
-      6.1.0 Added Parallel. Fixed ActivitySleep bug, which could make it sleep forever
-      6.0.0 Refactored Semaphores and modified Sleep. Semaphore is not backwards compatible
-      5.7.2 Bump
-      5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
-      5.7.0 Added the Sleep activity
-      5.6.0 IActivity now has WorkflowStartedAt and ActivityStartedAt properties
-      5.5.10 Bump
-      5.5.6 Now validates WorkflowSummary before returning it
-      5.5.5 Added logging in CallAsyncManagerForAsynchronousRequests
-      5.5.3 Now enforce IActivityForEachParallel to have a key method
-      5.5.2 Fixed bug for WorkflowFailedException
-      5.5.1 Consolidated service contracts
-      5.5.0 Implemented IWorkflowMgmtCapability
-      5.4.6 Corrected bugs found when unit testing
-      5.4.5 When the semaphore has been lowered, we no longer try to extend the expiration time
-      5.4.4 Corrected ActivitySemaphore interface
-      5.4.0 Added ActititySemaphore
-      5.3.0 Added WorkflowHelper.WhenAllActivities
-      5.2.2 Minor changes.
-      5.2.0 Changes inspired by writing the public documentation
-      5.1.11 Bump
-      5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
-      5.1.9 Made all classes that not need to be visible internal instead of public
-      5.1.8 Bump
-      5.1.6 Changed how we deal with database patching.
-      5.1.5 Now uses ToGuidString()
-      5.1.4 Missing inheritence to Activity{T}
-      5.1.3 ActivityAction{T} now inherits from Activity{T}
-      5.1.2 Support for larger enum values in database
-      5.1.1 Introduced IActivity{T}
-      5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
-      5.0.2 Introduced IWorkflowEngineRequiredCapabilities
-      5.0.1 Bump
-      5.0.0 New Contract repo
-      4.8.4 Bump
-      4.8.2 Added LogPurgeSeverityLevelThreshold
-      4.8.1 Option for PurgeLogStrategy
-      4.7.0 ActivityOption, option for LogSeverityLevelThreshold
-      4.6.3 Indented logging, made the logging available to the workflow programmer through IActivity
-      4.6.1 Added log for successful workflow
-      4.6.0 Added support for logging
-      4.5.0 Added support for activity context dictionary
-      4.4.2 Added backward compatibility
-      4.4.1 Extended IActivity
-      4.4.0 Refactored SelectWorkflowVersionAsync
-      4.3.2 Bump
-      4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
-      4.2.0 Introduced more settings for activities and a default value for them on workflow level
-      4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
-      4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
-      3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
-      3.3.0 Support for IDistributedLock
-      3.2.0 New fields for WorkflowInstance
-      3.1.0 Support for setting Success and Failed on an ActivityInstance
-      3.0.0 New capability contract structure.
-      2.0.1 Changed som method signatures
-      2.0.0 Refactored. One breaking change: You need to specify the activity position when calling the CreateActivity() method
-      1.12.5 Fixed bug in ActivityExecutor
-      1.12.4 Performance optimizations
-      1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
-      1.12.2 Fix in rest clients paths
-      1.12.0 Now preloads activity information when a workflow starts
-      1.11.2 Case confusion
-      1.11.1 Renamed some classes
-      1.11.0 Moved FailUrgency to ActivityVersion
-      1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data
-      1.9.0 Made SetParent and SetPrevious obsolete
-      1.8.3 Refactored ActivityForEachParallel
-      1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
-      1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
-      1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
-      1.7.0 Support for retry activity
-      1.6.0 Support for Cancel workflow
-      1.5.0 Service contract changes, mostly removing child things
-      1.4.0 Added error handling
-      1.3.0 Implemented WorkflowService and Workflow
-      1.2.0 Refactored ActivityInstance with respect to fields for failed activities
-      1.1.0-New syntax for flow programming
-      1.0.5 First release
-      Now supports
-    </PackageReleaseNotes>
+		6.21.0 Edited Forms ReadByIntervalWithPagingAsync to inculde Version and FormOverview filter.
+		6.20.0 Added RetryHalted in WorkflowService
+		6.19.1 Updated nugets to avoid versions with security risks
+		6.19.0 Added properties IBaseActivity.HasCompleted and BackgroundActivity.HasCompleted
+		6.18.7 Bump
+		6.18.5 Mgmt: Activity.Type
+		6.18.4 Mgmt: IFormService is IReadAllWithPaging
+		6.18.3 Mgmt: Activity.ResultAsJson
+		6.18.2 Mgmt: Workflow contains form id; FormService implementation
+		6.18.1 Fix: FormRestClient parameter names
+		6.18.0 IFormOverviewService/Controller
+		6.17.0 Support for searching/browsing instances, versions and forms
+		6.16.3 Bump
+		6.16.2 A Workflow from Nexus.Link.WorkflowEngine.Sdk.Services.Administration.WorkflowService now contains correct type of State
+		6.16.1 Support for plugins for when a workflow changes
+		6.15.4 Now resets the parent activity to null after a loop has been completed
+		6.15.3 Added runtime error if a default value was given for ForEachParallel or ForEachSequential
+		6.15.2 ForEachSequenctial() had the wrong generic signature
+		6.15.1 ActivityService.RetryAsync() now verifies that the WorkflowInstance has state Halted and it updates the state to Waiting
+		6.15.0 Introduced activity for try-catch. Activity type Sleep now accepts DateTimeOffset. Moved some parts of ActivityExecutor into LogicExecutor
+		6.14.3 Bump
+		6.14.2 Now throws FulcrumResourceLockedException instead of FulcrumTryAgainException
+		6.14.1 Made WorkflowVersionCollection class internal. The reroute to AM part of the code is now more obvious
+		6.14.0 Added WorkflowImplementation.SetDebugMode()
+		6.13.2 Fix: Base semaphore activity identity on the parent activity, not on the activity that raises the semaphore
+		6.13.1 Fix: Ignore JSON serialization for some fields to prevent self referencing loops
+		6.13.0 Fix: Handle multiple semaphores in the same workflow instance
+		6.12.4 Now doesn't try to convert circular objects when logging. Found a particularly nasty bug that only happened in loops of loops
+		6.12.2 ActivityFlow now catches errors that happens in the constructors of all the Activity types. Tried to establish better loggin messages at some cruicial points
+		6.12.1 New strategy for dealing with OperationCancelled where we restrict the time for activities.
+		To control that, we introduced two new settings: MaxTotalRunTimeSpan and PostponeAfterTimeSpan. Also minor logging adjustments
+		6.11.3 Added early fail if the reduced cancellation token has a cancellation request
+		6.11.2 ActivityPostponedException now inherits from RequestPostponedException.
+		Now has a reduced time for the activity methods to protect the workflow engine from early cancellation.
+		Fixed a bug in Sleep that made it always succeed, even when it shouldn't
+		6.11.1 Missing interface for IActivityParallel
+		6.11.0 Introduced SetExceptionHandler. Renamed SetDeadLine to SetDeadline. Fixed a bug in ActivitySemaphore
+		6.10.1 BackgroundActivity can now return handle sub-activities that are hidden by parent activities
+		6.10.0 Added activity SetDeadline(). Now throws FulcrumNotFoundException if a workflow parameter is undefined. Refactored BackgroundActivity
+		6.9.2 Fixed eternal loop bug + another serious bug where we lost track of all activities, resulting in the workflow thinking it has completed successfully
+		6.9.1 Tried again to fix the bug that we tried to fix in 6.7.5. The change needed was in Libraries.Crud (fixed in 3.13.0)
+		6.9.0 Tried to syntactially hinder bad activity flows like If().Then().Then()
+		6.8.0 Refactored how we work with ParentActivity and PreviousActivity. Introduced LoopIteration and JobNumber as replacements for Iteration
+		6.7.5 Now saves the ActivityInstance in an ordered fashion, to avoid foreign key constraints within the table
+		6.7.4 Unit tests + correcting bug for IActivity.Iteration
+		6.7.3 Now saves the ActivityVersions in an ordered fashion, to avoid foreign key constraints within the table
+		6.7.2 Renamed IActivityDoWhileOrUntil
+		6.7.1 Missing Iteration
+		6.7.0 Added ActivityDoUntil and ActivityWhileDo
+		6.6.2 Consolidated missing activity type ActivityLoopUntilTrue
+		6.6.0 Consolidated how ExecuteAsync() should work for activities, to enable BeginAsync()+EndAsync()
+		6.5.2 More logic around the lowering of a Throttle semaphore
+		6.5.1 Bump
+		6.5.0 Added ActivityLock and ActivityThrottle
+		6.4.3 Corrected a casting bug for parallel jobs that return a value
+		6.4.2 Now lowers all the semaphores of a workflow instance when it finishes with either state success or state failed
+		6.4.1 Added missing overloads
+		6.4.0 ActivityExecutor now understands FulcrumExceptions. Added ActivityIf and ActivitySwitch. Added SetMaxExecutionTimeSpan
+		6.3.1 Refactored ActivityExecutor to make the code more consistent and readable
+		6.3.0 Introduced lazy logging, i.e. log storage is delayed until the workflow is postponed or completed
+		6.2.0 Refactored to make it easier to do unit tests
+		6.1.0 Added Parallel. Fixed ActivitySleep bug, which could make it sleep forever
+		6.0.0 Refactored Semaphores and modified Sleep. Semaphore is not backwards compatible
+		5.7.2 Bump
+		5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
+		5.7.0 Added the Sleep activity
+		5.6.0 IActivity now has WorkflowStartedAt and ActivityStartedAt properties
+		5.5.10 Bump
+		5.5.6 Now validates WorkflowSummary before returning it
+		5.5.5 Added logging in CallAsyncManagerForAsynchronousRequests
+		5.5.3 Now enforce IActivityForEachParallel to have a key method
+		5.5.2 Fixed bug for WorkflowFailedException
+		5.5.1 Consolidated service contracts
+		5.5.0 Implemented IWorkflowMgmtCapability
+		5.4.6 Corrected bugs found when unit testing
+		5.4.5 When the semaphore has been lowered, we no longer try to extend the expiration time
+		5.4.4 Corrected ActivitySemaphore interface
+		5.4.0 Added ActititySemaphore
+		5.3.0 Added WorkflowHelper.WhenAllActivities
+		5.2.2 Minor changes.
+		5.2.0 Changes inspired by writing the public documentation
+		5.1.11 Bump
+		5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
+		5.1.9 Made all classes that not need to be visible internal instead of public
+		5.1.8 Bump
+		5.1.6 Changed how we deal with database patching.
+		5.1.5 Now uses ToGuidString()
+		5.1.4 Missing inheritence to Activity{T}
+		5.1.3 ActivityAction{T} now inherits from Activity{T}
+		5.1.2 Support for larger enum values in database
+		5.1.1 Introduced IActivity{T}
+		5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
+		5.0.2 Introduced IWorkflowEngineRequiredCapabilities
+		5.0.1 Bump
+		5.0.0 New Contract repo
+		4.8.4 Bump
+		4.8.2 Added LogPurgeSeverityLevelThreshold
+		4.8.1 Option for PurgeLogStrategy
+		4.7.0 ActivityOption, option for LogSeverityLevelThreshold
+		4.6.3 Indented logging, made the logging available to the workflow programmer through IActivity
+		4.6.1 Added log for successful workflow
+		4.6.0 Added support for logging
+		4.5.0 Added support for activity context dictionary
+		4.4.2 Added backward compatibility
+		4.4.1 Extended IActivity
+		4.4.0 Refactored SelectWorkflowVersionAsync
+		4.3.2 Bump
+		4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
+		4.2.0 Introduced more settings for activities and a default value for them on workflow level
+		4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
+		4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
+		3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
+		3.3.0 Support for IDistributedLock
+		3.2.0 New fields for WorkflowInstance
+		3.1.0 Support for setting Success and Failed on an ActivityInstance
+		3.0.0 New capability contract structure.
+		2.0.1 Changed som method signatures
+		2.0.0 Refactored. One breaking change: You need to specify the activity position when calling the CreateActivity() method
+		1.12.5 Fixed bug in ActivityExecutor
+		1.12.4 Performance optimizations
+		1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+		1.12.2 Fix in rest clients paths
+		1.12.0 Now preloads activity information when a workflow starts
+		1.11.2 Case confusion
+		1.11.1 Renamed some classes
+		1.11.0 Moved FailUrgency to ActivityVersion
+		1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data
+		1.9.0 Made SetParent and SetPrevious obsolete
+		1.8.3 Refactored ActivityForEachParallel
+		1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
+		1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
+		1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
+		1.7.0 Support for retry activity
+		1.6.0 Support for Cancel workflow
+		1.5.0 Service contract changes, mostly removing child things
+		1.4.0 Added error handling
+		1.3.0 Implemented WorkflowService and Workflow
+		1.2.0 Refactored ActivityInstance with respect to fields for failed activities
+		1.1.0-New syntax for flow programming
+		1.0.5 First release
+		6.13.0 Fix: Handle multiple semaphores in the same workflow instance
+		6.12.4 Now doesn't try to convert circular objects when logging. Found a particularly nasty bug that only happened in loops of loops
+		6.12.2 ActivityFlow now catches errors that happens in the constructors of all the Activity types. Tried to establish better loggin messages at some cruicial points
+		6.12.1 New strategy for dealing with OperationCancelled where we restrict the time for activities.
+		To control that, we introduced two new settings: MaxTotalRunTimeSpan and PostponeAfterTimeSpan. Also minor logging adjustments
+		6.11.3 Added early fail if the reduced cancellation token has a cancellation request
+		6.11.2 ActivityPostponedException now inherits from RequestPostponedException.
+		Now has a reduced time for the activity methods to protect the workflow engine from early cancellation.
+		Fixed a bug in Sleep that made it always succeed, even when it shouldn't
+		6.11.1 Missing interface for IActivityParallel
+		6.11.0 Introduced SetExceptionHandler. Renamed SetDeadLine to SetDeadline. Fixed a bug in ActivitySemaphore
+		6.10.1 BackgroundActivity can now return handle sub-activities that are hidden by parent activities
+		6.10.0 Added activity SetDeadline(). Now throws FulcrumNotFoundException if a workflow parameter is undefined. Refactored BackgroundActivity
+		6.9.2 Fixed eternal loop bug + another serious bug where we lost track of all activities, resulting in the workflow thinking it has completed successfully
+		6.9.1 Tried again to fix the bug that we tried to fix in 6.7.5. The change needed was in Libraries.Crud (fixed in 3.13.0)
+		6.9.0 Tried to syntactially hinder bad activity flows like If().Then().Then()
+		6.8.0 Refactored how we work with ParentActivity and PreviousActivity. Introduced LoopIteration and JobNumber as replacements for Iteration
+		6.7.5 Now saves the ActivityInstance in an ordered fashion, to avoid foreign key constraints within the table
+		6.7.4 Unit tests + correcting bug for IActivity.Iteration
+		6.7.3 Now saves the ActivityVersions in an ordered fashion, to avoid foreign key constraints within the table
+		6.7.2 Renamed IActivityDoWhileOrUntil
+		6.7.1 Missing Iteration
+		6.7.0 Added ActivityDoUntil and ActivityWhileDo
+		6.6.2 Consolidated missing activity type ActivityLoopUntilTrue
+		6.6.0 Consolidated how ExecuteAsync() should work for activities, to enable BeginAsync()+EndAsync()
+		6.5.2 More logic around the lowering of a Throttle semaphore
+		6.5.1 Bump
+		6.5.0 Added ActivityLock and ActivityThrottle
+		6.4.3 Corrected a casting bug for parallel jobs that return a value
+		6.4.2 Now lowers all the semaphores of a workflow instance when it finishes with either state success or state failed
+		6.4.1 Added missing overloads
+		6.4.0 ActivityExecutor now understands FulcrumExceptions. Added ActivityIf and ActivitySwitch. Added SetMaxExecutionTimeSpan
+		6.3.1 Refactored ActivityExecutor to make the code more consistent and readable
+		6.3.0 Introduced lazy logging, i.e. log storage is delayed until the workflow is postponed or completed
+		6.2.0 Refactored to make it easier to do unit tests
+		6.1.0 Added Parallel. Fixed ActivitySleep bug, which could make it sleep forever
+		6.0.0 Refactored Semaphores and modified Sleep. Semaphore is not backwards compatible
+		5.7.2 Bump
+		5.7.1 Now postpones the activity logs purge until the workflow logs purge, to avoid too many parallel connections with the database
+		5.7.0 Added the Sleep activity
+		5.6.0 IActivity now has WorkflowStartedAt and ActivityStartedAt properties
+		5.5.10 Bump
+		5.5.6 Now validates WorkflowSummary before returning it
+		5.5.5 Added logging in CallAsyncManagerForAsynchronousRequests
+		5.5.3 Now enforce IActivityForEachParallel to have a key method
+		5.5.2 Fixed bug for WorkflowFailedException
+		5.5.1 Consolidated service contracts
+		5.5.0 Implemented IWorkflowMgmtCapability
+		5.4.6 Corrected bugs found when unit testing
+		5.4.5 When the semaphore has been lowered, we no longer try to extend the expiration time
+		5.4.4 Corrected ActivitySemaphore interface
+		5.4.0 Added ActititySemaphore
+		5.3.0 Added WorkflowHelper.WhenAllActivities
+		5.2.2 Minor changes.
+		5.2.0 Changes inspired by writing the public documentation
+		5.1.11 Bump
+		5.1.10 Bug: A new assertion was wrong. Bug: WorkflowInstanceId could be lowercase. Bug: ResultAsJson was empty string
+		5.1.9 Made all classes that not need to be visible internal instead of public
+		5.1.8 Bump
+		5.1.6 Changed how we deal with database patching.
+		5.1.5 Now uses ToGuidString()
+		5.1.4 Missing inheritence to Activity{T}
+		5.1.3 ActivityAction{T} now inherits from Activity{T}
+		5.1.2 Support for larger enum values in database
+		5.1.1 Introduced IActivity{T}
+		5.1.0 Test support. CreateActivity now does not specify title. Added DefineActivity for WerkflowVersion
+		5.0.2 Introduced IWorkflowEngineRequiredCapabilities
+		5.0.1 Bump
+		5.0.0 New Contract repo
+		4.8.4 Bump
+		4.8.2 Added LogPurgeSeverityLevelThreshold
+		4.8.1 Option for PurgeLogStrategy
+		4.7.0 ActivityOption, option for LogSeverityLevelThreshold
+		4.6.3 Indented logging, made the logging available to the workflow programmer through IActivity
+		4.6.1 Added log for successful workflow
+		4.6.0 Added support for logging
+		4.5.0 Added support for activity context dictionary
+		4.4.2 Added backward compatibility
+		4.4.1 Extended IActivity
+		4.4.0 Refactored SelectWorkflowVersionAsync
+		4.3.2 Bump
+		4.3.0 Worked through the error handling in ActivityExecutor and WorkflowExecutor
+		4.2.0 Introduced more settings for activities and a default value for them on workflow level
+		4.1.0 Replaced AsyncRequestClient with AsyncRequestMgmtCapability
+		4.0.0 New base classes for customers; WorkflowVersions and WorkflowImplementation. Activity methods now has an interface for activity parameter
+		3.3.2 Updates WorkflowInstance .State .FinishedAt .IsComplete .ResultAsJson
+		3.3.0 Support for IDistributedLock
+		3.2.0 New fields for WorkflowInstance
+		3.1.0 Support for setting Success and Failed on an ActivityInstance
+		3.0.0 New capability contract structure.
+		2.0.1 Changed som method signatures
+		2.0.0 Refactored. One breaking change: You need to specify the activity position when calling the CreateActivity() method
+		1.12.5 Fixed bug in ActivityExecutor
+		1.12.4 Performance optimizations
+		1.12.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+		1.12.2 Fix in rest clients paths
+		1.12.0 Now preloads activity information when a workflow starts
+		1.11.2 Case confusion
+		1.11.1 Renamed some classes
+		1.11.0 Moved FailUrgency to ActivityVersion
+		1.10.0 Now cancels workflow if FailUrgency is CancelWorkflow. Initial load of workflow data
+		1.9.0 Made SetParent and SetPrevious obsolete
+		1.8.3 Refactored ActivityForEachParallel
+		1.8.2 Bug: ActivityLoopUntilTrue did always succeed after first iteration
+		1.8.1 Bug: Error callback was called even for success. AsyncWorkflowStatic.Context.ExecutionIsAsynchronous needed to be called at another point in the code.
+		1.8.0 Added RequestPostponedException.TryAgain, ExceptionAlertHandled
+		1.7.0 Support for retry activity
+		1.6.0 Support for Cancel workflow
+		1.5.0 Service contract changes, mostly removing child things
+		1.4.0 Added error handling
+		1.3.0 Implemented WorkflowService and Workflow
+		1.2.0 Refactored ActivityInstance with respect to fields for failed activities
+		1.1.0-New syntax for flow programming
+		1.0.5 First release
+		Now supports
+	</PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
