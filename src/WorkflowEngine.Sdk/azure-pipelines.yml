@@ -4,7 +4,7 @@ resources:
     type: github
     endpoint: 'xlent-link-admin'
     name: 'nexus-link/nexus-azure-devops-tools'
-    ref: 'refs/heads/dev'
+    ref: 'refs/heads/master'
 
 trigger:
   branches:
