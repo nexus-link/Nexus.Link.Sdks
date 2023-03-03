@@ -13,6 +13,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
     public class ActivityInstanceTableMemory : CrudMemory<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>, IActivityInstanceTable
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActivityInstanceTableMemory()
         {
             UniqueConstraintMethods += item => new ActivityInstanceRecordUnique

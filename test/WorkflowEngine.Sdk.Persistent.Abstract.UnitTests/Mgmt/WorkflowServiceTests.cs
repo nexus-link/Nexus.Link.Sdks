@@ -315,7 +315,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt
             var to = DateTimeOffset.Now;
 
             // Act
-            var result = await _formOverviewService.ReadByIntervalWithPagingAsync(from, to);
+            var result = await _formOverviewService.ReadByIntervalWithPagingAsync(from, to, FormOverviewIncludeFilter.All);
 
             // Assert
             result.Count.ShouldBe(2);

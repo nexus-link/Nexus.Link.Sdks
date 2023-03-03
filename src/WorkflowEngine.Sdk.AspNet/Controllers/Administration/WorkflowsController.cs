@@ -41,5 +41,14 @@ public abstract class WorkflowsController : ControllerBase, IWorkflowService
 
         await _capability.Workflow.CancelAsync(id, cancellationToken);
     }
-    
+
+    /// <inheritdoc />
+    [HttpPost("Workflows/{id}/RetryHalted")]
+    public async Task RetryHaltedAsync(string id, CancellationToken cancellationToken = default)
+    {
+        ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+
+        await _capability.Workflow.RetryHaltedAsync(id, cancellationToken);
+    }
+
 }

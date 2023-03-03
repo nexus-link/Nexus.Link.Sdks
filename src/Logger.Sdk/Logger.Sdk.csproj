@@ -19,8 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.7.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.25.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.7.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +29,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Logger.Sdk</PackageId>
-    <Version>3.0.13</Version>
+    <Version>3.0.15</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -38,7 +38,8 @@
     <Description>SDK for Nexus logging service (only for internal use).</Description>
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <PackageReleaseNotes>
-      3.0.13 Bump
+      3.0.15 Updated nugets to avoid versions with security risks
+      3.0.14 Bump
       3.0.3 Symbols
       3.0.2 Added CancellationToken where missing for async methods.
       2.2.2 Bump

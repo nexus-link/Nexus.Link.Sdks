@@ -25,6 +25,18 @@ public class BackgroundActivity
         FulcrumAssert.IsNotNull(executableActivity, CodeLocation.AsString());
         return executableActivity;
     }
+
+    /// <summary>
+    /// True if the background activity has completed
+    /// </summary>
+    public bool HasCompleted
+    {
+        get
+        {
+            var activity = GetActivity();
+            return activity is { HasCompleted: true };
+        }
+    }
 }
 
 /// <summary>
@@ -46,6 +58,18 @@ public class BackgroundActivity<TActivityReturns>
         var executableActivity = activity as IExecutableActivity<TActivityReturns>;
         FulcrumAssert.IsNotNull(executableActivity, CodeLocation.AsString());
         return executableActivity;
+    }
+
+    /// <summary>
+    /// True if the background activity has completed
+    /// </summary>
+    public bool HasCompleted
+    {
+        get
+        {
+            var activity = GetActivity();
+            return activity is { HasCompleted: true };
+        }
     }
 
     /// <summary>

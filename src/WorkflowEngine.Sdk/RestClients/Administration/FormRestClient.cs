@@ -22,13 +22,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
         }
 
         /// <inheritdoc />
-        public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default)
+        public async Task<IList<WorkflowFormOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default)
         {
             InternalContract.Require(instancesTo > instancesFrom, $"{nameof(instancesTo)} must be greater than {instancesFrom}");
 
             var relativeUrl = $"FormOverviews" +
                               $"?{nameof(instancesFrom)}={WebUtility.UrlEncode(instancesFrom.ToString("yyyy-MM-dd'T'HH:mm"))}" +
-                              $"&{nameof(instancesTo)}={WebUtility.UrlEncode(instancesTo.ToString("yyyy-MM-dd'T'HH:mm"))}";
+                              $"&{nameof(instancesTo)}={WebUtility.UrlEncode(instancesTo.ToString("yyyy-MM-dd'T'HH:mm"))}" +
+                              $"&{nameof(filter)}={WebUtility.UrlEncode(filter.ToString())}";
             return await GetAsync<List<WorkflowFormOverview>>(relativeUrl, cancellationToken: cancellationToken);
         }
 

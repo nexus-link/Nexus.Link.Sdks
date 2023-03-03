@@ -52,7 +52,7 @@ namespace AsyncManager.Sdk.UnitTests
         public async Task SendRequestCallsHttpSender()
         {
             // arrange
-            SetupSenderMockResponse(Guid.NewGuid().ToGuidString())
+            SetupSenderMockResponse2(Guid.NewGuid().ToGuidString())
                 .Verifiable();
             var client = new AsyncRequestClient(_restClients);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
@@ -72,7 +72,7 @@ namespace AsyncManager.Sdk.UnitTests
             var actualRequest = TestDataGenerator.DefaultAsyncHttpRequest;
             var client = new AsyncRequestClient(_restClients);
             var request = TestDataGenerator.CreateDefaultAsyncHttpRequest(client);
-            SetupSenderMockResponse(expectedRequestId)
+            SetupSenderMockResponse2(expectedRequestId)
                 .Verifiable();
 
             // act
@@ -134,6 +134,17 @@ namespace AsyncManager.Sdk.UnitTests
                     };
                     return response;
                 });
+        }
+
+        private IReturnsResult<IHttpSender> SetupSenderMockResponse2(string expectedRequestId)
+        {
+            return _httpSenderMock.Setup(sender => sender.SendRequestThrowIfNotSuccessAsync<string, HttpRequestCreate>(
+                    It.IsAny<HttpMethod>(),
+                    It.IsAny<string>(),
+                    It.IsAny<HttpRequestCreate>(),
+                    It.IsAny<Dictionary<string, List<string>>>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedRequestId);
         }
     }
 }

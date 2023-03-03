@@ -93,13 +93,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                     $" but workflow {workflowInstance.Id} is in state {workflowInstance.State}.");
             }
 
-            activityInstance.State = ActivityStateEnum.Waiting;
-            activityInstance.ResultAsJson = null;
-            activityInstance.ExceptionCategory = null;
-            activityInstance.ExceptionTechnicalMessage = null;
-            activityInstance.ExceptionFriendlyMessage = null;
-            activityInstance.AsyncRequestId = null;
-            activityInstance.ExceptionAlertHandled = false;
+            ClearValuesOfFailedActivity(activityInstance);
             await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
 
             workflowInstance.State = WorkflowStateEnum.Waiting;
@@ -108,6 +102,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId, cancellationToken);
 
             // TODO: Audit log
+        }
+
+        /// <inheritdoc />
+        private void ClearValuesOfFailedActivity(ActivityInstance activityInstance)
+        {
+            activityInstance.State = ActivityStateEnum.Waiting;
+            activityInstance.ResultAsJson = null;
+            activityInstance.ExceptionCategory = null;
+            activityInstance.ExceptionTechnicalMessage = null;
+            activityInstance.ExceptionFriendlyMessage = null;
+            activityInstance.AsyncRequestId = null;
+            activityInstance.ExceptionAlertHandled = false;
+            activityInstance.FinishedAt = null;
+
         }
     }
 }

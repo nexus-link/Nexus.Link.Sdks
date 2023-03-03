@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Crud.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
+    /// <inheritdoc />
     public interface IWorkflowFormTable:
         ICreateWithSpecifiedId<WorkflowFormRecordCreate, WorkflowFormRecord, Guid>,
         IRead<WorkflowFormRecord, Guid>, 
@@ -21,6 +23,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
         /// <summary>
         /// Get a list of forms with instance counts per state for the given interval
         /// </summary>
-        Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, CancellationToken cancellationToken = default);
+        Task<IList<WorkflowFormRecordOverview>> ReadByIntervalWithPagingAsync(DateTimeOffset instancesFrom, DateTimeOffset instancesTo, FormOverviewIncludeFilter filter, CancellationToken cancellationToken = default);
     }
 }

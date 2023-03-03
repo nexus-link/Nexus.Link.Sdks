@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -37,7 +37,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <Version>4.1.8</Version>
+    <Version>4.1.10</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -47,31 +47,32 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      4.1.8 Bump
+      4.1.10 Updated nugets to avoid versions with security risks
+      4.1.9 Bump
       4.1.3 Fix call to deleteinstanceAsync
-			4.1.1 Bump
-			4.1.0 Support for deleting instance
-			4.0.3 Bump
-			4.0.2 Symbols
-			4.0.1 Added CancellationToken where missing for async methods.
-			3.1.3 Bump
-			3.1.0 Added RestClient for Concepts service.
-			3.0.0 Moved ValueOrLockId to Libraries.Core.
-			2.0.23 Bump
-			2.0.17 Fix: PackageProjectUrl for this nuget package
-			2.0.16 Bump
-			2.0.0 Support refactored Authentication
-			1.3.2 Bump
-			1.3.0 Support for the new versions of TranslateOrLock/ReleaseLock, making it possible to use e.g. colons and slashes in the instance path.
-			1.1.14 Fix: Don't cache untranslated values in BatchTranslate
-			1.1.13 Bumped nexus nugets
-			1.1.4 Bumped version, consolidating versions
-			1.1.3 Bumped version, verifying new yaml and build.
-			1.1.2 UrlEncoded routes for TranslateClient
-			1.1.1 Updated dependencies.
-			1.1.0 Independent of other projects.
-			1.0.0 First release
-		</PackageReleaseNotes>
+      4.1.1 Bump
+      4.1.0 Support for deleting instance
+      4.0.3 Bump
+      4.0.2 Symbols
+      4.0.1 Added CancellationToken where missing for async methods.
+      3.1.3 Bump
+      3.1.0 Added RestClient for Concepts service.
+      3.0.0 Moved ValueOrLockId to Libraries.Core.
+      2.0.23 Bump
+      2.0.17 Fix: PackageProjectUrl for this nuget package
+      2.0.16 Bump
+      2.0.0 Support refactored Authentication
+      1.3.2 Bump
+      1.3.0 Support for the new versions of TranslateOrLock/ReleaseLock, making it possible to use e.g. colons and slashes in the instance path.
+      1.1.14 Fix: Don't cache untranslated values in BatchTranslate
+      1.1.13 Bumped nexus nugets
+      1.1.4 Bumped version, consolidating versions
+      1.1.3 Bumped version, verifying new yaml and build.
+      1.1.2 UrlEncoded routes for TranslateClient
+      1.1.1 Updated dependencies.
+      1.1.0 Independent of other projects.
+      1.0.0 First release
+    </PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

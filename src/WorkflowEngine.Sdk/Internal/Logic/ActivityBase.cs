@@ -142,6 +142,9 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     public string WorkflowInstanceId => ActivityInformation.Workflow.InstanceId;
 
     /// <inheritdoc />
+    public bool HasCompleted => Instance.HasCompleted;
+
+    /// <inheritdoc />
     public DateTimeOffset WorkflowStartedAt => ActivityInformation.Workflow.StartedAt;
 
     /// <inheritdoc />

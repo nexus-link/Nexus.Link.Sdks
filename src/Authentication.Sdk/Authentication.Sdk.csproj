@@ -20,11 +20,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
-    <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.31.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.25.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.7" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
@@ -33,7 +33,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-      <Version>3.4.4</Version>
+      <Version>3.4.6</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -43,42 +43,43 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.4.4 Bump
+        3.4.6 Updated nugets to avoid versions with security risks
+        3.4.5 Bump
         3.4.0 Support for IHashService
         3.3.10 Support for reset cache when creating NexusAuthenticationManager
-				3.3.9 Bump
-				3.3.8 Fix: Use dispose on RSACryptoServiceProvider
-				3.3.7 Bump
-				3.3.2 Symbols
-				3.3.1 Added missing CancellationToken for async methods.
-				2.2.24 Bump
-				2.2.23 Use ConcurrentDictionary for token cache in AuthenticationManager to avoid "The collection's state is no longer correct." (especially in unit tests)
-				2.2.22 Bump
-				2.2.21 Bump
-				2.2.14 Fix: PackageProjectUrl for this nuget package
-				2.2.13 Bump
-				2.2.6 Change log level on legacy tokens to from Warning to Verbose
-				2.2.5 Fix: In-pipe could be interupted by badly formatted token
-				2.2.2 Bump
-				2.2.0 Added interface IJwtTokenHandler
-				2.1.13 Bump
-				2.1.6 Added cancellation token
-				2.1.5 Added a convenience method for RSA public keys.
-				2.1.3 Support for public keys on .NET Core before 3.0
-				2.1.2 Lowered a reference version
-				2.1.1 Bumped nexus nugets
-				2.1.0 AuthenticationManager offers RsaKeySizeInBits
-				2.0.0 Support refactored Authentication
-				1.1.21 Bumped nexus nugets
-				1.1.9 Bumped version, consolidating versions
-				1.1.8 Bumped version, verifying new yaml and build.
-				1.1.7 Updated dependencies
-				1.1.3 Split into Sdk and Sdk.AspNet
-				1.1.2 Now also supports netstandard.
-				1.1.1 Moved namespace
-				1.0.1 Bumped
-				1.0.0 Changed to Nexus.Link libraries
-			</PackageReleaseNotes>
+        3.3.9 Bump
+        3.3.8 Fix: Use dispose on RSACryptoServiceProvider
+        3.3.7 Bump
+        3.3.2 Symbols
+        3.3.1 Added missing CancellationToken for async methods.
+        2.2.24 Bump
+        2.2.23 Use ConcurrentDictionary for token cache in AuthenticationManager to avoid "The collection's state is no longer correct." (especially in unit tests)
+        2.2.22 Bump
+        2.2.21 Bump
+        2.2.14 Fix: PackageProjectUrl for this nuget package
+        2.2.13 Bump
+        2.2.6 Change log level on legacy tokens to from Warning to Verbose
+        2.2.5 Fix: In-pipe could be interupted by badly formatted token
+        2.2.2 Bump
+        2.2.0 Added interface IJwtTokenHandler
+        2.1.13 Bump
+        2.1.6 Added cancellation token
+        2.1.5 Added a convenience method for RSA public keys.
+        2.1.3 Support for public keys on .NET Core before 3.0
+        2.1.2 Lowered a reference version
+        2.1.1 Bumped nexus nugets
+        2.1.0 AuthenticationManager offers RsaKeySizeInBits
+        2.0.0 Support refactored Authentication
+        1.1.21 Bumped nexus nugets
+        1.1.9 Bumped version, consolidating versions
+        1.1.8 Bumped version, verifying new yaml and build.
+        1.1.7 Updated dependencies
+        1.1.3 Split into Sdk and Sdk.AspNet
+        1.1.2 Now also supports netstandard.
+        1.1.1 Moved namespace
+        1.0.1 Bumped
+        1.0.0 Changed to Nexus.Link libraries
+      </PackageReleaseNotes>
     </PropertyGroup>
 
 </Project>
