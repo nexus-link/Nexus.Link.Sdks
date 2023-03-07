@@ -95,7 +95,6 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
         foreach (var (index, job) in _voidJobs)
         {
             JobNumber = index;
-            // TODO: Add JobDescriptor.
             WorkflowStatic.Context.IterationTitle = job.IterationTitle;
             var task = ExecuteJobWithoutReturnValueAsync((ActivityMethodAsync<IActivityParallel>)job.Job, cancellationToken);
             _voidTasks.Add(index, task);
