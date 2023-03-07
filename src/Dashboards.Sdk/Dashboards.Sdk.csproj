@@ -37,7 +37,7 @@
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.Dashboards.Sdk</PackageId>
-		<Version>1.0.6</Version>
+		<Version>1.0.7</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link;fulcrum;lever</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -47,11 +47,12 @@
 		<Copyright>Copyright ©2022 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-			1.0.6 Updated nugets
-			1.0.5 Updated nugets to avoid versions with security risks
-			1.0.4 Bump
-			1.0.1 Url fix
-			1.0.0 Initial release
+      1.0.7 Updated nugets
+      1.0.6 Updated nugets
+      1.0.5 Updated nugets to avoid versions with security risks
+      1.0.4 Bump
+      1.0.1 Url fix
+      1.0.0 Initial release
     </PackageReleaseNotes>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>

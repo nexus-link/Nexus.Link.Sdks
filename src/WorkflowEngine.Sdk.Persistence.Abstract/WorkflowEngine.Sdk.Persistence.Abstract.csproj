@@ -33,7 +33,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>3.6.0</Version>
+    <Version>3.6.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -43,43 +43,44 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.6.1 Bump
       3.6.0 Added Activity.IterationTitle.
       3.5.0 Edited Forms ReadByIntervalWithPagingAsync to inculde Version and FormOverview filter.
-		3.4.3 Updated nugets to avoid versions with security risks
-		3.4.2 Bump
-		3.4.0 WorkflowFormRecordOverview
-		3.3.0 Support for searching/browsing instances, versions and forms
-		3.2.2 Bump
-		3.2.0 Added AbsolutePosition to ActivityInstanceRecord
-		3.1.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
-		3.0.3 Bump
-		3.0.0 Refactored Semaphores. Not backwards compatible
-		2.6.0 Added HashTable
-		2.5.3 Bump
-		2.5.1 Added WorkflowSemaphore
-		2.4.7 Bump
-		2.4.5 Removed obsolete tables, corrections due to new test cases
-		2.4.4 Bump
-		2.4.3 Changed how we deal with database patching
-		2.4.2 Bump
-		2.4.0 netstandard2.1
-		2.3.2 Bump
-		2.3.1 Added purge threshold, changed method signatures
-		2.3.0 Purge for logs
-		2.2.0 Added support for logging.
-		2.1.0 Added ActivityInstanceRecordCreate.ContextAsJson
-		2.0.4 Bump
-		2.0.3 Support for IDistributedLock
-		2.0.0 Refactored methods
-		1.2.0 Create and Update now returns the resulting object
-		1.1.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
-		1.1.2 Unique for ActivityVersionRecord
-		1.1.0 Moved FailUrgency to ActivityVersion
-		1.0.5 Use IDatabaseOptions
-		1.0.4 Moved FailUrgency to Create.
-		1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
-		1.0.0 First release
-	</PackageReleaseNotes>
+      3.4.3 Updated nugets to avoid versions with security risks
+      3.4.2 Bump
+      3.4.0 WorkflowFormRecordOverview
+      3.3.0 Support for searching/browsing instances, versions and forms
+      3.2.2 Bump
+      3.2.0 Added AbsolutePosition to ActivityInstanceRecord
+      3.1.1 Added ParentActivityInstanceId to WorkflowSemaphoreQueueRecord
+      3.0.3 Bump
+      3.0.0 Refactored Semaphores. Not backwards compatible
+      2.6.0 Added HashTable
+      2.5.3 Bump
+      2.5.1 Added WorkflowSemaphore
+      2.4.7 Bump
+      2.4.5 Removed obsolete tables, corrections due to new test cases
+      2.4.4 Bump
+      2.4.3 Changed how we deal with database patching
+      2.4.2 Bump
+      2.4.0 netstandard2.1
+      2.3.2 Bump
+      2.3.1 Added purge threshold, changed method signatures
+      2.3.0 Purge for logs
+      2.2.0 Added support for logging.
+      2.1.0 Added ActivityInstanceRecordCreate.ContextAsJson
+      2.0.4 Bump
+      2.0.3 Support for IDistributedLock
+      2.0.0 Refactored methods
+      1.2.0 Create and Update now returns the resulting object
+      1.1.3 DatabasePatchSettings.DatabasePatchLevelVerifier is now optional and obsolete
+      1.1.2 Unique for ActivityVersionRecord
+      1.1.0 Moved FailUrgency to ActivityVersion
+      1.0.5 Use IDatabaseOptions
+      1.0.4 Moved FailUrgency to Create.
+      1.0.2 Refactored ActivityInstance with respect to fields for failed activities.
+      1.0.0 First release
+    </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
