@@ -33,6 +33,12 @@ public delegate Task<TMethodReturns> ActivityForEachParallelMethodAsync<TMethodR
 public delegate string GetKeyMethod<in T>(T item);
 
 /// <summary>
+/// Get the iteration title for a specific item.
+/// </summary>
+/// <typeparam name="T">The type of the item</typeparam>
+public delegate string GetIterationTitleMethod<in T>(T item);
+
+/// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.ForEachParallel"/>.
 /// </summary>
 /// <typeparam name="TItem">The type for an individual item.</typeparam>

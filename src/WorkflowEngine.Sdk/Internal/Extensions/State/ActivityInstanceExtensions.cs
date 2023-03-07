@@ -35,6 +35,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.AbsolutePosition = source.AbsolutePosition;
             target.AsyncRequestId = source.AsyncRequestId;
             target.ExceptionAlertHandled = source.ExceptionAlertHandled;
+            target.IterationTitle = source.IterationTitle;
             return target;
         }
 
@@ -81,6 +82,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.AbsolutePosition = source.AbsolutePosition;
             target.AsyncRequestId = source.AsyncRequestId;
             target.ExceptionAlertHandled = source.ExceptionAlertHandled;
+            target.IterationTitle = source.IterationTitle;
             return target;
         }
 

@@ -22,7 +22,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 3, 2, 1 };
-            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, (_, _, _) => Task.CompletedTask);
+            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, null, (_, _, _) => Task.CompletedTask);
 
             // Act
             await activity.ExecuteAsync();
@@ -37,7 +37,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 1, 2, 3, 4, 5, 99 };
-            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, (_, _, _) => Task.CompletedTask);
+            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, null, (_, _, _) => Task.CompletedTask);
 
             // Act
             await activity.ForEachSequentialAsync();
@@ -55,7 +55,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var actualValue = 0;
             var lockObject = new object();
             var values = new List<int> { 1, 2, 3, 4, 5, 99 };
-            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values,
+            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, null,
                 (i, a, _) =>
                 {
                     lock (lockObject)
@@ -81,7 +81,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 3, 2, 1 };
-            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values);
+            var activity = new ActivityForEachSequential<int>(_activityInformationMock, values, null);
 
             // Act
             await activity.ExecuteAsync((_, _, _) => Task.CompletedTask);
@@ -101,7 +101,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 3, 2, 1, 0 };
-            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult("a"));
+            var activity = new ActivityForEachSequential<string, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult("a"), null);
 
             // Act
             await activity.ExecuteAsync();
@@ -119,7 +119,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
         {
             // Arrange
             var values = new List<int> { 1, 2, 3, 4, 5, 99 };
-            var activity = new ActivityForEachSequential<int, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult(1));
+            var activity = new ActivityForEachSequential<int, int>(_activityInformationMock, values, (_, _, _) => Task.FromResult(1), null);
 
             // Act
             await activity.ForEachSequentialAsync();
@@ -141,7 +141,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
                 {
                     await Task.Delay(1, ct);
                     return a.LoopIteration + ": " + i;
-                });
+                }, null);
 
             // Act
             var result = await activity.ForEachSequentialAsync();

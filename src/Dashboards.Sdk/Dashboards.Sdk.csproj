@@ -28,7 +28,7 @@
 		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.12.1" />
 		<PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
 		<PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
-		<PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.5.6" />
+		<PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -15,24 +15,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="ActivityForEachSequential{TItem}" />
 internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEachSequential<TItem>
 {
+    private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     private ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
     public IEnumerable<TItem> Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, IEnumerable<TItem> items)
+        IActivityInformation activityInformation, IEnumerable<TItem> items,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod)
         : base(activityInformation)
     {
+        _getIterationTitleMethod = getIterationTitleMethod;
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
     }
-    public ActivityForEachSequential(
-        IActivityInformation activityInformation, IEnumerable<TItem> items,
+    public ActivityForEachSequential(IActivityInformation activityInformation, IEnumerable<TItem> items,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod,
         ActivityForEachSequentialMethodAsync<TItem> methodAsync)
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+        _getIterationTitleMethod = getIterationTitleMethod;
         _methodAsync = methodAsync;
         Items = items;
     }
@@ -56,6 +60,17 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
         foreach (var item in Items)
         {
             LoopIteration++;
+            try
+            {
+                WorkflowStatic.Context.IterationTitle = _getIterationTitleMethod == null
+                    ? LoopIteration.ToString()
+                    : _getIterationTitleMethod(item);
+            }
+            catch (Exception)
+            {
+                // The _getIterationTitleMethod failed, use the current iteration number
+                Instance.IterationTitle = LoopIteration.ToString();
+            }
 #pragma warning disable CS0618 // Type or member is obsolete
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
@@ -76,26 +91,32 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     LoopActivity<IList<TMethodReturns>>, IActivityForEachSequential<TMethodReturns, TItem>
 {
     private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
+    private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     public IEnumerable<TItem> Items { get; }
+    public GetIterationTitleMethod<TItem> GetIterationTitleMethod { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachSequential(
-        IActivityInformation activityInformation, IEnumerable<TItem> items)
+        IActivityInformation activityInformation, IEnumerable<TItem> items,
+        GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         Items = items;
+        GetIterationTitleMethod = getIterationTitleMethod;
     }
 
     public ActivityForEachSequential(
         IActivityInformation activityInformation,
         IEnumerable<TItem> items,
-        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync)
+        ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> methodAsync
+        , GetIterationTitleMethod<TItem> getIterationTitleMethod)
         : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
+        _getIterationTitleMethod = getIterationTitleMethod;
         Items = items;
     }
 
@@ -121,6 +142,17 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         foreach (var item in Items)
         {
             LoopIteration++;
+            try
+            {
+                Instance.IterationTitle = _getIterationTitleMethod == null
+                    ? LoopIteration.ToString()
+                    : _getIterationTitleMethod(item);
+            }
+            catch (Exception)
+            {
+                // The _getIterationTitleMethod failed, use the current iteration number
+                Instance.IterationTitle = LoopIteration.ToString();
+            }
             var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct),
                 $"Item{LoopIteration}", cancellationToken);
             resultList.Add(result);

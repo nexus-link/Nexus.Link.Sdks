@@ -412,13 +412,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc/>
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items)
+        public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
             try
             {
-                return new ActivityForEachParallel<TItem>(ActivityInformation, items);
+                return new ActivityForEachParallel<TItem>(ActivityInformation, items, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -427,14 +427,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync)
+        public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
-                return new ActivityForEachParallel<TItem>(ActivityInformation, items, methodAsync);
+                return new ActivityForEachParallel<TItem>(ActivityInformation, items, methodAsync, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -444,13 +444,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc/>
         [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
-        public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
+        public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             try
             {
-                return new ActivityForEachSequential<TItem>(ActivityInformation, items);
+                return new ActivityForEachSequential<TItem>(ActivityInformation, items, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -459,14 +459,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync)
+        public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
-                return new ActivityForEachSequential<TItem>(ActivityInformation, items, methodAsync);
+                return new ActivityForEachSequential<TItem>(ActivityInformation, items, getIterationTitleMethod, methodAsync);
             }
             catch (Exception e)
             {
@@ -890,7 +890,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc/>
         [Obsolete("Please use ForEachParallel() with a method parameter. Obsolete since 2022-05-01")]
-        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod)
+        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
@@ -898,7 +898,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachParallel)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
-                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod);
+                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -907,7 +907,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync)
+        public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
@@ -916,7 +916,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachParallel)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
-                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync);
+                return new ActivityForEachParallel<TActivityReturns, TItem>(ActivityInformation, items, getKeyMethod, methodAsync, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -926,14 +926,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         /// <inheritdoc/>
         [Obsolete("Please use ForEachSequential() with a method parameter. Obsolete since 2022-05-01")]
-        public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items)
+        public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
-                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items);
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, getIterationTitleMethod);
             }
             catch (Exception e)
             {
@@ -942,7 +942,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync)
+        public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
             InternalContract.RequireNotNull(items, nameof(items));
@@ -950,7 +950,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
-                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, methodAsync);
+                return new ActivityForEachSequential<TActivityReturns, TItem>(ActivityInformation, items, methodAsync, getIterationTitleMethod);
             }
             catch (Exception e)
             {

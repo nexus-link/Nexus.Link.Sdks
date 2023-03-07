@@ -89,6 +89,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                     ResultAsJson = activityRecord.Instance.ResultAsJson,
                     FriendlyErrorMessage = activityRecord.Instance.ExceptionFriendlyMessage,
                     TechnicalErrorMessage = activityRecord.Instance.ExceptionTechnicalMessage,
+                    IterationTitle = activityRecord.Instance.IterationTitle,
                     WaitingForWorkflow = await GetWaitingForWorkflowAsync(activityRecord)
                 };
                 activity.Children = await BuildActivityTreeAsync(activity, activityRecord.Children);

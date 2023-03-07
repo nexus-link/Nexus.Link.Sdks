@@ -21,9 +21,9 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
 {
     private readonly Dictionary<int, Task<object>> _objectTasks = new();
     private readonly Dictionary<int, Task> _voidTasks = new();
-    private readonly Dictionary<int, object> _objectJobs = new();
-    private readonly Dictionary<int, Type> _objectTypes = new();
-    private readonly Dictionary<int, ActivityMethodAsync<IActivityParallel>> _voidJobs = new();
+    private readonly Dictionary<int, JobDescriptor> _objectJobs = new();
+    private readonly Dictionary<int, JobDescriptor> _voidJobs = new();
+
     private int _maxJobIndex;
 
     public ActivityParallel(IActivityInformation activityInformation)
@@ -33,27 +33,42 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync)
+    public IActivityParallel AddJob(int index, ActivityMethodAsync<IActivityParallel> jobAsync, string jobTitle = null)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
         InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
         InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
-        _voidJobs.Add(index, jobAsync);
+
+        _voidJobs.Add(index, new JobDescriptor
+        {
+            Index = index,
+            Job = jobAsync,
+            IterationTitle = jobTitle
+        });
+
         if (index > _maxJobIndex) _maxJobIndex = index;
         return this;
     }
 
     /// <inheritdoc />
-    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null)
+    public IActivityParallel AddJob<TMethodReturns>(int index, ActivityMethodAsync<IActivityParallel, TMethodReturns> jobAsync, ActivityDefaultValueMethodAsync<TMethodReturns> getDefaultValueAsync = null, string jobTitle = null)
     {
         InternalContract.RequireGreaterThan(0, index, nameof(index));
         InternalContract.RequireNotNull(jobAsync, nameof(jobAsync));
         InternalContract.Require(!_voidJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
         InternalContract.Require(!_objectJobs.Keys.Contains(index), $"{nameof(index)} {index} already exists.");
+
+
         // Saving different method signatures together is complicated. Step 1: Save them as object.
-        _objectJobs.Add(index, jobAsync);
-        _objectTypes.Add(index, typeof(TMethodReturns));
+        _objectJobs.Add(index, new JobDescriptor
+        {
+            Index = index,
+            Job = jobAsync,
+            Type = typeof(TMethodReturns),
+            IterationTitle = jobTitle
+        });
+
         if (index > _maxJobIndex) _maxJobIndex = index;
         return this;
     }
@@ -80,25 +95,30 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
         foreach (var (index, job) in _voidJobs)
         {
             JobNumber = index;
-            var task = ExecuteJobWithoutReturnValueAsync(job, cancellationToken);
+            WorkflowStatic.Context.IterationTitle = job.IterationTitle;
+            var task = ExecuteJobWithoutReturnValueAsync((ActivityMethodAsync<IActivityParallel>)job.Job, cancellationToken);
             _voidTasks.Add(index, task);
         }
+
         foreach (var (index, job) in _objectJobs)
         {
             JobNumber = index;
-            var task = ExecuteJobWithReturnValueAsync(job, cancellationToken);
+            WorkflowStatic.Context.IterationTitle = job.IterationTitle;
+            var task = ExecuteJobWithReturnValueAsync(job.Job, cancellationToken);
             _objectTasks.Add(index, task);
         }
+
         var taskList = new List<Task>(_voidTasks.Values);
         taskList.AddRange(_objectTasks.Values);
         await WorkflowHelper.WhenAllActivities(taskList);
         var jobResults = new JobResults();
+
         foreach (var (index, task) in _objectTasks)
         {
             try
             {
                 var o = await task;
-                jobResults.Add(index, o, _objectTypes[index]);
+                jobResults.Add(index, o, _objectJobs[index].Type);
             }
             catch (WorkflowImplementationShouldNotCatchThisException outerException)
             {
@@ -110,6 +130,7 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
                 await this.LogInformationAsync($"Ignoring exception for parallel job {index}", e, cancellationToken);
             }
         }
+
         return jobResults;
     }
 

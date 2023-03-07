@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -40,6 +41,8 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
                 FulcrumAssert.IsGreaterThan(0, parentActivity.InternalIteration!.Value, CodeLocation.AsString());
                 NestedIterations.Add(parentActivity.InternalIteration.Value);
                 NestedPosition = $"{parentActivity.NestedPosition}[{parentActivity.InternalIteration.Value}].{ActivityInformation.Position}";
+
+                Instance.IterationTitle = WorkflowStatic.Context.IterationTitle;                
             }
             catch (FulcrumAssertionFailedException e)
             {
