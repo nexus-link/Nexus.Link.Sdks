@@ -30,7 +30,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncCaller.Sdk</PackageId>
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -40,7 +40,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.2.0 Dropped support for net461
+      3.2.1 Dropped support for net461
       3.1.4 Updated nugets to avoid versions with security risks
       3.1.3 Bump
       3.1.0 RequestHandler updates related to HttpStatusCode 423 (Locked)
