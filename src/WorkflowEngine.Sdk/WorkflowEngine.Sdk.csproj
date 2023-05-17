@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.23.0</Version>
+    <Version>6.23.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,7 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.23.0 Added new exception; RetryActivityFromCatchException, to be used when retrying an Action after a catch
+      6.23.1 Added new exception; RetryActivityFromCatchException, to be used when retrying an Action after a catch
       6.22.1 Middleware can now detect other versions of the AM Mock
       6.22.0 Added Activity.IterationTitle
       6.21.1 Added Retry logic in SemaphoreService when calling AsyncManager.
