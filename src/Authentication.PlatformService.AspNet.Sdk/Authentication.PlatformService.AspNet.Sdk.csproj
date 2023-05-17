@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</AssemblyName>
 
@@ -19,12 +19,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
     <Reference Include="System.Web" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
   </ItemGroup>
@@ -36,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <Version>1.0.63</Version>
+      <Version>1.1.0</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -46,6 +46,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        1.1.0 Dropped support for net461, now has net472 as minimum
         1.0.63 Updated nugets to avoid versions with security risks
         1.0.62 Bump
         1.0.50 Symbols

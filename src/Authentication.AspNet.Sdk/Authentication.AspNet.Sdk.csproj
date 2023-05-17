@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Nexus.Link.Authentication.AspNet.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Authentication.AspNet.Sdk</AssemblyName>
 
@@ -18,14 +18,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.9" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.11" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
     <Reference Include="System.Web" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
   </ItemGroup>
@@ -39,7 +39,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.1.6</Version>
+      <Version>3.2.0</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -49,6 +49,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        3.2.0 Dropped support for net461, now has net472 as minimum
         3.1.6 Updated nugets to avoid versions with security risks
         3.1.5 Bump
         3.1.0 TokenValidationHandler now supports ReentryAuthentication

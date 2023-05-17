@@ -85,6 +85,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.IterationTitle = source.IterationTitle;
             return target;
         }
+        
+        /// <summary>
+        /// Reset the activity instance as if it has never been executed.
+        /// </summary>
+        public static void Reset(this ActivityInstance activityInstance)
+        {
+            activityInstance.State = ActivityStateEnum.Waiting;
+            activityInstance.ResultAsJson = null;
+            activityInstance.ExceptionCategory = null;
+            activityInstance.ExceptionTechnicalMessage = null;
+            activityInstance.ExceptionFriendlyMessage = null;
+            activityInstance.AsyncRequestId = null;
+            activityInstance.ExceptionAlertHandled = false;
+            activityInstance.FinishedAt = null;
+        }
 
     }
 }

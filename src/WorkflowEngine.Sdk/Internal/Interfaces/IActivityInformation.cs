@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
@@ -18,14 +17,12 @@ internal interface IActivityInformation
     /// If the current activity is a child activity, then this is the parent activity for this child, otherwise null.
     /// </summary>
     [JsonIgnore]
-    [CanBeNull]
     IInternalActivity Parent { get; }
 
     /// <summary>
     /// The previous activity
     /// </summary>
     [JsonIgnore]
-    [CanBeNull]
     IInternalActivity Previous { get; }
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Nexus.Link.Configurations.Sdk</RootNamespace>
     <AssemblyName>Nexus.Link.Configurations.Sdk</AssemblyName>
 
@@ -18,17 +18,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
-    <Reference Include="System.Runtime.Caching" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
   </ItemGroup>
 
@@ -48,6 +40,7 @@
       <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.3.0 Dropped support for net461
         2.2.15 Updated nugets to avoid versions with security risks
         2.2.14 Bump
         2.2.4 Symbols

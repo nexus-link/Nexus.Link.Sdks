@@ -126,7 +126,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             });
             activity.CatchAll((_, exception, _) =>
             {
-                actualCaughtCategory = "default";
+                actualCaughtCategory = "all";
                 actualCategory = exception.ExceptionCategory;
                 return Task.CompletedTask;
             });
@@ -143,6 +143,35 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var key = $"Catch {expectedCaughtCategory}";
             logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey(key);
             logicExecutor.ExecuteWithoutReturnValueCounter[key].ShouldBe(1);
+            logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(2);
+        }
+
+        [Fact]
+        public async Task TryCatch_Given_FailAndRetry_Gives_Retried()
+        {
+            // Arrange
+            var category1 = ActivityExceptionCategoryEnum.BusinessError;
+            var firstTime = true;
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityAction(_activityInformationMock, (_, _) => Task.FromException(new ActivityFailedException(category1, "Fail", "Fail")));
+            activity.CatchAll((_, _, _) =>
+            {
+                if (!firstTime) return Task.CompletedTask;
+                firstTime = false;
+                throw new RetryActivityFromCatchException();
+            });
+
+            // Act
+            await activity.ActionAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(0);
+            logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Try");
+            logicExecutor.ExecuteWithoutReturnValueCounter["Try"].ShouldBe(2);
+            var key = "Catch all";
+            logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey(key);
+            logicExecutor.ExecuteWithoutReturnValueCounter[key].ShouldBe(2);
             logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(2);
         }
         #endregion
@@ -202,7 +231,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(0);
             logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("Try");
             logicExecutor.ExecuteWithReturnValueCounter["Try"].ShouldBe(1);
-            var key = "Catch default";
+            var key = "Catch all";
             logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey(key);
             logicExecutor.ExecuteWithReturnValueCounter[key].ShouldBe(1);
             logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(2);
@@ -227,7 +256,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(0);
             logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("Try");
             logicExecutor.ExecuteWithReturnValueCounter["Try"].ShouldBe(1);
-            var key = "Catch default";
+            var key = "Catch all";
             logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey(key);
             logicExecutor.ExecuteWithReturnValueCounter[key].ShouldBe(1);
             logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(2);
@@ -256,7 +285,7 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             });
             activity.CatchAll((_, exception, _) =>
             {
-                actualCaughtCategory = "default";
+                actualCaughtCategory = "all";
                 actualCategory = exception.ExceptionCategory;
                 return Task.FromResult((int)expectedCategory);
             });
@@ -273,6 +302,35 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
             var key = $"Catch {expectedCaughtCategory}";
             logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey(key);
             logicExecutor.ExecuteWithReturnValueCounter[key].ShouldBe(1);
+            logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(2);
+        }
+
+        [Fact]
+        public async Task RV_TryCatch_Given_FailAndRetry_Gives_Retried()
+        {
+            // Arrange
+            var category1 = ActivityExceptionCategoryEnum.BusinessError;
+            var firstTime = true;
+            var logicExecutor = new LogicExecutorMock();
+            _workflowInformationMock.LogicExecutor = logicExecutor;
+            var activity = new ActivityAction<int>(_activityInformationMock, null, (_, _) => throw new ActivityFailedException(category1, "Fail", "Fail"));
+            activity.CatchAll((_, _, _) =>
+            {
+                if (!firstTime) return Task.FromResult(1);
+                firstTime = false;
+                throw new RetryActivityFromCatchException();
+            });
+
+            // Act
+            await activity.ActionAsync();
+
+            // Assert
+            logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(0);
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey("Try");
+            logicExecutor.ExecuteWithReturnValueCounter["Try"].ShouldBe(2);
+            var key = "Catch all";
+            logicExecutor.ExecuteWithReturnValueCounter.ShouldContainKey(key);
+            logicExecutor.ExecuteWithReturnValueCounter[key].ShouldBe(2);
             logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(2);
         }
 

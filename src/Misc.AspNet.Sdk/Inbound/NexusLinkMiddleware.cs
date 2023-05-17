@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -147,7 +148,9 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                     {
                         if (Options.Features.RedirectAsynchronousRequests.Enabled)
                         {
-                            if (FulcrumApplication.Context.ManagedAsynchronousRequestId == null)
+
+                            if (FulcrumApplication.Context.ManagedAsynchronousRequestId == null 
+                                || StartedFromOtherMockService(context))
                             {
                                 throw await RerouteToAsyncRequestMgmtAndCreateExceptionAsync(context);
                             }
@@ -188,6 +191,20 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             }
         }
 
+        /// <summary>
+        /// This is for the case where we run async manager as a mock service in more than one application and they call each other
+        /// </summary>
+        private bool StartedFromOtherMockService(HttpContext context)
+        {
+            InternalContract.RequireNotNull(context, nameof(context));
+
+            if (!Options.Features.RedirectAsynchronousRequests.Enabled) return false;
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (Options.Features.RedirectAsynchronousRequests.RequestService is not ICanDetectMockInstances service) return false;
+            var mockId = ExtractAsyncManagerMockIdFromHeader(context, service);
+            return mockId != service.AsyncManagerMockInstanceId;
+        }
+
         #region RedirectAsynchronousRequests
         private static string ExtractManagedAsynchronousRequestIdFromHeader(HttpContext context)
         {
@@ -206,6 +223,25 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                 $"There was more than one execution id in the header: {string.Join(", ", executionsArray)}. The first one was picked as the Fulcrum execution id from here on.";
             Log.LogWarning(message);
             return executionsArray[0];
+        }
+
+        private static string ExtractAsyncManagerMockIdFromHeader(HttpContext context, ICanDetectMockInstances mockService)
+        {
+            var request = context?.Request;
+
+            FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
+            if (request == null) return null;
+            if (!request.Headers.TryGetValue(mockService.AsyncManagerMockInstanceIdHeaderName, out var mockIds))
+            {
+                return null;
+            }
+            var mockIdArray = mockIds.ToArray();
+            if (!mockIdArray.Any()) return null;
+            if (mockIdArray.Length == 1) return mockIdArray[0];
+            var message =
+                $"There was more than one mock id in the header {mockService.AsyncManagerMockInstanceIdHeaderName}: {string.Join(", ", mockIdArray)}. The first one was picked as the Fulcrum execution id from here on.";
+            Log.LogWarning(message);
+            return mockIdArray[0];
         }
         private async Task<Exception> RerouteToAsyncRequestMgmtAndCreateExceptionAsync(HttpContext context)
         {

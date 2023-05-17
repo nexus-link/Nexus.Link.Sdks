@@ -32,15 +32,15 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.2" />
-    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.9" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.3.1" />
+    <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.11" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Misc.AspNet.Sdk</PackageId>
-    <Version>1.1.2</Version>
+    <Version>1.2.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -50,6 +50,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.2.1 Bump
+      1.2.0 Can detect other instances of AM mock
       1.1.2 Updated nugets to avoid versions with security risks
       1.1.1 ConvertExceptionToResponse now can convert FulcrumHttpRedirectException to HTTP response
       1.0.4 Bump

@@ -37,15 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.2.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.26.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.15.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.33.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="3.3.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>3.2.9</Version>
+    <Version>3.2.10</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -55,6 +55,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      3.2.10 Bump
       3.2.9 Updated nugets to avoid versions with security risks
       3.2.8 Bump
       3.2.0 UpdateRequestAuthenticationAsync

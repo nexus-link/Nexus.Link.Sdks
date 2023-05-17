@@ -8,6 +8,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
@@ -42,18 +43,22 @@ internal class ActivityAction : Activity, IActivityAction
     }
 
     /// <inheritdoc/>
-    [Obsolete("Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
-    public Task ExecuteAsync(ActivityMethodAsync<IActivityAction> methodAsync, CancellationToken cancellationToken = default)
+    [Obsolete(
+        "Please use the ExecuteAsync() method without a method in concert with the constructor that has a method parameter. Obsolete since 2022-05-01.")]
+    public Task ExecuteAsync(ActivityMethodAsync<IActivityAction> methodAsync,
+        CancellationToken cancellationToken = default)
     {
-        InternalContract.Require(_methodAsync == null, $"You must use the {nameof(IActivityAction.ExecuteAsync)}() method that has no method parameter.");
+        InternalContract.Require(_methodAsync == null,
+            $"You must use the {nameof(IActivityAction.ExecuteAsync)}() method that has no method parameter.");
         _methodAsync = methodAsync;
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync( ct => methodAsync(this, ct), cancellationToken);
+        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, ct), cancellationToken);
     }
 
     /// <inheritdoc />
     public ITryCatchActivity Catch(ActivityExceptionCategoryEnum category, TryCatchMethodAsync methodAsync)
     {
-        InternalContract.Require(!_catchAsyncMethods.ContainsKey(category), $"A catch method for category {category} has already been set for this activity.");
+        InternalContract.Require(!_catchAsyncMethods.ContainsKey(category),
+            $"A catch method for category {category} has already been set for this activity.");
         _catchAsyncMethods.Add(category, methodAsync);
         return this;
     }
@@ -71,7 +76,8 @@ internal class ActivityAction : Activity, IActivityAction
     /// <inheritdoc />
     public IExecutableActivity CatchAll(TryCatchMethodAsync methodAsync)
     {
-        InternalContract.Require(_catchAllMethodAsync == null, "A catch-all method has already been set for this activity.");
+        InternalContract.Require(_catchAllMethodAsync == null,
+            "A catch-all method has already been set for this activity.");
         _catchAllMethodAsync = methodAsync;
         return this;
     }
@@ -85,10 +91,12 @@ internal class ActivityAction : Activity, IActivityAction
             return Task.CompletedTask;
         });
     }
+
     /// <inheritdoc/>
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
+        InternalContract.Require(_methodAsync != null,
+            $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
     }
 
@@ -96,22 +104,37 @@ internal class ActivityAction : Activity, IActivityAction
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
-        try
+        while (true)
         {
-            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), methodName, cancellationToken);
-        }
-        catch (ActivityFailedException e)
-        {
-            var catchName = e.ExceptionCategory.ToString();
-            if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
+            try
             {
-                methodAsync = _catchAllMethodAsync;
-                catchName = "all";
+                await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), methodName,
+                    cancellationToken);
+                return;
             }
+            catch (ActivityFailedException e)
+            {
+                var catchName = e.ExceptionCategory.ToString();
+                if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
+                {
+                    methodAsync = _catchAllMethodAsync;
+                    catchName = "all";
+                }
 
-            if (methodAsync == null) throw;
-            await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, e, ct), $"Catch {catchName}",
-                cancellationToken);
+                if (methodAsync == null) throw;
+                try
+                {
+                    await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, e, ct),
+                        $"Catch {catchName}",
+                        cancellationToken);
+                    return;
+                }
+                catch (RetryActivityFromCatchException)
+                {
+                    Instance.Reset();
+                    // Try the action again
+                }
+            }
         }
     }
 }
@@ -131,12 +154,12 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     private readonly Dictionary<ActivityExceptionCategoryEnum, TryCatchMethodAsync<TActivityReturns>> _catchAsyncMethods = new();
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
-    public ActivityAction(IActivityInformation activityInformation, 
+    public ActivityAction(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
         : base(activityInformation, defaultValueMethodAsync)
     {
     }
-    public ActivityAction(IActivityInformation activityInformation, 
+    public ActivityAction(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync,
         ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync)
         : base(activityInformation, defaultValueMethodAsync)
@@ -186,34 +209,46 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-         return await ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
+        return await ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
     internal async Task<TActivityReturns> ActionAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
-        try
+        while (true)
         {
-            var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), methodName,
-                cancellationToken);
-            return result;
-        }
-        catch (ActivityFailedException e)
-        {
-            var catchName = e.ExceptionCategory.ToString();
-            if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
+            try
             {
-                methodAsync = _catchAllMethodAsync;
-                catchName = "default";
-            }
-
-            if (methodAsync == null) throw;
-
-            var result =
-                await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(this, e, ct), $"Catch {catchName}",
+                var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), methodName,
                     cancellationToken);
-            return result;
+                return result;
+            }
+            catch (ActivityFailedException e)
+            {
+                var catchName = e.ExceptionCategory.ToString();
+                if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
+                {
+                    methodAsync = _catchAllMethodAsync;
+                    catchName = "all";
+                }
+
+                if (methodAsync == null) throw;
+
+                try
+                {
+                    var result =
+                        await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(this, e, ct),
+                            $"Catch {catchName}",
+                            cancellationToken);
+                    return result;
+                }
+                catch (RetryActivityFromCatchException)
+                {
+                    Instance.Reset();
+                    // Try the action again
+                }
+            }
         }
     }
 }
