@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
@@ -50,14 +51,26 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         }
 
         /// <inheritdoc />
-        public Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = new CancellationToken())
+        [Obsolete("Please use CreateRequestCopyWithNewAuthenticationAsync. Please note that it returns a new request id for the copy that will be used for retrying. Obsolete from 2023-05-17.")]
+        public async Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = new CancellationToken())
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
-            InternalContract.RequireNotNull(input, nameof(input));
-            InternalContract.RequireValidated(input, nameof(input));
+            InternalContract.RequireNotNull(newAuthentication, nameof(newAuthentication));
+            InternalContract.RequireValidated(newAuthentication, nameof(newAuthentication));
+
+            await CreateRequestCopyWithNewAuthenticationAsync(requestId, newAuthentication, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<string> CreateRequestCopyWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
+            InternalContract.RequireNotNull(newAuthentication, nameof(newAuthentication));
+            InternalContract.RequireValidated(newAuthentication, nameof(newAuthentication));
 
             var relativeUrl = $"{WebUtility.UrlEncode(requestId)}/Authentication";
-            return PostNoResponseContentAsync(relativeUrl, input, cancellationToken: cancellationToken);
+            var newRequestId = await PostAsync<string, RequestAuthentication>(relativeUrl, newAuthentication, cancellationToken: cancellationToken);
+            return newRequestId;
         }
     }
 }
