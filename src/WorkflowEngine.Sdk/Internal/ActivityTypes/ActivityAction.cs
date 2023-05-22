@@ -17,6 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 /// <inheritdoc cref="IActivityAction" />
 internal class ActivityAction : Activity, IActivityAction
 {
+    private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
 
     /// <summary>
@@ -106,34 +107,48 @@ internal class ActivityAction : Activity, IActivityAction
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
         while (true)
         {
-            try
+            TryGetContext(SerializedException, out string serializedException);
+            if (string.IsNullOrWhiteSpace(serializedException))
             {
-                await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), methodName,
-                    cancellationToken);
-                return;
-            }
-            catch (ActivityFailedException e)
-            {
-                var catchName = e.ExceptionCategory.ToString();
-                if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
-                {
-                    methodAsync = _catchAllMethodAsync;
-                    catchName = "all";
-                }
-
-                if (methodAsync == null) throw;
                 try
                 {
-                    await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, e, ct),
-                        $"Catch {catchName}",
+                    await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), methodName,
                         cancellationToken);
                     return;
                 }
-                catch (RetryActivityFromCatchException)
+                catch (ActivityFailedException e)
                 {
+                    serializedException = e.Serialize();
+                    if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
+                        && _catchAllMethodAsync == null)
+                    {
+                        throw;
+                    }
+
                     Instance.Reset();
-                    // Try the action again
+                    SetContext(SerializedException, serializedException);
                 }
+            }
+            var exception = ActivityFailedException.Deserialize(serializedException);
+            var catchName = exception.ExceptionCategory.ToString();
+            if (!_catchAsyncMethods.TryGetValue(exception.ExceptionCategory, out var methodAsync))
+            {
+                methodAsync = _catchAllMethodAsync;
+                catchName = "all";
+            }
+            FulcrumAssert.IsNotNull(methodAsync, CodeLocation.AsString());
+            try
+            {
+                await LogicExecutor.ExecuteWithoutReturnValueAsync(
+                    ct => methodAsync!(this, exception, ct),
+                    $"Catch {catchName}",
+                    cancellationToken);
+                return;
+            }
+            catch (RetryActivityFromCatchException)
+            {
+                Instance.Reset();
+                // The loop will try the action again
             }
         }
     }
@@ -141,6 +156,7 @@ internal class ActivityAction : Activity, IActivityAction
 
 internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
 {
+    private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
 
     /// <summary>
@@ -218,36 +234,48 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
         while (true)
         {
+            TryGetContext(SerializedException, out string serializedException);
+            if (string.IsNullOrWhiteSpace(serializedException))
+            {
+                try
+                {
+                    var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), methodName,
+                        cancellationToken);
+                    return result;
+                }
+                catch (ActivityFailedException e)
+                {
+                    serializedException = e.Serialize();
+                    if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
+                        && _catchAllMethodAsync == null)
+                    {
+                        throw;
+                    }
+
+                    Instance.Reset();
+                    SetContext(SerializedException, serializedException);
+                }
+            }
+            var exception = ActivityFailedException.Deserialize(serializedException);
+            var catchName = exception.ExceptionCategory.ToString();
+            if (!_catchAsyncMethods.TryGetValue(exception.ExceptionCategory, out var methodAsync))
+            {
+                methodAsync = _catchAllMethodAsync;
+                catchName = "all";
+            }
+            FulcrumAssert.IsNotNull(methodAsync, CodeLocation.AsString());
             try
             {
-                var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), methodName,
+                var result = await LogicExecutor.ExecuteWithReturnValueAsync(
+                    ct => methodAsync!(this, exception, ct),
+                    $"Catch {catchName}",
                     cancellationToken);
                 return result;
             }
-            catch (ActivityFailedException e)
+            catch (RetryActivityFromCatchException)
             {
-                var catchName = e.ExceptionCategory.ToString();
-                if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out var methodAsync))
-                {
-                    methodAsync = _catchAllMethodAsync;
-                    catchName = "all";
-                }
-
-                if (methodAsync == null) throw;
-
-                try
-                {
-                    var result =
-                        await LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(this, e, ct),
-                            $"Catch {catchName}",
-                            cancellationToken);
-                    return result;
-                }
-                catch (RetryActivityFromCatchException)
-                {
-                    Instance.Reset();
-                    // Try the action again
-                }
+                Instance.Reset();
+                // The loop will try the action again
             }
         }
     }

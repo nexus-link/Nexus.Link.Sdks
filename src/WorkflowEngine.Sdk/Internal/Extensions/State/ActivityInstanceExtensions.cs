@@ -99,6 +99,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             activityInstance.AsyncRequestId = null;
             activityInstance.ExceptionAlertHandled = false;
             activityInstance.FinishedAt = null;
+            activityInstance.ContextDictionary.Clear();
         }
 
     }
