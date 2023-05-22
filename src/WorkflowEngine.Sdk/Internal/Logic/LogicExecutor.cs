@@ -146,6 +146,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 throw;
             }
+            catch (RetryActivityFromCatchException)
+            {
+                throw;
+            }
             catch (RequestPostponedException)
             {
                 throw;
@@ -177,7 +181,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             {
                 // Unexpected exception. Our conclusion is that the workflow implementer has made a programmers error.
                 var exception = new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
-                    $"An activity method threw an unexpected exception, which is considered a workflow implementation error. This is the exception:\r{e}",
+                    $"An activity method threw an unexpected exception {e.GetType().Name}. The workflow programmer is expected to catch this exception and throw an {nameof(ActivityFailedException)}. More information about the exception:\r{e}",
                     $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
                 throw exception;
             }
