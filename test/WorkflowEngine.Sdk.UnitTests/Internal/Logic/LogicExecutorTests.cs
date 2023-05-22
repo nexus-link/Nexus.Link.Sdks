@@ -177,6 +177,31 @@ namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        public async Task Execute_Given_ThrowsRetryActivityFromCatchException_Gives_Rethrows(bool withReturnValue)
+        {
+            // Arrange
+            var exceptionToThrow = new RetryActivityFromCatchException();
+
+            // Act & assert
+            RetryActivityFromCatchException thrownException;
+            if (withReturnValue)
+            {
+                thrownException = await _executor
+                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, "Method with return value")
+                    .ShouldThrowAsync<RetryActivityFromCatchException>();
+            }
+            else
+            {
+                thrownException = await _executor
+                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!, "Method without return value")
+                    .ShouldThrowAsync<RetryActivityFromCatchException>();
+            }
+            thrownException.ShouldBe(exceptionToThrow);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
         public async Task Execute_Given_ThrowsRequestPostponedException_Gives_Rethrows(bool withReturnValue)
         {
             // Arrange

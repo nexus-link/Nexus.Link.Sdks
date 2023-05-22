@@ -68,7 +68,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (Exception e)
                 when (e is ActivityFailedException
-                          or RetryActivityFromCatchException
+                           or RetryActivityFromCatchException
                           or RequestPostponedException
                           or WorkflowFastForwardBreakException
                           or WorkflowImplementationShouldNotCatchThisException
