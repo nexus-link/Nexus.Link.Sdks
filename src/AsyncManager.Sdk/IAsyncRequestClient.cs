@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
@@ -44,12 +45,23 @@ namespace Nexus.Link.AsyncManager.Sdk
 
         /// <summary>
         /// Update the authentication of a <see cref="HttpRequest"/>,
+        /// typically used by the calling client when receiving AM callback with 401 response.
+        /// </summary>
+        /// <param name="requestId">The identification of <see cref="HttpRequest"/></param>
+        /// <param name="input">The new authentication</param>
+        /// <param name="cancellationToken">Token for cancelling a call</param>
+        /// <returns></returns>
+        [Obsolete("Please use CreateRequestCopyWithNewAuthenticationAsync. Please note that it returns a new request id for the copy that will be used for retrying. Obsolete from 2023-05-17.", true)]
+        Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update the authentication of a <see cref="HttpRequest"/>,
         /// typically used by the calling client when receving AM callback with 401 response.
         /// </summary>
         /// <param name="requestId">The identification of <see cref="HttpRequest"/></param>
         /// <param name="input">The new authentication</param>
         /// <param name="cancellationToken">Token for cancelling a call</param>
         /// <returns></returns>
-        Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default);
+        Task<string> CreateRequestCopyWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default);
     }
 }

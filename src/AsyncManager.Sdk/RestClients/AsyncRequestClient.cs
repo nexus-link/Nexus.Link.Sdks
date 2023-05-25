@@ -69,11 +69,18 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         }
 
         /// <inheritdoc />
+        [Obsolete("Please use CreateRequestCopyWithNewAuthenticationAsync. Please note that it returns a new request id for the copy that will be used for retrying. Obsolete from 2023-05-17.", true)]
         public Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc />
+        public Task<string> CreateRequestCopyWithNewAuthenticationAsync(string requestId, RequestAuthentication input, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
-            return _capability.Request.RetryRequestWithNewAuthenticationAsync(requestId, input, cancellationToken);
+            return _capability.Request.CreateRequestCopyWithNewAuthenticationAsync(requestId, input, cancellationToken);
         }
 
         /// <summary>
