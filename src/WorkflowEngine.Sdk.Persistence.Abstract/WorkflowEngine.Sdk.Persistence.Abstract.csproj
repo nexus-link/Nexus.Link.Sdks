@@ -28,7 +28,7 @@
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.1" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.4.1" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.8" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.17.1" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.17.3" />
   </ItemGroup>
 
   <PropertyGroup>

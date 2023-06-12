@@ -32,7 +32,7 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.0.0" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.1.0" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.11" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />

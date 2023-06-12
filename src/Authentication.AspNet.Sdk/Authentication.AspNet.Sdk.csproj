@@ -39,7 +39,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.2.0</Version>
+      <Version>3.2.1</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -49,6 +49,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        3.2.1 Bump
         3.2.0 Dropped support for net461, now has net472 as minimum
         3.1.6 Updated nugets to avoid versions with security risks
         3.1.5 Bump
