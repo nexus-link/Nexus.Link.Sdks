@@ -52,7 +52,7 @@ namespace Authentication.Sdk.UnitTests
             exception.InnerException.ShouldBeOfType<WebException>();
             exception.InnerException.Message.ShouldBe(errorMessage);
 
-            var problems = FulcrumApplication.Setup.HealthTracker.GetProblems(tenant);
+            var problems = FulcrumApplication.Setup.HealthTracker.GetHealthProblems(tenant);
             problems.ShouldNotBeNull();
             var problem = problems.FirstOrDefault();
             problem.ShouldNotBeNull();

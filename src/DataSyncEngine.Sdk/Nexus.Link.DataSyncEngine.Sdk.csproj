@@ -18,12 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.DatasyncEngine.Sdk</PackageId>
-    <Version>2.1.1</Version>
+    <Version>2.1.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -33,7 +33,7 @@
     <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.1.1 Bump
+      2.1.2 Bump
       2.1.0 Dropped support for net461
       2.0.12 Updated nugets to avoid versions with security risks
       2.0.11 Bump

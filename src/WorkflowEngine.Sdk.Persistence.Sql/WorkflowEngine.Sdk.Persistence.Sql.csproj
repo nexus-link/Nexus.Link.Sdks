@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.6.2" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.17.3" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="2.17.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.8.4</Version>
+    <Version>2.8.5</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -57,7 +57,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.8.4 Bump
+      2.8.5 Bump
       2.8.0 Added Activity.IterationTitle.
       2.7.0 Edited Forms ReadByIntervalWithPagingAsync to inculde Version and FormOverview filter.
       2.6.3 Updated nugets to avoid versions with security risks

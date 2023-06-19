@@ -12,6 +12,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Health.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
@@ -146,15 +147,13 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                     }
                     catch (RequestPostponedException)
                     {
-                        if (Options.Features.RedirectAsynchronousRequests.Enabled)
+                        if (!Options.Features.RedirectAsynchronousRequests.Enabled) throw;
+                        if (FulcrumApplication.Context.ManagedAsynchronousRequestId == null
+                            || StartedFromOtherMockService(context))
                         {
-
-                            if (FulcrumApplication.Context.ManagedAsynchronousRequestId == null 
-                                || StartedFromOtherMockService(context))
-                            {
-                                throw await RerouteToAsyncRequestMgmtAndCreateExceptionAsync(context);
-                            }
+                            throw await RerouteToAsyncRequestMgmtAndCreateExceptionAsync(context);
                         }
+
                         throw;
                     }
                     if (Options.Features.LogRequestAndResponse.Enabled)

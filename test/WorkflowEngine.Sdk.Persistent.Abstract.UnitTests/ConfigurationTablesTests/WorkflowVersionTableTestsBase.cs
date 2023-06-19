@@ -177,6 +177,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Configura
             var recordToUpdate =
                 await ConfigurationTables.WorkflowVersion.CreateWithSpecifiedIdAndReturnAsync(id, recordToCreate);
             recordToUpdate.MinorVersion++;
+            await Task.Delay(100);
 
             // Act
             var record = await ConfigurationTables.WorkflowVersion.UpdateAndReturnAsync(id, recordToUpdate);

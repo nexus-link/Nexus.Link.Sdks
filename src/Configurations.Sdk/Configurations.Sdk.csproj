@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.28.1" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.28.3" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
   </ItemGroup>
@@ -30,7 +30,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.3.1</Version>
+      <Version>2.3.2</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -40,7 +40,7 @@
       <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        2.3.1 Bump
+        2.3.2 Bump
         2.3.0 Dropped support for net461
         2.2.15 Updated nugets to avoid versions with security risks
         2.2.14 Bump

@@ -31,10 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.28.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.28.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.1" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.13.1" />
     <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.1" />
     <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.4.1" />
@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.23.6</Version>
+    <Version>6.23.7</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,7 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.23.6 Bump
+      6.23.7 Bump
       6.23.4 LogicExecutor now accepts RetryActivityFromCatchException as a valid exception
       6.23.2 Refactored how we deal with catch in ActivityAction
       6.23.1 Added new exception; RetryActivityFromCatchException, to be used when retrying an Action after a catch

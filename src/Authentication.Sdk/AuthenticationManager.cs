@@ -323,6 +323,10 @@ namespace Nexus.Link.Authentication.Sdk
 
             var url = $"{fundamentalsBaseUrl}/api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
             HttpResponseMessage response;
+            var php = new PotentialHealthProblem(PublicKeyHealthStateId, PublicKeyHealthStateResource, PublicKeyHealthStateTitle)
+            {
+                Tenant = tenant
+            };
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -330,14 +334,11 @@ namespace Nexus.Link.Authentication.Sdk
             }
             catch (Exception e)
             {
-                var state = FulcrumApplication.Setup.HealthTracker.GetProblemState(PublicKeyHealthStateId, tenant) ??
-                            new ProblemState(PublicKeyHealthStateId, PublicKeyHealthStateResource, PublicKeyHealthStateTitle, tenant);
-                state.AddError(e);
-                FulcrumApplication.Setup.HealthTracker.SetProblemState(state);
-
+                if (e is OperationCanceledException) throw;
+                php.Fail(e);
                 throw new FulcrumResourceException(PublicKeyHealthStateTitle, e);
             }
-            FulcrumApplication.Setup.HealthTracker.ResetProblemState(PublicKeyHealthStateId, tenant);
+            php.Success();
 
             if (!response.IsSuccessStatusCode)
             {

@@ -18,14 +18,14 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.KeyTranslator.Sdk</PackageId>
-    <Version>4.2.0</Version>
+    <Version>4.2.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -35,6 +35,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      4.2.1 Bump
       4.2.0 Dropped support for net461
       4.1.10 Updated nugets to avoid versions with security risks
       4.1.9 Bump
