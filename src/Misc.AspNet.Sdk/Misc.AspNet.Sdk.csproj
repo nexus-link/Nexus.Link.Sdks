@@ -34,13 +34,13 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.1.0" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.11" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.27.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.28.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Misc.AspNet.Sdk</PackageId>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -50,7 +50,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      1.2.3 Bump
+      1.2.4 Bump
       1.2.0 Can detect other instances of AM mock
       1.1.2 Updated nugets to avoid versions with security risks
       1.1.1 ConvertExceptionToResponse now can convert FulcrumHttpRedirectException to HTTP response
