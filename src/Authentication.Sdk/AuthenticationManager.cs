@@ -12,12 +12,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Nexus.Link.Authentication.Sdk.Logic;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Health.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.Core.Platform.Authentication;
 using Nexus.Link.Libraries.Web.Pipe.Outbound;
 using Nexus.Link.Libraries.Web.Platform.Authentication;
+using Nexus.Link.Libraries.Web.RestClientHelper;
 
 namespace Nexus.Link.Authentication.Sdk
 {
@@ -27,7 +31,7 @@ namespace Nexus.Link.Authentication.Sdk
     public class AuthenticationManager : IJwtTokenHandler
     {
         private static readonly string Namespace = typeof(AuthenticationManager).Namespace;
-        private static readonly HttpClient HttpClient = HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers());
+        internal static IHttpClient HttpClient = new HttpClientWrapper(HttpClientFactory.Create(OutboundPipeFactory.CreateDelegatingHandlers()));
         private static readonly ConcurrentDictionary<string, TokenCache> TokenCaches = new ConcurrentDictionary<string, TokenCache>();
         private readonly TokenCache _tokenCache;
         public Tenant Tenant { get; }
@@ -307,28 +311,43 @@ namespace Nexus.Link.Authentication.Sdk
             rsa.ImportParameters(parameters);
         }
 
-        protected static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type, CancellationToken token)
+        private const string PublicKeyHealthStateId = "6F10CF35-DAA8-4061-8983-DE0002F917D6";
+        private const string PublicKeyHealthStateResource = "Authentication";
+        private const string PublicKeyHealthStateTitle = "Could not get the public key for authentication";
+
+        internal static async Task<string> GetPublicKeyXmlAsync(Tenant tenant, string fundamentalsBaseUrl, string type, CancellationToken token)
         {
             var key = $"{type}|{tenant}";
             var publicKeyXml = PublicKeyCache.Get<string>(key);
             if (!string.IsNullOrWhiteSpace(publicKeyXml)) return publicKeyXml;
 
             var url = $"{fundamentalsBaseUrl}/api/v2/Organizations/{tenant.Organization}/Environments/{tenant.Environment}/Tokens/{type}";
+            HttpResponseMessage response;
             try
             {
-                var response = await HttpClient.GetAsync(url, token);
-                if (!response.IsSuccessStatusCode) throw new Exception($"Response code {response.StatusCode}");
-                var result = await response.Content.ReadAsStringAsync();
-                var publicKey = JsonConvert.DeserializeObject<string>(result);
-                PublicKeyCache.Set(key, publicKey, DateTimeOffset.MaxValue);
-                return publicKey;
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                response = await HttpClient.SendAsync(request, token);
             }
             catch (Exception e)
             {
-                Log.LogError($"Failed fetching '{type}' public key from '{url}'", e);
-            }
+                var state = FulcrumApplication.Setup.HealthTracker.GetProblemState(PublicKeyHealthStateId, tenant) ??
+                            new ProblemState(PublicKeyHealthStateId, PublicKeyHealthStateResource, PublicKeyHealthStateTitle, tenant);
+                state.AddError(e);
+                FulcrumApplication.Setup.HealthTracker.SetProblemState(state);
 
-            return null;
+                throw new FulcrumResourceException(PublicKeyHealthStateTitle, e);
+            }
+            FulcrumApplication.Setup.HealthTracker.ResetProblemState(PublicKeyHealthStateId, tenant);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Log.LogError($"Failed fetching '{type}' public key from '{url}'. Response code {response.StatusCode}");
+                return null;
+            }
+            var result = await response.Content.ReadAsStringAsync();
+            var publicKey = JsonConvert.DeserializeObject<string>(result);
+            PublicKeyCache.Set(key, publicKey, DateTimeOffset.MaxValue);
+            return publicKey;
         }
 
         public static bool HasRole(string role, ClaimsPrincipal principal)
