@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.32" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +32,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Implementations</PackageId>
-    <Version>3.4.18</Version>
+    <Version>3.4.19</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -42,7 +42,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.4.18 Bump
+      3.4.19 Bump
       3.4.15 Updated nugets to avoid versions with security risks
       3.4.14 Bump
       3.4.5 Symbols
