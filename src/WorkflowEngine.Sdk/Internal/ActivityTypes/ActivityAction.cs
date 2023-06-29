@@ -11,6 +11,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
@@ -19,6 +20,8 @@ internal class ActivityAction : Activity, IActivityAction
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
+
+    internal ISemaphoreSupport SemaphoreSupport { get; set; }
 
     /// <summary>
     /// The "catch all" method if none of the <see cref="_catchAsyncMethods"/> is applicable.
@@ -93,6 +96,26 @@ internal class ActivityAction : Activity, IActivityAction
         });
     }
 
+    /// <inheritdoc />
+    public IActivityAction UnderLock(string resourceIdentifier)
+    {
+        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
+        {
+            Activity = this
+        };
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    {
+        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
+        {
+            Activity = this
+        };
+        return this;
+    }
+
     /// <inheritdoc/>
     public Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
@@ -112,12 +135,18 @@ internal class ActivityAction : Activity, IActivityAction
             {
                 try
                 {
-                    await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), methodName,
+                    await LogicExecutor.ExecuteWithoutReturnValueAsync(async ct =>
+                        {
+                            if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
+                            await _methodAsync(this, ct);
+                            if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                        }, methodName,
                         cancellationToken);
                     return;
                 }
                 catch (ActivityFailedException e)
                 {
+                    if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)
@@ -158,6 +187,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
+
+    internal ISemaphoreSupport SemaphoreSupport { get; set; }
 
     /// <summary>
     /// The "catch all" method if none of the <see cref="_catchAsyncMethods"/> is applicable.
@@ -222,6 +253,27 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     }
 
     /// <inheritdoc />
+    public IActivityAction<TActivityReturns> UnderLock(string resourceIdentifier)
+    {
+        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
+        {
+            Activity = this
+        };
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction<TActivityReturns> WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    {
+        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
+        {
+            Activity = this
+        };
+        return this;
+    }
+
+
+    /// <inheritdoc />
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
@@ -239,12 +291,19 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
             {
                 try
                 {
-                    var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(this, ct), methodName,
+                    var result = await LogicExecutor.ExecuteWithReturnValueAsync(async ct =>
+                    {
+                        if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
+                        var returnValue = await _methodAsync(this, ct);
+                        if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                        return returnValue;
+                    }, methodName,
                         cancellationToken);
                     return result;
                 }
                 catch (ActivityFailedException e)
                 {
+                    if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)

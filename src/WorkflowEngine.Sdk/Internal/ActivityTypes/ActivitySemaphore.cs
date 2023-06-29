@@ -13,6 +13,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivitySemaphore" />
+[Obsolete($"Please use {nameof(ActivityLock)} to lock within a workflow form and {nameof(ActivityThrottle)} to reduce the number of concurrent calls to a common resource (over all workflows). Obsolete since 2022-06-15.")]
 internal class ActivitySemaphore : Activity, IActivitySemaphore
 {
     private const string ContextSemaphoreHolderId = "SemaphoreHolderId";
