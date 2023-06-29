@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -9,6 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Lock"/>, i.e. an activity that is executed while a resource is locked.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 public interface IActivityLock : IActivity
 {
     /// <summary>
@@ -38,6 +40,7 @@ public interface IActivityLock : IActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Lock"/>
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 public interface IActivityLockThen : IExecutableActivity
 {
     /// <summary>
@@ -56,6 +59,7 @@ public interface IActivityLockThen : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Lock"/>.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 public interface IActivityLock<TActivityReturns> : IActivity
 {
     /// <summary>
@@ -86,6 +90,7 @@ public interface IActivityLock<TActivityReturns> : IActivity
 /// An activity of type <see cref="ActivityTypeEnum.Lock"/>
 /// </summary>
 /// <typeparam name="TActivityReturns"></typeparam>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 public interface IActivityLockThen<TActivityReturns> : IExecutableActivity<TActivityReturns>
 {
     /// <summary>

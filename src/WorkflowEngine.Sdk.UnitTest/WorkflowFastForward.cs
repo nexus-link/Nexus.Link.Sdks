@@ -132,7 +132,9 @@ public abstract class WorkflowFastForward : WorkflowImplementation
             case ActivityTypeEnum.Switch:
             case ActivityTypeEnum.ForEachParallel:
             case ActivityTypeEnum.ForEachSequential:
+#pragma warning disable CS0618
             case ActivityTypeEnum.Semaphore:
+#pragma warning restore CS0618
             case ActivityTypeEnum.Throttle:
             case ActivityTypeEnum.Lock:
             case ActivityTypeEnum.Sleep:

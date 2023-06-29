@@ -62,6 +62,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
         /// <returns></returns>
+        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
         IActivityLock Lock(string resourceIdentifier);
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
         /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
+        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null);
 
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync)
@@ -101,14 +103,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
         IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null);
         /// <summary>
-                                                                                                     /// 
-                                                                                                     /// </summary>
-                                                                                                     /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
-                                                                                                     /// <returns></returns>
+        /// 
+        /// </summary>
+        /// <param name="resourceIdentifier">A string that uniquely identifies the resource that is protected by the semaphore.</param>
+        /// <returns></returns>
+        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.UnderLock)} or {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         IActivitySemaphore Semaphore(string resourceIdentifier);
     }
 
-    public interface 
+    public interface
         IActivityFlow<TActivityReturns> : IActivityFlowBase
     {
         IActivityFlow<TActivityReturns> SetParameter<T>(string name, T value);
@@ -177,6 +180,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// </summary>
         /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
         /// <returns></returns>
+        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
         IActivityLock<TActivityReturns> Lock(string resourceIdentifier);
 
         /// <summary>
@@ -187,6 +191,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
         /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
+        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan);
 
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)

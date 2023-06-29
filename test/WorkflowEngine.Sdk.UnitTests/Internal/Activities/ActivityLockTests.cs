@@ -9,6 +9,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
+#pragma warning disable CS0618
 
 namespace WorkflowEngine.Sdk.UnitTests.Internal.Activities
 {

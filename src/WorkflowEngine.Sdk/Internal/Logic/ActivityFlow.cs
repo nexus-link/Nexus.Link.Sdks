@@ -239,6 +239,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
         public IActivityLock Lock(string resourceIdentifier)
         {
             if (resourceIdentifier != null)
@@ -257,6 +258,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         public IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
@@ -806,6 +808,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
         public IActivityLock<TActivityReturns> Lock(string resourceIdentifier)
         {
             if (resourceIdentifier != null)
@@ -825,6 +828,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         public IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));

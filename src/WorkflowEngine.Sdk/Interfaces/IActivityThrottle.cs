@@ -10,6 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 /// An activity of type <see cref="ActivityTypeEnum.Throttle"/>, i.e. an activity where we try to reduce the number of workflow instances that access the same resource.
 /// The throttling is active over all workflow forms.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
 public interface IActivityThrottle : IActivity
 {
     /// <summary>
@@ -57,6 +58,7 @@ public interface IActivityThrottle : IActivity
 /// An activity of type <see cref="ActivityTypeEnum.Throttle"/>, i.e. an activity where we try to reduce the number of workflow instances that access the same resource.
 /// The throttling is active over all workflow forms.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
 public interface IActivityThrottleThen : IExecutableActivity
 {
     /// <summary>
@@ -75,6 +77,7 @@ public interface IActivityThrottleThen : IExecutableActivity
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Throttle"/>, i.e. an activity where we try to reduce the number of workflow instances that access the same resource.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
 public interface IActivityThrottle<TActivityReturns> : IActivity
 {
     /// <summary>
@@ -122,6 +125,7 @@ public interface IActivityThrottle<TActivityReturns> : IActivity
 /// An activity of type <see cref="ActivityTypeEnum.Throttle"/>, i.e. an activity where we try to reduce the number of workflow instances that access the same resource.
 /// The throttling is active over all workflow forms.
 /// </summary>
+[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
 public interface IActivityThrottleThen<TActivityReturns> : IExecutableActivity<TActivityReturns>
 {
     /// <summary>
