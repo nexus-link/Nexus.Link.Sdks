@@ -63,7 +63,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.24.1</Version>
+    <Version>6.24.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +73,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.24.2 Bump
       6.24.1 Activity Action now has UnderLock() and WithThrottle() which are lowered when there is an exception
       6.23.8 Bump
       6.23.4 LogicExecutor now accepts RetryActivityFromCatchException as a valid exception
