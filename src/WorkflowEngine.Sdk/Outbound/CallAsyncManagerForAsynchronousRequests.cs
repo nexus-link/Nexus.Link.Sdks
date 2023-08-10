@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
@@ -51,7 +53,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 
             if (activity.Instance.AsyncRequestId != null)
             {
-                var response = await TryGetResponseAsync(request, activity, cancellationToken);
+                HttpResponseMessage response;
+                try
+                {
+                    response = await TryGetResponseAsync(request, activity, cancellationToken);
+                }
+                catch (RequestPostponedException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    var timeSpan = ex is FulcrumException fe
+                        ? TimeSpan.FromSeconds(fe.RecommendedWaitTimeInSeconds)
+                        : TimeSpan.FromSeconds(60);
+                    throw new RequestPostponedException($"Could not get the response for {request.ToLogString()}: {ex.Message}")
+                    {
+                        TryAgain = true,
+                        TryAgainAfterMinimumTimeSpan = timeSpan
+                    };
+                }
+
                 if (response != null)
                 {
                     await activity.LogInformationAsync($"Activity received a response"+
