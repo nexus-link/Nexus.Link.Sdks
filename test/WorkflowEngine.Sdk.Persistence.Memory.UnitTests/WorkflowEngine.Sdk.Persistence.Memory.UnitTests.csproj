@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\WorkflowEngine.Sdk.Persistence.Memory\WorkflowEngine.Sdk.Persistence.Memory.csproj" />
-    <ProjectReference Include="..\WorkflowEngine.Sdk.Persistent.Abstract.UnitTests\WorkflowEngine.Sdk.Persistent.Abstract.UnitTests.csproj" />
   </ItemGroup>
 
 </Project>
