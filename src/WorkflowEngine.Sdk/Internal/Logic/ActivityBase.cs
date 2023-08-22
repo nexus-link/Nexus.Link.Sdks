@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
@@ -129,6 +130,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         return TryGetContext(GetInternalContextKey(key), out value);
     }
 
+    [JsonIgnore]
     public IActivityInformation ActivityInformation { get; protected set; }
 
     /// <inheritdoc />

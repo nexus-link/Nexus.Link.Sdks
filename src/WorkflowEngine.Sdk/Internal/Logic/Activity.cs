@@ -160,6 +160,7 @@ internal abstract class Activity : ActivityBase, IInternalActivity
 /// <inheritdoc cref="Activity" />
 internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>
 {
+    [JsonIgnore]
     public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
 
     protected Activity(IActivityInformation activityInformation,

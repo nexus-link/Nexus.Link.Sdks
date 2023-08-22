@@ -22,7 +22,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             {
                 if (data is Exception exception)
                 {
-                    return SaveConvertExceptionToJToken(exception);
+                    return SafeConvertExceptionToJToken(exception);
                 }
                 try
                 {
@@ -38,7 +38,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             return jToken;
         }
 
-        private static JToken SaveConvertExceptionToJToken(Exception exception)
+        private static JToken SafeConvertExceptionToJToken(Exception exception)
         {
             // TODO: Make a real JToken representation
             var stringRepresentation = $"{exception}";

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -22,6 +23,7 @@ internal class ActivityIf : Activity, IActivityIf, IActivityIfElse
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public ActivityConditionMethodAsync<IActivityIf> ConditionMethodAsync { get; }
 
     /// <inheritdoc />
@@ -106,6 +108,7 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> ConditionMethodAsync { get; }
 
     /// <inheritdoc />

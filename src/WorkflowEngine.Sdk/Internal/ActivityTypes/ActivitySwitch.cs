@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
@@ -28,6 +29,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <inheritdoc />
@@ -86,6 +88,7 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> :
     }
 
     /// <inheritdoc />
+    [JsonIgnore]
     public ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> SwitchValueMethodAsync { get; }
 
     /// <inheritdoc />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -21,6 +22,7 @@ internal class ActivityAction : Activity, IActivityAction
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
 
+    [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
 
     /// <summary>
@@ -188,6 +190,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
 
+    [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
 
     /// <summary>

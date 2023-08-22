@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
@@ -93,6 +94,8 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     public IEnumerable<TItem> Items { get; }
+
+    [JsonIgnore]
     public GetIterationTitleMethod<TItem> GetIterationTitleMethod { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
