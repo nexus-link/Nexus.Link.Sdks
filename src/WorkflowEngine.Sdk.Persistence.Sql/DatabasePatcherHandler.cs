@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Data.SqlClient;
 using Nexus.Link.DatabasePatcher;
 using Nexus.Link.Libraries.Core.Error.Logic;
 

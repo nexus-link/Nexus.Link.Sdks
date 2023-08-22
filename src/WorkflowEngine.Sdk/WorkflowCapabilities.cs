@@ -1,9 +1,9 @@
 ﻿using System;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.EntityAttributes;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services;
@@ -28,7 +28,7 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// <summary>
     /// Constructor
     /// </summary>
-    [Obsolete("Please use the constructor with WorkflowCapabilities(IConfigurationTables, IRuntimeTables, IAsyncRequestMgmtCapability). Obsolete since 2022-02-10.")]
+    [Obsolete("Please use the constructor with WorkflowCapabilities(IConfigurationTables, IRuntimeTables, IStorage, IAsyncRequestMgmtCapability, WorflowOptions). Obsolete since 2022-02-10.")]
     public WorkflowCapabilities(IWorkflowConfigurationCapability configurationCapability, IWorkflowStateCapability stateCapability, IAsyncRequestMgmtCapability requestMgmtCapability)
     {
         ConfigurationCapability = configurationCapability;
@@ -39,10 +39,19 @@ public class WorkflowCapabilities : IWorkflowEngineRequiredCapabilities
     /// <summary>
     /// Constructor
     /// </summary>
-    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions = null)
+    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables,
+        IAsyncRequestMgmtCapability requestMgmtCapability, IWorkflowEngineStorage storage, WorkflowOptions workflowOptions = null)
     {
         ConfigurationCapability = new WorkflowConfigurationCapability(configurationTables);
-        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, requestMgmtCapability, workflowOptions);
+        StateCapability = new WorkflowStateCapability(configurationTables, runtimeTables, storage, requestMgmtCapability, workflowOptions);
         RequestMgmtCapability = requestMgmtCapability;
+    }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public WorkflowCapabilities(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions = null)
+        : this(configurationTables, runtimeTables, requestMgmtCapability, new NoWorkflowEngineStorage(), workflowOptions)
+    {
     }
 }

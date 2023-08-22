@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Crud.Web.RestClient;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
 {
@@ -21,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
 
         /// <inheritdoc />
         public Task SuccessAsync(string id, ActivitySuccessResult result,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(result, nameof(result));
@@ -30,7 +30,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
         }
 
         /// <inheritdoc />
-        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = new CancellationToken())
+        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(result, nameof(result));

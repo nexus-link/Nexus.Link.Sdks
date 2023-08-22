@@ -23,7 +23,7 @@ namespace Nexus.Link.KeyTranslator.Sdk
 
         /// <inheritdoc />
         public async Task<IDictionary<string, string>> TranslateAsync(IEnumerable<string> conceptValuePaths, string targetClientName,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             var translateRequests = conceptValuePaths
                 .Select(path => new TranslateRequest(path, GetTargetContextPath(path, targetClientName)));

@@ -22,7 +22,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
         }
 
         public override async Task<ActivityFormRecord> UpdateAndReturnAsync(Guid id, ActivityFormRecord item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             var oldItem = await ReadAsync(id, cancellationToken);
             if (oldItem != null)

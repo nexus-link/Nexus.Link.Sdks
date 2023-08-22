@@ -1,6 +1,6 @@
 ﻿using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 

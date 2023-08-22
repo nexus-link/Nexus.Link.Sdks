@@ -19,11 +19,6 @@
     <DebugType>embedded</DebugType>
     <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Model\**" />
-    <EmbeddedResource Remove="Model\**" />
-    <None Remove="Model\**" />
-  </ItemGroup>
 
   <!-- Publish symbols -->
   <ItemGroup>
@@ -33,15 +28,13 @@
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.1" />
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.3" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.13.2" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.2" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.4.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AsyncManager.Sdk\AsyncManager.Sdk.csproj" />
+    <ProjectReference Include="..\WorkflowEngine.Sdk.Abstract\WorkflowEngine.Sdk.Abstract.csproj" />
     <ProjectReference Include="..\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />
   </ItemGroup>
 
@@ -63,7 +56,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.24.3</Version>
+    <Version>6.25.0-beta01</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -73,6 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.25.0 Added support for fallback strategy of saving workflow state
       6.24.3 Now throws RequestPostponedException if an action call to AM fails
       6.24.2 Bump
       6.24.1 Activity Action now has UnderLock() and WithThrottle() which are lowered when there is an exception
@@ -340,6 +334,13 @@
       Now supports
     </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- Automatic generation of local alpha packages -->
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Version)', '(-alpha|-alfa)')) ">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <LocalPackageOutputPath Condition="'$(LocalPackageOutputPath)'==''">c:\dev\local-nugets</LocalPackageOutputPath>
+    <PackageOutputPath>$(LocalPackageOutputPath)</PackageOutputPath>
   </PropertyGroup>
 
 </Project>

@@ -1,11 +1,11 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -21,14 +21,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
             _configurationTables = configurationTables;
         }
         /// <inheritdoc />
-        public async Task CreateWithSpecifiedIdAsync(string id, WorkflowFormCreate item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task CreateWithSpecifiedIdAsync(string id, WorkflowFormCreate item, CancellationToken cancellationToken = default)
         {
             await CreateWithSpecifiedIdAndReturnAsync(id, item, cancellationToken);
         }
 
         /// <inheritdoc />
         public async Task<WorkflowForm> CreateWithSpecifiedIdAndReturnAsync(string id, WorkflowFormCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -46,7 +46,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
-        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             
@@ -61,7 +61,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(string id, WorkflowForm item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task UpdateAsync(string id, WorkflowForm item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));

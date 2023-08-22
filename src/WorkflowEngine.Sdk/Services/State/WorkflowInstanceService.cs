@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -76,7 +76,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
         /// <inheritdoc />
         public async Task<Lock<string>> ClaimDistributedLockAsync(string id, TimeSpan? lockTimeSpan = null, string currentLockId = null,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             var idAsGuid = id.ToGuid();
@@ -91,7 +91,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
         /// <inheritdoc />
         public Task ReleaseDistributedLockAsync(string id, string lockId,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNullOrWhiteSpace(lockId, nameof(lockId));

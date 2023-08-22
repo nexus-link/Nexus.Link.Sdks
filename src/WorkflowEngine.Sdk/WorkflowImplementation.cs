@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -17,7 +17,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     /// <inheritdoc />
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
-        private readonly WorkflowExecutor _workflowExecutor;
+        private readonly IWorkflowExecutor _workflowExecutor;
 
         internal IInternalActivity CurrentParentActivity => WorkflowStatic.Context.ParentActivity;
 
@@ -57,13 +57,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// <summary>
         /// Constructor
         /// </summary>
-        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken)
+        protected WorkflowImplementationBase(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
         {
             MajorVersion = majorVersion;
             MinorVersion = minorVersion;
             WorkflowContainer = workflowContainer;
 
-            _workflowExecutor = new WorkflowExecutor(new WorkflowInformation(this));
+            var workflowInformation = new WorkflowInformation(this);
+            var workflowBeforeAndAfterExecution = new WorkflowBeforeAndAfterExecution(workflowInformation);
+            _workflowExecutor = new WorkflowExecutor(workflowInformation, workflowBeforeAndAfterExecution);
         }
 
         /// <summary>
@@ -167,7 +169,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use DefaultActivityOptions.FailUrgency. Compilation warning since 2021-11-19.")]
         public void SetDefaultFailUrgency(ActivityFailUrgencyEnum failUrgency)
         {
-            _workflowExecutor.SetDefaultFailUrgency(failUrgency);
+            var implementation = _workflowExecutor as WorkflowExecutor;
+            FulcrumAssert.IsNotNull(implementation, CodeLocation.AsString());
+            implementation!.SetDefaultFailUrgency(failUrgency);
         }
 
         /// <summary>
@@ -176,7 +180,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use DefaultActivityOptions.ExceptionAlertHandler. Compilation warning since 2021-11-19.")]
         public void SetDefaultExceptionAlertHandler(ActivityExceptionAlertMethodAsync alertMethodAsync)
         {
-            _workflowExecutor.SetDefaultExceptionAlertHandler(alertMethodAsync);
+
+            var implementation = _workflowExecutor as WorkflowExecutor;
+            FulcrumAssert.IsNotNull(implementation, CodeLocation.AsString());
+            implementation!.SetDefaultExceptionAlertHandler(alertMethodAsync);
         }
 
         /// <summary>
@@ -185,7 +192,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         [Obsolete("Please use DefaultActivityOptions.AsyncRequestPriority. Compilation warning since 2021-11-19.")]
         public void SetDefaultAsyncRequestPriority(double priority)
         {
-            _workflowExecutor.SetDefaultAsyncRequestPriority(priority);
+
+            var implementation = _workflowExecutor as WorkflowExecutor;
+            FulcrumAssert.IsNotNull(implementation, CodeLocation.AsString());
+            implementation!.SetDefaultAsyncRequestPriority(priority);
         }
 
         /// <inheritdoc />
@@ -229,8 +239,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     {
 
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken = default)
-            : base(majorVersion, minorVersion, workflowContainer, cancellationToken)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
+            : base(majorVersion, minorVersion, workflowContainer)
         {
         }
 
@@ -269,8 +279,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     public abstract class WorkflowImplementation<TWorkflowResult> : WorkflowImplementationBase, IWorkflowImplementation<TWorkflowResult>
     {
         /// <inheritdoc />
-        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer, CancellationToken cancellationToken = default)
-            : base(majorVersion, minorVersion, workflowContainer, cancellationToken)
+        protected WorkflowImplementation(int majorVersion, int minorVersion, IWorkflowContainer workflowContainer)
+            : base(majorVersion, minorVersion, workflowContainer)
         {
         }
 

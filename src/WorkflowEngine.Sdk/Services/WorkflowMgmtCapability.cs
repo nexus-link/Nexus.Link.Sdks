@@ -1,9 +1,8 @@
-using Nexus.Link.Components.WorkflowMgmt.Abstract;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
-using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services
 {

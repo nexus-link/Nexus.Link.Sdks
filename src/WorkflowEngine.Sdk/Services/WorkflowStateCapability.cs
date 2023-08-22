@@ -1,8 +1,6 @@
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
-using Nexus.Link.Libraries.Core.Application;
-using Nexus.Link.Libraries.Core.Queue.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 
@@ -15,12 +13,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
         /// <summary>
         /// Constructor
         /// </summary>
-        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
+        public WorkflowStateCapability(IConfigurationTables configurationTables, IRuntimeTables runtimeTables,
+            IWorkflowEngineStorage storage, IAsyncRequestMgmtCapability requestMgmtCapability, WorkflowOptions workflowOptions)
         {
             WorkflowInstance = new WorkflowInstanceService(runtimeTables, workflowOptions);
             ActivityInstance = new ActivityInstanceService(runtimeTables, requestMgmtCapability);
             Log = new LogService(runtimeTables);
-            WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables, requestMgmtCapability);
+            WorkflowSummary = new WorkflowSummaryService(configurationTables, runtimeTables);
+            WorkflowSummaryStorage = new WorkflowSummaryServiceStorage(storage);
             WorkflowSemaphore = new WorkflowSemaphoreService(requestMgmtCapability, runtimeTables);
         }
 
@@ -35,6 +35,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services
 
         /// <inheritdoc />
         public IWorkflowSummaryService WorkflowSummary { get; }
+
+        /// <inheritdoc />
+        public IWorkflowSummaryServiceStorage WorkflowSummaryStorage { get; }
 
         /// <inheritdoc />
         public IWorkflowSemaphoreService WorkflowSemaphore { get; }

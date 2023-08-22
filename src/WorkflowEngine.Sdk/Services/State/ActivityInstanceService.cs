@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -25,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
         }
 
         /// <inheritdoc />
-        public async Task<ActivityInstance> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityInstanceCreate item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<ActivityInstance> CreateWithSpecifiedIdAndReturnAsync(string id, ActivityInstanceCreate item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -40,7 +40,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
         /// <inheritdoc />
         public async Task SetContextAsync(string id, string key, JToken content,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
             InternalContract.RequireNotNullOrWhiteSpace(key, nameof(key));

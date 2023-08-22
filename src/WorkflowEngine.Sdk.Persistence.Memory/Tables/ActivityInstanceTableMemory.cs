@@ -11,6 +11,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
 {
+    /// <inheritdoc cref="IActivityInstanceTable" />
     public class ActivityInstanceTableMemory : CrudMemory<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>, IActivityInstanceTable
     {
         /// <summary>
@@ -38,7 +39,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory.Tables
         }
 
         public override async Task<ActivityInstanceRecord> UpdateAndReturnAsync(Guid id, ActivityInstanceRecord item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             var oldItem = await ReadAsync(id, cancellationToken);
             if (oldItem != null)

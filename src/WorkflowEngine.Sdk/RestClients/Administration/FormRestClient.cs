@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
 using Nexus.Link.Libraries.Web.RestClientHelper;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
 {

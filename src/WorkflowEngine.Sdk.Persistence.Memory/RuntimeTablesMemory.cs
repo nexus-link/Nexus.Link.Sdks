@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Contracts.Misc.Sdk.Authentication;
 using Nexus.Link.Libraries.Core.Assert;
@@ -48,27 +49,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         /// <summary>
         /// Use this for testing purposes to delete all runtime table records.
         /// </summary>
-        public async Task DeleteAllAsync()
+        public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
         {
             // Log
             var log = Log as CrudMemory<LogRecordCreate, LogRecord, Guid>;
             FulcrumAssert.IsNotNull(log, CodeLocation.AsString());
-            await log!.DeleteAllAsync();
+            await log!.DeleteAllAsync(cancellationToken);
 
             // WorkflowSemaphore
             var workflowSemaphore = WorkflowSemaphore as CrudMemory<WorkflowSemaphoreRecordCreate, WorkflowSemaphoreRecord, Guid>;
             FulcrumAssert.IsNotNull(workflowSemaphore, CodeLocation.AsString());
-            await workflowSemaphore!.DeleteAllAsync();
+            await workflowSemaphore!.DeleteAllAsync(cancellationToken);
 
             // ActivityInstance
             var activityInstance = ActivityInstance as CrudMemory<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>;
             FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
-            await activityInstance!.DeleteAllAsync();
+            await activityInstance!.DeleteAllAsync(cancellationToken);
 
             // WorkflowInstance
             var workflowInstance = WorkflowInstance as CrudMemory<WorkflowInstanceRecordCreate, WorkflowInstanceRecord, Guid>;
             FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
-            await workflowInstance!.DeleteAllAsync();
+            await workflowInstance!.DeleteAllAsync(cancellationToken);
         }
     }
 }

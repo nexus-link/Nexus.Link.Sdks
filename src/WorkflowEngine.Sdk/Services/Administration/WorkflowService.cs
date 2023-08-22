@@ -4,20 +4,21 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Misc.Models;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 {
+    /// <inheritdoc />
     public class WorkflowService : IWorkflowService
     {
         private readonly IWorkflowStateCapability _stateCapability;

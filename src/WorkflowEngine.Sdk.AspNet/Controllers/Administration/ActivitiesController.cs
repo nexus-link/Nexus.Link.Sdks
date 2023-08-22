@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Nexus.Link.Components.WorkflowMgmt.Abstract;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 {
@@ -25,7 +25,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
         /// <inheritdoc />
         [HttpPost("Activities/{id}/Success")]
         public Task SuccessAsync(string id, ActivitySuccessResult result,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 
         /// <inheritdoc />
         [HttpPost("Activities/{id}/Failed")]
-        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = new CancellationToken())
+        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 

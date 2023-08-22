@@ -36,7 +36,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.V
         {
             /// <inheritdoc />
             public Task<IDictionary<string, string>> TranslateAsync(IEnumerable<string> conceptValuePaths, string targetClientName,
-                CancellationToken cancellationToken = new CancellationToken())
+                CancellationToken cancellationToken = default)
             {
                 throw new FulcrumNotImplementedException("This method is not expected to be called from a Nexus Adapter.");
             }

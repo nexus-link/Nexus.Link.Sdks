@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -31,27 +32,28 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory
         /// <inheritdoc />
         public IActivityVersionTable ActivityVersion { get; }
 
-        public async Task DeleteAllAsync()
+        /// <inheritdoc />
+        public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
         {
             // ActivityVersion
             var activityVersion = ActivityVersion as CrudMemory<ActivityVersionRecordCreate, ActivityVersionRecord, Guid>;
             FulcrumAssert.IsNotNull(activityVersion, CodeLocation.AsString());
-            await activityVersion!.DeleteAllAsync();
+            await activityVersion!.DeleteAllAsync(cancellationToken);
 
             // ActivityForm
             var activityForm = ActivityForm as CrudMemory<ActivityFormRecordCreate, ActivityFormRecord, Guid>;
             FulcrumAssert.IsNotNull(activityVersion, CodeLocation.AsString());
-            await activityForm!.DeleteAllAsync();
+            await activityForm!.DeleteAllAsync(cancellationToken);
 
             // WorkflowVersion
             var workflowVersion = WorkflowVersion as CrudMemory<WorkflowVersionRecordCreate, WorkflowVersionRecord, Guid>;
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
-            await workflowVersion!.DeleteAllAsync();
+            await workflowVersion!.DeleteAllAsync(cancellationToken);
 
             // WorkflowForm
             var workflowForm = WorkflowForm as CrudMemory<WorkflowFormRecordCreate, WorkflowFormRecord, Guid>;
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
-            await workflowForm!.DeleteAllAsync();
+            await workflowForm!.DeleteAllAsync(cancellationToken);
         }
     }
 }

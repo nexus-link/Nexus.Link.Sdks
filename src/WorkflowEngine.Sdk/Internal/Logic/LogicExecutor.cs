@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
@@ -30,11 +30,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             InternalContract.RequireNotNull(methodName, nameof(methodName));
-            await SafeExecuteAsync(async ct =>
+            var (_, exception) = await SafeExecuteAsync(async ct =>
                 {
                     await methodAsync(ct);
                     return Task.FromResult(true);
                 }, methodName, true, cancellationToken);
+            if (exception != null) throw exception;
         }
 
         /// <inheritdoc />
@@ -44,7 +45,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             InternalContract.RequireNotNull(methodName, nameof(methodName));
-            var result = await SafeExecuteAsync(methodAsync, methodName, true, cancellationToken);
+            var (result, exception) = await SafeExecuteAsync(methodAsync, methodName, true, cancellationToken);
+            if (exception != null) throw exception;
             return result;
         }
 
@@ -55,40 +57,44 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <exception cref="RequestPostponedException"></exception>
         /// <exception cref="WorkflowImplementationShouldNotCatchThisException"></exception>
         /// <exception cref="IgnoreAndExitToParentException"></exception>
-        private async Task<TMethodReturns> SafeExecuteAsync<TMethodReturns>(
+        private async Task<(TMethodReturns, Exception)> SafeExecuteAsync<TMethodReturns>(
             InternalActivityMethodAsync<TMethodReturns> methodAsync, string methodName,
             bool hasReturnValue,
             CancellationToken cancellationToken = default)
         {
+            InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
+            Exception exception;
             try
             {
-                InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
-                var result = await LogAndExecuteAsync(methodAsync, methodName, hasReturnValue, cancellationToken);
-                return result;
+                (var result, exception) =
+                    await LogAndExecuteAsync(methodAsync, methodName, hasReturnValue, cancellationToken);
+                if (exception == null) return (result, null);
             }
-            catch (Exception e)
-                when (e is ActivityFailedException
-                           or RetryActivityFromCatchException
-                          or RequestPostponedException
-                          or WorkflowFastForwardBreakException
-                          or WorkflowImplementationShouldNotCatchThisException
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            switch (exception)
+            {
+                case ActivityFailedException
+                    or RetryActivityFromCatchException
+                    or RequestPostponedException
+                    or WorkflowFastForwardBreakException
+                    or WorkflowImplementationShouldNotCatchThisException
 #pragma warning disable CS0618
-                          or IgnoreAndExitToParentException)
-#pragma warning restore CS0618
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                // Unexpected exception. Our conclusion is that there is an error in the workflow engine.
-                var exception = new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError,
-                    $"The workflow engine threw an unexpected exception when executing a activity's logic method ({methodName}). This is the exception:\r{e}",
-                    $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
-                throw exception;
+                    or IgnoreAndExitToParentException:
+                    return (default, exception);
+                default:
+                    // Unexpected exception. Our conclusion is that there is an error in the workflow engine.
+                    var unexpectedException = new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError,
+                        $"The workflow engine threw an unexpected exception when executing a activity's logic method ({methodName}). This is the exception:\r{exception}",
+                        $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
+                    return (default, unexpectedException);
             }
         }
 
-        private async Task<TMethodReturns> LogAndExecuteAsync<TMethodReturns>(
+        private async Task<(TMethodReturns, Exception)> LogAndExecuteAsync<TMethodReturns>(
             InternalActivityMethodAsync<TMethodReturns> methodAsync, string methodName,
             bool hasReturnValue,
             CancellationToken cancellationToken = default)
@@ -98,41 +104,38 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} started.", new { Name = methodName }, cancellationToken);
-            try
-            {
-                var result = await ExecuteAndConsolidateExceptionsAsync(methodAsync, cancellationToken);
-                stopwatch.Stop();
-                object data;
-                if (hasReturnValue)
-                {
-                    data = new
-                    {
-                        ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
-                        Result = result
-                    };
-                }
-                else
-                {
-                    data = new { ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2") };
-                }
-                await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} returned.", data, cancellationToken);
 
-                return result;
-            }
-            catch (Exception e)
+            var (result, exception) = await ExecuteAndConsolidateExceptionsAsync(methodAsync, cancellationToken);
+            stopwatch.Stop();
+            if (exception != null)
             {
-                stopwatch.Stop();
                 await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} threw",
                     new
                     {
                         ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
-                        Exception = $"{e.GetType().Name}: {e.Message}",
+                        Exception = $"{exception.GetType().Name}: {exception.Message}",
                     }, cancellationToken);
-                throw;
+                return (result, exception);
             }
+            object data;
+            if (hasReturnValue)
+            {
+                data = new
+                {
+                    ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                    Result = result
+                };
+            }
+            else
+            {
+                data = new { ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2") };
+            }
+            await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} returned.", data, cancellationToken);
+
+            return (result, null);
         }
 
-        private async Task<TMethodReturns> ExecuteAndConsolidateExceptionsAsync<TMethodReturns>(
+        private async Task<(TMethodReturns, Exception)> ExecuteAndConsolidateExceptionsAsync<TMethodReturns>(
             InternalActivityMethodAsync<TMethodReturns> methodAsync, CancellationToken cancellationToken)
         {
             try
@@ -140,30 +143,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 // We will postpone if the reduced total execution time has passed
                 // This should normally not happen, if the workflow postpone limit has been set to a low enough value
                 Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken.ThrowIfCancellationRequested();
-                return await methodAsync(Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken);
+                var result = await methodAsync(Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken);
+                return (result, null);
             }
-            catch (ActivityFailedException) // Also covers WorkflowFailedException
+            catch (ActivityFailedException ex) // Also covers WorkflowFailedException
             {
-                throw;
+                return (default, ex);
             }
-            catch (RetryActivityFromCatchException)
+            catch (RetryActivityFromCatchException ex)
             {
-                throw;
+                return (default, ex);
             }
-            catch (RequestPostponedException)
+            catch (RequestPostponedException ex)
             {
-                throw;
+                return (default, ex);
             }
 #pragma warning disable CS0618
-            catch (ActivityException e)
+            catch (ActivityException ex)
 #pragma warning disable CS0618
             {
-                throw new ActivityFailedException(e.ExceptionCategory, e.TechnicalMessage, e.FriendlyMessage);
+                var exception = new ActivityFailedException(ex.ExceptionCategory, ex.TechnicalMessage, ex.FriendlyMessage);
+                return (default, exception);
             }
-            catch (WorkflowImplementationShouldNotCatchThisException e)
+            catch (WorkflowImplementationShouldNotCatchThisException ex)
             {
-                FulcrumAssert.IsNotNull(e.InnerException, CodeLocation.AsString());
-                throw e.InnerException!;
+                FulcrumAssert.IsNotNull(ex.InnerException, CodeLocation.AsString());
+                return (default, ex.InnerException);
             }
             catch (FulcrumException e)
             {
@@ -171,11 +176,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (OperationCanceledException)
             {
-                throw new RequestPostponedException
+                var exception = new RequestPostponedException
                 {
                     TryAgain = true,
                     TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
                 };
+                return (default, exception);
             }
             catch (Exception e)
             {
@@ -183,7 +189,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 var exception = new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
                     $"An activity method threw an unexpected exception {e.GetType().Name}. The workflow programmer is expected to catch this exception and throw an {nameof(ActivityFailedException)}. More information about the exception:\r{e}",
                     $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
-                throw exception;
+                return (default, exception);
             }
         }
 

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Storage.Model;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 {

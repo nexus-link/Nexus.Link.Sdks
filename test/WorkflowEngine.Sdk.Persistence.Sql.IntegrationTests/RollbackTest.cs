@@ -1,7 +1,8 @@
-using System.Data.SqlClient;
+
 using System.IO;
 using System.Linq;
 using Dapper;
+using Microsoft.Data.SqlClient;
 using Nexus.Link.Libraries.SqlServer.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
 using WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support;
@@ -13,7 +14,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
     public class RollbackTest : AbstractDatabaseTest
     {
 
-        private const string ConnectionStringForRollback = "Server=localhost;Database=workflow-sdk-tests-rollback;Trusted_Connection=True;";
+        private const string ConnectionStringForRollback = "Server=localhost;Database=workflow-sdk-tests-rollback;Trusted_Connection=True;Encrypt=False;";
 
         public class DatabaseRollbackTest
         {

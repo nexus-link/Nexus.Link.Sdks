@@ -32,7 +32,7 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         }
 
         /// <inheritdoc />
-        public Task RetryAsync(string requestId, CancellationToken cancellationToken = new CancellationToken())
+        public Task RetryAsync(string requestId, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
 
@@ -52,7 +52,7 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
 
         /// <inheritdoc />
         [Obsolete("Please use CreateRequestCopyWithNewAuthenticationAsync. Please note that it returns a new request id for the copy that will be used for retrying. Obsolete from 2023-05-17.")]
-        public async Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = new CancellationToken())
+        public async Task RetryRequestWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
             InternalContract.RequireNotNull(newAuthentication, nameof(newAuthentication));
@@ -62,7 +62,7 @@ namespace Nexus.Link.AsyncManager.Sdk.RestClients
         }
 
         /// <inheritdoc />
-        public async Task<string> CreateRequestCopyWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<string> CreateRequestCopyWithNewAuthenticationAsync(string requestId, RequestAuthentication newAuthentication, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(requestId, nameof(requestId));
             InternalContract.RequireNotNull(newAuthentication, nameof(newAuthentication));

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Nexus.Link.Contracts.Misc.Sdk.Authentication;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
@@ -49,17 +50,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         public IHashTable Hash { get; }
 
         /// <inheritdoc />
-        public async Task DeleteAllAsync()
+        public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
         {
             // ActivityInstance
             var activityInstance = ActivityInstance as CrudSql<ActivityInstanceRecordCreate, ActivityInstanceRecord>;
             FulcrumAssert.IsNotNull(activityInstance, CodeLocation.AsString());
-            await activityInstance!.DeleteAllAsync();
+            await activityInstance!.DeleteAllAsync(cancellationToken);
             
             // WorkflowInstance
             var workflowInstance = WorkflowInstance as CrudSql<WorkflowInstanceRecordCreate, WorkflowInstanceRecord>;
             FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
-            await workflowInstance!.DeleteAllAsync();
+            await workflowInstance!.DeleteAllAsync(cancellationToken);
         }
     }
 }

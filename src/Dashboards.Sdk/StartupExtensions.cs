@@ -2,11 +2,11 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Nexus.Link.AsyncManager.Sdk;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Messages;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Messages;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.Dashboards.Sdk;

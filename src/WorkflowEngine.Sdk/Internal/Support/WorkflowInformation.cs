@@ -4,17 +4,19 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Services;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
@@ -131,9 +133,50 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(CancellationToken cancellationToken)
+    public async Task SaveAsync(CancellationToken cancellationToken)
     {
-        return _workflowCache.SaveAsync(cancellationToken);
+
+        // Save the logs and possibly purge logs
+        try
+        {
+            await SaveAndPurgeLogs();
+        }
+        catch (Exception)
+        {
+            if (FulcrumApplication.IsInDevelopment) throw;
+            // Don't let logging problems get in our way
+        }
+        await _workflowCache.SaveAsync(true, cancellationToken);
+
+        async Task SaveAndPurgeLogs()
+        {
+            var purge = DefaultActivityOptions.LogPurgeStrategy switch
+            {
+                LogPurgeStrategyEnum.AfterActivitySuccess => true,
+                LogPurgeStrategyEnum.AfterWorkflowReturn => true,
+                LogPurgeStrategyEnum.AfterWorkflowSuccess => Instance.State == WorkflowStateEnum.Success,
+                LogPurgeStrategyEnum.AfterWorkflowComplete => Instance.IsComplete,
+                _ => false
+            };
+
+            // Save the logs
+            foreach (var logCreate in Logs)
+            {
+                if (purge && BelowOrEqualToThreshold(logCreate)) continue;
+                await LogService.CreateAsync(logCreate, cancellationToken);
+            }
+
+            if (purge)
+            {
+                await LogService.DeleteWorkflowChildrenAsync(InstanceId,
+                    DefaultActivityOptions.LogPurgeThreshold, cancellationToken);
+            }
+        }
+
+        bool BelowOrEqualToThreshold(LogCreate logCreate)
+        {
+            return (int)logCreate.SeverityLevel <= (int)DefaultActivityOptions.LogPurgeThreshold;
+        }
     }
 
     /// <inheritdoc />

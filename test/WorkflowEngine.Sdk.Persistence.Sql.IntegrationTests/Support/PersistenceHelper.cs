@@ -1,17 +1,16 @@
-﻿using System.Data.SqlClient;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Services;
+﻿
+using Microsoft.Data.SqlClient;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
-using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 
 namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support
 {
     internal class PersistenceHelper
     {
-        public const string MasterConnectionString = "Server=localhost;Database=master;Trusted_Connection=True;";
-        public const string ConnectionString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;";
+        public const string MasterConnectionString = "Server=localhost;Database=master;Trusted_Connection=True;Encrypt=False;";
+        public const string ConnectionString = "Server=localhost;Database=workflow-sdk-tests;Trusted_Connection=True;Encrypt=False;";
 
         public static IConfigurationTables ConfigurationTables => new ConfigurationTablesSql(DefaultDatabaseOptions);
         public static IRuntimeTables RuntimeTables => new RuntimeTablesSql(DefaultDatabaseOptions);

@@ -1,612 +1,610 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 
-namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic
+namespace WorkflowEngine.Sdk.UnitTests.Internal.Logic;
+
+public class ActivityExecutorTests
 {
-    public class ActivityExecutorTests
+    private readonly ActivityInformationMock _activityInformation;
+    private readonly ActivityMock _activityMock;
+    private readonly ActivityExecutor _executor;
+    private readonly ActivityInformationMock _activityInformationResult;
+    private readonly ActivityMock<int> _activityMockResult;
+    private readonly ActivityExecutor _executorResult;
+    private readonly WorkflowInformationMock _workflowInformationMock;
+    private readonly WorkflowInformationMock _workflowInformationResultMock;
+
+    public ActivityExecutorTests()
     {
-        private readonly ActivityInformationMock _activityInformation;
-        private readonly ActivityMock _activityMock;
-        private readonly ActivityExecutor _executor;
-        private readonly ActivityInformationMock _activityInformationResult;
-        private readonly ActivityMock<int> _activityMockResult;
-        private readonly ActivityExecutor _executorResult;
-        private readonly WorkflowInformationMock _workflowInformationMock;
-        private readonly WorkflowInformationMock _workflowInformationResultMock;
+        FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
+        FulcrumApplication.Setup.SynchronousFastLogger = new ConsoleLogger();
 
-        public ActivityExecutorTests()
+        _workflowInformationMock = new WorkflowInformationMock(null, null);
+        _activityInformation = new ActivityInformationMock(_workflowInformationMock);
+        _activityMock = new ActivityMock(_activityInformation);
+        _executor = new ActivityExecutor(_activityMock);
+        _workflowInformationMock.ActivityExecutor = _executor;
+
+        _workflowInformationResultMock = new WorkflowInformationMock(null, null);
+        _activityInformationResult = new ActivityInformationMock(_workflowInformationResultMock);
+        _activityMockResult = new ActivityMock<int>(_activityInformationResult, null);
+        _executorResult = new ActivityExecutor(_activityMockResult);
+        _workflowInformationResultMock.ActivityExecutor = _executorResult;
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_TotalExecutionTimePassed_Gives_MaxTimeReachedError(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            FulcrumApplicationHelper.UnitTestSetup(nameof(ActivityExecutorTests));
-            FulcrumApplication.Setup.SynchronousFastLogger = new ConsoleLogger();
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        activity.Options.ActivityMaxExecutionTimeSpan = TimeSpan.Zero;
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            _workflowInformationMock = new WorkflowInformationMock(null, null);
-            _activityInformation = new ActivityInformationMock(_workflowInformationMock);
-            _activityMock = new ActivityMock(_activityInformation);
-            _executor = new ActivityExecutor(_activityMock);
-            _workflowInformationMock.ActivityExecutor = _executor;
-
-            _workflowInformationResultMock = new WorkflowInformationMock(null, null);
-            _activityInformationResult = new ActivityInformationMock(_workflowInformationResultMock);
-            _activityMockResult = new ActivityMock<int>(_activityInformationResult, null);
-            _executorResult = new ActivityExecutor(_activityMockResult);
-            _workflowInformationResultMock.ActivityExecutor = _executorResult;
+        // Act
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_TotalExecutionTimePassed_Gives_MaxTimeReachedError(bool withReturnValue)
+        // Assert
+        var innerException = outerException.InnerException;
+        innerException.ShouldBeOfType<RequestPostponedException>();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        var exception = activity.GetException();
+        exception.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError);
+        activity.SafeAlertExceptionCalled.ShouldBe(1);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_ReducedTimePassed_Gives_RequestPostponed(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        WorkflowInformationMock workflowInformation;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            activity.Options.ActivityMaxExecutionTimeSpan = TimeSpan.Zero;
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            workflowInformation = _workflowInformationResultMock;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            workflowInformation = _workflowInformationMock;
+            activity = _activityMock;
+            executor = _executor;
+        }
+        workflowInformation.ReducedTimeCancellationToken = new CancellationTokenSource(TimeSpan.Zero).Token;
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            // Assert
-            var innerException = outerException.InnerException;
-            innerException.ShouldBeOfType<RequestPostponedException>();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            var exception = activity.GetException();
-            exception.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError);
-            activity.SafeAlertExceptionCalled.ShouldBe(1);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+        // Act
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_ReducedTimePassed_Gives_RequestPostponed(bool withReturnValue)
+        // Assert
+        var innerException = outerException.InnerException;
+        innerException.ShouldBeOfType<RequestPostponedException>();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_ThrowsWorkflowFailedException_Gives_Rethrows(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            WorkflowInformationMock workflowInformation;
-            if (withReturnValue)
-            {
-                workflowInformation = _workflowInformationResultMock;
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                workflowInformation = _workflowInformationMock;
-                activity = _activityMock;
-                executor = _executor;
-            }
-            workflowInformation.ReducedTimeCancellationToken = new CancellationTokenSource(TimeSpan.Zero).Token;
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        var exceptionToThrow = new WorkflowFailedException(ActivityExceptionCategoryEnum.BusinessError, "fail", "fail");
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            // Assert
-            var innerException = outerException.InnerException;
-            innerException.ShouldBeOfType<RequestPostponedException>();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+        // Act & assert
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_ThrowsWorkflowFailedException_Gives_Rethrows(bool withReturnValue)
+        outerException.InnerException.ShouldNotBeNull();
+        var innerException = outerException.InnerException;
+        innerException.ShouldBe(exceptionToThrow);
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        var exception = activity.GetException();
+        exception.ExceptionCategory.ShouldBe(exceptionToThrow.ExceptionCategory);
+        activity.SafeAlertExceptionCalled.ShouldBe(1);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_ThrowsActivityFailedException_Gives_Rethrows(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            var exceptionToThrow = new WorkflowFailedException(ActivityExceptionCategoryEnum.BusinessError, "fail", "fail");
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        var exceptionToThrow = new ActivityFailedException(ActivityExceptionCategoryEnum.BusinessError, "fail", "fail");
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act & assert
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException;
-            innerException.ShouldBe(exceptionToThrow);
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            var exception = activity.GetException();
-            exception.ExceptionCategory.ShouldBe(exceptionToThrow.ExceptionCategory);
-            activity.SafeAlertExceptionCalled.ShouldBe(1);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+        // Act & assert
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_ThrowsActivityFailedException_Gives_Rethrows(bool withReturnValue)
+        outerException.InnerException.ShouldNotBeNull();
+        var innerException = outerException.InnerException;
+        innerException.ShouldBeOfType<RequestPostponedException>();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        var exception = activity.GetException();
+        exception.ExceptionCategory.ShouldBe(exceptionToThrow.ExceptionCategory);
+        activity.SafeAlertExceptionCalled.ShouldBe(1);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_ThrowsRequestPostponedException_Gives_Rethrows(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            var exceptionToThrow = new ActivityFailedException(ActivityExceptionCategoryEnum.BusinessError, "fail", "fail");
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        var exceptionToThrow = new RequestPostponedException();
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act & assert
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException;
-            innerException.ShouldBeOfType<RequestPostponedException>();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            var exception = activity.GetException();
-            exception.ExceptionCategory.ShouldBe(exceptionToThrow.ExceptionCategory);
-            activity.SafeAlertExceptionCalled.ShouldBe(1);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+        // Act & assert
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_ThrowsRequestPostponedException_Gives_Rethrows(bool withReturnValue)
+        outerException.InnerException.ShouldNotBeNull();
+        var innerException = outerException.InnerException;
+        innerException.ShouldBeOfType<RequestPostponedException>();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_ThrowsOperationCancelledException_Gives_ThrowsRequestPostponed(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            var exceptionToThrow = new RequestPostponedException();
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        var exceptionToThrow = new OperationCanceledException();
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act & assert
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException;
-            innerException.ShouldBeOfType<RequestPostponedException>();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+        // Act & assert
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_ThrowsOperationCancelledException_Gives_ThrowsRequestPostponed(bool withReturnValue)
+        outerException.InnerException.ShouldNotBeNull();
+        var innerException = outerException.InnerException;
+        innerException.ShouldBeOfType<RequestPostponedException>();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_MethodReturns_Gives_Success(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            var exceptionToThrow = new OperationCanceledException();
-            WorkflowImplementationShouldNotCatchThisException outerException;
-
-            // Act & assert
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException;
-            innerException.ShouldBeOfType<RequestPostponedException>();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_MethodReturns_Gives_Success(bool withReturnValue)
+        // Act
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-
-            // Act
-            if (withReturnValue)
-            {
-                await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null);
-            }
-            else
-            {
-                await executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask);
-            }
-
-            // Assert
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Success);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
+            await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(10), null);
+        }
+        else
+        {
+            await executor.ExecuteWithoutReturnValueAsync(_ => Task.CompletedTask);
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_CallAgain_Gives_NoMethodCall(bool withReturnValue)
+        // Assert
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Success);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_CallAgain_Gives_NoMethodCall(bool withReturnValue)
+    {
+        // Arrange
+        int calls = 0;
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            int calls = 0;
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
+            activity = _activityMockResult;
+            executor = _executorResult;
+            await executor.ExecuteWithReturnValueAsync(_ =>
             {
-                activity = _activityMockResult;
-                executor = _executorResult;
-                await executor.ExecuteWithReturnValueAsync(_ =>
-                {
-                    calls++;
-                    return Task.FromResult(10);
-                }, null);
-            }
-            else
+                calls++;
+                return Task.FromResult(10);
+            }, null);
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+            await executor.ExecuteWithoutReturnValueAsync(_ =>
             {
-                activity = _activityMock;
-                executor = _executor;
-                await executor.ExecuteWithoutReturnValueAsync(_ =>
-                {
-                    calls++;
-                    return Task.CompletedTask;
-                });
-            }
-
-            // Act
-            if (withReturnValue)
-            {
-                await executor.ExecuteWithReturnValueAsync(_ =>
-                {
-                    calls++;
-                    return Task.FromResult(10);
-                }, null);
-            }
-            else
-            {
-                await executor.ExecuteWithoutReturnValueAsync(_ =>
-                {
-                    calls++;
-                    return Task.CompletedTask;
-                });
-            }
-
-            // Assert
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Success);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
-            calls.ShouldBe(1);
+                calls++;
+                return Task.CompletedTask;
+            });
         }
 
-        [Fact]
-        public async Task ExecuteWithReturnValue_Given_MethodReturns_Gives_CorrectValue()
+        // Act
+        if (withReturnValue)
         {
-            // Arrange
-            var executor = _executorResult;
-            const int expectedValue = 10;
-
-            // Act
-            var actualValue = await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(expectedValue), null);
-
-            // Assert
-            actualValue.ShouldBe(expectedValue);
+            await executor.ExecuteWithReturnValueAsync(_ =>
+            {
+                calls++;
+                return Task.FromResult(10);
+            }, null);
+        }
+        else
+        {
+            await executor.ExecuteWithoutReturnValueAsync(_ =>
+            {
+                calls++;
+                return Task.CompletedTask;
+            });
         }
 
-        [Theory]
-        [InlineData(false, ActivityFailUrgencyEnum.CancelWorkflow)]
-        [InlineData(true, ActivityFailUrgencyEnum.CancelWorkflow)]
-        [InlineData(false, ActivityFailUrgencyEnum.Stopping)]
-        [InlineData(true, ActivityFailUrgencyEnum.Stopping)]
-        public async Task Execute_Given_MethodThrowsAndNotIgnorable_Gives_StateFailedAndReported(bool withReturnValue, ActivityFailUrgencyEnum failUrgency)
+        // Assert
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Success);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+        calls.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task ExecuteWithReturnValue_Given_MethodReturns_Gives_CorrectValue()
+    {
+        // Arrange
+        var executor = _executorResult;
+        const int expectedValue = 10;
+
+        // Act
+        var actualValue = await executor.ExecuteWithReturnValueAsync(_ => Task.FromResult(expectedValue), null);
+
+        // Assert
+        actualValue.ShouldBe(expectedValue);
+    }
+
+    [Theory]
+    [InlineData(false, ActivityFailUrgencyEnum.CancelWorkflow)]
+    [InlineData(true, ActivityFailUrgencyEnum.CancelWorkflow)]
+    [InlineData(false, ActivityFailUrgencyEnum.Stopping)]
+    [InlineData(true, ActivityFailUrgencyEnum.Stopping)]
+    public async Task Execute_Given_MethodThrowsAndNotIgnorable_Gives_StateFailedAndReported(bool withReturnValue, ActivityFailUrgencyEnum failUrgency)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            activity.Options.FailUrgency = failUrgency;
-            WorkflowImplementationShouldNotCatchThisException outerException;
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        activity.Options.FailUrgency = failUrgency;
+        WorkflowImplementationShouldNotCatchThisException outerException;
 
-            // Act
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw new Exception(), null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw new Exception())
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            // Assert
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            activity.SafeAlertExceptionCalled.ShouldBe(1);
-            activity.Instance.AsyncRequestId.ShouldBeNull();
-            if (failUrgency == ActivityFailUrgencyEnum.Stopping)
-            {
-                outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
-            }
-            else
-            {
-                outerException.InnerException.ShouldBeAssignableTo<WorkflowFailedException>();
-            }
+        // Act
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw new Exception(), null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw new Exception())
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
         }
 
-        [Theory]
-        [InlineData(ActivityFailUrgencyEnum.HandleLater)]
-        [InlineData(ActivityFailUrgencyEnum.Ignore)]
-        public async Task ExecuteWithReturnValue_Given_MethodThrows_NotStopping_Gives_Default(ActivityFailUrgencyEnum failUrgency)
+        // Assert
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        activity.SafeAlertExceptionCalled.ShouldBe(1);
+        activity.Instance.AsyncRequestId.ShouldBeNull();
+        if (failUrgency == ActivityFailUrgencyEnum.Stopping)
         {
-            // Arrange
-            var executor = _executorResult;
-            _activityMockResult.Options.FailUrgency = failUrgency;
-            const int expectedValue = 10;
-
-            // Act
-            var actualValue = await executor.ExecuteWithReturnValueAsync(_ => throw new Exception(), _ => Task.FromResult(expectedValue));
-
-            // Assert
-            actualValue.ShouldBe(expectedValue);
-            _activityMockResult.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            _activityMockResult.SafeAlertExceptionCalled.ShouldBe(1);
-            _activityMockResult.Instance.AsyncRequestId.ShouldBeNull();
+            outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
         }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Execute_Given_MethodThrowsRequestPostponed_Gives_RequestIdSet(bool withReturnValue)
+        else
         {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            activity.Options.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-            const string expectedRequestId = "D26D6803-03D2-4889-90E4-500B83839184";
-            var requestPostponedException = new RequestPostponedException
-            {
-                WaitingForRequestIds = { expectedRequestId }
-            };
-
-
-            // Act
-            if (withReturnValue)
-            {
-                await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw requestPostponedException, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw requestPostponedException)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            // Assert
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
-            activity.SafeAlertExceptionCalled.ShouldBe(0);
-            activity.Instance.AsyncRequestId.ShouldNotBeNull();
-        }
-
-        [Theory]
-        [InlineData(false, typeof(Exception))]
-        [InlineData(true, typeof(Exception))]
-        [InlineData(false, typeof(ArgumentException))]
-        [InlineData(true, typeof(ArgumentException))]
-        [InlineData(false, typeof(FulcrumTryAgainException))]
-        [InlineData(true, typeof(FulcrumTryAgainException))]
-        [InlineData(false, typeof(FulcrumResourceLockedException))]
-        [InlineData(true, typeof(FulcrumResourceLockedException))]
-        [InlineData(false, typeof(FulcrumNotFoundException))]
-        [InlineData(true, typeof(FulcrumNotFoundException))]
-        [InlineData(false, typeof(FulcrumBusinessRuleException))]
-        [InlineData(true, typeof(FulcrumBusinessRuleException))]
-        [InlineData(false, typeof(FulcrumCancelledException))]
-        [InlineData(true, typeof(FulcrumCancelledException))]
-        [InlineData(false, typeof(FulcrumConflictException))]
-        [InlineData(true, typeof(FulcrumConflictException))]
-        [InlineData(false, typeof(FulcrumForbiddenAccessException))]
-        [InlineData(true, typeof(FulcrumForbiddenAccessException))]
-        [InlineData(false, typeof(FulcrumNotImplementedException))]
-        [InlineData(true, typeof(FulcrumNotImplementedException))]
-        [InlineData(false, typeof(FulcrumResourceException))]
-        [InlineData(true, typeof(FulcrumResourceException))]
-        [InlineData(false, typeof(FulcrumServiceContractException))]
-        [InlineData(true, typeof(FulcrumServiceContractException))]
-        [InlineData(false, typeof(FulcrumUnauthorizedException))]
-        [InlineData(true, typeof(FulcrumUnauthorizedException))]
-        [InlineData(false, typeof(FulcrumAssertionFailedException))]
-        [InlineData(true, typeof(FulcrumAssertionFailedException))]
-        [InlineData(false, typeof(FulcrumContractException))]
-        [InlineData(true, typeof(FulcrumContractException))]
-        public async Task Execute_Given_UnexpectedException_Gives_WorkflowCapabilityError(bool withReturnValue, Type exceptionType)
-        {
-            // Arrange
-            ActivityExecutor executor;
-            ActivityMock activity;
-            if (withReturnValue)
-            {
-                activity = _activityMockResult;
-                executor = _executorResult;
-            }
-            else
-            {
-                activity = _activityMock;
-                executor = _executor;
-            }
-            activity.Options.FailUrgency = ActivityFailUrgencyEnum.Stopping;
-            var exceptionToThrow = (Exception) Activator.CreateInstance(exceptionType);
-            FulcrumAssert.IsNotNull(exceptionToThrow, CodeLocation.AsString());
-
-            // Act
-            WorkflowImplementationShouldNotCatchThisException outerException;
-            if (withReturnValue)
-            {
-                outerException = await executor
-                    .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow!, null)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-            else
-            {
-                outerException = await executor
-                    .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!)
-                    .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
-            }
-
-            // Assert
-            outerException.InnerException.ShouldNotBeNull();
-            var innerException = outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
-            innerException.ShouldNotBeNull();
-            activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
-            var exception = activity.GetException();
-            exception.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.WorkflowCapabilityError);
+            outerException.InnerException.ShouldBeAssignableTo<WorkflowFailedException>();
         }
     }
-}
 
+    [Theory]
+    [InlineData(ActivityFailUrgencyEnum.HandleLater)]
+    [InlineData(ActivityFailUrgencyEnum.Ignore)]
+    public async Task ExecuteWithReturnValue_Given_MethodThrows_NotStopping_Gives_Default(ActivityFailUrgencyEnum failUrgency)
+    {
+        // Arrange
+        var executor = _executorResult;
+        _activityMockResult.Options.FailUrgency = failUrgency;
+        const int expectedValue = 10;
+
+        // Act
+        var actualValue = await executor.ExecuteWithReturnValueAsync(_ => throw new Exception(), _ => Task.FromResult(expectedValue));
+
+        // Assert
+        actualValue.ShouldBe(expectedValue);
+        _activityMockResult.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        _activityMockResult.SafeAlertExceptionCalled.ShouldBe(1);
+        _activityMockResult.Instance.AsyncRequestId.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Execute_Given_MethodThrowsRequestPostponed_Gives_RequestIdSet(bool withReturnValue)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
+        {
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        activity.Options.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+        const string expectedRequestId = "D26D6803-03D2-4889-90E4-500B83839184";
+        var requestPostponedException = new RequestPostponedException
+        {
+            WaitingForRequestIds = { expectedRequestId }
+        };
+
+
+        // Act
+        if (withReturnValue)
+        {
+            await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw requestPostponedException, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw requestPostponedException)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+
+        // Assert
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
+        activity.SafeAlertExceptionCalled.ShouldBe(0);
+        activity.Instance.AsyncRequestId.ShouldNotBeNull();
+    }
+
+    [Theory]
+    [InlineData(false, typeof(Exception))]
+    [InlineData(true, typeof(Exception))]
+    [InlineData(false, typeof(ArgumentException))]
+    [InlineData(true, typeof(ArgumentException))]
+    [InlineData(false, typeof(FulcrumTryAgainException))]
+    [InlineData(true, typeof(FulcrumTryAgainException))]
+    [InlineData(false, typeof(FulcrumResourceLockedException))]
+    [InlineData(true, typeof(FulcrumResourceLockedException))]
+    [InlineData(false, typeof(FulcrumNotFoundException))]
+    [InlineData(true, typeof(FulcrumNotFoundException))]
+    [InlineData(false, typeof(FulcrumBusinessRuleException))]
+    [InlineData(true, typeof(FulcrumBusinessRuleException))]
+    [InlineData(false, typeof(FulcrumCancelledException))]
+    [InlineData(true, typeof(FulcrumCancelledException))]
+    [InlineData(false, typeof(FulcrumConflictException))]
+    [InlineData(true, typeof(FulcrumConflictException))]
+    [InlineData(false, typeof(FulcrumForbiddenAccessException))]
+    [InlineData(true, typeof(FulcrumForbiddenAccessException))]
+    [InlineData(false, typeof(FulcrumNotImplementedException))]
+    [InlineData(true, typeof(FulcrumNotImplementedException))]
+    [InlineData(false, typeof(FulcrumResourceException))]
+    [InlineData(true, typeof(FulcrumResourceException))]
+    [InlineData(false, typeof(FulcrumServiceContractException))]
+    [InlineData(true, typeof(FulcrumServiceContractException))]
+    [InlineData(false, typeof(FulcrumUnauthorizedException))]
+    [InlineData(true, typeof(FulcrumUnauthorizedException))]
+    [InlineData(false, typeof(FulcrumAssertionFailedException))]
+    [InlineData(true, typeof(FulcrumAssertionFailedException))]
+    [InlineData(false, typeof(FulcrumContractException))]
+    [InlineData(true, typeof(FulcrumContractException))]
+    public async Task Execute_Given_UnexpectedException_Gives_WorkflowCapabilityError(bool withReturnValue, Type exceptionType)
+    {
+        // Arrange
+        ActivityExecutor executor;
+        ActivityMock activity;
+        if (withReturnValue)
+        {
+            activity = _activityMockResult;
+            executor = _executorResult;
+        }
+        else
+        {
+            activity = _activityMock;
+            executor = _executor;
+        }
+        activity.Options.FailUrgency = ActivityFailUrgencyEnum.Stopping;
+        var exceptionToThrow = (Exception) Activator.CreateInstance(exceptionType);
+        FulcrumAssert.IsNotNull(exceptionToThrow, CodeLocation.AsString());
+
+        // Act
+        WorkflowImplementationShouldNotCatchThisException outerException;
+        if (withReturnValue)
+        {
+            outerException = await executor
+                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow!, null)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+        else
+        {
+            outerException = await executor
+                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!)
+                .ShouldThrowAsync<WorkflowImplementationShouldNotCatchThisException>();
+        }
+
+        // Assert
+        outerException.InnerException.ShouldNotBeNull();
+        var innerException = outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
+        innerException.ShouldNotBeNull();
+        activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
+        var exception = activity.GetException();
+        exception.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.WorkflowCapabilityError);
+    }
+}

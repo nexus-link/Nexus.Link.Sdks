@@ -21,7 +21,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
             _subscriptionHandler = subscriptionHandler;
         }
         /// <inheritdoc />
-        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken cancellationToken = new CancellationToken())
+        public async Task ReceiveEventAsync(JToken eventAsJson, CancellationToken cancellationToken = default)
         {
             Log.LogOnLevel(
                 FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,
@@ -39,7 +39,7 @@ namespace Nexus.Link.Services.Implementations.Common.Events
         /// <inheritdoc />
         public async Task ReceiveEventExplicitlyAsync(string entityName, string eventName, int majorVersion,
             JToken eventAsJson,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             Log.LogOnLevel(
                 FulcrumApplication.IsInProductionOrProductionSimulation ? LogSeverityLevel.Verbose : LogSeverityLevel.Information,

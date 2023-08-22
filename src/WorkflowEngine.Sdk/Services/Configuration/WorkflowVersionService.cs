@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Services;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
@@ -36,7 +36,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
 
         /// <inheritdoc />
         public async Task<WorkflowVersion> CreateWithSpecifiedIdAndReturnAsync(string workflowVersionId, WorkflowVersionCreate item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNull(item, nameof(item));
@@ -50,7 +50,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
 
         /// <inheritdoc />
         public async Task<WorkflowVersion> UpdateAndReturnAsync(string workflowVersionId, WorkflowVersion item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(workflowVersionId, nameof(workflowVersionId));
             InternalContract.RequireNotNull(item, nameof(item));

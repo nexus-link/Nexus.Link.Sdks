@@ -18,7 +18,7 @@ namespace Nexus.Link.Services.Implementations.BusinessApi.Capabilities.Integrati
         }
 
         /// <inheritdoc />
-        public override async Task<JToken> ReadAsync(string id, CancellationToken token = new CancellationToken())
+        public override async Task<JToken> ReadAsync(string id, CancellationToken token = default)
         {
             try
             {

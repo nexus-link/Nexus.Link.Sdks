@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Data.SqlClient;
+
+using Microsoft.Data.SqlClient;
 using Nexus.Link.Libraries.Core.MultiTenant.Model;
 using Nexus.Link.Libraries.SqlServer;
 using Nexus.Link.Libraries.SqlServer.Logic;

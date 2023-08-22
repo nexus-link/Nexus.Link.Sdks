@@ -47,7 +47,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
         }
 
         /// <inheritdoc />
-        public override async Task<string> CreateAsync(TModelCreate item, CancellationToken token = new CancellationToken())
+        public override async Task<string> CreateAsync(TModelCreate item, CancellationToken token = default)
         {
             var id = await base.CreateAsync(item, token);
             await PublishEvent(id, token);
@@ -55,7 +55,7 @@ namespace Nexus.Link.Services.Contracts.DataSync
         }
 
         /// <inheritdoc />
-        public override async Task UpdateAsync(string id, TModel item, CancellationToken token = new CancellationToken())
+        public override async Task UpdateAsync(string id, TModel item, CancellationToken token = default)
         {
             await base.UpdateAsync(id, item, token);
             await PublishEvent(id, token);

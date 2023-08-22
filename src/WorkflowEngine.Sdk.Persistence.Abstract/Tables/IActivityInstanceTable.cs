@@ -7,6 +7,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables
 {
+    /// <summary>
+    /// Persistence for <see cref="ActivityInstanceRecord"/>
+    /// </summary>
     public interface IActivityInstanceTable: 
         ICreateWithSpecifiedIdAndReturn<ActivityInstanceRecordCreate, ActivityInstanceRecord, Guid>,
         IRead<ActivityInstanceRecord, Guid>, 

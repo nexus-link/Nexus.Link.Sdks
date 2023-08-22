@@ -44,7 +44,7 @@ namespace Nexus.Link.Services.Controllers.Capabilities.Integration.AppSupport
 
         /// <inheritdoc />
         [HttpGet("{id}")]
-        public async Task<JToken> ReadAsync(string id, CancellationToken token = new CancellationToken())
+        public async Task<JToken> ReadAsync(string id, CancellationToken token = default)
         {
             var authenticatedSystemName = FulcrumApplication.Context.ClientPrincipal?.Identity.Name;
             FulcrumAssert.IsNotNull(authenticatedSystemName, CodeLocation.AsString());

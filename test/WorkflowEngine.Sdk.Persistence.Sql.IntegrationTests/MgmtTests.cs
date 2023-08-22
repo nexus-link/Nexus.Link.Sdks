@@ -1,5 +1,4 @@
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Mgmt;
-using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTablesTests;
 using WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests.Support;
 using Xunit;
 

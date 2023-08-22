@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Nexus.Link.AsyncManager.Sdk.Extensions;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -93,9 +93,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             // Remember the request id and postpone the activity.
             throw new RequestPostponedException(requestId);
         }
-
-        private string ToLogString(IInternalActivity activity) =>
-            $"{activity.ToLogString()} in workflow instance {WorkflowStatic.Context.WorkflowInstanceId}";
 
         private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, IInternalActivity activity, CancellationToken cancellationToken)
         {

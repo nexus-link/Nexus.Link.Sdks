@@ -1,5 +1,5 @@
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Services;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Configuration;
 

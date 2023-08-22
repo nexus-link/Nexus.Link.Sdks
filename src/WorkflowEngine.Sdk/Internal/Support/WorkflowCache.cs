@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.Capabilities.WorkflowConfiguration.Abstract.Entities;
-using Nexus.Link.Capabilities.WorkflowState.Abstract;
-using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Components.WorkflowMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Crud.Helpers;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -22,27 +25,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
     internal class WorkflowCache
     {
         private readonly IWorkflowInformation _workflowInformation;
+        private readonly IWorkflowEngineRequiredCapabilities _workflowCapabilities;
 
         private readonly CrudPersistenceHelper<ActivityFormCreate, ActivityForm, string> _activityFormCache;
 
         private WorkflowSummary _summary;
 
-        public WorkflowForm Form
-        {
-            get => _summary?.Form;
-            set => _summary.Form = value;
-        }
+        public WorkflowForm Form => _summary?.Form;
 
-        public WorkflowVersion Version
-        {
-            get => _summary?.Version;
-            set => _summary.Version = value;
-        }
-        public WorkflowInstance Instance
-        {
-            get => _summary?.Instance;
-            set => _summary.Instance = value;
-        }
+        public WorkflowVersion Version => _summary?.Version;
+
+        public WorkflowInstance Instance => _summary?.Instance;
 
         private readonly NexusAsyncSemaphore _semaphore = new();
         private readonly CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string> _activityVersionCache;
@@ -58,6 +51,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             IWorkflowEngineRequiredCapabilities workflowCapabilities)
         {
             _workflowInformation = workflowInformation;
+            _workflowCapabilities = workflowCapabilities;
             var crudPersistenceHelperOptions = new CrudPersistenceHelperOptions
             {
                 ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
@@ -80,42 +74,69 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
         public async Task<WorkflowSummary> LoadAsync(CancellationToken cancellationToken)
         {
-            if (_summary != null) return _summary;
-            return await _semaphore.ExecuteAsync(async (ct) =>
-            {
-                if (_summary != null) return _summary;
-                _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(
-                    _workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
-                RememberData(true);
-                _summary.Form ??= new WorkflowForm
-                {
-                    Id = _workflowInformation.FormId,
-                    CapabilityName = _workflowInformation.CapabilityName,
-                    Title = _workflowInformation.FormTitle
-                };
-                _summary.Version ??= new WorkflowVersion
-                {
-                    Id = Guid.NewGuid().ToGuidString(),
-                    WorkflowFormId = _workflowInformation.FormId,
-                    MajorVersion = _workflowInformation.MajorVersion,
-                    MinorVersion = _workflowInformation.MinorVersion,
-                    DynamicCreate = true
-                };
-                _summary.Instance ??= new WorkflowInstance
-                {
-                    Id = _workflowInformation.InstanceId,
-                    WorkflowVersionId = _summary.Version.Id,
-                    StartedAt = DateTimeOffset.UtcNow,
-                    InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
-                    Title = _workflowInformation.InstanceTitle,
-                    State = WorkflowStateEnum.Executing
-                };
-                return _summary;
-            }, cancellationToken);
+            _summary = null;
 
+            // Read from DB
+            await ReadAndMaybeSaveSummaryAsync(cancellationToken);
+            FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
+            _summary!.Form ??= new WorkflowForm
+            {
+                Id = _workflowInformation.FormId,
+                CapabilityName = _workflowInformation.CapabilityName,
+                Title = _workflowInformation.FormTitle
+            };
+            _summary.Version ??= new WorkflowVersion
+            {
+                Id = Guid.NewGuid().ToGuidString(),
+                WorkflowFormId = _workflowInformation.FormId,
+                MajorVersion = _workflowInformation.MajorVersion,
+                MinorVersion = _workflowInformation.MinorVersion,
+                DynamicCreate = true
+            };
+            _summary.Instance ??= new WorkflowInstance
+            {
+                Id = _workflowInformation.InstanceId,
+                WorkflowVersionId = _summary.Version.Id,
+                StartedAt = DateTimeOffset.UtcNow,
+                InitialVersion = $"{_workflowInformation.MajorVersion}.{_workflowInformation.MinorVersion}",
+                Title = _workflowInformation.InstanceTitle,
+                State = WorkflowStateEnum.Waiting
+            };
+            return _summary;
         }
 
-        public async Task<WorkflowSummary> SaveAsync(CancellationToken cancellationToken = default)
+        private async Task ReadAndMaybeSaveSummaryAsync(CancellationToken cancellationToken)
+        {
+            await _semaphore.ExecuteAsync(async (ct) =>
+            {
+                // Read from DB
+                _summary = await _stateCapability.WorkflowSummary.GetSummaryAsync(_workflowInformation.FormId, _workflowInformation.MajorVersion, _workflowInformation.InstanceId, ct);
+                RememberData(true);
+                if (_summary.Instance == null) return;
+
+                // Check to see if an earlier execution failed to save to DB, but succeeded to save a fallback blob to storage
+                try
+                {
+                    var summary =
+                        await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.ReadBlobAsync(_summary.Instance.Id,
+                            _summary.Instance.StartedAt, cancellationToken);
+                    if (summary == null) return;
+                    _summary = summary;
+                }
+                catch (FulcrumNotImplementedException)
+                {
+                    return;
+                }
+
+                // There was a fallback blob stored of the last state. Save that state to DB and remove the blob representation.
+                using var scope = TransactionHelper.CreateStandardScope();
+                await SaveAsync(false, cancellationToken);
+                scope.Complete();
+                await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.DeleteBlobAsync(_summary.Instance.Id, _summary.Instance.StartedAt, cancellationToken);
+            }, cancellationToken);
+        }
+
+        public async Task<WorkflowSummary> SaveAsync(bool useFallback, CancellationToken cancellationToken = default)
         {
             InternalContract.Require(_summary != null, $"The method {nameof(LoadAsync)} must be called before calling this method.");
             if (_summary == null) return _summary;
@@ -126,19 +147,34 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 var oldVersion = _workflowVersionCache.GetStored(_summary.Version.Id);
                 var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
 
-                await InternalSaveAsync(ct);
+                try
+                {
+                    await SaveToDbAsync(ct);
+                }
+                catch (Exception ex)
+                {
+                    if (!useFallback) throw;
+                    Log.LogWarning($"Failed to save to DB: {ex}\rWill try to save to secondary storage.");
+                    await SaveToStorageAsync(ct);
+                    throw new RequestPostponedException
+                    {
+                        TryAgain = true,
+                        TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
+                    };
+                }
 
                 if (_workflowInformation.WorkflowOptions.AfterSaveAsync != null)
                 {
                     try
                     {
-                        // Fail handling is deferred to implementor. E.g., if using AM, the AM SDK will provide retry mechanism.
                         await _workflowInformation.WorkflowOptions.AfterSaveAsync(
                             oldForm, oldVersion, oldInstance, _summary.Form, _summary.Version, _summary.Instance);
                     }
                     catch (Exception e)
                     {
-                        Log.LogError($"Error at {nameof(_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync)}: {e.Message}. Giving up.");
+                        // Fail handling is deferred to implementor. E.g., if using AM, the AM SDK will provide retry mechanism.
+                        Log.LogError(
+                            $"Error at {nameof(_stateCapability.WorkflowInstance.DefaultWorkflowOptions.AfterSaveAsync)}: {e.Message}. Giving up.");
                     }
                 }
 
@@ -243,21 +279,49 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
         }
 
-        private async Task InternalSaveAsync(CancellationToken cancellationToken)
+        private async Task SaveToDbAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
+            // Max 10 s execution
+            var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            var limitedToken = mergedToken.Token;
+            
+            await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, limitedToken);
+            await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, limitedToken);
+            await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, limitedToken);
+            await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, limitedToken);
+            await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, limitedToken);
+            await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, limitedToken);
+        }
 
-            await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, cancellationToken);
-
-            await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, cancellationToken);
-
-            await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, cancellationToken);
-
-            await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
-
-            await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, cancellationToken);
-
-            await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, cancellationToken);
+        private async Task SaveToStorageAsync(CancellationToken cancellationToken)
+        {
+            FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
+            // Max 20 s retry
+            var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            var limitedToken = mergedToken.Token;
+            Exception lastException = null;
+            while (true)
+            {
+                try
+                {
+                    await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.WriteBlobAsync(_summary, limitedToken);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    if (limitedToken.IsCancellationRequested || ex is FulcrumNotImplementedException || FulcrumApplication.IsInDevelopment)
+                    {
+                        var exception = lastException ?? ex;
+                        throw exception;
+                    }
+                    lastException = ex;
+                    await Task.Delay(1000, limitedToken);
+                    // Try again
+                }
+            }
         }
 
         public ActivityForm GetActivityForm(string formId)

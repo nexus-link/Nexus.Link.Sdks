@@ -1,7 +1,7 @@
-﻿using Nexus.Link.Capabilities.WorkflowState.Abstract.Entities;
-using Nexus.Link.Libraries.Core.Assert;
+﻿using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Json;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
 {

@@ -9,17 +9,9 @@
   <!-- Nugets for the test framework -->
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowConfiguration.Abstract" Version="1.13.2" />
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowState.Abstract" Version="2.6.2" />
-    <PackageReference Include="Nexus.Link.Components.WorkflowMgmt.Abstract" Version="2.4.2" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="Shouldly" Version="4.1.0" />
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.WorkflowMgmt.Abstract" Version="3.4.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.10.3" />
-  </ItemGroup>-->
 
   <ItemGroup>
         <ProjectReference Include="..\..\src\WorkflowEngine.Sdk.Persistence.Abstract\WorkflowEngine.Sdk.Persistence.Abstract.csproj" />

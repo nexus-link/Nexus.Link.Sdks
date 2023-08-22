@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.SqlServer;
@@ -34,27 +35,27 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
         /// <inheritdoc />
         public IActivityVersionTable ActivityVersion { get; }
 
-        public async Task DeleteAllAsync()
+        public async Task DeleteAllAsync(CancellationToken cancellationToken = default)
         {
             // ActivityVersion
             var activityVersion = ActivityVersion as CrudSql<ActivityVersionRecordCreate, ActivityVersionRecord>;
             FulcrumAssert.IsNotNull(activityVersion, CodeLocation.AsString());
-            await activityVersion!.DeleteAllAsync();
+            await activityVersion!.DeleteAllAsync(cancellationToken);
 
             // ActivityForm
             var activityForm = ActivityForm as CrudSql<ActivityFormRecordCreate, ActivityFormRecord>;
             FulcrumAssert.IsNotNull(activityVersion, CodeLocation.AsString());
-            await activityForm!.DeleteAllAsync();
+            await activityForm!.DeleteAllAsync(cancellationToken);
 
             // WorkflowVersion
             var workflowVersion = WorkflowVersion as CrudSql<WorkflowVersionRecordCreate, WorkflowVersionRecord>;
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
-            await workflowVersion!.DeleteAllAsync();
+            await workflowVersion!.DeleteAllAsync(cancellationToken);
 
             // WorkflowForm
             var workflowForm = WorkflowForm as CrudSql<WorkflowFormRecordCreate, WorkflowFormRecord>;
             FulcrumAssert.IsNotNull(workflowVersion, CodeLocation.AsString());
-            await workflowForm!.DeleteAllAsync();
+            await workflowForm!.DeleteAllAsync(cancellationToken);
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Nexus.Link.Services.Implementations.Adapter.Capabilities.Integration.A
         private class LoggingService_NotImplemented : ILoggingService
         {
             /// <inheritdoc />
-            public Task LogAsync(JToken message, CancellationToken token = new CancellationToken())
+            public Task LogAsync(JToken message, CancellationToken token = default)
             {
                 throw new FulcrumNotImplementedException();
             }

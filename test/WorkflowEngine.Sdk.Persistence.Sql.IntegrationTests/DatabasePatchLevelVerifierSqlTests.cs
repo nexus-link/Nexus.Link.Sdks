@@ -1,6 +1,7 @@
-﻿using System.Data.SqlClient;
+﻿
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Data.SqlClient;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql;
@@ -15,7 +16,7 @@ namespace WorkflowEngine.Sdk.Persistence.Sql.IntegrationTests
     {
         private readonly DatabasePatcherHandler _patchLevelVerifierForDrop;
 
-        private const string ConnectionStringForLevelVerifier = "Server=localhost;Database=workflow-sdk-tests-flv;Trusted_Connection=True;";
+        private const string ConnectionStringForLevelVerifier = "Server=localhost;Database=workflow-sdk-tests-flv;Trusted_Connection=True;Encrypt=False;Encrypt=False;";
 
         public DatabasePatchLevelVerifierSqlTests()
         {
