@@ -25,8 +25,8 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.7.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.9.2" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.9.3" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,7 +48,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.9.0-beta01</Version>
+    <Version>2.9.0-beta02</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>

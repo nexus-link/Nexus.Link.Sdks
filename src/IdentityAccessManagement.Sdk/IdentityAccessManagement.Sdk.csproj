@@ -21,14 +21,14 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.32" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.26.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.4" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
 		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
 	</ItemGroup>
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.IdentityAccessManagement.Sdk</PackageId>
-		<Version>0.4.23</Version>
+		<Version>0.4.24</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -38,7 +38,7 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-			0.4.23 Bump
+			0.4.24 Bump
       0.4.19 Updated nugets to avoid versions with security risks
       0.4.18 Bump
       0.4.11 Fixed an issue where UserId used for translating userId was set in the wrong place.

@@ -28,12 +28,12 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.4" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.0.2-beta01</Version>
+    <Version>1.0.2-beta02</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

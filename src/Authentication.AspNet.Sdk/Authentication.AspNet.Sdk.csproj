@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.12" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.6" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">
@@ -36,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.2.5</Version>
+      <Version>3.2.6</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -46,7 +46,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.2.5 Bump
+        3.2.6 Bump
         3.2.0 Dropped support for net461, now has net472 as minimum
         3.1.6 Updated nugets to avoid versions with security risks
         3.1.5 Bump

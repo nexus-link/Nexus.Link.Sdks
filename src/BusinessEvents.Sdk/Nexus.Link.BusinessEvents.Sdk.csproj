@@ -18,13 +18,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.4" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.BusinessEvents.Sdk</PackageId>
-    <Version>3.2.3</Version>
+    <Version>3.2.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.2.3 Bump
+      3.2.4 Bump
       3.2.0 
       3.1.14 Updated nugets to avoid versions with security risks
       3.1.13 Bump
