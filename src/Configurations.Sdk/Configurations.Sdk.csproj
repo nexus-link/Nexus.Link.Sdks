@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.1" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
   </ItemGroup>

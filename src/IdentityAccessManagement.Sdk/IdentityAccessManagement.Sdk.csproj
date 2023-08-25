@@ -23,7 +23,7 @@
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.26.0" />
 		<PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.3" />
 		<PackageReference Include="IdentityModel" Version="5.1.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.1" />
+		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
 	</ItemGroup>
 
 	<PropertyGroup>

@@ -128,6 +128,11 @@ namespace Nexus.Link.Logger.Sdk.Helpers
             return _baseQueue.GetResourceHealthAsync(tenant, cancellationToken);
         }
 
+        public Task<HealthInfo> GetResourceHealth2Async(Tenant tenant, CancellationToken cancellationToken = default)
+        {
+            return _baseQueue.GetResourceHealth2Async(tenant, cancellationToken);
+        }
+
         public string Name => _baseQueue.Name;
     }
 }
