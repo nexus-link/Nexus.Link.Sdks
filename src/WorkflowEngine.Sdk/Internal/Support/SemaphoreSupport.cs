@@ -43,16 +43,11 @@ internal class SemaphoreSupport : ISemaphoreSupport
         LimitationTimeSpan = limitationTimeSpan;
     }
 
-    public SemaphoreSupport(string resourceIdentifier)
+    public SemaphoreSupport(string resourceIdentifier = null)
     {
-        if (resourceIdentifier == null)
+        if (string.IsNullOrWhiteSpace(resourceIdentifier))
         {
-            resourceIdentifier = "";
-        }
-        else
-        {
-            InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier),
-                $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
+            resourceIdentifier = "*";
         }
         IsThrottle = false;
         ResourceIdentifier = resourceIdentifier;

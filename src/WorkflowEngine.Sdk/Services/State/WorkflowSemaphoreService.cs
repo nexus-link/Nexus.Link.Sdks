@@ -60,7 +60,11 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
             if (raisedHolder == null)
             {
                 scope.Complete();
-                throw new RequestPostponedException();
+                throw new RequestPostponedException
+                {
+                    TryAgain = true,
+                    TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
+                };
             }
 
             if (semaphore.Limit != item.Limit)

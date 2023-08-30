@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.WorkflowEngine.Sdk;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 
 namespace WorkflowEngine.Sdk.UnitTests.TestSupport;
 

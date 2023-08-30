@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Core.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Shouldly;

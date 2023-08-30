@@ -1,5 +1,6 @@
 ﻿using System;
 using Nexus.Link.Libraries.Core.Logging;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 

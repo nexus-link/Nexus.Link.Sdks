@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 
 namespace WorkflowEngine.Sdk.UnitTests.SystemTests.DBFallback.Support;
 

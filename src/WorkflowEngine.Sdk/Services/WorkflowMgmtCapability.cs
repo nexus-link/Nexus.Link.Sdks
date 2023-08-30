@@ -1,6 +1,6 @@
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 using Nexus.Link.WorkflowEngine.Sdk.Services.Administration;
 

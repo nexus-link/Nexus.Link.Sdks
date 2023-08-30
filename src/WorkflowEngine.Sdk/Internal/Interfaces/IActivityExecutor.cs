@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 

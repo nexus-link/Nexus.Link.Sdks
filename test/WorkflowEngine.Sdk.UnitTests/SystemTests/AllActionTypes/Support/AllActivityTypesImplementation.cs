@@ -4,8 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.WorkflowEngine.Sdk;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 
 namespace WorkflowEngine.Sdk.UnitTests.SystemTests.AllActionTypes.Support;
 
@@ -79,6 +80,7 @@ public class AllActivityTypesImplementation : WorkflowImplementation<int>
         await CreateActivity(7, AllActivityTypesContainer.Activities.ActionUnderLock)
             .Action((_, _) => _logic.ActionUnderLockAsync())
             .UnderLock("lock-resource-id")
+            .WhenWaiting(_ => _logic.ActionUnderLockAlreadyLocked())
             .ExecuteAsync(cancellationToken);
 
         await CreateActivity(8, AllActivityTypesContainer.Activities.Parallel)
@@ -170,4 +172,5 @@ public interface IAllActivityTypesLogic
     Task ParallelJob2Async();
     Task DoUntilAsync(IActivityDoWhileOrUntil activityWhileDo);
     Task WhileDoAsync(IActivityWhileDo activityWhileDo);
+    void ActionUnderLockAlreadyLocked();
 }

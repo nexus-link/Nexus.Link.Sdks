@@ -14,7 +14,7 @@ public enum ActivityTypeEnum
     /// <summary>
     /// The activity results in a value to be used as a condition
     /// </summary>
-    [Obsolete("Please use If or Switch. Obsolete since 2002-04-27.")]
+    [Obsolete("Please use If or Switch. Obsolete since 2022-04-27.")]
     Condition,
     /// <summary>
     /// One activity subset that  should only be executed if a specific condition is true and
@@ -28,7 +28,7 @@ public enum ActivityTypeEnum
     /// <summary>
     /// Loop over all sub activities until a condition is met
     /// </summary>
-    [Obsolete("Please use WhileDo or DoUntil. Obsolete since 2002-05-02.")]
+    [Obsolete("Please use WhileDo or DoUntil. Obsolete since 2022-05-02.")]
     LoopUntilTrue,
     /// <summary>
     /// Do the sub activities for each of the items in a list,
@@ -48,10 +48,12 @@ public enum ActivityTypeEnum
     /// <summary>
     /// Run a sub flow with a limited number of concurrent instances
     /// </summary>
+    [Obsolete("Please use Action with WithThrottle. Obsolete since 2023-08-30.")]
     Throttle,
     /// <summary>
     /// Make sure that no other workflow instance is running this part of the workflow concurrently.
     /// </summary>
+    [Obsolete("Please use Action with UnderLock. Obsolete since 2023-04-30.")]
     Lock,
     /// <summary>
     /// Let the workflow sleep a while and then continue

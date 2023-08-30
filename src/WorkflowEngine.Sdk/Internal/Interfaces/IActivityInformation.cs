@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 

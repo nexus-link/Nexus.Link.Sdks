@@ -7,17 +7,15 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Support;
-using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
@@ -85,7 +83,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
         WorkflowInformation.Instance.FinishedAt = DateTimeOffset.UtcNow;
     }
 
-    public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(WorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
+    public async Task<TWorkflowResult> ExecuteAsync<TWorkflowResult>(IWorkflowImplementation<TWorkflowResult> workflowImplementation, CancellationToken cancellationToken)
     {
         try
         {
@@ -129,7 +127,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
         }
     }
 
-    public async Task ExecuteAsync(WorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(IWorkflowImplementation workflowImplementation, CancellationToken cancellationToken)
     {
         try
         {

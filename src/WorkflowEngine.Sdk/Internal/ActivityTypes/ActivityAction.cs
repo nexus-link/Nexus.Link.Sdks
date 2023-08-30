@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -17,13 +18,15 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityAction" />
-internal class ActivityAction : Activity, IActivityAction
+internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOrThrottle
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
 
     [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
+
+    protected ActivityMethodAsync<IActivityAction> WhenWaitingAsync { get; set; }
 
     /// <summary>
     /// The "catch all" method if none of the <see cref="_catchAsyncMethods"/> is applicable.
@@ -99,7 +102,7 @@ internal class ActivityAction : Activity, IActivityAction
     }
 
     /// <inheritdoc />
-    public IActivityAction UnderLock(string resourceIdentifier)
+    public IActivityActionLockOrThrottle UnderLock(string resourceIdentifier)
     {
         SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
         {
@@ -109,11 +112,31 @@ internal class ActivityAction : Activity, IActivityAction
     }
 
     /// <inheritdoc />
-    public IActivityAction WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    public IActivityActionLockOrThrottle WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
     {
         SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
         {
             Activity = this
+        };
+        return this;
+    }
+
+    /// <inheritdoc />
+    public ITryCatchActivity WhenWaiting(ActivityMethodAsync<IActivityAction> whenWaitingAsync)
+    {
+        InternalContract.RequireNotNull(whenWaitingAsync, nameof(whenWaitingAsync));
+        WhenWaitingAsync = whenWaitingAsync;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public ITryCatchActivity WhenWaiting(ActivityMethod<IActivityAction> whenWaiting)
+    {
+        InternalContract.RequireNotNull(whenWaiting, nameof(whenWaiting));
+        WhenWaitingAsync = (a, _) =>
+        {
+            whenWaiting(a);
+            return Task.CompletedTask;
         };
         return this;
     }
@@ -145,6 +168,14 @@ internal class ActivityAction : Activity, IActivityAction
                         }, methodName,
                         cancellationToken);
                     return;
+                }
+                catch (RequestPostponedException)
+                {
+                    if (WhenWaitingAsync != null) await LogicExecutor.ExecuteWithoutReturnValueAsync(
+                        ct => WhenWaitingAsync(this, ct),
+                        "Already locked",
+                        cancellationToken);
+                    throw;
                 }
                 catch (ActivityFailedException e)
                 {
@@ -185,10 +216,12 @@ internal class ActivityAction : Activity, IActivityAction
     }
 }
 
-internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>
+internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>, IActivityActionLockOrThrottle<TActivityReturns>
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
+
+    protected ActivityMethodAsync<IActivityAction<TActivityReturns>> WhenLockedAsync { get; set; }
 
     [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
@@ -256,7 +289,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     }
 
     /// <inheritdoc />
-    public IActivityAction<TActivityReturns> UnderLock(string resourceIdentifier)
+    public IActivityActionLockOrThrottle<TActivityReturns> UnderLock(string resourceIdentifier)
     {
         SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
         {
@@ -266,11 +299,31 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     }
 
     /// <inheritdoc />
-    public IActivityAction<TActivityReturns> WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    public IActivityActionLockOrThrottle<TActivityReturns> WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
     {
         SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
         {
             Activity = this
+        };
+        return this;
+    }
+
+    /// <inheritdoc />
+    public ITryCatchActivity<TActivityReturns> WhenWaiting(ActivityMethodAsync<IActivityAction<TActivityReturns>> whenWaitingAsync)
+    {
+        InternalContract.RequireNotNull(whenWaitingAsync, nameof(whenWaitingAsync));
+        WhenLockedAsync = whenWaitingAsync;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public ITryCatchActivity<TActivityReturns> WhenWaiting(ActivityMethod<IActivityAction<TActivityReturns>> whenWaiting)
+    {
+        InternalContract.RequireNotNull(whenWaiting, nameof(whenWaiting));
+        WhenLockedAsync = (a, _) =>
+        {
+            whenWaiting(a);
+            return Task.CompletedTask;
         };
         return this;
     }
@@ -295,14 +348,22 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                 try
                 {
                     var result = await LogicExecutor.ExecuteWithReturnValueAsync(async ct =>
-                    {
-                        if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
-                        var returnValue = await _methodAsync(this, ct);
-                        if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
-                        return returnValue;
-                    }, methodName,
+                        {
+                            if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
+                            var returnValue = await _methodAsync(this, ct);
+                            if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                            return returnValue;
+                        }, methodName,
                         cancellationToken);
                     return result;
+                }
+                catch (RequestPostponedException)
+                {
+                    if (WhenLockedAsync != null) await LogicExecutor.ExecuteWithoutReturnValueAsync(
+                        ct => WhenLockedAsync(this, ct), 
+                        "Already locked",
+                        cancellationToken);
+                    throw;
                 }
                 catch (ActivityFailedException e)
                 {

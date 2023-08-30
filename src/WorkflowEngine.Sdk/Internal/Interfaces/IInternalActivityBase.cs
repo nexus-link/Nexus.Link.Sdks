@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 

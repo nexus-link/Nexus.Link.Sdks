@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Interfaces;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.SystemTests.AllActionTypes.Support;
 using Xunit;
@@ -312,6 +312,48 @@ public class ActivityTests : Base
             var item = i + 1;
             LogicMoq.Verify(l => l.ForEachParallelAsync(item), Times.Once);
         }
+        LogicMoq.VerifyNoOtherCalls();
+        var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
+        workflowInstance.ShouldNotBeNull();
+        workflowInstance.State.ShouldBe(WorkflowStateEnum.Waiting.ToString());
+    }
+
+    [Fact]
+    public async Task Execute_ActionUnderLock()
+    {
+        // Arrange
+        var parameterValue = 1;
+        var implementation = await WorkflowContainer.SelectImplementationAsync<int>(1, 1);
+        implementation.DefaultActivityOptions.FailUrgency = ActivityFailUrgencyEnum.CancelWorkflow;
+        implementation.SetParameter(AllActivityTypesContainer.ParameterNames.ParameterA, parameterValue);
+
+        // First run
+        LogicMoq
+            .SetupGet(l => l.IfValue)
+            .Returns(true)
+            .Verifiable();
+        LogicMoq
+            .SetupGet(l => l.SwitchValue)
+            .Returns(1)
+            .Verifiable();
+        LogicMoq
+            .Setup(l => l.ActionUnderLockAsync())
+            .ThrowsAsync(new RequestPostponedException())
+            .Verifiable();
+
+        // Act
+        await implementation.ExecuteAsync()
+            .ShouldThrowAsync<RequestPostponedException>();
+
+        // Assert
+        LogicMoq.Verify();
+        LogicMoq.Verify(l => l.ActionAsync(), Times.Once);
+        LogicMoq.Verify(l => l.IfThenAsync(), Times.Once);
+        LogicMoq.Verify(l => l.SwitchValue1Async(), Times.Once);
+        LogicMoq.Verify(l => l.ForEachParallelAsync(1), Times.Once);
+        LogicMoq.Verify(l => l.ForEachSequentialAsync(1), Times.Once);
+        LogicMoq.Verify(l => l.ActionWithThrottleAsync(), Times.Once);
+        LogicMoq.Verify(l => l.ActionUnderLockAlreadyLocked(), Times.Once);
         LogicMoq.VerifyNoOtherCalls();
         var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
         workflowInstance.ShouldNotBeNull();

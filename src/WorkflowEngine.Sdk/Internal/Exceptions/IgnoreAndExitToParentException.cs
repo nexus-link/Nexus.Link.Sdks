@@ -1,6 +1,6 @@
 ﻿using System;
 using Nexus.Link.Libraries.Web.Error.Logic;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 
