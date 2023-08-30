@@ -7,6 +7,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -157,6 +158,32 @@ internal abstract class Activity : ActivityBase, IInternalActivity
         {
             // We will try again next reentry.
         }
+    }
+
+    protected async Task MaybeRaiseAsync<TActivity>(ISemaphoreSupport semaphoreSupport,
+        ActivityMethodAsync<TActivity> whenWaitingAsync, CancellationToken cancellationToken)
+    where TActivity : class, IActivity
+    {
+        CancellationToken ct;
+        if (semaphoreSupport == null) return;
+        try
+        {
+            await semaphoreSupport.RaiseAsync(cancellationToken);
+        }
+        catch (RequestPostponedException)
+        {
+            if (whenWaitingAsync == null) throw;
+            await LogicExecutor.ExecuteWithoutReturnValueAsync(
+                token => whenWaitingAsync(this as TActivity, token),
+                "Already locked",
+                ct);
+            throw;
+        }
+    }
+
+    protected async Task MaybeLowerAsync(ISemaphoreSupport semaphoreSupport, CancellationToken cancellationToken)
+    {
+        if (semaphoreSupport != null) await semaphoreSupport.LowerAsync(cancellationToken);
     }
 }
 

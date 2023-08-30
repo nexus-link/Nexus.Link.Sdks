@@ -161,21 +161,14 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                 try
                 {
                     await LogicExecutor.ExecuteWithoutReturnValueAsync(async ct =>
-                        {
-                            if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
-                            await _methodAsync(this, ct);
-                            if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
-                        }, methodName,
+                    {
+                        await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await _methodAsync(this, ct);
+                        await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                        if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                    }, methodName,
                         cancellationToken);
                     return;
-                }
-                catch (RequestPostponedException)
-                {
-                    if (WhenWaitingAsync != null) await LogicExecutor.ExecuteWithoutReturnValueAsync(
-                        ct => WhenWaitingAsync(this, ct),
-                        "Already locked",
-                        cancellationToken);
-                    throw;
                 }
                 catch (ActivityFailedException e)
                 {
@@ -221,7 +214,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
 
-    protected ActivityMethodAsync<IActivityAction<TActivityReturns>> WhenLockedAsync { get; set; }
+    protected ActivityMethodAsync<IActivityAction<TActivityReturns>> WhenWaitingAsync { get; set; }
 
     [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
@@ -312,7 +305,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public ITryCatchActivity<TActivityReturns> WhenWaiting(ActivityMethodAsync<IActivityAction<TActivityReturns>> whenWaitingAsync)
     {
         InternalContract.RequireNotNull(whenWaitingAsync, nameof(whenWaitingAsync));
-        WhenLockedAsync = whenWaitingAsync;
+        WhenWaitingAsync = whenWaitingAsync;
         return this;
     }
 
@@ -320,7 +313,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public ITryCatchActivity<TActivityReturns> WhenWaiting(ActivityMethod<IActivityAction<TActivityReturns>> whenWaiting)
     {
         InternalContract.RequireNotNull(whenWaiting, nameof(whenWaiting));
-        WhenLockedAsync = (a, _) =>
+        WhenWaitingAsync = (a, _) =>
         {
             whenWaiting(a);
             return Task.CompletedTask;
@@ -349,21 +342,13 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                 {
                     var result = await LogicExecutor.ExecuteWithReturnValueAsync(async ct =>
                         {
-                            if (SemaphoreSupport != null) await SemaphoreSupport.RaiseAsync(cancellationToken);
+                            await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
                             var returnValue = await _methodAsync(this, ct);
-                            if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                            await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
                             return returnValue;
                         }, methodName,
                         cancellationToken);
                     return result;
-                }
-                catch (RequestPostponedException)
-                {
-                    if (WhenLockedAsync != null) await LogicExecutor.ExecuteWithoutReturnValueAsync(
-                        ct => WhenLockedAsync(this, ct), 
-                        "Already locked",
-                        cancellationToken);
-                    throw;
                 }
                 catch (ActivityFailedException e)
                 {
