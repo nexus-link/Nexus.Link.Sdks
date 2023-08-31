@@ -79,7 +79,7 @@ public class AllActivityTypesImplementation : WorkflowImplementation<int>
 
         await CreateActivity(7, AllActivityTypesContainer.Activities.ActionUnderLock)
             .Action((_, _) => _logic.ActionUnderLockAsync())
-            .UnderLock("lock-resource-id")
+            .UnderLock()
             .WhenWaiting(_ => _logic.ActionUnderLockAlreadyLocked())
             .ExecuteAsync(cancellationToken);
 

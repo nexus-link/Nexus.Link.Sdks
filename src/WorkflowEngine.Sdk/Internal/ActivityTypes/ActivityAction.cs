@@ -165,14 +165,13 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                         await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         await _methodAsync(this, ct);
                         await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
-                        if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
                     }, methodName,
                         cancellationToken);
                     return;
                 }
                 catch (ActivityFailedException e)
                 {
-                    if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                    await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)
@@ -352,7 +351,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                 }
                 catch (ActivityFailedException e)
                 {
-                    if (SemaphoreSupport != null) await SemaphoreSupport.LowerAsync(cancellationToken);
+                    await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)

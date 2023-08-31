@@ -183,7 +183,8 @@ internal abstract class Activity : ActivityBase, IInternalActivity
 
     protected async Task MaybeLowerAsync(ISemaphoreSupport semaphoreSupport, CancellationToken cancellationToken)
     {
-        if (semaphoreSupport != null) await semaphoreSupport.LowerAsync(cancellationToken);
+        if (semaphoreSupport == null) return;
+        await semaphoreSupport.LowerAsync(cancellationToken);
     }
 }
 

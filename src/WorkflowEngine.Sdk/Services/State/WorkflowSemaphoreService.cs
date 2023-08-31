@@ -63,7 +63,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 throw new RequestPostponedException
                 {
                     TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
+                    TryAgainAfterMinimumTimeSpan = TimeSpan.FromHours(1)
                 };
             }
 

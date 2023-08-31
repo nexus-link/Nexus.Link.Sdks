@@ -86,7 +86,9 @@ public class SemaphoreSupportTests
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Assert
-        exception.TryAgain.ShouldBe(false, "A semaphore should not be tried again after a time interval, but explicitly when the semaphore is lowered");
+        exception.TryAgain.ShouldBeTrue();
+        exception.TryAgainAfterMinimumTimeSpan.ShouldNotBeNull();
+        exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeGreaterThanOrEqualTo(TimeSpan.FromHours(1), "A semaphore should not be tried again soon afterwards, but explicitly when the semaphore is lowered");
     }
 
     private static ActivityInstance CreateActivity1Instance(string id, string workflowInstanceId)

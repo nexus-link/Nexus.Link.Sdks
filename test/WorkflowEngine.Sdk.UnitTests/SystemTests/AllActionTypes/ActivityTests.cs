@@ -353,7 +353,7 @@ public class ActivityTests : Base
         LogicMoq.Verify(l => l.ForEachParallelAsync(1), Times.Once);
         LogicMoq.Verify(l => l.ForEachSequentialAsync(1), Times.Once);
         LogicMoq.Verify(l => l.ActionWithThrottleAsync(), Times.Once);
-        LogicMoq.Verify(l => l.ActionUnderLockAlreadyLocked(), Times.Once);
+        LogicMoq.Verify(l => l.ActionUnderLockAlreadyLocked(), Times.Never);
         LogicMoq.VerifyNoOtherCalls();
         var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);
         workflowInstance.ShouldNotBeNull();
