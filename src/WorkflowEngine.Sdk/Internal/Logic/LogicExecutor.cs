@@ -34,7 +34,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                 {
                     await methodAsync(ct);
                     return Task.FromResult(true);
-                }, methodName, true, cancellationToken);
+                }, methodName, false, cancellationToken);
             if (exception != null) throw exception;
         }
 
@@ -107,6 +107,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
             var (result, exception) = await ExecuteAndConsolidateExceptionsAsync(methodAsync, cancellationToken);
             stopwatch.Stop();
+            if (exception is WorkflowImplementationShouldNotCatchThisException ex)
+            {
+                await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} child threw",
+                    new
+                    {
+                        ElapsedSeconds = stopwatch.Elapsed.TotalSeconds.ToString("F2"),
+                        Exception = $"{ex.InnerException.GetType().Name}: {ex.InnerException.Message}",
+                    }, cancellationToken);
+                return (result, exception);
+            }
             if (exception != null)
             {
                 await Activity.LogInformationAsync($"Activity {Activity.ToLogString()} method {methodName} threw",
@@ -168,7 +178,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             catch (WorkflowImplementationShouldNotCatchThisException ex)
             {
                 FulcrumAssert.IsNotNull(ex.InnerException, CodeLocation.AsString());
-                return (default, ex.InnerException);
+                // TODO: Experiment
+                //return (default, ex.InnerException);
+                return (default, ex);
             }
             catch (FulcrumException e)
             {
@@ -176,11 +188,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (OperationCanceledException)
             {
-                var exception = new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
-                };
+                var exception = new ActivityPostponedException(TimeSpan.Zero);
                 return (default, exception);
             }
             catch (Exception e)
@@ -203,11 +211,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     timeSpan = TimeSpan.FromSeconds(1);
                 }
 
-                return new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = timeSpan
-                };
+                return new ActivityPostponedException(timeSpan);
             }
 
             if (e is FulcrumProgrammersErrorException)

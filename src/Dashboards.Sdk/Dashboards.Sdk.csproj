@@ -25,9 +25,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
-		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.4" />
+		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.5-beta01" />
 		<PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.3" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.4" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.0-beta01" />
 	</ItemGroup>
 
 	<ItemGroup>

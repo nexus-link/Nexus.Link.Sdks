@@ -89,6 +89,8 @@ internal class ActivityExecutor : IActivityExecutor
 
         switch (exception)
         {
+            case WorkflowImplementationShouldNotCatchThisException:
+                throw exception;
             case ActivityFailedException
                       or WorkflowFastForwardBreakException
                       or RequestPostponedException
@@ -141,7 +143,7 @@ internal class ActivityExecutor : IActivityExecutor
                         $"Activity {Activity}:\r{Activity.Instance.ExceptionTechnicalMessage}",
                         $"Activity {Activity}:\r{Activity.Instance.ExceptionFriendlyMessage}");
                 case ActivityFailUrgencyEnum.Stopping:
-                    return new RequestPostponedException();
+                    return new ActivityPostponedException(null);
                 case ActivityFailUrgencyEnum.HandleLater:
                 case ActivityFailUrgencyEnum.Ignore:
                     return null;
@@ -252,7 +254,9 @@ internal class ActivityExecutor : IActivityExecutor
         }
         switch (exception)
         {
-
+            case WorkflowImplementationShouldNotCatchThisException:
+                Activity.Instance.State = ActivityStateEnum.Waiting;
+                return exception;
             case WorkflowFastForwardBreakException:
 #pragma warning disable CS0618
             case IgnoreAndExitToParentException:
@@ -315,16 +319,13 @@ internal class ActivityExecutor : IActivityExecutor
             switch (ex)
             {
                 case ActivityFailedException: // Also covers WorkflowFailedException
+                case WorkflowImplementationShouldNotCatchThisException:
                 case RequestPostponedException:
                 case WorkflowFastForwardBreakException:
                     exception = ex;
                     break;
                 case OperationCanceledException:
-                    exception = new RequestPostponedException
-                    {
-                        TryAgain = true,
-                        TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
-                    };
+                    exception = new ActivityPostponedException(TimeSpan.Zero);
                     break;
                 default:
                     // Unexpected exception. Our conclusion is that there is an error in the workflow engine.
@@ -346,7 +347,9 @@ internal class ActivityExecutor : IActivityExecutor
         InternalActivityMethodAsync<TActivityReturns> methodAsync, CancellationToken cancellationToken)
     {
         // We will fail if the total execution time limit has passed
+#pragma warning disable CS0618
         GetTotalExecutionTimeRemainingOrThrow();
+#pragma warning restore CS0618
 
         // We will postpone if the current run has passed the postpone limit
         var currentRunTimeSoFar = Activity.ActivityInformation.Workflow.TimeSinceCurrentRunStarted.Elapsed;
@@ -363,6 +366,7 @@ internal class ActivityExecutor : IActivityExecutor
         Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken.ThrowIfCancellationRequested();
         return await methodAsync(cancellationToken);
 
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.")]
         TimeSpan? GetTotalExecutionTimeRemainingOrThrow()
         {
             if (!Activity.ActivityInformation.Options.ActivityMaxExecutionTimeSpan.HasValue) return null;

@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.8.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.7-beta01" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.8.5-beta01" />
   </ItemGroup>
 
   <ItemGroup>

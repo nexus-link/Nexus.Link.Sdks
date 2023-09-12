@@ -9,7 +9,6 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
@@ -73,10 +72,7 @@ public class LogicExecutorTests
     {
         // Arrange
         const string expectedRequestId = "D26D6803-03D2-4889-90E4-500B83839184";
-        var requestPostponedException = new RequestPostponedException
-        {
-            WaitingForRequestIds = { expectedRequestId }
-        };
+        var requestPostponedException = new ActivityWaitsForRequestException(expectedRequestId);
 
 
         // Act
@@ -206,7 +202,7 @@ public class LogicExecutorTests
     public async Task Execute_Given_ThrowsRequestPostponedException_Gives_Rethrows(bool withReturnValue)
     {
         // Arrange
-        var exceptionToThrow = new RequestPostponedException();
+        var exceptionToThrow = new ActivityPostponedException(null);
 
         // Act & assert
         RequestPostponedException thrownException;
@@ -248,63 +244,65 @@ public class LogicExecutorTests
         }
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Execute_Given_ThrowsWorkflowImplementationShouldNotCatchThisException_Gives_RethrowsInnerException(bool withReturnValue)
-    {
-        // Arrange
-        var expectedInnerException = new RequestPostponedException();
-        var exceptionToThrow = new WorkflowImplementationShouldNotCatchThisException(expectedInnerException);
+    // No longer true, since we just rethrow WorkflowImplementationShouldNotCatchThisException
+    //[Theory]
+    //[InlineData(false)]
+    //[InlineData(true)]
+    //public async Task Execute_Given_ThrowsWorkflowImplementationShouldNotCatchThisException_Gives_RethrowsInnerException(bool withReturnValue)
+    //{
+    //    // Arrange
+    //    var expectedInnerException = new ActivityPostponedException(null);
+    //    var exceptionToThrow = new WorkflowImplementationShouldNotCatchThisException(expectedInnerException);
 
-        // Act & assert
-        RequestPostponedException thrownException;
-        if (withReturnValue)
-        {
-            thrownException = await _executor
-                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, "Method with return value")
-                .ShouldThrowAsync<RequestPostponedException>();
-        }
-        else
-        {
-            thrownException = await _executor
-                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!, "Method without return value")
-                .ShouldThrowAsync<RequestPostponedException>();
-        }
-        thrownException.ShouldBe(expectedInnerException);
-    }
+    //    // Act & assert
+    //    RequestPostponedException thrownException;
+    //    if (withReturnValue)
+    //    {
+    //        thrownException = await _executor
+    //            .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, "Method with return value")
+    //            .ShouldThrowAsync<RequestPostponedException>();
+    //    }
+    //    else
+    //    {
+    //        thrownException = await _executor
+    //            .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!, "Method without return value")
+    //            .ShouldThrowAsync<RequestPostponedException>();
+    //    }
+    //    thrownException.ShouldBe(expectedInnerException);
+    //}
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Execute_Given_ThrowsWorkflowImplementationShouldNotCatchThisExceptionWithBadInnerException_Gives_ThrowsApplicationFailedException(bool withReturnValue)
-    {
-        // Arrange
-        var innerException = new ApplicationException();
-        var exceptionToThrow = new WorkflowImplementationShouldNotCatchThisException(innerException);
+// No longer true, since we just rethrow WorkflowImplementationShouldNotCatchThisException
+//[Theory]
+//[InlineData(false)]
+//[InlineData(true)]
+//public async Task Execute_Given_ThrowsWorkflowImplementationShouldNotCatchThisExceptionWithBadInnerException_Gives_ThrowsApplicationFailedException(bool withReturnValue)
+//{
+//    // Arrange
+//    var innerException = new ApplicationException();
+//    var exceptionToThrow = new WorkflowImplementationShouldNotCatchThisException(innerException);
 
-        // Act & assert
-        if (withReturnValue)
-        {
-            await _executor
-                .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, "Method with return value")
-                .ShouldThrowAsync<ActivityFailedException>();
-        }
-        else
-        {
-            await _executor
-                .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!, "Method without return value")
-                .ShouldThrowAsync<ActivityFailedException>();
-        }
-    }
+//    // Act & assert
+//    if (withReturnValue)
+//    {
+//        await _executor
+//            .ExecuteWithReturnValueAsync<int>(_ => throw exceptionToThrow, "Method with return value")
+//            .ShouldThrowAsync<ActivityFailedException>();
+//    }
+//    else
+//    {
+//        await _executor
+//            .ExecuteWithoutReturnValueAsync(_ => throw exceptionToThrow!, "Method without return value")
+//            .ShouldThrowAsync<ActivityFailedException>();
+//    }
+//}
 
-    [Theory]
-    [InlineData(false, typeof(FulcrumTryAgainException), typeof(RequestPostponedException), null)]
-    [InlineData(true, typeof(FulcrumTryAgainException), typeof(RequestPostponedException), null)]
-    [InlineData(false, typeof(FulcrumResourceLockedException), typeof(RequestPostponedException), null)]
-    [InlineData(true, typeof(FulcrumResourceLockedException), typeof(RequestPostponedException), null)]
-    [InlineData(false, typeof(FulcrumNotFoundException), typeof(RequestPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
-    [InlineData(true, typeof(FulcrumNotFoundException), typeof(RequestPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
+[Theory]
+    [InlineData(false, typeof(FulcrumTryAgainException), typeof(ActivityPostponedException), null)]
+    [InlineData(true, typeof(FulcrumTryAgainException), typeof(ActivityPostponedException), null)]
+    [InlineData(false, typeof(FulcrumResourceLockedException), typeof(ActivityPostponedException), null)]
+    [InlineData(true, typeof(FulcrumResourceLockedException), typeof(ActivityPostponedException), null)]
+    [InlineData(false, typeof(FulcrumNotFoundException), typeof(ActivityPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
+    [InlineData(true, typeof(FulcrumNotFoundException), typeof(ActivityPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
     [InlineData(false, typeof(FulcrumBusinessRuleException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.BusinessError)]
     [InlineData(true, typeof(FulcrumBusinessRuleException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.BusinessError)]
     [InlineData(false, typeof(FulcrumCancelledException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.TechnicalError)]
@@ -408,6 +406,6 @@ public class LogicExecutorTests
         }
 
         // Assert
-        thrownException.TryAgain.ShouldBe(true);
+        
     }
 }

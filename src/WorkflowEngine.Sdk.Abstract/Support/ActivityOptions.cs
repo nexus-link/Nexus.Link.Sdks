@@ -75,6 +75,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Support
         /// <summary>
         /// If an activity is still executing after this time, it will throw an exception.
         /// </summary>
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.")]
         public TimeSpan? ActivityMaxExecutionTimeSpan { get; set; }
 
         /// <summary>

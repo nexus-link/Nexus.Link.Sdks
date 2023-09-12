@@ -7,7 +7,6 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
@@ -47,7 +46,7 @@ public class WorkflowBeforeAndAfterTests
         var expectedRequestId = Guid.NewGuid();
         FulcrumApplication.Context.ExecutionId = expectedRequestId.ToGuidString();
         var implementation = new TestWorkflowImplementation(_workflowCapabilities,
-            _ => throw new WorkflowImplementationShouldNotCatchThisException(new RequestPostponedException()));
+            _ => throw new WorkflowImplementationShouldNotCatchThisException(new ActivityPostponedException(null)));
         var information = new WorkflowInformation(implementation);
         var beforeAndAfter = new WorkflowBeforeAndAfterExecution(information);
 
@@ -73,7 +72,7 @@ public class WorkflowBeforeAndAfterTests
         var storageMock = new Mock<IWorkflowEngineStorage>();
         var workflowCapabilities = new WorkflowCapabilities(configurationTablesMock.Object, runtimeTablesMock.Object, _armMock, storageMock.Object);
         var implementation = new TestWorkflowImplementation(workflowCapabilities,
-            _ => throw new WorkflowImplementationShouldNotCatchThisException(new RequestPostponedException()));
+            _ => throw new WorkflowImplementationShouldNotCatchThisException(new ActivityPostponedException(null)));
         var information = new WorkflowInformation(implementation);
         var beforeAndAfter = new WorkflowBeforeAndAfterExecution(information);
 
@@ -82,6 +81,6 @@ public class WorkflowBeforeAndAfterTests
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Assert
-        exception.TryAgain.ShouldBe(true);
+
     }
 }

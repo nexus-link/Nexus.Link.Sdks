@@ -4,6 +4,7 @@ using Moq;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.SystemTests.AllActionTypes.Support;
@@ -90,7 +91,7 @@ public class ActivityTests : Base
         // First run
         LogicMoq.
             Setup(l => l.ActionAsync())
-            .ThrowsAsync(new RequestPostponedException());
+            .ThrowsAsync(new ActivityPostponedException(null));
         await implementation.ExecuteAsync()
             .ShouldThrowAsync<RequestPostponedException>();
 
@@ -107,14 +108,14 @@ public class ActivityTests : Base
         {
             LogicMoq
                 .Setup(l => l.IfThenAsync())
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable();
         }
         else
         {
             LogicMoq
                 .Setup(l => l.IfElseAsync())
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable(); ;
         }
 
@@ -151,14 +152,14 @@ public class ActivityTests : Base
         {
             LogicMoq
                 .Setup(l => l.IfThenAsync())
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable();
         }
         else
         {
             LogicMoq
                 .Setup(l => l.IfElseAsync())
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable(); ;
         }
 
@@ -200,13 +201,13 @@ public class ActivityTests : Base
             case 1:
                 LogicMoq
                     .Setup(l => l.SwitchValue1Async())
-                    .ThrowsAsync(new RequestPostponedException())
+                    .ThrowsAsync(new ActivityPostponedException(null))
                     .Verifiable();
                 break;
             case 2:
                 LogicMoq
                 .Setup(l => l.SwitchValue2Async())
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable();
                 break;
             default:
@@ -253,7 +254,7 @@ public class ActivityTests : Base
             var item = i + 1;
             LogicMoq
                 .Setup(l => l.ForEachParallelAsync(item))
-                .ThrowsAsync(new RequestPostponedException())
+                .ThrowsAsync(new ActivityPostponedException(null))
                 .Verifiable();
         }
 
@@ -295,7 +296,7 @@ public class ActivityTests : Base
             .Verifiable();
         LogicMoq
             .Setup(l => l.ForEachSequentialAsync(1))
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
 
         // Act
@@ -338,7 +339,7 @@ public class ActivityTests : Base
             .Verifiable();
         LogicMoq
             .Setup(l => l.ActionUnderLockAsync())
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
 
         // Act
@@ -380,11 +381,11 @@ public class ActivityTests : Base
             .Verifiable();
         LogicMoq
             .Setup(l => l.ParallelJob1Async())
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
         LogicMoq
             .Setup(l => l.ParallelJob2Async())
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
 
         // Act
@@ -426,7 +427,7 @@ public class ActivityTests : Base
             .Verifiable();
         LogicMoq
             .Setup(l => l.DoUntilAsync(It.IsAny<IActivityDoWhileOrUntil>()))
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
 
         // Act
@@ -477,7 +478,7 @@ public class ActivityTests : Base
             .Verifiable();
         LogicMoq
             .Setup(l => l.WhileDoAsync(It.IsAny<IActivityWhileDo>()))
-            .ThrowsAsync(new RequestPostponedException())
+            .ThrowsAsync(new ActivityPostponedException(null))
             .Verifiable();
 
         // Act

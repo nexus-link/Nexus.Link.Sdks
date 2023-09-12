@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.12" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.6" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.7-beta01" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">

@@ -7,8 +7,8 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
@@ -96,6 +96,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         public IActivityFlow SetMaxExecutionTimeSpan(TimeSpan timeSpan)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
@@ -103,7 +104,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2022-05-09.", true)]
         public IActivityFlow SetDeadLine(DateTimeOffset deadline)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
@@ -111,6 +112,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         public IActivityFlow SetDeadline(DateTimeOffset deadline)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
@@ -560,6 +562,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         public IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = timeSpan;
@@ -567,7 +570,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2022-05-09.", true)]
         public IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadline)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);
@@ -575,6 +578,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         public IActivityFlow<TActivityReturns> SetDeadline(DateTimeOffset deadline)
         {
             ActivityInformation.Options.ActivityMaxExecutionTimeSpan = deadline.Subtract(DateTimeOffset.UtcNow);

@@ -10,7 +10,9 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Log = Nexus.Link.Libraries.Core.Logging.Log;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -40,11 +42,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         {
             if (ex is WorkflowFailedException) throw;
             // All other exceptions should result in a retry
-            throw new RequestPostponedException($"Could not prepare for execution: {ex}")
-            {
-                TryAgain = true,
-                TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
-            };
+            throw new WorkflowPostponedException(TimeSpan.FromSeconds(30));
         }
     }
 
@@ -93,11 +91,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         catch (Exception ex)
         {
             Log.LogWarning($"The workflow {WorkflowInformation} had a problem with the book keeping after execution. Will try again later.\r{ex}");
-            throw new RequestPostponedException
-            {
-                TryAgain = true,
-                TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
-            };
+            throw new WorkflowPostponedException(TimeSpan.FromSeconds(30));
         }
     }
 

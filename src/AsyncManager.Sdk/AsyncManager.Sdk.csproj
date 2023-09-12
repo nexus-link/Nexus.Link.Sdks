@@ -40,7 +40,7 @@
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.1.1" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="5.34.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.0-beta01" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -11,6 +11,8 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Storage.Logic;
 using Nexus.Link.Libraries.Crud.Model;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
@@ -60,11 +62,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
             if (raisedHolder == null)
             {
                 scope.Complete();
-                throw new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.FromHours(1)
-                };
+                throw new ActivityPostponedException(TimeSpan.FromHours(1));
             }
 
             if (semaphore.Limit != item.Limit)

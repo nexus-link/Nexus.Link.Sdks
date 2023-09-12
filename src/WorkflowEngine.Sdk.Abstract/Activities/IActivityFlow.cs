@@ -35,15 +35,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// <summary>
         /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
-        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2022-05-09.", true)]
         IActivityFlow SetDeadLine(DateTimeOffset deadline);
 
         /// <summary>
         /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         IActivityFlow SetDeadline(DateTimeOffset deadline);
 
-        [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
+        [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01", true)]
         IActivityAction Action();
         IActivityAction Action(ActivityMethodAsync<IActivityAction> methodAsync);
         IActivityAction Action(ActivityMethod<IActivityAction> method);
@@ -127,17 +128,19 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// </summary>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         IActivityFlow<TActivityReturns> SetMaxExecutionTimeSpan(TimeSpan timeSpan);
 
         /// <summary>
         /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
-        [Obsolete($"Please use {nameof(SetDeadline)}. Obsolete since 2022-05-09.")]
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2022-05-09.", true)]
         IActivityFlow<TActivityReturns> SetDeadLine(DateTimeOffset deadline);
 
         /// <summary>
         /// When time has passed <paramref name="deadline"/>, it will throw an <see cref="ActivityFailedException"/>.
         /// </summary>
+        [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.", true)]
         IActivityFlow<TActivityReturns> SetDeadline(DateTimeOffset deadline);
 
         IActivityFlow<TActivityReturns> SetDefaultValueForNotUrgentFail(TActivityReturns defaultValue);

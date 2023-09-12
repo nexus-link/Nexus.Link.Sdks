@@ -12,6 +12,7 @@ using Nexus.Link.Libraries.Crud.Helpers;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -156,11 +157,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     if (!useFallback) throw;
                     Log.LogWarning($"Failed to save to DB: {ex}\rWill try to save to secondary storage.");
                     await SaveToStorageAsync(ct);
-                    throw new RequestPostponedException
-                    {
-                        TryAgain = true,
-                        TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
-                    };
+                    throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
                 }
 
                 if (_workflowInformation.WorkflowOptions.AfterSaveAsync != null)

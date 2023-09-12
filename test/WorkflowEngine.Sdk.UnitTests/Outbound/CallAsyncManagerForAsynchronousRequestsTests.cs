@@ -10,6 +10,8 @@ using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -52,11 +54,7 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         // Arrange
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/Persons/123");
         var requestResponseServiceMock = new Mock<IRequestResponseService>();
-        var expectedException = new RequestPostponedException
-        {
-            TryAgain = true,
-            TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(30)
-        };
+        var expectedException = new ActivityPostponedException(TimeSpan.FromSeconds(30));
         requestResponseServiceMock
             .Setup(rr => rr.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(expectedException);
@@ -67,7 +65,7 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         // Act && Assert
         var exception = await _iut.SendAsync(request, CancellationToken.None)
             .ShouldThrowAsync<RequestPostponedException>();
-        exception.TryAgain.ShouldBe(true);
+
         exception.TryAgainAfterMinimumTimeSpan.ShouldBe(expectedException.TryAgainAfterMinimumTimeSpan);
         exception.InnerException.ShouldBeNull();
     }
@@ -99,7 +97,7 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         // Act && Assert
         var exception = await _iut.SendAsync(request, CancellationToken.None)
             .ShouldThrowAsync<RequestPostponedException>();
-        exception.TryAgain.ShouldBe(true);
+
         exception.TryAgainAfterMinimumTimeSpan.ShouldBe(expectedTimeSpan);
         exception.InnerException.ShouldBeAssignableTo(exceptionThrown.GetType());
     }

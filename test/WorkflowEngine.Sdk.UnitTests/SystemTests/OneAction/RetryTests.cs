@@ -10,7 +10,6 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.SystemTests.OneAction.Support;
 using Xunit;

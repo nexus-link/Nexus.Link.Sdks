@@ -11,6 +11,7 @@ using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.Libraries.Web.Logging;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -67,11 +68,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                     var timeSpan = ex is FulcrumException fe
                         ? TimeSpan.FromSeconds(fe.RecommendedWaitTimeInSeconds)
                         : TimeSpan.FromSeconds(60);
-                    throw new RequestPostponedException($"Could not get the response for {request.ToLogString()}: {ex.Message}")
-                    {
-                        TryAgain = true,
-                        TryAgainAfterMinimumTimeSpan = timeSpan
-                    };
+                    throw new ActivityPostponedException(timeSpan);
                 }
 
                 if (response != null)
@@ -82,7 +79,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                 }
                 await activity.LogVerboseAsync($"Activity polled for a response" +
                                                    $" to request {request.ToLogString()}", activity, cancellationToken);
-                throw new RequestPostponedException(activity.Instance.AsyncRequestId);
+                throw new ActivityWaitsForRequestException(activity.Instance.AsyncRequestId);
             }
 
             // Send the request to AM
@@ -91,7 +88,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             await activity.LogInformationAsync($"Activity sent the request {request.ToLogString()} for asynchronous execution.", activity, cancellationToken);
 
             // Remember the request id and postpone the activity.
-            throw new RequestPostponedException(requestId);
+            throw new ActivityWaitsForRequestException(requestId);
         }
 
         private async Task<HttpResponseMessage> TryGetResponseAsync(HttpRequestMessage request, IInternalActivity activity, CancellationToken cancellationToken)

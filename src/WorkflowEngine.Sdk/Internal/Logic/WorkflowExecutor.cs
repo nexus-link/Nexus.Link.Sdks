@@ -13,6 +13,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -191,7 +192,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
             new { Exception = ex, WorkflowInformation },
             cancellationToken);
 
-        return new RequestPostponedException();
+        return new WorkflowPostponedException(null);
     }
 
     private async Task<Exception> HandleAndConvertExceptionAsync(Exception exception, CancellationToken cancellationToken)
@@ -212,11 +213,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
             case WorkflowFastForwardBreakException:
                 return exception;
             case FulcrumTryAgainException tryAgainException:
-                return new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.FromSeconds(tryAgainException.RecommendedWaitTimeInSeconds)
-                };
+                return new WorkflowPostponedException(TimeSpan.FromSeconds(tryAgainException.RecommendedWaitTimeInSeconds));
             default:
                 return await ReportUnexpectedExceptionAsync(exception, cancellationToken);
         }

@@ -1,9 +1,9 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
@@ -99,6 +99,54 @@ public class ActivityActionCatchTests : ActivityTestsBase
         logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Try");
         logicExecutor.ExecuteWithoutReturnValueCounter["Try"].ShouldBe(1);
         var key = "Catch all";
+        logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey(key);
+        logicExecutor.ExecuteWithoutReturnValueCounter[key].ShouldBe(1);
+        logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task TryCatch_Given_TimeOutWithCatchAll_Gives_CatchAll()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => Task.CompletedTask);
+        activity.SetMaxTime(TimeSpan.Zero);
+        activity.Catch(ActivityExceptionCategoryEnum.TechnicalError, (_, _, _) => Task.CompletedTask);
+        activity.CatchAll((_, _, _) => Task.CompletedTask);
+
+        // Act
+        await activity.ActionAsync();
+
+        // Assert
+        logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(0);
+        logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Try");
+        logicExecutor.ExecuteWithoutReturnValueCounter["Try"].ShouldBe(1);
+        var key = "Catch all";
+        logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey(key);
+        logicExecutor.ExecuteWithoutReturnValueCounter[key].ShouldBe(1);
+        logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task TryCatch_Given_TimeOutWithSpecificCatch_Gives_SpecificCatch()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => Task.CompletedTask);
+        activity.SetMaxTime(TimeSpan.Zero);
+        activity.Catch(ActivityExceptionCategoryEnum.MaxTimeReachedError, (_, _, _) => Task.CompletedTask);
+        activity.CatchAll((_, _, _) => Task.CompletedTask);
+
+        // Act
+        await activity.ActionAsync();
+
+        // Assert
+        logicExecutor.ExecuteWithReturnValueCounter.Count.ShouldBe(0);
+        logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey("Try");
+        logicExecutor.ExecuteWithoutReturnValueCounter["Try"].ShouldBe(1);
+        var key = "Catch MaxTimeReachedError";
         logicExecutor.ExecuteWithoutReturnValueCounter.ShouldContainKey(key);
         logicExecutor.ExecuteWithoutReturnValueCounter[key].ShouldBe(1);
         logicExecutor.ExecuteWithoutReturnValueCounter.Count.ShouldBe(2);

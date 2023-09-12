@@ -21,7 +21,8 @@ public class WorkflowHelper
     public static async Task WhenAllActivities(IEnumerable<Task> tasks)
     {
         var exceptionTasks = new List<Task>();
-        RequestPostponedException outException = null;
+        RequestPostponedException aggregatedException = null;
+        var hasOuterException = false;
         foreach (var task in tasks)
         {
             try
@@ -36,50 +37,8 @@ public class WorkflowHelper
 #pragma warning restore CS0618
             catch (RequestPostponedException e)
             {
-                outException ??= new RequestPostponedException();
-                outException.AddWaitingForIds(e.WaitingForRequestIds);
-                if (!outException.TryAgain)
-                {
-                    outException.TryAgain = e.TryAgain;
-                    var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
-                                              || e.TryAgainAfterMinimumTimeSpan.HasValue &&
-                                              e.TryAgainAfterMinimumTimeSpan <
-                                              outException.TryAgainAfterMinimumTimeSpan;
-                    if (replaceCurrentValue)
-                    {
-                        outException.TryAgainAfterMinimumTimeSpan = e.TryAgainAfterMinimumTimeSpan;
-                    }
-                }
+                AggregateException(e);
             }
-            // TODO: Remove?
-            //catch (WorkflowImplementationShouldNotCatchThisException outerException)
-            //{
-            //    if (outerException.InnerException is IgnoreAndExitToParentException)
-            //    {
-            //        // Ignore the exception by not adding it to the list exceptionTasksFulcrumAssert.IsNotNull(innerException.ActivityFailedException, CodeLocation.AsString());
-            //    }
-            //    else if (outerException.InnerException is RequestPostponedException rpe)
-            //    {
-            //        outException ??= new RequestPostponedException();
-            //        outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-            //        if (!outException.TryAgain)
-            //        {
-            //            outException.TryAgain = rpe.TryAgain;
-            //            var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
-            //                                      || rpe.TryAgainAfterMinimumTimeSpan.HasValue &&
-            //                                      rpe.TryAgainAfterMinimumTimeSpan <
-            //                                      outException.TryAgainAfterMinimumTimeSpan;
-            //            if (replaceCurrentValue)
-            //            {
-            //                outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        exceptionTasks.Add(task);
-            //    }
-            //}
             catch (WorkflowImplementationShouldNotCatchThisException outerException)
             {
 #pragma warning disable CS0618
@@ -90,20 +49,8 @@ public class WorkflowHelper
 #pragma warning restore CS0618
                 else if (outerException.InnerException is RequestPostponedException rpe)
                 {
-                    outException ??= new RequestPostponedException();
-                    outException.AddWaitingForIds(rpe.WaitingForRequestIds);
-                    if (!outException.TryAgain)
-                    {
-                        outException.TryAgain = rpe.TryAgain;
-                        var replaceCurrentValue = !outException.TryAgainAfterMinimumTimeSpan.HasValue
-                                                  || rpe.TryAgainAfterMinimumTimeSpan.HasValue &&
-                                                  rpe.TryAgainAfterMinimumTimeSpan <
-                                                  outException.TryAgainAfterMinimumTimeSpan;
-                        if (replaceCurrentValue)
-                        {
-                            outException.TryAgainAfterMinimumTimeSpan = rpe.TryAgainAfterMinimumTimeSpan;
-                        }
-                    }
+                    hasOuterException = true;
+                    AggregateException(rpe);
                 }
                 else
                 {
@@ -116,8 +63,29 @@ public class WorkflowHelper
             }
         }
 
-        if (outException != null) throw outException;
+        if (aggregatedException != null)
+        {
+            if (hasOuterException) throw new WorkflowImplementationShouldNotCatchThisException(aggregatedException);
+            throw aggregatedException;
+        }
         await Task.WhenAll(exceptionTasks);
+
+        void AggregateException(RequestPostponedException e)
+        {
+            if (aggregatedException == null)
+            {
+                aggregatedException = e;
+                return;
+            }
+
+            aggregatedException.AddWaitingForIds(e.WaitingForRequestIds);
+            if (!e.TryAgainAfterMinimumTimeSpan.HasValue) return;
+            if (!aggregatedException.TryAgainAfterMinimumTimeSpan.HasValue
+                || aggregatedException.TryAgainAfterMinimumTimeSpan.Value > e.TryAgainAfterMinimumTimeSpan.Value)
+            {
+                aggregatedException.TryAgainAfterMinimumTimeSpan = e.TryAgainAfterMinimumTimeSpan.Value;
+            }
+        }
     }
 
     /// <summary>

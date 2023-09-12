@@ -5,6 +5,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
@@ -43,11 +44,7 @@ internal class ActivitySleep: Activity, IActivitySleep
         FulcrumAssert.IsTrue(success, CodeLocation.AsString());
         if (sleepUntil >= DateTimeOffset.UtcNow)
         {
-            throw new RequestPostponedException
-            {
-                TryAgain = true,
-                TryAgainAfterMinimumTimeSpan = sleepUntil.Subtract(DateTimeOffset.UtcNow)
-            };
+            throw new ActivityPostponedException(sleepUntil.Subtract(DateTimeOffset.UtcNow));
         }
 
         await Task.CompletedTask;

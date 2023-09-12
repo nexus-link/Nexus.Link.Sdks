@@ -49,7 +49,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk
             DefaultActivityOptions.LogPurgeThreshold = LogSeverityLevel.None;
             DefaultActivityOptions.MaxTotalRunTimeSpan = TimeSpan.FromHours(1);
             DefaultActivityOptions.PostponeAfterTimeSpan = TimeSpan.FromHours(1);
+#pragma warning disable CS0618
             DefaultActivityOptions.ActivityMaxExecutionTimeSpan = null;
+#pragma warning restore CS0618
         }
 
         /// <inheritdoc />

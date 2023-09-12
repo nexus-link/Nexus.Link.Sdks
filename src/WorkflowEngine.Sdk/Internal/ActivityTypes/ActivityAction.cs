@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
-using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -22,6 +22,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
+    private DateTimeOffset _maxTime = DateTimeOffset.MaxValue;
 
     [JsonIgnore]
     internal ISemaphoreSupport SemaphoreSupport { get; set; }
@@ -49,6 +50,20 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction SetMaxTime(DateTimeOffset time)
+    {
+        _maxTime = time;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction SetMaxTime(TimeSpan timeSpan)
+    {
+        _maxTime = ActivityStartedAt.Add(timeSpan);
+        return this;
     }
 
     /// <inheritdoc/>
@@ -162,6 +177,12 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                 {
                     await LogicExecutor.ExecuteWithoutReturnValueAsync(async ct =>
                     {
+                        if (DateTimeOffset.UtcNow > _maxTime)
+                        {
+                            throw new ActivityFailedException(ActivityExceptionCategoryEnum.MaxTimeReachedError,
+                                $"The maximum time ({_maxTime.ToLogString()}) for the activity {ToLogString()} has been reached. The activity was started at {ActivityStartedAt.ToLogString()} and expired at {_maxTime.ToLogString()}, it is now {DateTimeOffset.UtcNow.ToLogString()}",
+                                "The maximum time for the activity has been reached.");
+                        }
                         await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         await _methodAsync(this, ct);
                         await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
@@ -212,6 +233,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
+    private DateTimeOffset _maxTime = DateTimeOffset.MaxValue;
 
     protected ActivityMethodAsync<IActivityAction<TActivityReturns>> WhenWaitingAsync { get; set; }
 
@@ -241,6 +263,20 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     {
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction<TActivityReturns> SetMaxTime(DateTimeOffset time)
+    {
+        _maxTime = time;
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction<TActivityReturns> SetMaxTime(TimeSpan timeSpan)
+    {
+        _maxTime = ActivityStartedAt.Add(timeSpan);
+        return this;
     }
 
     /// <inheritdoc/>
@@ -340,12 +376,18 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                 try
                 {
                     var result = await LogicExecutor.ExecuteWithReturnValueAsync(async ct =>
+                    {
+                        if (DateTimeOffset.UtcNow > _maxTime)
                         {
-                            await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
-                            var returnValue = await _methodAsync(this, ct);
-                            await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
-                            return returnValue;
-                        }, methodName,
+                            throw new ActivityFailedException(ActivityExceptionCategoryEnum.MaxTimeReachedError,
+                                $"The maximum time ({_maxTime.ToLogString()}) for the activity {ToLogString()} has been reached. The activity was started at {ActivityStartedAt.ToLogString()} and expired at {_maxTime.ToLogString()}, it is now {DateTimeOffset.UtcNow.ToLogString()}",
+                                "The maximum time for the activity has been reached.");
+                        }
+                        await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        var returnValue = await _methodAsync(this, ct);
+                        await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                        return returnValue;
+                    }, methodName,
                         cancellationToken);
                     return result;
                 }

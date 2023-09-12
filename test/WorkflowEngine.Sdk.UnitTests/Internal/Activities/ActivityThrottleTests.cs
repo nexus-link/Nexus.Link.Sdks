@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
@@ -92,7 +93,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle(_activityInformationMock, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.CompletedTask);
         activity.Else((_, _) => Task.CompletedTask);
@@ -115,7 +116,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle(_activityInformationMock, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.CompletedTask);
         activity.Else((_, _) => Task.CompletedTask);
@@ -139,7 +140,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle(_activityInformationMock, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.CompletedTask);
 
@@ -160,7 +161,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle(_activityInformationMock, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.CompletedTask);
         await Should.ThrowAsync<RequestPostponedException>(activity.LockOrThrottleAsync(CancellationToken.None));
@@ -246,7 +247,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle<int>(_activityInformationMock, null, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.FromResult(1));
         activity.Else((_, _) => Task.FromResult(2));
@@ -269,7 +270,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle<int>(_activityInformationMock, null, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.FromResult(1));
         activity.Else((_, _) => Task.FromResult(2));
@@ -293,7 +294,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle<int>(_activityInformationMock, null, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.FromResult(1));
 
@@ -314,7 +315,7 @@ public class ActivityThrottleTests : ActivityTestsBase
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         _semaphoreSupportMock.Setup(s => s.RaiseAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new RequestPostponedException("Already Throttled"));
+            .ThrowsAsync(new ActivityPostponedException(null));
         var activity = new ActivityThrottle<int>(_activityInformationMock, null, _semaphoreSupportMock.Object);
         activity.Then((_, _) => Task.FromResult(1));
         await Should.ThrowAsync<RequestPostponedException>(activity.LockOrThrottleAsync(CancellationToken.None));

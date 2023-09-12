@@ -8,6 +8,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
@@ -65,11 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
             {
-                throw new RequestPostponedException
-                {
-                    TryAgain = true,
-                    TryAgainAfterMinimumTimeSpan = TimeSpan.Zero
-                };
+                throw new ActivityPostponedException(TimeSpan.Zero);
             }
         }
 

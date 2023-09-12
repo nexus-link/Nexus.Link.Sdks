@@ -11,6 +11,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 public interface IActivityAction : ITryCatchActivity
 {
     /// <summary>
+    /// Set the maximum execution time to the absolute time <paramref name="time"/>.
+    /// </summary>
+    /// <param name="time"></param>
+    IActivityAction SetMaxTime(DateTimeOffset time);
+
+    /// <summary>
+    /// Set the maximum execution time to the time activity started originally + <paramref name="timeSpan"/>.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    IActivityAction SetMaxTime(TimeSpan timeSpan);
+
+    /// <summary>
     /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.
     /// If you want to protect from all other instances, no matter from which workflow form, then please use
     /// <see cref="WithThrottle"/>
@@ -59,6 +71,18 @@ public interface IActivityActionLockOrThrottle : ITryCatchActivity
 /// </summary>
 public interface IActivityAction<TActivityReturns> : ITryCatchActivity<TActivityReturns>
 {
+    /// <summary>
+    /// Set the maximum execution time to the absolute time <paramref name="time"/>.
+    /// </summary>
+    /// <param name="time"></param>
+    IActivityAction<TActivityReturns> SetMaxTime(DateTimeOffset time);
+
+    /// <summary>
+    /// Set the maximum execution time to the time activity started originally + <paramref name="timeSpan"/>.
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    IActivityAction<TActivityReturns> SetMaxTime(TimeSpan timeSpan);
+
     /// <summary>
     /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.
     /// If you want to protect from all other instances, no matter from which workflow form, then please use

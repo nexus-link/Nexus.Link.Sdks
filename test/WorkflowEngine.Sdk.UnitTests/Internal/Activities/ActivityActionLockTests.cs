@@ -4,7 +4,6 @@ using Moq;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Shouldly;
@@ -76,7 +75,7 @@ public class ActivityActionLockTests : ActivityTestsBase
         // Arrange
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
-        var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new RequestPostponedException())
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new ActivityPostponedException(null))
         {
             SemaphoreSupport = _semaphoreSupportMock.Object
         };
@@ -142,7 +141,7 @@ public class ActivityActionLockTests : ActivityTestsBase
         // Arrange
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
-        var activity = new ActivityAction<int>(_activityInformationMock, null, (_, _) => throw new RequestPostponedException())
+        var activity = new ActivityAction<int>(_activityInformationMock, null, (_, _) => throw new ActivityPostponedException(null))
         {
             SemaphoreSupport = _semaphoreSupportMock.Object
         };

@@ -10,7 +10,6 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
@@ -65,7 +64,9 @@ public class ActivityExecutorTests
             activity = _activityMock;
             executor = _executor;
         }
+#pragma warning disable CS0618
         activity.Options.ActivityMaxExecutionTimeSpan = TimeSpan.Zero;
+#pragma warning restore CS0618
         WorkflowImplementationShouldNotCatchThisException outerException;
 
         // Act
@@ -84,7 +85,7 @@ public class ActivityExecutorTests
 
         // Assert
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<RequestPostponedException>();
+        innerException.ShouldBeAssignableTo<RequestPostponedException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
         var exception = activity.GetException();
         exception.ExceptionCategory.ShouldBe(ActivityExceptionCategoryEnum.MaxTimeReachedError);
@@ -132,7 +133,7 @@ public class ActivityExecutorTests
 
         // Assert
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<RequestPostponedException>();
+        innerException.ShouldBeAssignableTo<RequestPostponedException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
         activity.SafeAlertExceptionCalled.ShouldBe(0);
         activity.Instance.AsyncRequestId.ShouldBeNull();
@@ -220,7 +221,7 @@ public class ActivityExecutorTests
 
         outerException.InnerException.ShouldNotBeNull();
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<RequestPostponedException>();
+        innerException.ShouldBeAssignableTo<RequestPostponedException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Failed);
         var exception = activity.GetException();
         exception.ExceptionCategory.ShouldBe(exceptionToThrow.ExceptionCategory);
@@ -246,7 +247,7 @@ public class ActivityExecutorTests
             activity = _activityMock;
             executor = _executor;
         }
-        var exceptionToThrow = new RequestPostponedException();
+        var exceptionToThrow = new ActivityPostponedException(null);
         WorkflowImplementationShouldNotCatchThisException outerException;
 
         // Act & assert
@@ -265,7 +266,7 @@ public class ActivityExecutorTests
 
         outerException.InnerException.ShouldNotBeNull();
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<RequestPostponedException>();
+        innerException.ShouldBeOfType<ActivityPostponedException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
         activity.SafeAlertExceptionCalled.ShouldBe(0);
         activity.Instance.AsyncRequestId.ShouldBeNull();
@@ -308,7 +309,7 @@ public class ActivityExecutorTests
 
         outerException.InnerException.ShouldNotBeNull();
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<RequestPostponedException>();
+        innerException.ShouldBeOfType<ActivityPostponedException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
         activity.SafeAlertExceptionCalled.ShouldBe(0);
         activity.Instance.AsyncRequestId.ShouldBeNull();
@@ -461,7 +462,7 @@ public class ActivityExecutorTests
         activity.Instance.AsyncRequestId.ShouldBeNull();
         if (failUrgency == ActivityFailUrgencyEnum.Stopping)
         {
-            outerException.InnerException.ShouldBeAssignableTo<RequestPostponedException>();
+            outerException.InnerException.ShouldBeAssignableTo<ActivityPostponedException>();
         }
         else
         {
@@ -509,10 +510,7 @@ public class ActivityExecutorTests
         }
         activity.Options.FailUrgency = ActivityFailUrgencyEnum.Stopping;
         const string expectedRequestId = "D26D6803-03D2-4889-90E4-500B83839184";
-        var requestPostponedException = new RequestPostponedException
-        {
-            WaitingForRequestIds = { expectedRequestId }
-        };
+        var requestPostponedException = new ActivityWaitsForRequestException(expectedRequestId);
 
 
         // Act

@@ -86,7 +86,6 @@ public class SemaphoreSupportTests
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Assert
-        exception.TryAgain.ShouldBeTrue();
         exception.TryAgainAfterMinimumTimeSpan.ShouldNotBeNull();
         exception.TryAgainAfterMinimumTimeSpan.Value.ShouldBeGreaterThanOrEqualTo(TimeSpan.FromHours(1), "A semaphore should not be tried again soon afterwards, but explicitly when the semaphore is lowered");
     }

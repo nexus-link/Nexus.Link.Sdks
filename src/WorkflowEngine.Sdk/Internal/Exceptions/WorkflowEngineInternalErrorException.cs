@@ -4,7 +4,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Exceptions
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions
 {
     internal class WorkflowEngineInternalErrorException : WorkflowFailedException
     {
