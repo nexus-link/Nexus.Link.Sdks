@@ -242,8 +242,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
-        public IActivityLock Lock(string resourceIdentifier)
+        public IActivityLock Lock(string resourceIdentifier = null)
         {
             if (resourceIdentifier != null)
             {
@@ -813,8 +812,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
-        public IActivityLock<TActivityReturns> Lock(string resourceIdentifier)
+        public IActivityLock<TActivityReturns> Lock(string resourceIdentifier = null)
         {
             if (resourceIdentifier != null)
             {

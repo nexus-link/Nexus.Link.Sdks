@@ -10,7 +10,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 
 /// <inheritdoc cref="IActivityLock" />
-[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 internal class ActivityLock : LockOrThrottleActivity<IActivityLock, IActivityLockThen>, IActivityLock, IActivityLockThen
 {
     public ActivityLock(IActivityInformation activityInformation, ISemaphoreSupport semaphoreSupport)
@@ -32,7 +31,6 @@ internal class ActivityLock : LockOrThrottleActivity<IActivityLock, IActivityLoc
     }
 }
 
-[Obsolete($"Please use {nameof(IActivityAction)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
 internal class ActivityLock<TActivityReturns> : ActivityLockOrThrottle<TActivityReturns, IActivityLock<TActivityReturns>, IActivityLockThen<TActivityReturns>>, IActivityLock<TActivityReturns>, IActivityLockThen<TActivityReturns>
 {
     public ActivityLock(IActivityInformation activityInformation, ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync, ISemaphoreSupport semaphoreSupport)

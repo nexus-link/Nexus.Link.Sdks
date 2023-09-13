@@ -62,8 +62,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// </summary>
         /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
         /// <returns></returns>
-        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
-        IActivityLock Lock(string resourceIdentifier);
+        IActivityLock Lock(string? resourceIdentifier = null);
 
         /// <summary>
         /// Do an activity that uses a resource that needs throttling. This makes sure that there is a limited of concurrent
@@ -73,7 +72,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
         /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
-        [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null);
 
         IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync)
@@ -182,8 +180,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// </summary>
         /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
         /// <returns></returns>
-        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.UnderLock)}. Obsolete since 2023-06-29.")]
-        IActivityLock<TActivityReturns> Lock(string resourceIdentifier);
+        IActivityLock<TActivityReturns> Lock(string? resourceIdentifier = null);
 
         /// <summary>
         /// Do an activity that uses a resource that needs throttling. This makes sure that there is a limited of concurrent
@@ -193,7 +190,6 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
         /// <param name="limit">The max number of instances that can use the resource at any given time.</param>
         /// <param name="limitationTimeSpan">The time span that the <paramref name="limit"/> applies to. Null means that the <paramref name="limit"/> is for concurrent instances.</param>
         /// <returns></returns>
-        [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan);
 
         IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)
