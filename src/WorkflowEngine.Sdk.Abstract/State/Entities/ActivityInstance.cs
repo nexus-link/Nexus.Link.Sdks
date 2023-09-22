@@ -56,7 +56,7 @@ public enum ActivityStateEnum
     /// </summary>
     Failed
 };
-public class ActivityInstance : ActivityInstanceCreate, IUniquelyIdentifiable<string>, IOptimisticConcurrencyControlByETag
+public class ActivityInstance : ActivityInstanceCreate, IUniquelyIdentifiable<string>, IOptimisticConcurrencyControlByETag, IEqualityComparer<ActivityInstance>
 {
     public string Id { get; set; }
     public string Etag { get; set; }
@@ -68,6 +68,18 @@ public class ActivityInstance : ActivityInstanceCreate, IUniquelyIdentifiable<st
         base.Validate(errorLocation, propertyPath);
         FulcrumValidate.IsNotNullOrWhiteSpace(Id, nameof(Id), errorLocation);
         FulcrumValidate.IsNotNullOrWhiteSpace(Etag, nameof(Etag), errorLocation);
+    }
+
+    /// <inheritdoc />
+    public bool Equals(ActivityInstance x, ActivityInstance y)
+    {
+        return x?.Id == y?.Id;
+    }
+
+    /// <inheritdoc />
+    public int GetHashCode(ActivityInstance obj)
+    {
+        return Id.GetHashCode();
     }
 }
 

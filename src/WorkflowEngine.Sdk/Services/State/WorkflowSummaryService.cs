@@ -141,10 +141,14 @@ public class WorkflowSummaryService : IWorkflowSummaryService
         }
         else
         {
+            var activityInstancesList =
+                    await _runtimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(instanceId.Value,
+                        int.MaxValue, cancellationToken);
 
-            var activityInstancesList = await _runtimeTables.ActivityInstance.SearchByWorkflowInstanceIdAsync(instanceId.Value, int.MaxValue, cancellationToken);
-
-            activityInstances = activityInstancesList.ToDictionary(x => x.Id.ToGuidString(), x => new ActivityInstance().From(x));
+            activityInstances = activityInstancesList
+                .ToHashSet() // Paging can result in duplicate items
+                .ToDictionary(x => x.Id.ToGuidString(),
+                    x => new ActivityInstance().From(x));
         }
 
         return (activityForms, activityVersions, activityInstances);

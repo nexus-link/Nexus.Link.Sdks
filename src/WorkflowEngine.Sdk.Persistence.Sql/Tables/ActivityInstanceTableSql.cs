@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Storage.Logic;
@@ -45,13 +46,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<ActivityInstanceRecord>> SearchByWorkflowInstanceIdAsync(Guid workflowInstanceId, int limit = Int32.MaxValue,
+        public async Task<IEnumerable<ActivityInstanceRecord>> SearchByWorkflowInstanceIdAsync(Guid workflowInstanceId, int limit = Int32.MaxValue,
             CancellationToken cancellationToken = default)
         {
-            return StorageHelper.ReadPagesAsync(
-                (o, ct) =>
-                    SearchAsync(new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch() { WorkflowInstanceId = workflowInstanceId }), o, null, ct),
+            var searchDetails = new SearchDetails<ActivityInstanceRecord>(new ActivityInstanceRecordSearch() { WorkflowInstanceId = workflowInstanceId });
+            var result = await StorageHelper.ReadPagesAsync(
+                (o, ct) => SearchAsync(searchDetails, o, null, ct),
                 limit, cancellationToken);
+            return result;
         }
     }
 }

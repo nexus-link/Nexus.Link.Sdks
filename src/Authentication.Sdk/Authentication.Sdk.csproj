@@ -19,12 +19,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.9" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.3" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.4" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.26.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.4" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +32,7 @@
 
   <PropertyGroup>
 	  <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-	  <Version>3.6.6</Version>
+	  <Version>3.6.7</Version>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <PackageTags>nexus;link;fulcrum;lever</PackageTags>
 	  <Authors>XLENT Link</Authors>
@@ -43,7 +42,7 @@
 	  <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <PackageReleaseNotes>
-			3.6.6 Bump
+			3.6.7 Bump
       3.6.2 Detect http client exception when fetching public key and setup on FulcrumApplication.Setup.HealthTracker. Converts the exception to FulcrumResourceException.
 		  3.5.0 Dropped support for net461
 		  3.4.6 Updated nugets to avoid versions with security risks

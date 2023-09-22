@@ -50,12 +50,12 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
     {
         FulcrumAssert.IsNotNullOrWhiteSpace(FulcrumApplication.Context.ExecutionId, CodeLocation.AsString());
         WorkflowInformation.InstanceId = FulcrumApplication.Context.ExecutionId.ToGuidString();
-        await WorkflowInformation.LoadAsync(cancellationToken);
-        if (WorkflowInformation.InstanceExists() && WorkflowInformation.WorkflowInstanceService != null)
+        if (WorkflowInformation.WorkflowInstanceService != null)
         {
             _workflowDistributedLock = await WorkflowInformation.WorkflowInstanceService.ClaimDistributedLockAsync(
                 WorkflowInformation.InstanceId, null, null, cancellationToken);
         }
+        await WorkflowInformation.LoadAsync(cancellationToken);
 
         if (WorkflowInformation.Instance.State == WorkflowStateEnum.Executing)
         {
@@ -104,23 +104,36 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         var limitedTimeCancellationToken = new CancellationTokenSource(timeLeftToFinish);
         var extendedCancellationToken = limitedTimeCancellationToken.Token;
 
-        WorkflowInformation.AggregateActivityInformation();
-
-        // Release semaphores
-        if (WorkflowInformation.Instance.State is WorkflowStateEnum.Success or WorkflowStateEnum.Failed)
+        try
         {
-            await WorkflowInformation.SemaphoreService.LowerAllAsync(WorkflowInformation.InstanceId,
-                extendedCancellationToken);
+            WorkflowInformation.AggregateActivityInformation();
+
+            // Release semaphores
+            if (WorkflowInformation.Instance.State is WorkflowStateEnum.Success or WorkflowStateEnum.Failed)
+            {
+                await WorkflowInformation.SemaphoreService.LowerAllAsync(WorkflowInformation.InstanceId,
+                    extendedCancellationToken);
+            }
+
+            await WorkflowInformation.SaveAsync(extendedCancellationToken);
         }
-
-        await WorkflowInformation.SaveAsync(extendedCancellationToken);
-
-        // Release the lock
-        if (_workflowDistributedLock != null)
+        finally
         {
-            FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
-            await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
-                _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, extendedCancellationToken);
+            try
+            {
+                // Release the lock
+                if (_workflowDistributedLock != null)
+                {
+                    FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
+                    await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
+                        _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, extendedCancellationToken);
+                }
+            }
+            catch (Exception)
+            {
+                // Never let this cause a failure
+            }
+
         }
     }
 

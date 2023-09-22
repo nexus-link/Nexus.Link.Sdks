@@ -157,8 +157,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.RuntimeTa
 
             var workflowVersionCreate = DataGenerator.DefaultWorkflowVersionCreate;
             workflowVersionCreate.MajorVersion++;
-            var workflowVersion = ConfigurationTables.WorkflowVersion
-                .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), workflowVersionCreate).Result;
+            var workflowVersion = await ConfigurationTables.WorkflowVersion
+                .CreateWithSpecifiedIdAndReturnAsync(Guid.NewGuid(), workflowVersionCreate);
 
             recordToUpdate.WorkflowVersionId = workflowVersion.Id;
 
