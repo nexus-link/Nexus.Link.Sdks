@@ -76,6 +76,9 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     public DateTimeOffset ActivityStartedAt => Instance.StartedAt;
 
     /// <inheritdoc />
+    public DateTimeOffset? ActivityFinishedAt => Instance.FinishedAt;
+
+    /// <inheritdoc />
     [Obsolete($"Please use {nameof(ILoopActivity.LoopIteration)}.", true)]
     public int? Iteration => InternalIteration;
 

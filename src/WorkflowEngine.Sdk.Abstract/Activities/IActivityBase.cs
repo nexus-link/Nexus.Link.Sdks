@@ -38,6 +38,11 @@ public interface IActivityBase
     DateTimeOffset ActivityStartedAt { get; }
 
     /// <summary>
+    /// The date and time when the activity finished
+    /// </summary>
+    DateTimeOffset? ActivityFinishedAt { get; }
+
+    /// <summary>
     /// A string representation that is good for logging purposes.
     /// </summary>
     /// <returns></returns>

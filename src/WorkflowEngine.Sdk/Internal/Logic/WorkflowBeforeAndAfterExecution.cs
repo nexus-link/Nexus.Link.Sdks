@@ -53,7 +53,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         if (WorkflowInformation.WorkflowInstanceService != null)
         {
             _workflowDistributedLock = await WorkflowInformation.WorkflowInstanceService.ClaimDistributedLockAsync(
-                WorkflowInformation.InstanceId, null, null, cancellationToken);
+                WorkflowInformation.InstanceId, TimeSpan.FromMinutes(2), null, cancellationToken);
         }
         await WorkflowInformation.LoadAsync(cancellationToken);
 
