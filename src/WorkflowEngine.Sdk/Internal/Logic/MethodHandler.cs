@@ -11,7 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
     {
 
         private Dictionary<int, MethodParameter> _parameters = new();
-        private readonly Dictionary<string, MethodArgument> _arguments = new();
+        internal readonly Dictionary<string, MethodArgument> Arguments = new();
 
         public string FormTitle { get; }
         public string InstanceTitle { get; set; }
@@ -43,7 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public object GetArgument(string parameterName)
         {
-            if (!_arguments.TryGetValue(parameterName, out var argument))
+            if (!Arguments.TryGetValue(parameterName, out var argument))
             {
                 throw new FulcrumNotFoundException($"{FormTitle} has a parameter named {parameterName}, but {InstanceTitle} had no argument for that parameter." +
                                                    $" Found these: {string.Join(", ", ArgumentNames())}");
@@ -60,7 +60,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private IEnumerable<string> ArgumentNames()
         {
-            return _arguments.Values.Select(a => a.Parameter.Name);
+            return Arguments.Values.Select(a => a.Parameter.Name);
         }
 
         private IEnumerable<string> ParameterNames()
@@ -96,7 +96,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             var argument = new MethodArgument(parameter, value);
-            _arguments.Add(parameter.Name, argument);
+            Arguments.Add(parameter.Name, argument);
         }
     }
 }

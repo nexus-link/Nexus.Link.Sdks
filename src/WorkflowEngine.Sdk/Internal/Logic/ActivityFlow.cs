@@ -123,7 +123,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use Action(method). Obsolete since 2022-05-01")]
         public IActivityAction Action()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             try
             {
                 return new ActivityAction(ActivityInformation);
@@ -134,10 +134,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
+        private void VerifyActualType(ActivityTypeEnum actualType)
+        {
+            ActivityInformation.Type ??= actualType;
+            InternalContract.Require(ActivityInformation.Type == actualType,
+                $"The activity of type was declared as {ActivityInformation.Type}.");
+        }
+
         /// <inheritdoc />
         public IActivityAction Action(ActivityMethodAsync<IActivityAction> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -152,7 +159,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityAction Action(ActivityMethod<IActivityAction> method)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(method, nameof(method));
             try
             {
@@ -171,7 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivitySleep Sleep(TimeSpan timeToSleep)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Sleep, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Sleep);
             try
             {
                 return new ActivitySleep(ActivityInformation, timeToSleep);
@@ -185,7 +192,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityParallel Parallel()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Parallel, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Parallel);
 
             try
             {
@@ -200,7 +207,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf If(ActivityConditionMethodAsync<IActivityIf> conditionMethodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
             try
             {
@@ -215,7 +222,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf If(ActivityConditionMethod<IActivityIf> conditionMethod)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
             try
             {
@@ -230,7 +237,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf If(bool condition)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             try
             {
                 return new ActivityIf(ActivityInformation, (_, _) => Task.FromResult(condition));
@@ -244,6 +251,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityLock Lock(string resourceIdentifier = null)
         {
+            VerifyActualType(ActivityTypeEnum.Lock);
             if (resourceIdentifier != null)
             {
                 InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier), $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
@@ -263,6 +271,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete($"Please use {nameof(Action)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         public IActivityThrottle Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
+            VerifyActualType(ActivityTypeEnum.Throttle);
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
@@ -281,7 +290,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TSwitchValue>, TSwitchValue> switchValueMethodAsync)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
             try
             {
@@ -297,7 +306,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
             try
             {
@@ -313,7 +322,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             try
             {
                 return new ActivitySwitch<TSwitchValue>(ActivityInformation, (_, _) => Task.FromResult(switchValue));
@@ -328,7 +337,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         public IActivityLoopUntilTrue LoopUntil()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.LoopUntilTrue);
             try
             {
                 return new ActivityLoopUntilTrue(ActivityInformation);
@@ -343,7 +352,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         public IActivityLoopUntilTrue LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.LoopUntilTrue);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -358,7 +367,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityDoWhileOrUntil Do(ActivityMethodAsync<IActivityDoWhileOrUntil> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.DoWhileOrUntil);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -373,7 +382,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo While(ActivityConditionMethodAsync<IActivityWhileDo> conditionMethodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
             try
             {
@@ -388,7 +397,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo While(ActivityConditionMethod<IActivityWhileDo> conditionMethod)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
             try
             {
@@ -403,7 +412,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo While(bool condition)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             try
             {
                 return new ActivityWhileDo(ActivityInformation, (_, _) => Task.FromResult(condition));
@@ -419,7 +428,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachParallel);
             try
             {
                 return new ActivityForEachParallel<TItem>(ActivityInformation, items, getIterationTitleMethod);
@@ -433,7 +442,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityForEachParallel<TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, ActivityForEachParallelMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachParallel);
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
@@ -451,7 +460,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachSequential);
             try
             {
                 return new ActivityForEachSequential<TItem>(ActivityInformation, items, getIterationTitleMethod);
@@ -465,7 +474,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityForEachSequential<TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachSequential);
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
@@ -482,7 +491,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete($"Please use {nameof(Lock)} to lock within a workflow form and {nameof(Throttle)} to reduce the number of concurrent calls to a common resource (over all workflows).")]
         public IActivitySemaphore Semaphore(string resourceIdentifier)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Semaphore, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Semaphore);
             try
             {
                 return new ActivitySemaphore(ActivityInformation, resourceIdentifier);
@@ -607,7 +616,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         public IActivityAction<TActivityReturns> Action()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             try
             {
                 return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
@@ -618,10 +627,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
         }
 
+        private void VerifyActualType(ActivityTypeEnum actualType)
+        {
+            ActivityInformation.Type ??= actualType;
+            InternalContract.Require(ActivityInformation.Type == actualType,
+                $"The activity of type was declared as {ActivityInformation.Type}.");
+        }
+
         /// <inheritdoc />
         public IActivityAction<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -636,7 +652,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityAction<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(method, nameof(method));
             try
             {
@@ -651,7 +667,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityAction<TActivityReturns> Action(TActivityReturns value)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Action, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Action);
             try
             {
                 return new ActivityAction<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(value));
@@ -666,7 +682,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.LoopUntilTrue);
             try
             {
                 return new ActivityLoopUntilTrue<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
@@ -681,7 +697,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use Do or While. Obsolete since 2022-05-02.")]
         public IActivityLoopUntilTrue<TActivityReturns> LoopUntil(ActivityMethodAsync<IActivityLoopUntilTrue<TActivityReturns>, TActivityReturns> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.LoopUntilTrue, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.LoopUntilTrue);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -696,7 +712,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityDoWhileOrUntil<TActivityReturns> Do(ActivityMethodAsync<IActivityDoWhileOrUntil<TActivityReturns>, TActivityReturns> methodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.DoWhileOrUntil, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.DoWhileOrUntil);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             try
             {
@@ -711,7 +727,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethodAsync<IActivityWhileDo<TActivityReturns>> conditionMethodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
             try
             {
@@ -726,7 +742,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo<TActivityReturns> While(ActivityConditionMethod<IActivityWhileDo<TActivityReturns>> conditionMethod)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
             try
             {
@@ -741,7 +757,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityWhileDo<TActivityReturns> While(bool condition)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.WhileDo, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.WhileDo);
             try
             {
                 return new ActivityWhileDo<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(condition));
@@ -756,7 +772,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete("Please use If. Obsolete since 2022-04-27.")]
         public IActivityCondition<TActivityReturns> Condition()
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Condition, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Condition);
             try
             {
                 return new ActivityCondition<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail);
@@ -770,7 +786,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf<TActivityReturns> If(ActivityConditionMethodAsync<IActivityIf<TActivityReturns>> conditionMethodAsync)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             InternalContract.RequireNotNull(conditionMethodAsync, nameof(conditionMethodAsync));
             try
             {
@@ -785,7 +801,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf<TActivityReturns> If(ActivityConditionMethod<IActivityIf<TActivityReturns>> conditionMethod)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             InternalContract.RequireNotNull(conditionMethod, nameof(conditionMethod));
             try
             {
@@ -800,7 +816,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityIf<TActivityReturns> If(bool condition)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.If, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.If);
             try
             {
                 return new ActivityIf<TActivityReturns>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(condition));
@@ -814,6 +830,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityLock<TActivityReturns> Lock(string resourceIdentifier = null)
         {
+            VerifyActualType(ActivityTypeEnum.Lock);
             if (resourceIdentifier != null)
             {
                 InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier), $"The parameter {nameof(resourceIdentifier)} must not be empty and not only contain whitespace.");
@@ -834,6 +851,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         [Obsolete($"Please use {nameof(Action<TActivityReturns>)} with {nameof(IActivityAction.WithThrottle)}. Obsolete since 2023-06-29.")]
         public IActivityThrottle<TActivityReturns> Throttle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan)
         {
+            VerifyActualType(ActivityTypeEnum.Throttle);
             InternalContract.RequireNotNullOrWhiteSpace(resourceIdentifier, nameof(resourceIdentifier));
             InternalContract.RequireGreaterThan(0, limit, nameof(limit));
 
@@ -852,7 +870,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivityMethodAsync<IActivitySwitch<TActivityReturns, TSwitchValue>, TSwitchValue> switchValueMethodAsync)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             InternalContract.RequireNotNull(switchValueMethodAsync, nameof(switchValueMethodAsync));
             try
             {
@@ -868,7 +886,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(ActivitySwitchValueMethod<TSwitchValue> switchValueMethod)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             InternalContract.RequireNotNull(switchValueMethod, nameof(switchValueMethod));
             try
             {
@@ -884,7 +902,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivitySwitch<TActivityReturns, TSwitchValue> Switch<TSwitchValue>(TSwitchValue switchValue)
             where TSwitchValue : IComparable, IComparable<TSwitchValue>
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.Switch, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.Switch);
             try
             {
                 return new ActivitySwitch<TActivityReturns, TSwitchValue>(ActivityInformation, DefaultValueForNotUrgentFail, (_, _) => Task.FromResult(switchValue));
@@ -901,7 +919,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         {
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachParallel);
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachParallel)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
@@ -916,7 +934,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityForEachParallel<TActivityReturns, TItem> ForEachParallel<TItem>(IEnumerable<TItem> items, GetKeyMethod<TItem> getKeyMethod, ActivityForEachParallelMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachParallel, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachParallel);
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -936,7 +954,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
             InternalContract.RequireNotNull(items, nameof(items));
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachSequential);
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");
             try
             {
@@ -951,7 +969,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         /// <inheritdoc />
         public IActivityForEachSequential<TActivityReturns, TItem> ForEachSequential<TItem>(IEnumerable<TItem> items, ActivityForEachSequentialMethodAsync<TActivityReturns, TItem> methodAsync, GetIterationTitleMethod<TItem> getIterationTitleMethod = null)
         {
-            InternalContract.Require(ActivityInformation.Type == ActivityTypeEnum.ForEachSequential, $"The activity was declared as {ActivityInformation.Type}.");
+            VerifyActualType(ActivityTypeEnum.ForEachSequential);
             InternalContract.RequireNotNull(items, nameof(items));
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
             InternalContract.Require(DefaultValueForNotUrgentFail == null, $"The activity {nameof(ForEachSequential)} does not support {nameof(SetDefaultValueForNotUrgentFail)}.");

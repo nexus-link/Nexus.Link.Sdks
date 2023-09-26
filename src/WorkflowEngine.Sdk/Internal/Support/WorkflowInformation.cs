@@ -77,8 +77,13 @@ internal class WorkflowInformation : IWorkflowInformation
 
 
     /// <inheritdoc />
-    public ActivityDefinition GetActivityDefinition(string activityFormId) =>
-        _workflowImplementation.WorkflowContainer.GetActivityDefinition(activityFormId);
+    public ActivityDefinition GetActivityDefinition(string activityFormId, string title) =>
+        _workflowImplementation.WorkflowContainer.GetActivityDefinition(activityFormId) 
+        ?? (title == null ? null : new ActivityDefinition
+        {
+            ActivityFormId = activityFormId,
+            Title = title
+        });
 
     /// <inheritdoc />
     [JsonIgnore]

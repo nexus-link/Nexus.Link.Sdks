@@ -378,12 +378,13 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 var form = GetActivityForm(activityInformation.FormId);
                 if (form == null)
                 {
+                    FulcrumAssert.IsNotNull(activityInformation.Type, CodeLocation.AsString());
                     form = new ActivityForm
                     {
                         Id = activityInformation.FormId,
                         WorkflowFormId = _workflowInformation.FormId,
                         Title = activityInformation.FormTitle,
-                        Type = activityInformation.Type
+                        Type = activityInformation.Type!.Value
                     };
                     _summary.ActivityForms.Add(form.Id, form);
                     _activityFormCache.Add(form.Id, form, false);

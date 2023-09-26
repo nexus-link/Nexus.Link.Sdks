@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -28,6 +30,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
     private readonly IWorkflowBeforeAndAfterExecution _beforeAndAfter;
     private readonly MethodHandler _methodHandler;
     public IWorkflowInformation WorkflowInformation { get; }
+    internal Dictionary<string, MethodArgument> Arguments => _methodHandler.Arguments;
 
     public WorkflowExecutor(IWorkflowInformation workflowInformation, IWorkflowBeforeAndAfterExecution beforeAndAfter)
     {
@@ -219,19 +222,19 @@ internal class WorkflowExecutor : IWorkflowExecutor
         }
     }
 
-    public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id)
+    public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id, string title = null)
     {
         InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
 
-        var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
+        var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString(), title);
         var flow = new ActivityFlow<TActivityReturns>(activityInformation);
         return flow;
     }
 
-    public IActivityFlow CreateActivity(int position, string id)
+    public IActivityFlow CreateActivity(int position, string id, string title = null)
     {
         InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
-        var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString());
+        var activityInformation = new ActivityInformation(WorkflowInformation, position, id.ToGuidString(), title);
         var flow = new ActivityFlow(activityInformation);
         return flow;
     }

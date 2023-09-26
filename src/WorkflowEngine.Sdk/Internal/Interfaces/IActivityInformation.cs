@@ -48,7 +48,7 @@ internal interface IActivityInformation
     /// <summary>
     /// The type for this activity form
     /// </summary>
-    public ActivityTypeEnum Type{ get; }
+    public ActivityTypeEnum? Type{ get; set; }
 
     /// <summary>
     /// The options for this activity

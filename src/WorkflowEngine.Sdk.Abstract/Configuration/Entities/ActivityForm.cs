@@ -48,12 +48,10 @@ public enum ActivityTypeEnum
     /// <summary>
     /// Run a sub flow with a limited number of concurrent instances
     /// </summary>
-    [Obsolete("Please use Action with WithThrottle. Obsolete since 2023-08-30.")]
     Throttle,
     /// <summary>
     /// Make sure that no other workflow instance is running this part of the workflow concurrently.
     /// </summary>
-    [Obsolete("Please use Action with UnderLock. Obsolete since 2023-04-30.")]
     Lock,
     /// <summary>
     /// Let the workflow sleep a while and then continue

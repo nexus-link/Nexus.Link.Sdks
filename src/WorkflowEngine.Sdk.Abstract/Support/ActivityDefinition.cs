@@ -3,7 +3,7 @@
 namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 
 /// <summary>
-/// The definition of an activity. This class is normally used in <see cref="WorkflowContainer"/>.
+/// The definition of an activity. This class is normally used in a WorkflowContainer.
 /// </summary>
 /// <remarks>
 /// This definition should be constant over versions.
@@ -23,5 +23,5 @@ public class ActivityDefinition
     /// <summary>
     /// The type of the activity
     /// </summary>
-    public ActivityTypeEnum Type { get; set; }
+    public ActivityTypeEnum? Type { get; set; }
 }

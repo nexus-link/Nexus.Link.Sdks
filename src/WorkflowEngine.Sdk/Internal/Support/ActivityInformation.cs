@@ -16,7 +16,7 @@ internal class ActivityInformation : IActivityInformation
 
     private readonly MethodHandler _methodHandler;
 
-    public ActivityInformation(IWorkflowInformation workflowInformation, int position, string formId)
+    public ActivityInformation(IWorkflowInformation workflowInformation, int position, string formId, string title = null)
     {
         InternalContract.RequireNotNull(workflowInformation, nameof(workflowInformation));
         InternalContract.RequireGreaterThanOrEqualTo(1, position, nameof(position));
@@ -26,7 +26,7 @@ internal class ActivityInformation : IActivityInformation
         FormId = formId;
         Parent = WorkflowStatic.Context.ParentActivity;
         Previous = WorkflowStatic.Context.LatestActivity;
-        _activityDefinition = Workflow.GetActivityDefinition(formId);
+        _activityDefinition = Workflow.GetActivityDefinition(formId, title);
         if (_activityDefinition == null)
         {
             throw new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
@@ -63,7 +63,11 @@ internal class ActivityInformation : IActivityInformation
         }
     }
 
-    public ActivityTypeEnum Type => _activityDefinition.Type;
+    public ActivityTypeEnum? Type
+    {
+        get => _activityDefinition.Type;
+        set => _activityDefinition.Type = value;
+    }
 
     /// <inheritdoc />
     public ActivityOptions Options { get; } = new();

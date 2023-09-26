@@ -119,7 +119,7 @@ internal class WorkflowInformationMock : IWorkflowInformation
     public IInternalActivity LatestActivity { get; set; }
 
     /// <inheritdoc />
-    public ActivityDefinition GetActivityDefinition(string activityFormId)
+    public ActivityDefinition GetActivityDefinition(string activityFormId, string title)
     {
         throw new NotImplementedException();
     }

@@ -100,7 +100,8 @@ internal interface IWorkflowInformation
     /// Get the definition for a specific activity
     /// </summary>
     /// <param name="activityFormId">The activity that we want the definition for.</param>
-    ActivityDefinition GetActivityDefinition(string activityFormId);
+    /// <param name="title">The title for the activity</param>
+    ActivityDefinition GetActivityDefinition(string activityFormId, string title);
 
     /// <summary>
     /// Get the <see cref="ActivityForm"/> with id <paramref name="activityFormId"/>.

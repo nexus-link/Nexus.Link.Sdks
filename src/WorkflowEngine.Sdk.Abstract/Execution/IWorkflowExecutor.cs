@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 
@@ -39,12 +40,12 @@ public interface IWorkflowExecutor : IWorkflowLogger
     T GetArgument<T>(string name);
 
     /// <summary>
-    /// Create an activity with position <paramref name="position"/> and id <paramref name="id"/>
+    /// Create an activity with position <paramref name="position"/>, id <paramref name="id"/> and title <paramref name="title"/>
     /// </summary>
-    IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id);
+    IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string id, string title = null);
 
     /// <summary>
-    /// Create an activity with position <paramref name="position"/> and id <paramref name="id"/>
+    /// Create an activity with position <paramref name="position"/>, id <paramref name="id"/> and title <paramref name="title"/>
     /// </summary>
-    IActivityFlow CreateActivity(int position, string id);
+    IActivityFlow CreateActivity(int position, string id, string title = null);
 }

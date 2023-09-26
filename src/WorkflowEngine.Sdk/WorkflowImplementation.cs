@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
@@ -11,6 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Model;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk
@@ -19,6 +21,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk
     public abstract class WorkflowImplementationBase : IWorkflowImplementationBase
     {
         private readonly IWorkflowExecutor _workflowExecutor;
+
+        internal Dictionary<string, MethodArgument> Arguments => (_workflowExecutor as WorkflowExecutor)?.Arguments;
 
         internal IInternalActivity CurrentParentActivity => WorkflowStatic.Context.ParentActivity;
 
@@ -100,39 +104,32 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         /// Create one activity for the workflow implementation.
         /// </summary>
         /// <param name="position">The relative position in the hierarchy of activities.</param>
-        /// <param name="title">The title for this activity.</param>
+        /// <param name="title">The title for the activity form</param>
         /// <param name="id">The key for the activity form</param>
         /// <typeparam name="TActivityReturns">The type that this activity returns.</typeparam>
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
         public IActivityFlow<TActivityReturns> CreateActivity<TActivityReturns>(int position, string title, string id)
         {
-            var tmp = WorkflowContainer as WorkflowContainer;
-            FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
-            if (tmp!.GetActivityDefinition(id) == null)
-            {
-                tmp.DefineActivity(id, title, ActivityTypeEnum.Action);
-            }
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.Require(Guid.TryParse(id, out _), $"Parameter {nameof(id)} ({id}) must be a string with a {nameof(Guid)}.");
 
-            return CreateActivity<TActivityReturns>(position, id);
+
+            return _workflowExecutor.CreateActivity<TActivityReturns>(position, id, title);
         }
 
         /// <summary>
         /// Create one activity for the workflow implementation.
         /// </summary>
         /// <param name="position">The relative position in the hierarchy of activities.</param>
-        /// <param name="title">The title for this activity.</param>
+        /// <param name="title">The title for the activity form</param>
         /// <param name="id">The key for the activity form</param>
-        [Obsolete("Please use CreateActivity(position, id) and add a DefineActivity() in your WorkflowContainer. Warning since 2021-12-07.")]
         public IActivityFlow CreateActivity(int position, string title, string id)
         {
-            var tmp = WorkflowContainer as WorkflowContainer;
-            FulcrumAssert.IsNotNull(tmp, CodeLocation.AsString());
-            if (tmp!.GetActivityDefinition(id) == null)
-            {
-                tmp.DefineActivity(id, title, ActivityTypeEnum.Action);
-            }
+            InternalContract.RequireNotNullOrWhiteSpace(title, nameof(title));
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.Require(Guid.TryParse(id, out _), $"Parameter {nameof(id)} ({id}) must be a string with a {nameof(Guid)}.");
 
-            return CreateActivity(position, id);
+            return _workflowExecutor.CreateActivity(position, id, title);
         }
 
         /// <summary>

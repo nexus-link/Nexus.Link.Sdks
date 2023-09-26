@@ -34,7 +34,7 @@ internal class ActivityInformationMock : IActivityInformation
     public string InstanceId { get; set; } = "7A67BD5E-430C-4B01-B281-445D3BB7FE12";
 
     /// <inheritdoc />
-    public ActivityTypeEnum Type { get; set; } = ActivityTypeEnum.Action;
+    public ActivityTypeEnum? Type { get; set; } = ActivityTypeEnum.Action;
 
     /// <inheritdoc />
     public ActivityOptions Options { get; set; } = new ActivityOptions();

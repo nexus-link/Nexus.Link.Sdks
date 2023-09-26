@@ -56,7 +56,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.26.0</Version>
+    <Version>6.27.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -66,6 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.27.0 Added WorkflowImplementationSingleVersion
       6.26.0 Added IActivityBase.ActivityFinishedAt
       6.25.5 The lock on the workflow instance is now done before loading the data
       6.25.4 Bug fixes while using the beta version

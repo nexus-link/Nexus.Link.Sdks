@@ -18,7 +18,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         public IWorkflowContainer WorkflowContainer { get; }
         public IWorkflowEngineRequiredCapabilities WorkflowCapabilities => WorkflowContainer.WorkflowCapabilities;
 
-        private readonly Dictionary<int, IWorkflowImplementationBase> _versions = new();
+        public readonly Dictionary<int, IWorkflowImplementationBase> Versions = new();
 
         public WorkflowVersionCollection(IWorkflowContainer workflowContainer)
         {
@@ -30,8 +30,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             InternalContract.RequireGreaterThanOrEqualTo(0, minVersion, nameof(minVersion));
             ThrowIfNotManagedAsynchronousRequest();
             var majorVersion = await SelectMajorVersionAsync(minVersion, maxVersion, cancellationToken);
-            FulcrumAssert.IsTrue(_versions.ContainsKey(majorVersion), CodeLocation.AsString());
-            var implementationCandidate = _versions[majorVersion];
+            FulcrumAssert.IsTrue(Versions.ContainsKey(majorVersion), CodeLocation.AsString());
+            var implementationCandidate = Versions[majorVersion];
             FulcrumAssert.IsNotNull(implementationCandidate, CodeLocation.AsString());
             InternalContract.Require(majorVersion >= minVersion,
                 $"The selected version, {majorVersion}, is not >= {nameof(minVersion)} ({minVersion})."
@@ -53,9 +53,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             InternalContract.RequireGreaterThanOrEqualTo(0, minVersion, nameof(minVersion));
             ThrowIfNotManagedAsynchronousRequest();
             var majorVersion = await SelectMajorVersionAsync(minVersion, maxVersion, cancellationToken);
-            FulcrumAssert.IsTrue(_versions.ContainsKey(majorVersion), CodeLocation.AsString());
+            FulcrumAssert.IsTrue(Versions.ContainsKey(majorVersion), CodeLocation.AsString());
 
-            var implementationCandidate = _versions[majorVersion];
+            var implementationCandidate = Versions[majorVersion];
             var implementation = implementationCandidate as IWorkflowImplementation;
             InternalContract.Require(implementation != null,
                 $"The implementation {implementationCandidate} does not implement {nameof(IWorkflowImplementation)}.");
@@ -80,18 +80,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 if (maxVersion.HasValue)
                 {
                     majorVersion = maxVersion.Value;
-                    InternalContract.Require(_versions.ContainsKey(majorVersion),
+                    InternalContract.Require(Versions.ContainsKey(majorVersion),
                         $"Could not find an implementation for the parameter {nameof(maxVersion)} = {maxVersion}");
                 }
                 else
                 {
-                    majorVersion = _versions.Keys.Max();
+                    majorVersion = Versions.Keys.Max();
                 }
             }
             else
             {
                 majorVersion = workflowVersion.MajorVersion;
-                InternalContract.Require(_versions.ContainsKey(majorVersion),
+                InternalContract.Require(Versions.ContainsKey(majorVersion),
                     $"Could not find an implementation for the current work flow instance with id = {FulcrumApplication.Context.ExecutionId}, which has major version = {majorVersion}");
             }
 
@@ -113,7 +113,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 
         public WorkflowVersionCollection AddWorkflowVersion(IWorkflowImplementationBase workflowImplementation)
         {
-            _versions.Add(workflowImplementation.MajorVersion, workflowImplementation);
+            Versions.Add(workflowImplementation.MajorVersion, workflowImplementation);
             return this;
         }
     }
