@@ -130,9 +130,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 }
 
                 // There was a fallback blob stored of the last state. Save that state to DB and remove the blob representation.
-                using var scope = TransactionHelper.CreateStandardScope();
                 await SaveAsync(false, cancellationToken);
-                scope.Complete();
                 await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.DeleteBlobAsync(_summary.Instance.Id, _summary.Instance.StartedAt, cancellationToken);
             }, cancellationToken);
         }
@@ -283,13 +281,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
             var limitedToken = mergedToken.Token;
-            
+
+            using var scope = TransactionHelper.CreateStandardScope();
             await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, limitedToken);
             await _workflowVersionCache.SaveAsync((id, item) => _summary.Version = item, limitedToken);
             await _workflowInstanceCache.SaveAsync((id, item) => _summary.Instance = item, limitedToken);
             await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, limitedToken);
             await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item, limitedToken);
             await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item, limitedToken);
+            scope.Complete();
         }
 
         private async Task SaveToStorageAsync(CancellationToken cancellationToken)
