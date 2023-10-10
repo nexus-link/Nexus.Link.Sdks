@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Nexus.Link.BusinessEvents.Sdk.RestClients.Models;
 using Nexus.Link.Libraries.Core.Health.Model;
+using Nexus.Link.Libraries.Core.MultiTenant.Model;
 
 namespace Nexus.Link.BusinessEvents.Sdk
 {
@@ -42,5 +43,10 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// Marks Client.DynamicalRegistration =  true.
         /// </summary>
         Task RegisterSubscriptions(string clientName, List<ClientSubscription> clientSubscriptions, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Business Events health for a tenant 
+        /// </summary>
+        Task<Health> TenantHealthAsync(Tenant tenant, CancellationToken cancellationToken = default);
     }
 }

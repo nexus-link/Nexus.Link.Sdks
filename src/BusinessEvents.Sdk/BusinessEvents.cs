@@ -116,9 +116,17 @@ namespace Nexus.Link.BusinessEvents.Sdk
         /// Get the health for the BusinessEvents service.
         /// </summary>
         /// <returns>A description of the health for the BusinessEvents service.</returns>
+        [Obsolete("Please use TenantHealthAsync")]
         public async Task<HealthResponse> GetResourceHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
         {
             var result = await _serviceMetasClient.GetResourceHealthAsync(tenant, cancellationToken);
+            return result;
+        }
+
+        /// <inheritdoc />
+        public async Task<Health> TenantHealthAsync(Tenant tenant, CancellationToken cancellationToken = default)
+        {
+            var result = await _serviceMetasClient.TenantHealthAsync(tenant, cancellationToken);
             return result;
         }
 
