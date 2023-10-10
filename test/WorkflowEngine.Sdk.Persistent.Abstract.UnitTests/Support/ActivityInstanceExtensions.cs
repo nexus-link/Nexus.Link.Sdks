@@ -46,6 +46,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
             actual.State.ShouldBe(expected.State);
             actual.ExceptionAlertHandled.ShouldBe(expected.ExceptionAlertHandled);
             actual.ParentIteration.ShouldBe(expected.ParentIteration);
+            actual.Iteration.ShouldBe(expected.Iteration);
+            actual.IterationTitle.ShouldBe(expected.IterationTitle);
+            actual.ParentIteration.ShouldBe(expected.ParentIteration);
             var now = DateTimeOffset.UtcNow;
             actual.RecordCreatedAt.ShouldBeLessThanOrEqualTo(now);
             actual.RecordUpdatedAt.ShouldBeLessThanOrEqualTo(now);

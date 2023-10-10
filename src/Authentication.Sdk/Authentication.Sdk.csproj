@@ -20,9 +20,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.9" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.5" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.17.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.2" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
   </ItemGroup>
 

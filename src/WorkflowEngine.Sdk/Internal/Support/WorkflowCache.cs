@@ -55,7 +55,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             _workflowCapabilities = workflowCapabilities;
             var crudPersistenceHelperOptions = new CrudPersistenceHelperOptions
             {
-                ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew
+                ConflictStrategy = PersistenceConflictStrategyEnum.ReturnNew,
+                OnlySequential = true
             };
 
             _stateCapability = workflowCapabilities.StateCapability;
@@ -277,10 +278,22 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         private async Task SaveToDbAsync(CancellationToken cancellationToken)
         {
             FulcrumAssert.IsNotNull(_summary, CodeLocation.AsString());
-            // Max 10 s execution
-            var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
-            var limitedToken = mergedToken.Token;
+
+            CancellationToken limitedToken;
+            if (FulcrumApplication.IsInDevelopment)
+            {
+                limitedToken = cancellationToken;
+            }
+            else
+            {
+                // Max 10 s execution
+                var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                var mergedToken =
+                    CancellationTokenSource.CreateLinkedTokenSource(cancellationToken,
+                        limitedTimeCancellationToken.Token);
+                limitedToken = mergedToken.Token;
+            }
+
 
             using var scope = TransactionHelper.CreateStandardScope();
             await _workflowFormCache.SaveAsync((id, item) => _summary.Form = item, limitedToken);

@@ -76,7 +76,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
 #pragma warning restore CS0618 // Type or member is obsolete
-
+            Instance.Iteration = LoopIteration;
         }
     }
 

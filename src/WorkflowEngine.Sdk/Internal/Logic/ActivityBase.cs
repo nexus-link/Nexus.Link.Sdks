@@ -58,7 +58,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         }
 
         Instance.AbsolutePosition = NestedPosition;
-        InternalIteration = 0;
+        InternalIteration = Instance.Iteration ?? 0;
     }
 
     /// <inheritdoc />
@@ -105,7 +105,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
         set => _internalIterationAsAsyncLocal.Value = value;
     }
 
-    private static string InternalContextIdentifier = "A05CF82F-ADF2-4A0E-8715-78C560421689";
+    private const string InternalContextIdentifier = "A05CF82F-ADF2-4A0E-8715-78C560421689";
 
     private string GetInternalContextKey(string key) => $"{key}-{InternalContextIdentifier}";
 

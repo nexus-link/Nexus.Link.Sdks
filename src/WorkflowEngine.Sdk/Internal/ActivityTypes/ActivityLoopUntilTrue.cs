@@ -79,6 +79,7 @@ internal class ActivityLoopUntilTrue : LoopActivity, IActivityLoopUntilTrue
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, ct), "Loop", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
             InternalContract.RequireNotNull(EndLoop, "ignore", $"You must set {nameof(EndLoop)} before returning.");
+            Instance.Iteration = LoopIteration;
         } while (EndLoop != true);
     }
 

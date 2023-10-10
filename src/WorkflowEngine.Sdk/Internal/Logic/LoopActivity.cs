@@ -68,7 +68,7 @@ internal abstract class LoopActivity<TActivityReturns> : Activity<TActivityRetur
     /// <inheritdoc />
     public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        LoopIteration = 0;
+        LoopIteration = Instance.Iteration ?? 0;
         WorkflowStatic.Context.ParentActivity = this;
         var result =await InternalExecuteAsync(cancellationToken);
         WorkflowStatic.Context.ParentActivity = null;

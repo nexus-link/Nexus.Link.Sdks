@@ -106,6 +106,11 @@ public class ActivityInstanceCreate : ActivityInstanceUnique, IValidatable
     public string ExceptionFriendlyMessage { get; set; }
 
     /// <summary>
+    /// The current iteration number for this loop activity, or null if the activity is not a loop activity
+    /// </summary>
+    public int? Iteration { get; set; }
+
+    /// <summary>
     /// A title associated with an individual iteration (or parallel job).
     /// </summary>
     public string IterationTitle { get; set; }

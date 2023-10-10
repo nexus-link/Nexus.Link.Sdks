@@ -212,6 +212,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.UnitTests.Support
             ExceptionTechnicalMessage = null,
             StartedAt = DateTimeOffset.UtcNow,
             FinishedAt = null,
+            Iteration = 23,
+            IterationTitle = "23",
             ParentIteration = null,
             ResultAsJson = null,
             State = ActivityStateEnum.Executing.ToString()

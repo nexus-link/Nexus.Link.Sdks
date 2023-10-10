@@ -6,6 +6,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 {
+    /// <summary>
+    /// The persistence record for an ActivityInstance
+    /// </summary>
     public class ActivityInstanceRecord : ActivityInstanceRecordCreate, ICompleteTableItem
     {
         public Guid Id { get; set; }
@@ -27,7 +30,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
             TableItemHelper.Validate(this, false, errorLocation, propertyPath);
         }
     }
-
+    /// <summary>
+    /// The persistence record for an ActivityInstance
+    /// </summary>
     public class ActivityInstanceRecordCreate : ActivityInstanceRecordUnique, IValidatable
     {
         public DateTimeOffset StartedAt { get; set; }
@@ -53,6 +58,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         /// The nested position of this activity in the activity hierarchy
         /// </summary>
         public string AbsolutePosition { get; set; }
+
+        /// <summary>
+        /// The current iteration number for this loop activity, or null if the activity is not a loop activity
+        /// </summary>
+        public int? Iteration { get; set; }
 
         /// <summary>
         /// A title associated with an individual iteration (or parallel job).
@@ -87,17 +97,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
         }
     }
 
-    public class ActivityInstanceRecordUnique
+    /// <summary>
+    /// The persistence record for an ActivityInstance
+    /// </summary>
+    public class ActivityInstanceRecordUnique : ActivityInstanceRecordSearch
     {
-        public Guid WorkflowInstanceId { get; set; }
+        /// <summary>
+        /// The activity version for this activity instance
+        /// </summary>
         public Guid ActivityVersionId { get; set; }
+
+        /// <summary>
+        /// The activity instance that is our parent, or null if we have no parent.
+        /// </summary>
         public Guid? ParentActivityInstanceId { get; set; }
 
+        /// <summary>
+        /// The current iteration count for the parent of this activity, or null if we have no parent or if that parent has no iteration
+        /// </summary>
         public int? ParentIteration { get; set; }
     }
 
+    /// <summary>
+    /// How we search for all activity instances for a specific workflow instance
+    /// </summary>
     public class ActivityInstanceRecordSearch
     {
+        /// <summary>
+        /// The workflow instance id
+        /// </summary>
         public Guid WorkflowInstanceId { get; set; }
     }
 }

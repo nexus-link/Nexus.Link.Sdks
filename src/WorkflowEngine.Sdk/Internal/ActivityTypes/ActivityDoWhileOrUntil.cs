@@ -97,6 +97,7 @@ internal class ActivityDoWhileOrUntil : LoopActivity, IActivityDoWhileOrUntil
 #pragma warning disable CS0618 // Type or member is obsolete
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), "Do", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
+            Instance.Iteration = LoopIteration;
 #pragma warning restore CS0618 // Type or member is obsolete
         } while (await GetWhileConditionAsync(cancellationToken));
     }

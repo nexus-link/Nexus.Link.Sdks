@@ -69,6 +69,7 @@ internal class ActivityWhileDo : LoopActivity, IActivityWhileDo
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(this, ct), $"Do{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
 #pragma warning restore CS0618
+            Instance.Iteration = LoopIteration;
         } while (await LogicExecutor.ExecuteWithReturnValueAsync(ct=> _conditionMethodAsync!(this, ct), "While", cancellationToken));
     }
 }

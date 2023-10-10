@@ -12,16 +12,24 @@ using Nexus.Link.Libraries.Core.Error.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql
 {
+    /// <summary>
+    /// Handler for patching the database
+    /// </summary>
     public class DatabasePatcherHandler
     {
         /// <summary>
         /// Note! Keep this in sync with patch scripts.
         /// </summary>
-        public const int DatabasePatchVersion = 15;
+        public const int DatabasePatchVersion = 16;
 
         private readonly string _connectionString;
         private readonly string _masterConnectionString;
 
+        /// <summary>
+        /// Controller
+        /// </summary>
+        /// <param name="connectionString">A connection string to the WFE database</param>
+        /// <param name="masterConnectionString">Only use this for development environments where you want to create the database if it is missing.</param>
         public DatabasePatcherHandler(string connectionString, string masterConnectionString)
         {
             _connectionString = connectionString;

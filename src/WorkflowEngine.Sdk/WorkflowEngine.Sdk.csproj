@@ -26,10 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.5" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.16.4" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.8" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.17.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +56,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.27.1</Version>
+    <Version>6.28.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -66,6 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.28.0 Added shortcut for fast forwarding of loops, fixed a transaction bug
       6.27.1 Now saves the workflow state to DB with a surrounding transaction
       6.27.0 Added WorkflowImplementationSingleVersion
       6.26.0 Added IActivityBase.ActivityFinishedAt
