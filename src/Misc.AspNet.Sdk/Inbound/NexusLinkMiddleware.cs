@@ -467,7 +467,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         {
             var request = context?.Request;
             FulcrumAssert.IsNotNull(request, CodeLocation.AsString());
-            var headerValueExists = request.Headers.TryGetValue(Constants.ReentryAuthenticationHeaderName, out var values);
+            var headerValueExists = request!.Headers.TryGetValue(Constants.ReentryAuthenticationHeaderName, out var values);
             if (!headerValueExists) return null;
             var valuesAsArray = values.ToArray();
             if (!valuesAsArray.Any()) return null;

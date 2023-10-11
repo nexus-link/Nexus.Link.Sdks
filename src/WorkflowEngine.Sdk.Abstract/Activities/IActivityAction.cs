@@ -23,6 +23,13 @@ public interface IActivityAction : ITryCatchActivity
     IActivityAction SetMaxTime(TimeSpan timeSpan);
 
     /// <summary>
+    /// If the method sends an HTTP request, we will first try to send the request synchronously.
+    /// If the request does not return a HTTP status code = 200, then we will try to do it asynchronously.
+    /// </summary>
+    /// <returns></returns>
+    IActivityAction TrySynchronousHttpRequestFirst();
+
+    /// <summary>
     /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.
     /// If you want to protect from all other instances, no matter from which workflow form, then please use
     /// <see cref="WithThrottle"/>
@@ -82,6 +89,13 @@ public interface IActivityAction<TActivityReturns> : ITryCatchActivity<TActivity
     /// </summary>
     /// <param name="timeSpan"></param>
     IActivityAction<TActivityReturns> SetMaxTime(TimeSpan timeSpan);
+
+    /// <summary>
+    /// If the method sends an HTTP request, we will first try to send the request synchronously.
+    /// If the request does not return a HTTP status code = 200, then we will try to do it asynchronously.
+    /// </summary>
+    /// <returns></returns>
+    IActivityAction<TActivityReturns> TrySynchronousHttpRequestFirst();
 
     /// <summary>
     /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.

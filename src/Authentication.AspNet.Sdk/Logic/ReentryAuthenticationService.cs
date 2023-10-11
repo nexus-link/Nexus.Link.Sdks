@@ -32,12 +32,13 @@ namespace Nexus.Link.Authentication.AspNet.Sdk.Logic
         }
 
         /// <inheritdoc />
-        public Task<string> CreateAsync(HttpContext context, DateTimeOffset deleteAfter,CancellationToken cancellationToken = default)
+        public async Task<string> CreateAsync(HttpContext context, DateTimeOffset deleteAfter,CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(context, nameof(context));
             var token = RequestHelper.GetAuthorizationBearerTokenOrApiKey(new CompabilityInvocationContext(context));
             if (string.IsNullOrWhiteSpace(token)) return null;
-            return _hashService.CreateAsync(token, deleteAfter, cancellationToken);
+            var result = await _hashService.CreateAsync(token, deleteAfter, cancellationToken);
+            return result;
         }
     }
 }

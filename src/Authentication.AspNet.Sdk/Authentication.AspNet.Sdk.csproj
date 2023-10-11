@@ -36,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.2.8</Version>
+      <Version>3.2.9</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -46,6 +46,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        3.2.9 Bug in ReentryAuthenticationService.CreateAsync()
         3.2.8 Bump
         3.2.0 Dropped support for net461, now has net472 as minimum
         3.1.6 Updated nugets to avoid versions with security risks
@@ -88,5 +89,12 @@
         1.0.0 Changed to Nexus.Link libraries
       </PackageReleaseNotes>
     </PropertyGroup>
+
+  <!-- Automatic generation of local alpha packages -->
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Version)', '(-alpha|-alfa)')) ">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <LocalPackageOutputPath Condition="'$(LocalPackageOutputPath)'==''">c:\dev\local-nugets</LocalPackageOutputPath>
+    <PackageOutputPath>$(LocalPackageOutputPath)</PackageOutputPath>
+  </PropertyGroup>
 
 </Project>

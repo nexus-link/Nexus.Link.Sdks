@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
@@ -39,6 +40,8 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     /// </summary>
     private readonly Dictionary<ActivityExceptionCategoryEnum, TryCatchMethodAsync> _catchAsyncMethods = new();
 
+    private bool _trySynchronousHttpRequestFirst;
+
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityAction(IActivityInformation activityInformation)
         : base(activityInformation)
@@ -63,6 +66,13 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     public IActivityAction SetMaxTime(TimeSpan timeSpan)
     {
         _maxTime = ActivityStartedAt.Add(timeSpan);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction TrySynchronousHttpRequestFirst()
+    {
+        _trySynchronousHttpRequestFirst = true;
         return this;
     }
 
@@ -184,7 +194,30 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                                 "The maximum time for the activity has been reached.");
                         }
                         await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
-                        await _methodAsync(this, ct);
+                        if (_trySynchronousHttpRequestFirst
+                            && Instance.AsyncRequestId == null
+                            && WorkflowStatic.Context.ExecutionIsAsynchronous)
+                        {
+                            try
+                            {
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = false;
+                                await _methodAsync(this, ct);
+                            }
+                            catch (Exception exception)
+                            {
+                                await this.LogWarningAsync($"First try with synchronous HTTP request failed", exception, cancellationToken);
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+                                await _methodAsync(this, ct);
+                            }
+                            finally
+                            {
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+                            }
+                        }
+                        else
+                        {
+                            await _methodAsync(this, ct);
+                        }
                         await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
                     }, methodName,
                         cancellationToken);
@@ -250,6 +283,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     /// </summary>
     private readonly Dictionary<ActivityExceptionCategoryEnum, TryCatchMethodAsync<TActivityReturns>> _catchAsyncMethods = new();
 
+    private bool _trySynchronousHttpRequestFirst;
+
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityAction(IActivityInformation activityInformation,
         ActivityDefaultValueMethodAsync<TActivityReturns> defaultValueMethodAsync)
@@ -276,6 +311,13 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     public IActivityAction<TActivityReturns> SetMaxTime(TimeSpan timeSpan)
     {
         _maxTime = ActivityStartedAt.Add(timeSpan);
+        return this;
+    }
+
+    /// <inheritdoc />
+    public IActivityAction<TActivityReturns> TrySynchronousHttpRequestFirst()
+    {
+        _trySynchronousHttpRequestFirst = true;
         return this;
     }
 
@@ -384,7 +426,31 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                                 "The maximum time for the activity has been reached.");
                         }
                         await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
-                        var returnValue = await _methodAsync(this, ct);
+                        TActivityReturns returnValue;
+                        if (_trySynchronousHttpRequestFirst 
+                            && Instance.AsyncRequestId == null 
+                            && WorkflowStatic.Context.ExecutionIsAsynchronous)
+                        {
+                            try
+                            {
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = false;
+                                returnValue = await _methodAsync(this, ct);
+                            }
+                            catch (Exception exception)
+                            {
+                                await this.LogWarningAsync($"First try with synchronous HTTP request failed", exception, cancellationToken);
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+                                returnValue = await _methodAsync(this, ct);
+                            }
+                            finally
+                            {
+                                WorkflowStatic.Context.ExecutionIsAsynchronous = true;
+                            }
+                        }
+                        else
+                        {
+                            returnValue = await _methodAsync(this, ct);
+                        }
                         await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
                         return returnValue;
                     }, methodName,
