@@ -167,11 +167,11 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     }
 
     /// <inheritdoc/>
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null,
             $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
     }
 
     internal async Task ActionAsync(CancellationToken cancellationToken = default)

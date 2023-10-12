@@ -11,7 +11,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         /// <inheritdoc />
         public HashTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
         {
-            TableName = "Hash",
+            TableName = "HashRecord",
             CreatedAtColumnName = nameof(HashRecord.RecordCreatedAt),
             UpdatedAtColumnName = nameof(HashRecord.RecordUpdatedAt),
             RowVersionColumnName = nameof(HashRecord.RecordVersion),
