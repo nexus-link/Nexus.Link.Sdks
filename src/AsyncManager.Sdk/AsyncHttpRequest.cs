@@ -161,6 +161,14 @@ namespace Nexus.Link.AsyncManager.Sdk
         }
 
         /// <inheritdoc />
+        public AsyncHttpRequest SetWaitingRequestId(string waitingRequestId)
+        {
+            InternalContract.RequireNotNullOrWhiteSpace( waitingRequestId, nameof(waitingRequestId));
+            Metadata.WaitingRequestId = waitingRequestId;
+            return this;
+        }
+
+        /// <inheritdoc />
         public AsyncHttpRequest SetCallbackUrl(string url)
         {
             InternalContract.RequireNotNullOrWhiteSpace(url, nameof(url));

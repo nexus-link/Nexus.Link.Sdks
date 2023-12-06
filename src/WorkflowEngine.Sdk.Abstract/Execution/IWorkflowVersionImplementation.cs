@@ -10,6 +10,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution
     public interface IWorkflowImplementationBase : IWorkflowLogger
     {
         /// <summary>
+        /// The form id for the current workflow
+        /// </summary>
+        string FormId { get; }
+
+        /// <summary>
+        /// The instance id for the current workflow
+        /// </summary>
+        string InstanceId { get; }
+
+        /// <summary>
         /// The major version for this implementation.
         /// </summary>
         int MajorVersion { get; }

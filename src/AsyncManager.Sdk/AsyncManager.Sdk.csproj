@@ -37,15 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.1.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.2.1" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.17.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.2" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>4.0.7</Version>
+    <Version>4.1.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -55,7 +55,8 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      4.0.7 Bump
+      4.1.0 Now use Metadata.WaitingRequestId
+      4.0.8 Bump
       4.0.0 Replaced IRequestService.RetryRequestWithNewAuthenticationAsync with CreateRequestCopyWithNewAuthenticationAsync
       3.3.0 New method in RequestRestClient
       3.2.10 Bump
@@ -79,5 +80,12 @@
       1.0.2 First release
     </PackageReleaseNotes>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- Automatic generation of local alpha packages -->
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Version)', '(-alpha|-alfa)')) ">
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <LocalPackageOutputPath Condition="'$(LocalPackageOutputPath)'==''">c:\dev\local-nugets</LocalPackageOutputPath>
+    <PackageOutputPath>$(LocalPackageOutputPath)</PackageOutputPath>
   </PropertyGroup>
 </Project>

@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 
-namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
+namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 
 /// <summary>
 /// The functionality needed for executing a workflow
 /// </summary>
-public interface IWorkflowExecutor : IWorkflowLogger
+internal interface IWorkflowExecutor : IWorkflowLogger
 {
+    public IWorkflowInformation WorkflowInformation { get; }
+
     /// <summary>
     /// Execute the <paramref name="workflowImplementation"/>
     /// </summary>

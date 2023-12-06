@@ -106,6 +106,12 @@ namespace Nexus.Link.AsyncManager.Sdk
         AsyncHttpRequest SetSendAfter(TimeSpan after);
 
         /// <summary>
+        /// Set the request to be called when a response is available.
+        /// </summary>
+        /// <param name="waitingRequestId">A request of postpone type (typically a workflow) that want to be called again when the response is available.</param>
+        AsyncHttpRequest SetWaitingRequestId(string waitingRequestId);
+
+        /// <summary>
         /// Set the callback URL to <paramref name="url"/>.
         /// </summary>
         AsyncHttpRequest SetCallbackUrl(string url);

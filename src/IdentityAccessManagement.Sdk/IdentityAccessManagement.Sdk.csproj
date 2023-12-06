@@ -17,18 +17,17 @@
 	<ItemGroup>
 		<PackageReference Include="IdentityModel" Version="6.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.0.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.33.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.32" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.2" />
-		<!--<PackageReference Include="IdentityModel" Version="7.0.0" />-->
 		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
 	</ItemGroup>
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.IdentityAccessManagement.Sdk</PackageId>
-		<Version>0.4.26</Version>
+		<Version>0.5.0-beta01</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -38,7 +37,8 @@
 		<Copyright>Copyright ©2021 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-			0.4.26 Bump
+			0.5.0 Downgraded IdentityModel
+      0.4.26 Bump
       0.4.19 Updated nugets to avoid versions with security risks
       0.4.18 Bump
       0.4.11 Fixed an issue where UserId used for translating userId was set in the wrong place.

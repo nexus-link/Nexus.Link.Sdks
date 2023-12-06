@@ -19,12 +19,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.17.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Contracts</PackageId>
-    <Version>3.4.23</Version>
+    <Version>3.4.24</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -34,7 +34,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.4.23 Bump
+      3.4.24 Bump
       3.4.16 Updated nugets to avoid versions with security risks
       3.4.15 Bump
       3.4.4 Symbols

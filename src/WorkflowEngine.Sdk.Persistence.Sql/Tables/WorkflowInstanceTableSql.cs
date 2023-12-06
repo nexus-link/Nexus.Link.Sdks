@@ -12,8 +12,12 @@ using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Tables;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables;
 
+/// <inheritdoc cref="IWorkflowInstanceTable" />
 public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, WorkflowInstanceRecord>, IWorkflowInstanceTable
 {
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public WorkflowInstanceTableSql(IDatabaseOptions options) : base(options, new SqlTableMetadata
     {
         TableName = "WorkflowInstance",

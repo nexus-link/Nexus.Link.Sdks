@@ -7,6 +7,8 @@ using Nexus.Link.AsyncManager.Sdk;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Misc;
+using Shouldly;
 using Xunit;
 
 namespace AsyncManager.Sdk.UnitTests
@@ -159,6 +161,20 @@ namespace AsyncManager.Sdk.UnitTests
 
             // assert
             AssertHelper.AssertEqual(expectedTime, request.Metadata.SendBefore, TimeSpan.FromSeconds(3));
+        }
+
+        [Fact]
+        public void SetWaitingRequestId()
+        {
+            // arrange
+            var expectedRequestId = Guid.NewGuid().ToGuidString();
+            var request = TestDataGenerator.DefaultAsyncHttpRequest;
+
+            // act
+            request.SetWaitingRequestId(expectedRequestId);
+
+            // assert
+            request.Metadata.WaitingRequestId.ShouldBe(expectedRequestId);
         }
 
         [Fact]

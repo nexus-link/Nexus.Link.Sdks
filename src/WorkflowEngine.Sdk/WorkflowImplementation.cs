@@ -27,6 +27,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk
         internal IInternalActivity CurrentParentActivity => WorkflowStatic.Context.ParentActivity;
 
         /// <inheritdoc />
+        public string FormId => WorkflowContainer?.WorkflowFormId;
+
+        /// <inheritdoc />
+        public string InstanceId => _workflowExecutor.WorkflowInformation?.InstanceId;
+
+        /// <inheritdoc />
         public int MajorVersion { get; }
 
         /// <inheritdoc />
