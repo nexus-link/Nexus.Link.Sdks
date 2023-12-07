@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nexus.Link.Libraries.Core.Assert;
+using System;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
 {
@@ -6,6 +7,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
     {
         public MethodParameter(string name, Type type)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(name, nameof(name));
             Name = name;
             Type = type;
             IsNullable = IsNullableType(type);
@@ -21,5 +23,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
             if (Nullable.GetUnderlyingType(t) != null) return true; // Nullable<T>
             return false; // value-type
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Name;
     }
 }

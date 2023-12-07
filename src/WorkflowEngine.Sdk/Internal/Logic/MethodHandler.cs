@@ -32,17 +32,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private void DefineParameter(string name, System.Type type)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(name, nameof(name));
             var position = _parameters.Count + 1;
             _parameters.Add(position, new MethodParameter(name, type));
         }
 
         public void DefineParameter<TParameter>(string name)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(name, nameof(name));
             DefineParameter(name, typeof(TParameter));
         }
 
         public object GetArgument(string parameterName)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(parameterName, nameof(parameterName));
             if (!Arguments.TryGetValue(parameterName, out var argument))
             {
                 throw new FulcrumNotFoundException($"{FormTitle} has a parameter named {parameterName}, but {InstanceTitle} had no argument for that parameter." +
@@ -75,6 +78,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         private MethodParameter GetMethodParameter(string parameterName)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(parameterName, nameof(parameterName));
             var parameter = _parameters.Values.FirstOrDefault(p => p.Name == parameterName);
             InternalContract.RequireNotNull(parameter, nameof(parameterName),
                 $"No parameter named {parameterName}. These are registered: {string.Join(", ", ParameterNames())}");
@@ -83,6 +87,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 
         public void SetParameter(string parameterName, object value)
         {
+            InternalContract.RequireNotNullOrWhiteSpace(parameterName, nameof(parameterName));
             var parameter = GetMethodParameter(parameterName);
             if (value == null)
             {
@@ -96,7 +101,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
 
             var argument = new MethodArgument(parameter, value);
-            Arguments.Add(parameter.Name, argument);
+            Arguments[parameter.Name] = argument;
         }
     }
 }

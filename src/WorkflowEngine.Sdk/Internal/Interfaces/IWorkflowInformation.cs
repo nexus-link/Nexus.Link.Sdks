@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
+using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
@@ -183,6 +185,16 @@ internal interface IWorkflowInformation
     Stopwatch TimeSinceCurrentRunStarted { get; }
 
     WorkflowOptions WorkflowOptions { get; }
+    
+    /// <summary>
+    /// This semaphore is used to make updating <see cref="HttpAsyncResponses"/> thread safe.
+    /// </summary>
+    NexusAsyncSemaphore ReadResponsesSemaphore { get; }
+
+    /// <summary>
+    /// All the responses awailable from Async Manager for the requests that this workflow instance is waiting for
+    /// </summary>
+    IDictionary<string, HttpResponse> HttpAsyncResponses { get; set; }
 
     /// <summary>
     /// A string representation of the workflow that is detailed enough for logging.

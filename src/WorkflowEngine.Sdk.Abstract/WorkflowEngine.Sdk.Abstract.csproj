@@ -24,7 +24,7 @@
   <!-- Publish symbols -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.2.1" />
+    <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.5.0</Version>
+    <Version>1.5.1</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -43,6 +43,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.5.1 Bump
       1.5.0 Added InstanceId and FormId to IWorkflowImplementation. Made IWorkflowExecutor internal and moved it to Sdk
       1.4.1 Bump
       1.4.0 Added IActionActivity.TrySynchronousHttpRequestFirst()

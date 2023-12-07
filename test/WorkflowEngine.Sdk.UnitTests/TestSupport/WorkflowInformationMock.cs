@@ -6,9 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -260,6 +262,12 @@ internal class WorkflowInformationMock : IWorkflowInformation
     public Stopwatch TimeSinceCurrentRunStarted { get; }
 
     public WorkflowOptions WorkflowOptions { get; set; } = new();
+
+    /// <inheritdoc />
+    public NexusAsyncSemaphore ReadResponsesSemaphore { get; } = new NexusAsyncSemaphore(1);
+
+    /// <inheritdoc />
+    public IDictionary<string, HttpResponse> HttpAsyncResponses { get; set; }
 
     /// <inheritdoc />
     public string ToLogString()

@@ -32,8 +32,11 @@ public abstract class WorkflowImplementationSingleVersion : WorkflowImplementati
         : base(1, 0, 
             GetOrCreateWorkflowContainer(capabilityName, workflowTitle, workflowId, workflowCapabilities))
     {
-        if (WorkflowContainerSingleVersion.WorkflowVersionCollection.Versions.Any()) return;
-        WorkflowContainerSingleVersion.AddImplementation(this);
+        lock (WorkflowContainerSingleVersion.WorkflowVersionCollection.Versions)
+        {
+            if (WorkflowContainerSingleVersion.WorkflowVersionCollection.Versions.Any()) return;
+            WorkflowContainerSingleVersion.AddImplementation(this);
+        }
     }
 
     /// <inheritdoc />

@@ -10,5 +10,8 @@
 
         public MethodParameter Parameter { get; }
         public object Value { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => $"{Parameter} {Value}";
     }
 }
