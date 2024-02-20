@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
   </ItemGroup>
 

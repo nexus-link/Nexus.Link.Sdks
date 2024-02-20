@@ -81,8 +81,9 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
         /// <param name="context">The information about the current HTTP request.</param>
         public virtual async Task InvokeAsync(HttpContext context)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            FulcrumApplication.Context.RequestStopwatch = new Stopwatch();
+            FulcrumApplication.Context.RequestStopwatch.Start();
+
             var cancellationToken = context.RequestAborted;
             // Enable multiple reads of the content
             context.Request.EnableBuffering();
@@ -157,7 +158,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                     }
                     if (Options.Features.LogRequestAndResponse.Enabled)
                     {
-                        await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
+                        await LogResponseAsync(context, FulcrumApplication.Context.RequestStopwatch.Elapsed, cancellationToken);
                     }
                 }
                 catch (Exception exception)
@@ -169,7 +170,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
                         shouldThrow = false;
                         if (Options.Features.LogRequestAndResponse.Enabled)
                         {
-                            await LogResponseAsync(context, stopwatch.Elapsed, cancellationToken);
+                            await LogResponseAsync(context, FulcrumApplication.Context.RequestStopwatch.Elapsed, cancellationToken);
                         }
                     }
                     if (shouldThrow) throw;
@@ -179,7 +180,7 @@ namespace Nexus.Link.Misc.AspNet.Sdk.Inbound
             {
                 if (Options.Features.LogRequestAndResponse.Enabled)
                 {
-                    LogException(context, exception, stopwatch.Elapsed);
+                    LogException(context, exception, FulcrumApplication.Context.RequestStopwatch.Elapsed);
                 }
                 throw;
             }

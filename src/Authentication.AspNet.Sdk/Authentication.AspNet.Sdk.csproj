@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.13" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.4.9" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.5.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">
@@ -36,7 +36,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.3.0-beta02</Version>
+      <Version>3.3.0-beta03</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>

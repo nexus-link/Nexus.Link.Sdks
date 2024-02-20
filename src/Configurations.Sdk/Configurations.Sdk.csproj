@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.0.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.29.6" /> 
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" /> 
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.33.0" />
   </ItemGroup>
 
@@ -29,7 +29,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.4.0-beta01</Version>
+      <Version>2.4.0-beta02</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
