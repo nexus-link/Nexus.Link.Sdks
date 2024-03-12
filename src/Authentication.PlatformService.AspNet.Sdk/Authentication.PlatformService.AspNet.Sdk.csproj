@@ -23,10 +23,10 @@
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+  <!--<ItemGroup Condition="'$(TargetFramework)'=='net472'">
     <Reference Include="System.Web" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
-  </ItemGroup>
+  </ItemGroup>-->
 
   <ItemGroup>
     <ProjectReference Include="..\Authentication.AspNet.Sdk\Authentication.AspNet.Sdk.csproj" />
@@ -35,7 +35,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.PlatformService.AspNet.Sdk</PackageId>
-      <Version>1.2.0-beta03</Version>
+      <Version>1.2.0</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -45,7 +45,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        1.2.0 Experimenting with versions of IdentityModel
+        1.2.0 Upgraded IdentityModel
         1.1.6 Bump
         1.1.0 Dropped support for net461, now has net472 as minimum
         1.0.63 Updated nugets to avoid versions with security risks
