@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -6,9 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
+using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
+using Nexus.Link.Libraries.Core.Threads;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
@@ -40,6 +43,17 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         workflowInformationMock
             .Setup(ai => ai.GetActivityInstance(It.IsAny<string>()))
             .Returns(activityInstance);
+        var nexusAsyncSemaphore = new NexusAsyncSemaphore();
+        workflowInformationMock
+            .SetupGet(ai => ai.ReadResponsesSemaphore)
+            .Returns(nexusAsyncSemaphore);
+        workflowInformationMock
+            .SetupSequence(ai => ai.HttpAsyncResponses)
+            .Returns((IDictionary<string, HttpResponse>)null)
+            .Returns(new ConcurrentDictionary<string, HttpResponse>())
+            .Returns(new ConcurrentDictionary<string, HttpResponse>())
+            .Returns(new ConcurrentDictionary<string, HttpResponse>())
+            .Returns(new ConcurrentDictionary<string, HttpResponse>());
         var activitionInformationMock = new Mock<IActivityInformation>();
         activitionInformationMock
             .SetupGet(ai => ai.Workflow)

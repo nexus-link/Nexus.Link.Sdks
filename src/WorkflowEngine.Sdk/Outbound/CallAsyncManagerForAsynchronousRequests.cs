@@ -80,7 +80,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                     return response;
                 }
                 await activity.LogVerboseAsync($"Activity polled for a response" +
-                                                   $" to request {request.ToLogString()}", activity, cancellationToken);
+                                                   $" to request {request.ToLogString()}", activity.ToLogString(), cancellationToken);
                 throw new ActivityWaitsForRequestException(activity.Instance.AsyncRequestId);
             }
 
