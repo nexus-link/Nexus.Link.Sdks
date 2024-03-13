@@ -56,7 +56,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.31.1</Version>
+    <Version>6.31.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -66,7 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.31.1 Bump
+      6.31.2 Bump
       6.31.0 Now reads all responses from AM in one read. Added ToString for MethodParameter and MethodArgument. Modified how we set arguments
       6.30.0 Added InstanceId and FormId to WorkflowImplementation
       6.29.2 Bump
