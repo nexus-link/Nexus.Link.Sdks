@@ -9,6 +9,7 @@ using Moq;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Entities;
 using Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract.Services;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Core.Threads;
@@ -32,6 +33,7 @@ public class CallAsyncManagerForAsynchronousRequestsTests
 
     public CallAsyncManagerForAsynchronousRequestsTests()
     {
+        FulcrumApplicationHelper.UnitTestSetup(this.GetType().Name);
         _asyncManagerMock = new Mock<IAsyncRequestMgmtCapability>();
         _iut = new ItemUnderTest(_asyncManagerMock.Object);
         WorkflowStatic.Context.ExecutionIsAsynchronous = true;
@@ -78,9 +80,9 @@ public class CallAsyncManagerForAsynchronousRequestsTests
 
         // Act && Assert
         var exception = await _iut.SendAsync(request, CancellationToken.None)
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<ActivityWaitsForRequestException>();
 
-        exception.TryAgainAfterMinimumTimeSpan.ShouldBe(expectedException.TryAgainAfterMinimumTimeSpan);
+        exception.TryAgainAfterMinimumTimeSpan.ShouldBeNull();
         exception.InnerException.ShouldBeNull();
     }
 
@@ -89,16 +91,7 @@ public class CallAsyncManagerForAsynchronousRequestsTests
     public async Task Send_Given_ThrowsNotTryAgainException_ThrowsRequestPostponedWithInnerException(Exception exceptionThrown)
     {
         // Arrange
-        TimeSpan expectedTimeSpan;
-        ;
-        if (exceptionThrown is FulcrumException fulcrumException)
-        {
-            expectedTimeSpan = TimeSpan.FromSeconds(fulcrumException.RecommendedWaitTimeInSeconds);
-        }
-        else
-        {
-            expectedTimeSpan = TimeSpan.FromSeconds(60);
-        }
+        TimeSpan? expectedTimeSpan = null;
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/Persons/123");
         var requestResponseServiceMock = new Mock<IRequestResponseService>();
         requestResponseServiceMock
