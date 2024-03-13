@@ -12,7 +12,14 @@ public interface IWorkflowStateCapability
     /// </summary>
     IActivityInstanceService ActivityInstance { get; }
 
+    /// <summary>
+    /// Service for logging
+    /// </summary>
     ILogService Log { get; }
+
+    /// <summary>
+    /// Service for workflow instance data
+    /// </summary>
     IWorkflowInstanceService WorkflowInstance { get; }
 
     /// <summary>
@@ -24,5 +31,9 @@ public interface IWorkflowStateCapability
     /// Service for accessing storage version of <see cref="Entities.WorkflowSummary"/>
     /// </summary>
     IWorkflowSummaryServiceStorage WorkflowSummaryStorage { get; }
+
+    /// <summary>
+    /// Service for dealing with semaphores
+    /// </summary>
     IWorkflowSemaphoreService WorkflowSemaphore { get; }
 }
