@@ -28,7 +28,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.4.24</Version>
+    <Version>2.4.25</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -38,7 +38,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.4.24 Bump
+      2.4.25 Bump
       2.4.14 Updated nugets to avoid versions with security risks
       2.4.13 Bump
       2.4.4 Symbols
