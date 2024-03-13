@@ -25,9 +25,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.9" />
+		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.10" />
 		<PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.0" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,7 +37,7 @@
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.Dashboards.Sdk</PackageId>
-		<Version>1.0.17</Version>
+		<Version>1.0.18</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link;fulcrum;lever</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -47,7 +47,7 @@
 		<Copyright>Copyright ©2022 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-      1.0.17 Bump
+      1.0.18 Bump
       1.0.5 Updated nugets to avoid versions with security risks
       1.0.4 Bump
       1.0.1 Url fix

@@ -25,8 +25,8 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.DatabasePatcher" Version="2.8.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.9.5" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.2.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Azure" Version="3.9.6" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>

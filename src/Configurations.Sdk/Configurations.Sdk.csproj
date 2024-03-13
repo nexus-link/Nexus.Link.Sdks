@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.1" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" /> 
   </ItemGroup>
 
@@ -28,7 +28,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Configurations.Sdk</PackageId>
-      <Version>2.4.0-beta03</Version>
+      <Version>2.4.1</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -38,6 +38,7 @@
       <Copyright>Copyright ©2020 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
+        2.4.1 Bump
         2.4.0 Removed IdentityModel (obsolete)
         2.3.6 Bump
         2.3.0 Dropped support for net461

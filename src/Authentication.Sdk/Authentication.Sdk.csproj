@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.10" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.1" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
   </ItemGroup>
@@ -32,7 +32,7 @@
 
   <PropertyGroup>
 	  <PackageId>Nexus.Link.Authentication.Sdk</PackageId>
-	  <Version>3.7.0</Version>
+	  <Version>3.7.1</Version>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <PackageTags>nexus;link;fulcrum;lever</PackageTags>
 	  <Authors>XLENT Link</Authors>
@@ -42,6 +42,7 @@
 	  <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
 	  <IncludeSymbols>true</IncludeSymbols>
 	  <PackageReleaseNotes>
+			3.7.1 Bump
       3.7.0 Upgraded IdentityModel
       3.6.7 Bump
       3.6.2 Detect http client exception when fetching public key and setup on FulcrumApplication.Setup.HealthTracker. Converts the exception to FulcrumResourceException.
