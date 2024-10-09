@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
@@ -75,9 +76,17 @@ public class WorkflowSummaryService : IWorkflowSummaryService
         if (instance != null)
         {
             FulcrumAssert.IsNotNull(version, CodeLocation.AsString());
-            FulcrumAssert.AreEqual(version!.Id, instance.WorkflowVersionId, CodeLocation.AsString());
             FulcrumAssert.IsNotNull(form, CodeLocation.AsString());
             FulcrumAssert.AreEqual(form!.Id, version.WorkflowFormId, CodeLocation.AsString());
+            if (version!.Id != instance.WorkflowVersionId)
+            {
+                var problem =
+                    $"The parameters {nameof(formId)} ({formId}), {nameof(majorVersion)} ({majorVersion}) and {nameof(instanceId)} ({instanceId}) are inconsistent.";
+                var symptom =
+                    $"The first two points to version {version.Id}, but the third points to version {instance.WorkflowVersionId}.";
+                var message = $"{problem} {symptom}";
+                throw new FulcrumContractException(message);
+            }
         }
 
         return await GetSummaryAsync(form, version, instance, cancellationToken);

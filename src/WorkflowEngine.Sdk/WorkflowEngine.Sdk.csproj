@@ -66,6 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.31.3 Better error messages in WorkflowSummaryService when there is a form/version/instance inconsistency
       6.31.2 Bump
       6.31.0 Now reads all responses from AM in one read. Added ToString for MethodParameter and MethodArgument. Modified how we set arguments
       6.30.0 Added InstanceId and FormId to WorkflowImplementation
