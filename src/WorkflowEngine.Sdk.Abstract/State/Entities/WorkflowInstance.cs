@@ -157,6 +157,7 @@ public enum WorkflowSearchOrderByEnum
     /// <summary>
     /// <see cref="WorkflowInstanceCreate.StartedAt"/>
     /// </summary>
+    /// <remarks>For optimization reasons, this is now ordering by RecordCreatedAt instead. It should always be within a second of StartedAt.</remarks>
     StartedAt,
 
     /// <summary>
@@ -172,7 +173,7 @@ public enum WorkflowSearchOrderByEnum
     /// <summary>
     /// <see cref="WorkflowInstanceCreate.State"/>
     /// </summary>
-    State,
+    State
 }
 
 /// <summary>

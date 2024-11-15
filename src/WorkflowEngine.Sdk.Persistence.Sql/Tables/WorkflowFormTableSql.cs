@@ -49,7 +49,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
         {
             await using var connection = await Database.NewSqlConnectionAsync(cancellationToken);
 
-            const string dateRestriction = "AND StartedAt BETWEEN @instancesFrom AND @instancesTo";
+            const string dateRestriction = "AND RecordCreatedAt BETWEEN @instancesFrom AND @instancesTo";
             const string versionRestriction = @"( SELECT wf.Id , wf.Majorversion , wf.MinorVersion, wf.WorkflowFormId
                                                  FROM WorkflowVersion wf, (SELECT WorkflowFormId, max(Majorversion) v from WorkflowVersion GROUP by WorkflowFormId ) g
                                                  WHERE wf.WorkflowFormId = g.WorkflowFormId and wf.Majorversion = g.v )";

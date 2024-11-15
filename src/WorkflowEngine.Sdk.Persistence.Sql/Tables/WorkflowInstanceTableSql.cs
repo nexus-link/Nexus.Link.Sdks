@@ -58,11 +58,11 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
             query += $" JOIN {WorkflowVersionTableSql.TableName} v ON (v.Id = i.{nameof(WorkflowInstanceRecord.WorkflowVersionId)})";
         }
 
-        query += $" WHERE {nameof(WorkflowInstanceRecord.StartedAt)} >= @{nameof(searchDetails.From)}";
+        query += $" WHERE {nameof(WorkflowInstanceRecord.RecordCreatedAt)} >= @{nameof(searchDetails.From)}";
 
         if (searchDetails.To != null)
         {
-            query += $" AND {nameof(WorkflowInstanceRecord.StartedAt)} <= @{nameof(searchDetails.To)}";
+            query += $" AND {nameof(WorkflowInstanceRecord.RecordCreatedAt)} <= @{nameof(searchDetails.To)}";
         }
         if (!string.IsNullOrWhiteSpace(searchDetails.FormId))
         {
@@ -94,7 +94,7 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
             WorkflowSearchOrderByEnum.Title => nameof(WorkflowInstanceRecord.Title),
             WorkflowSearchOrderByEnum.State => nameof(WorkflowInstanceRecord.State),
             WorkflowSearchOrderByEnum.FinishedAt => nameof(WorkflowInstanceRecord.FinishedAt),
-            _ => nameof(WorkflowInstanceRecord.StartedAt)
+            _ => nameof(WorkflowInstanceRecord.RecordCreatedAt)
         };
         result += asending ? " ASC" : " DESC";
         return result;
