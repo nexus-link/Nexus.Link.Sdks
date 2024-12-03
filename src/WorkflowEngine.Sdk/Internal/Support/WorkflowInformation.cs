@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -153,7 +154,7 @@ internal class WorkflowInformation : IWorkflowInformation
             if (FulcrumApplication.IsInDevelopment) throw;
             // Don't let logging problems get in our way
         }
-        await _workflowCache.SaveAsync(true, cancellationToken);
+        await _workflowCache.SaveWithFallbackAsync(cancellationToken);
 
         async Task SaveAndPurgeLogs()
         {
@@ -167,7 +168,7 @@ internal class WorkflowInformation : IWorkflowInformation
             };
 
             // Save the logs
-            foreach (var logCreate in Logs)
+            foreach (var logCreate in Logs.Where(l => l != null))
             {
                 if (purge && BelowOrEqualToThreshold(logCreate)) continue;
                 await LogService.CreateAsync(logCreate, cancellationToken);

@@ -28,13 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.19.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.2.1" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.6.1</Version>
+    <Version>1.7.0</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -43,6 +43,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.7.0 Now has JsonIgnore attribute on redundant information in WorkflowSummary
       1.6.1 IActivityAction can now have both throttle and lock
       1.5.2 Bump
       1.5.0 Added InstanceId and FormId to IWorkflowImplementation. Made IWorkflowExecutor internal and moved it to Sdk
@@ -62,4 +63,9 @@
     <LocalPackageOutputPath Condition="'$(LocalPackageOutputPath)'==''">c:\dev\local-nugets</LocalPackageOutputPath>
     <PackageOutputPath>$(LocalPackageOutputPath)</PackageOutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>Nexus.Link.WorkflowEngine.Sdk</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.5.2" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.8.10" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.5.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.AspNet" Version="2.8.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +28,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.Services.Controllers</PackageId>
-    <Version>2.4.25</Version>
+    <Version>2.4.26</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -38,7 +38,7 @@
     <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.4.25 Bump
+      2.4.26 Bump
       2.4.14 Updated nugets to avoid versions with security risks
       2.4.13 Bump
       2.4.4 Symbols

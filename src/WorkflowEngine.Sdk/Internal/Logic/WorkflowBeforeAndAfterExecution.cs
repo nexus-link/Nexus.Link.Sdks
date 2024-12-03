@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -60,8 +61,10 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         if (WorkflowInformation.Instance.State == WorkflowStateEnum.Executing)
         {
             // This means that we have an execution that didn't suceed in saving its state, we must fail the entire workflow instance
+            var technicalMessage = $"The workflow instance {WorkflowInformation.InstanceId} could not save its state. This means that the integrity of the workflow can no longer be guaranteed, and we are forced to fail the workflow.";
+            Log.LogError(technicalMessage);
             throw new WorkflowFailedException(ActivityExceptionCategoryEnum.TechnicalError,
-                $"The workflow instance {WorkflowInformation.InstanceId} could not save its state. This means that the integrity of the workflow can no longer be guaranteed, and we are forced to fail the workflow.",
+                technicalMessage,
                 $"The workflow could not save its state. This means that the integrity of the workflow can no longer be guaranteed, and we are forced to fail the workflow.");
         }
 
@@ -72,7 +75,6 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
         await WorkflowInformation.SaveAsync(cancellationToken);
 
-        // TODO: Unit test for cancelled
         if (WorkflowInformation.Instance.CancelledAt != null)
         {
             throw new WorkflowFailedException(
@@ -90,7 +92,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         }
         catch (Exception ex)
         {
-            Log.LogWarning($"The workflow {WorkflowInformation} had a problem with the book keeping after execution. Will try again later.\r{ex}");
+            Log.LogWarning($"The workflow {WorkflowInformation} had a problem with the book keeping after execution. Will try again later.\r{ex.ToLog()}", ex);
             throw new WorkflowPostponedException(TimeSpan.FromSeconds(30));
         }
     }

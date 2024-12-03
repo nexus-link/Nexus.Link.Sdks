@@ -64,8 +64,8 @@ public class DbFallbackWithStorageTests : Base
         LogicMoq.VerifyNoOtherCalls();
         workflowInstanceId.ShouldNotBeNull();
         var path = IWorkflowSummaryServiceStorage.GetWorkflowSummaryPath(workflowInstanceId);
-        var blob = await WorkflowEngineStorage.WorkflowSummary.ReadAsync(path);
-        blob.ShouldNotBeNull();
+        var summary = await WorkflowEngineStorage.WorkflowSummary.ReadAsync(path);
+        summary.ShouldNotBeNull();
     }
 
     [Fact]

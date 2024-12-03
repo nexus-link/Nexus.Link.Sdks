@@ -26,10 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.30.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.10" />
-    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.18.0" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.1.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.32.0" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.13" />
+    <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.19.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +56,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.32.1</Version>
+    <Version>6.33.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -66,6 +66,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.33.0 Cache now has transaction. Saves less data in fallback storage. Lot of bugfixes around saving to fallback
       6.32.1 ActivityAction can now have both throttle and lock
       6.31.3 Better error messages in WorkflowSummaryService when there is a form/version/instance inconsistency
       6.31.2 Bump

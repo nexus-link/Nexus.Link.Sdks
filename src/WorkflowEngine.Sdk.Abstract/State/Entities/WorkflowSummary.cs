@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 
@@ -45,6 +46,7 @@ public class WorkflowSummary : IValidatable
     /// <summary>
     /// Sorted top level activities in position order
     /// </summary>
+    [JsonIgnore]
     public IReadOnlyList<ActivitySummary> ActivityTree
     {
         get
@@ -63,6 +65,7 @@ public class WorkflowSummary : IValidatable
     /// <summary>
     /// Sorted top level activities in position order
     /// </summary>
+    [JsonIgnore]
     public IReadOnlyList<ActivitySummary> ReferredActivities
     {
         get

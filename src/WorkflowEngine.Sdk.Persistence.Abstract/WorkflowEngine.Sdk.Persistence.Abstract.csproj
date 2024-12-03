@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nexus.Link.Contracts.Misc.Sdk" Version="1.0.10" />
-    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.2.1" />
+    <PackageReference Include="Nexus.Link.Libraries.SqlServer" Version="3.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract</PackageId>
-    <Version>3.8.2</Version>
+    <Version>3.8.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -44,7 +44,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      3.8.2 Bump
+      3.8.4 Bump
       3.8.0 Added ActivityInstanceRecord.Iteration
       3.7.3 Bump
       3.7.2 Added support for fallback strategy of saving workflow state

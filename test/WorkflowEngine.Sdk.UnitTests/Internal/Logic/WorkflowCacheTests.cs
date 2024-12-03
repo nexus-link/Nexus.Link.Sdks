@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
+using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
@@ -16,6 +17,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Memory;
 using Nexus.Link.WorkflowEngine.Sdk.Services.State;
 using Shouldly;
+using UnitTests.Support;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
 using Xunit.Abstractions;
@@ -34,6 +36,8 @@ public class WorkflowCacheTests
     public WorkflowCacheTests(ITestOutputHelper testOutputHelper)
     {
         FulcrumApplicationHelper.UnitTestSetup(nameof(WorkflowCacheTests));
+        FulcrumApplication.Setup.SynchronousFastLogger = new XUnitFulcrumLogger(testOutputHelper);
+        FulcrumApplication.Setup.LogSeverityLevelThreshold = LogSeverityLevel.Verbose;
 
         _testOutputHelper = testOutputHelper;
 
@@ -89,7 +93,7 @@ public class WorkflowCacheTests
         cache.Instance.State = newState;
         cache.Instance.Title = newInstanceTitle;
         cache.Instance.FinishedAt = newFinishedAt;
-        await cache.SaveAsync(false);
+        await cache.SaveWithFallbackAsync();
 
         // Assert
         resetEvent.WaitOne(100).ShouldBeTrue($"There is probably an error in {nameof(workflowInformation.WorkflowOptions.AfterSaveAsync)}. Look for an error message below.");
@@ -144,7 +148,7 @@ public class WorkflowCacheTests
         cache.Instance.Title = "Changed to force a save";
 
         // Act
-        await cache.SaveAsync(true)
+        await cache.SaveWithFallbackAsync()
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Assert
@@ -154,7 +158,7 @@ public class WorkflowCacheTests
     }
 
     /// <summary>
-    /// We have a contract for <see cref="WorkflowCache.SaveAsync"/>
+    /// We have a contract for <see cref="WorkflowCache.SaveWithFallbackAsync"/>
     /// that it must call <see cref="WorkflowOptions.AfterSaveAsync"/>
     /// whenever it saves it values.
     /// </summary>

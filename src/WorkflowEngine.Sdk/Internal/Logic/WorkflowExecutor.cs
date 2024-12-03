@@ -14,6 +14,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -184,7 +185,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
 
     private async Task<Exception> ReportUnexpectedExceptionAsync(Exception ex, CancellationToken cancellationToken)
     {
-        var technicalMessage = $"Workflow engine error. Unexpected exception: {ex}";
+        var technicalMessage = $"Workflow engine error. Unexpected exception: {ex.ToLog()}";
         await this.LogCriticalAsync(technicalMessage, ex, cancellationToken);
         WorkflowInformation.Instance.State = WorkflowStateEnum.Halted;
         WorkflowInformation.Instance.ExceptionTechnicalMessage =

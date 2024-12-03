@@ -44,35 +44,47 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
         InternalContract.RequireNotNull(item, nameof(item));
         InternalContract.RequireValidated(item, nameof(item));
 
-        var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
-        using var scope = new TransactionScope(TransactionScopeOption.Required, options,
-            TransactionScopeAsyncFlowOption.Enabled);
-
-        var (semaphore, holder) = await GetOrCreateSemaphoreAndHolderWithLockAsync(item, cancellationToken);
-        if (holder.Raised)
+        try
         {
-            // Already raised, extend the expiration time
-            holder.ExpiresAt = DateTimeOffset.UtcNow + item.ExpirationTime;
-            await _runtimeTables.WorkflowSemaphoreQueue.UpdateAsync(holder.Id, holder, cancellationToken);
-        }
-        else
-        {
-            var raisedHolder = await ActivateItemsInQueueAsync(semaphore.Id, item.Limit, holder, cancellationToken);
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options,
+                TransactionScopeAsyncFlowOption.Enabled);
 
-            if (raisedHolder == null)
+            var (semaphore, holder) = await GetOrCreateSemaphoreAndHolderWithLockAsync(item, cancellationToken);
+            if (holder.Raised)
             {
-                scope.Complete();
-                throw new ActivityPostponedException(TimeSpan.FromHours(1));
+                // Already raised, extend the expiration time
+                holder.ExpiresAt = DateTimeOffset.UtcNow + item.ExpirationTime;
+                await _runtimeTables.WorkflowSemaphoreQueue.UpdateAsync(holder.Id, holder, cancellationToken);
+            }
+            else
+            {
+                var raisedHolder = await ActivateItemsInQueueAsync(semaphore.Id, item.Limit, holder, cancellationToken);
+
+                if (raisedHolder == null)
+                {
+                    scope.Complete();
+                    throw new ActivityPostponedException(TimeSpan.FromHours(1));
+                }
+
+                if (semaphore.Limit != item.Limit)
+                {
+                    semaphore.Limit = item.Limit;
+                    await _runtimeTables.WorkflowSemaphore.UpdateAsync(semaphore.Id, semaphore, cancellationToken);
+                }
             }
 
-            if (semaphore.Limit != item.Limit)
-            {
-                semaphore.Limit = item.Limit;
-                await _runtimeTables.WorkflowSemaphore.UpdateAsync(semaphore.Id, semaphore, cancellationToken);
-            }
+            scope.Complete();
+            return holder.Id.ToGuidString();
         }
-        scope.Complete();
-        return holder.Id.ToGuidString();
+        catch (Exception ex)
+        {
+            if (ex is RequestPostponedException or FulcrumTryAgainException) throw;
+            throw new FulcrumTryAgainException($"{ex.GetType().Name}: {ex.Message}")
+            {
+                RecommendedWaitTimeInSeconds = TimeSpan.FromMinutes(5).TotalSeconds
+            };
+        }
     }
 
     /// <inheritdoc />
@@ -80,22 +92,36 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
     {
         InternalContract.RequireNotNullOrWhiteSpace(semaphoreHolderId, nameof(semaphoreHolderId));
 
-        var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
-        using var scope = new TransactionScope(TransactionScopeOption.Required, options,
-            TransactionScopeAsyncFlowOption.Enabled);
-
-        var holder = await _runtimeTables.WorkflowSemaphoreQueue.ReadAsync(semaphoreHolderId.ToGuid(), cancellationToken);
-        FulcrumAssert.IsNotNull(holder, CodeLocation.AsString());
-        if (!holder.Raised)
+        try
         {
-            throw new FulcrumConflictException($"The semaphore {holder} has lost the semaphore.");
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options,
+                TransactionScopeAsyncFlowOption.Enabled);
+
+            var holder =
+                await _runtimeTables.WorkflowSemaphoreQueue.ReadAsync(semaphoreHolderId.ToGuid(), cancellationToken);
+            FulcrumAssert.IsNotNull(holder, CodeLocation.AsString());
+            if (!holder.Raised)
+            {
+                throw new FulcrumConflictException($"The semaphore {holder} has lost the semaphore.");
+            }
+
+            // Already raised, extend the expiration time
+            timeToExpiration ??= TimeSpan.FromSeconds(holder.ExpirationAfterSeconds);
+            await _runtimeTables.WorkflowSemaphore.ClaimTransactionLockAsync(holder.WorkflowSemaphoreId,
+                cancellationToken);
+            holder.ExpiresAt = DateTimeOffset.UtcNow.Add(timeToExpiration.Value);
+            await _runtimeTables.WorkflowSemaphoreQueue.UpdateAsync(holder.Id, holder, cancellationToken);
+            scope.Complete();
         }
-        // Already raised, extend the expiration time
-        timeToExpiration ??= TimeSpan.FromSeconds(holder.ExpirationAfterSeconds);
-        await _runtimeTables.WorkflowSemaphore.ClaimTransactionLockAsync(holder.WorkflowSemaphoreId, cancellationToken);
-        holder.ExpiresAt = DateTimeOffset.UtcNow.Add(timeToExpiration.Value);
-        await _runtimeTables.WorkflowSemaphoreQueue.UpdateAsync(holder.Id, holder, cancellationToken);
-        scope.Complete();
+        catch (Exception ex)
+        {
+            if (ex is RequestPostponedException or FulcrumTryAgainException) throw;
+            throw new FulcrumTryAgainException($"{ex.GetType().Name}: {ex.Message}")
+            {
+                RecommendedWaitTimeInSeconds = TimeSpan.FromMinutes(5).TotalSeconds
+            };
+        }
     }
 
     /// <inheritdoc />
@@ -106,12 +132,26 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
         var holder = await _runtimeTables.WorkflowSemaphoreQueue.ReadAsync(semaphoreHolderId.ToGuid(), cancellationToken);
         if (holder?.Raised != true) return;
 
-        var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
-        using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
-        var semaphore = await _runtimeTables.WorkflowSemaphore.ClaimTransactionLockAndReadAsync(holder.WorkflowSemaphoreId, cancellationToken);
-        await _runtimeTables.WorkflowSemaphoreQueue.DeleteAsync(holder.Id, cancellationToken);
-        await ActivateItemsInQueueAsync(semaphore.Id, semaphore.Limit, null, cancellationToken);
-        scope.Complete();
+        try
+        {
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options,
+                TransactionScopeAsyncFlowOption.Enabled);
+            var semaphore =
+                await _runtimeTables.WorkflowSemaphore.ClaimTransactionLockAndReadAsync(holder.WorkflowSemaphoreId,
+                    cancellationToken);
+            await _runtimeTables.WorkflowSemaphoreQueue.DeleteAsync(holder.Id, cancellationToken);
+            await ActivateItemsInQueueAsync(semaphore.Id, semaphore.Limit, null, cancellationToken);
+            scope.Complete();
+        }
+        catch (Exception ex)
+        {
+            if (ex is RequestPostponedException or FulcrumTryAgainException) throw;
+            throw new FulcrumTryAgainException($"{ex.GetType().Name}: {ex.Message}")
+            {
+                RecommendedWaitTimeInSeconds = TimeSpan.FromMinutes(5).TotalSeconds
+            };
+        }
     }
 
     /// <inheritdoc />

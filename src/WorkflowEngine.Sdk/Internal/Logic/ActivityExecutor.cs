@@ -13,6 +13,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -330,7 +331,7 @@ internal class ActivityExecutor : IActivityExecutor
                 default:
                     // Unexpected exception. Our conclusion is that there is an error in the workflow engine.
                     exception = new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError,
-                        $"The workflow engine threw an unexpected exception when executing an activity. This is the exception:\r{ex}",
+                        $"The workflow engine threw an unexpected exception when executing an activity. This is the exception:\r{ex.ToLog()}",
                         $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
                     break;
             }
