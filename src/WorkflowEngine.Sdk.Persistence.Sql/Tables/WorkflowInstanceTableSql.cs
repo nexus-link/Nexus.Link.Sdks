@@ -58,11 +58,11 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
             query += $" JOIN {WorkflowVersionTableSql.TableName} v ON (v.Id = i.{nameof(WorkflowInstanceRecord.WorkflowVersionId)})";
         }
 
-        query += $" WHERE {nameof(WorkflowInstanceRecord.RecordCreatedAt)} >= @{nameof(searchDetails.From)}";
+        query += $" WHERE i.{nameof(WorkflowInstanceRecord.RecordCreatedAt)} >= @{nameof(searchDetails.From)}";
 
         if (searchDetails.To != null)
         {
-            query += $" AND {nameof(WorkflowInstanceRecord.RecordCreatedAt)} <= @{nameof(searchDetails.To)}";
+            query += $" AND i.{nameof(WorkflowInstanceRecord.RecordCreatedAt)} <= @{nameof(searchDetails.To)}";
         }
         if (!string.IsNullOrWhiteSpace(searchDetails.FormId))
         {
@@ -74,15 +74,15 @@ public class WorkflowInstanceTableSql : CrudSql<WorkflowInstanceRecordCreate, Wo
         }
         if (!string.IsNullOrWhiteSpace(searchDetails.TitlePart))
         {
-            query += $" AND lower({nameof(WorkflowInstanceRecord.Title)}) LIKE lower('%' + @{nameof(searchDetails.TitlePart)} + '%')";
+            query += $" AND lower(i.{nameof(WorkflowInstanceRecord.Title)}) LIKE lower('%' + @{nameof(searchDetails.TitlePart)} + '%')";
         }
 
-        var orderBy = " " + OrderBy(searchDetails.Order.PrimaryOrderBy, searchDetails.Order.PrimaryAscendingOrder);
+        var orderBy = " i." + OrderBy(searchDetails.Order.PrimaryOrderBy, searchDetails.Order.PrimaryAscendingOrder);
         if (searchDetails.Order.SecondaryOrderBy.HasValue && searchDetails.Order.SecondaryOrderBy != searchDetails.Order.PrimaryOrderBy)
         {
-            orderBy += ", " + OrderBy(searchDetails.Order.SecondaryOrderBy.Value, searchDetails.Order.SecondaryAscendingOrder);
+            orderBy += ", i." + OrderBy(searchDetails.Order.SecondaryOrderBy.Value, searchDetails.Order.SecondaryAscendingOrder);
         }
-        orderBy += $", {nameof(WorkflowInstanceRecord.Id)}";
+        orderBy += $", i.{nameof(WorkflowInstanceRecord.Id)}";
 
         return await SearchAdvancedAsync(selectCount, selectRows, query, orderBy, searchDetails, offset, limit, cancellationToken);
     }

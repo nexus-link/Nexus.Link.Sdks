@@ -48,7 +48,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.10.5</Version>
+    <Version>2.11.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -58,6 +58,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.11.1 Bug fixed for SELECT statement with RecordCreatedAt
       2.11.0 Now uses RecordCreatedAt instead of StartedAt at some cruicial points to get better performnce for some SELECT statements
       2.10.5 Bump
       2.10.1 Corrected name of Hash table to HashRecord
