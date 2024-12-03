@@ -130,7 +130,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     }
 
     /// <inheritdoc />
-    public IActivityActionWithThrottle UnderLock(string resourceIdentifier)
+    public IActivityActionLockOrThrottle UnderLock(string resourceIdentifier)
     {
         LockSemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
         {
@@ -140,7 +140,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     }
 
     /// <inheritdoc />
-    public IActivityActionLockOrThrottle WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    public IActivityActionWithThrottle WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
     {
         ThrottleSemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
         {
@@ -268,7 +268,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     }
 }
 
-internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>, IActivityActionLockOrThrottle<TActivityReturns>
+internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>, IActivityActionLockOrThrottle<TActivityReturns>, IActivityActionWithThrottle<TActivityReturns>
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
@@ -277,7 +277,10 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     protected ActivityMethodAsync<IActivityAction<TActivityReturns>> WhenWaitingAsync { get; set; }
 
     [JsonIgnore]
-    internal ISemaphoreSupport SemaphoreSupport { get; set; }
+    internal ISemaphoreSupport LockSemaphoreSupport { get; set; }
+
+    [JsonIgnore]
+    internal ISemaphoreSupport ThrottleSemaphoreSupport { get; set; }
 
     /// <summary>
     /// The "catch all" method if none of the <see cref="_catchAsyncMethods"/> is applicable.
@@ -367,7 +370,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     /// <inheritdoc />
     public IActivityActionLockOrThrottle<TActivityReturns> UnderLock(string resourceIdentifier)
     {
-        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
+        LockSemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
         {
             Activity = this
         };
@@ -375,9 +378,9 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     }
 
     /// <inheritdoc />
-    public IActivityActionLockOrThrottle<TActivityReturns> WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
+    public IActivityActionWithThrottle<TActivityReturns> WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
     {
-        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
+        ThrottleSemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
         {
             Activity = this
         };
@@ -431,7 +434,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                                 $"The maximum time ({_maxTime.ToLogString()}) for the activity {ToLogString()} has been reached. The activity was started at {ActivityStartedAt.ToLogString()} and expired at {_maxTime.ToLogString()}, it is now {DateTimeOffset.UtcNow.ToLogString()}",
                                 "The maximum time for the activity has been reached.");
                         }
-                        await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await MaybeRaiseAsync(ThrottleSemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await MaybeRaiseAsync(LockSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         TActivityReturns returnValue;
                         if (_trySynchronousHttpRequestFirst 
                             && Instance.AsyncRequestId == null 
@@ -457,7 +461,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                         {
                             returnValue = await _methodAsync(this, ct);
                         }
-                        await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
+                        await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
                         return returnValue;
                     }, methodName,
                         cancellationToken);
@@ -465,7 +470,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                 }
                 catch (ActivityFailedException e)
                 {
-                    await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                    await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
+                    await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)
