@@ -1,20 +1,25 @@
 using System;
 using System.Threading.Tasks;
+using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Shouldly;
+using UnitTests.Support;
 using WorkflowEngine.Sdk.UnitTests.SystemTests.DBFallback.Support;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace WorkflowEngine.Sdk.UnitTests.SystemTests.DBFallback;
 
 public class DbFallbackWithStorageTests : Base
 {
 
-    public DbFallbackWithStorageTests() :base(nameof(DbFallbackWithStorageTests), true)
+    public DbFallbackWithStorageTests(ITestOutputHelper testOutputHelper) :base(nameof(DbFallbackWithStorageTests), true)
     {
+        FulcrumApplicationHelper.UnitTestSetup(this.GetType().Name);
+        FulcrumApplication.Setup.SynchronousFastLogger = new XUnitFulcrumLogger(testOutputHelper);
     }
 
     [Fact]

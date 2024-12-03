@@ -398,13 +398,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 {
                     var stored = cache.GetStored(id);
                     if (stored == null) continue;
-                    if (item == null || !AreEqual(item, stored))
-                    {
-                        itemDictionary.Remove(id);
-                        removed++;
-                    }
+                    if (item != null && !AreEqual(item, stored)) continue;
+                    itemDictionary.Remove(id);
+                    removed++;
                 }
-                Log.LogVerbose($"Removed {removed} {itemNamePlural} for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}).");
+                Log.LogVerbose($"Removed {removed} unmodified {itemNamePlural} for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}).");
                 Log.LogVerbose($"Contains {itemDictionary.Count} {itemNamePlural} after removing unmodified for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}).");
             }
         }
