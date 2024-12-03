@@ -25,14 +25,33 @@ public class ActivityActionLockTests : ActivityTestsBase
 
     #region No return value
     [Fact]
-    public async Task Execute_Given_Success_Gives_RaisedAndLowered()
+    public async Task Execute_Given_Success_Gives_LockRaisedAndLowered()
     {
         // Arrange
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         var activity = new ActivityAction(_activityInformationMock, (_, _) => Task.CompletedTask)
         {
-            SemaphoreSupport = _semaphoreSupportMock.Object
+            LockSemaphoreSupport = _semaphoreSupportMock.Object
+        };
+
+
+        // Act
+        await activity.ActionAsync();
+
+        // Assert
+        _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _semaphoreSupportMock.Verify(e => e.LowerAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+    [Fact]
+    public async Task Execute_Given_Success_Gives_ThrottleRaisedAndLowered()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => Task.CompletedTask)
+        {
+            ThrottleSemaphoreSupport = _semaphoreSupportMock.Object
         };
 
 
@@ -50,14 +69,39 @@ public class ActivityActionLockTests : ActivityTestsBase
     [InlineData(ActivityExceptionCategoryEnum.MaxTimeReachedError)]
     [InlineData(ActivityExceptionCategoryEnum.WorkflowCapabilityError)]
     [InlineData(ActivityExceptionCategoryEnum.WorkflowImplementationError)]
-    public async Task Execute_Given_ActivityFailed_Gives_RaisedAndLowered(ActivityExceptionCategoryEnum category)
+    public async Task Execute_Given_ActivityFailed_Gives_LockRaisedAndLowered(ActivityExceptionCategoryEnum category)
     {
         // Arrange
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new ActivityFailedException(category, "technical", "friendly"))
         {
-            SemaphoreSupport = _semaphoreSupportMock.Object
+            LockSemaphoreSupport = _semaphoreSupportMock.Object
+        };
+
+        // Act
+        await activity.ActionAsync()
+            .ShouldThrowAsync<ActivityFailedException>();
+
+        // Assert
+        _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _semaphoreSupportMock.Verify(e => e.LowerAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(ActivityExceptionCategoryEnum.BusinessError)]
+    [InlineData(ActivityExceptionCategoryEnum.TechnicalError)]
+    [InlineData(ActivityExceptionCategoryEnum.MaxTimeReachedError)]
+    [InlineData(ActivityExceptionCategoryEnum.WorkflowCapabilityError)]
+    [InlineData(ActivityExceptionCategoryEnum.WorkflowImplementationError)]
+    public async Task Execute_Given_ActivityFailed_Gives_ThrottleRaisedAndLowered(ActivityExceptionCategoryEnum category)
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new ActivityFailedException(category, "technical", "friendly"))
+        {
+            ThrottleSemaphoreSupport = _semaphoreSupportMock.Object
         };
 
         // Act
@@ -70,14 +114,34 @@ public class ActivityActionLockTests : ActivityTestsBase
     }
 
     [Fact]
-    public async Task Execute_Given_Postponed_Gives_RaisedButNotLowered()
+    public async Task Execute_Given_Postponed_Gives_LockRaisedButNotLowered()
     {
         // Arrange
         var logicExecutor = new LogicExecutorMock();
         _workflowInformationMock.LogicExecutor = logicExecutor;
         var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new ActivityPostponedException(null))
         {
-            SemaphoreSupport = _semaphoreSupportMock.Object
+            LockSemaphoreSupport = _semaphoreSupportMock.Object
+        };
+
+        // Act
+        await activity.ActionAsync()
+            .ShouldThrowAsync<RequestPostponedException>();
+
+        // Assert
+        _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _semaphoreSupportMock.Verify(e => e.LowerAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Execute_Given_Postponed_Gives_ThrottleRaisedButNotLowered()
+    {
+        // Arrange
+        var logicExecutor = new LogicExecutorMock();
+        _workflowInformationMock.LogicExecutor = logicExecutor;
+        var activity = new ActivityAction(_activityInformationMock, (_, _) => throw new ActivityPostponedException(null))
+        {
+            ThrottleSemaphoreSupport = _semaphoreSupportMock.Object
         };
 
         // Act

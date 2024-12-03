@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
-public interface IActivityAction : ITryCatchActivity
+public interface IActivityAction : ITryCatchActivity, IActivityActionCanHaveLock
 {
     /// <summary>
     /// Set the maximum execution time to the absolute time <paramref name="time"/>.
@@ -30,15 +30,6 @@ public interface IActivityAction : ITryCatchActivity
     IActivityAction TrySynchronousHttpRequestFirst();
 
     /// <summary>
-    /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.
-    /// If you want to protect from all other instances, no matter from which workflow form, then please use
-    /// <see cref="WithThrottle"/>
-    /// </summary>
-    /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
-    /// <returns></returns>
-    IActivityActionLockOrThrottle UnderLock(string resourceIdentifier = null);
-
-    /// <summary>
     /// The activity uses a resource that needs throttling. Make sure that there is a limited of concurrent
     /// workflows that use this resource (for all workflow instances, no matter which workflow form they belong to).
     /// </summary>
@@ -53,6 +44,29 @@ public interface IActivityAction : ITryCatchActivity
     /// </summary>
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
     Task ExecuteAsync(ActivityMethodAsync<IActivityAction> methodAsync, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.If"/>.
+/// </summary>
+public interface IActivityActionWithThrottle : IActivityActionCanHaveLock, IActivityActionLockOrThrottle
+{
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.If"/>.
+/// </summary>
+public interface IActivityActionCanHaveLock
+{
+
+    /// <summary>
+    /// Do the activity under a lock. This protects from other workflow instances of the same workflow form.
+    /// If you want to protect from all other instances, no matter from which workflow form, then please use
+    /// <see cref="IActivityAction.WithThrottle"/>
+    /// </summary>
+    /// <param name="resourceIdentifier">The resource that should be locked, or null for a general lock.</param>
+    /// <returns></returns>
+    IActivityActionWithThrottle UnderLock(string resourceIdentifier = null);
 }
 
 /// <summary>

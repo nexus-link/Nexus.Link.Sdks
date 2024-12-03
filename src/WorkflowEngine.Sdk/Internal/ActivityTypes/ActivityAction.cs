@@ -19,14 +19,17 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityAction" />
-internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOrThrottle
+internal class ActivityAction : Activity, IActivityAction, IActivityActionWithThrottle
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
     private DateTimeOffset _maxTime = DateTimeOffset.MaxValue;
 
     [JsonIgnore]
-    internal ISemaphoreSupport SemaphoreSupport { get; set; }
+    internal ISemaphoreSupport LockSemaphoreSupport { get; set; }
+
+    [JsonIgnore]
+    internal ISemaphoreSupport ThrottleSemaphoreSupport { get; set; }
 
     protected ActivityMethodAsync<IActivityAction> WhenWaitingAsync { get; set; }
 
@@ -127,9 +130,9 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     }
 
     /// <inheritdoc />
-    public IActivityActionLockOrThrottle UnderLock(string resourceIdentifier)
+    public IActivityActionWithThrottle UnderLock(string resourceIdentifier)
     {
-        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
+        LockSemaphoreSupport = new SemaphoreSupport(resourceIdentifier)
         {
             Activity = this
         };
@@ -139,7 +142,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
     /// <inheritdoc />
     public IActivityActionLockOrThrottle WithThrottle(string resourceIdentifier, int limit, TimeSpan? limitationTimeSpan = null)
     {
-        SemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
+        ThrottleSemaphoreSupport = new SemaphoreSupport(resourceIdentifier, limit, limitationTimeSpan)
         {
             Activity = this
         };
@@ -193,7 +196,8 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                                 $"The maximum time ({_maxTime.ToLogString()}) for the activity {ToLogString()} has been reached. The activity was started at {ActivityStartedAt.ToLogString()} and expired at {_maxTime.ToLogString()}, it is now {DateTimeOffset.UtcNow.ToLogString()}",
                                 "The maximum time for the activity has been reached.");
                         }
-                        await MaybeRaiseAsync(SemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await MaybeRaiseAsync(ThrottleSemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await MaybeRaiseAsync(LockSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         if (_trySynchronousHttpRequestFirst
                             && Instance.AsyncRequestId == null
                             && WorkflowStatic.Context.ExecutionIsAsynchronous)
@@ -218,14 +222,16 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionLockOr
                         {
                             await _methodAsync(this, ct);
                         }
-                        await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
+                        await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
                     }, methodName,
                         cancellationToken);
                     return;
                 }
                 catch (ActivityFailedException e)
                 {
-                    await MaybeLowerAsync(SemaphoreSupport, cancellationToken);
+                    await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
+                    await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)
