@@ -5,10 +5,15 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 
+/// <summary>
+/// Persistence for <see cref="WorkflowInstance"/>
+/// </summary>
 public interface IWorkflowInstanceService : 
     ICreateWithSpecifiedId<WorkflowInstanceCreate,WorkflowInstance, string>, 
+    ICreateWithSpecifiedIdAndReturn<WorkflowInstanceCreate,WorkflowInstance, string>, 
     IRead<WorkflowInstance, string>, 
     IUpdate<WorkflowInstance, string>,
+    IUpdateAndReturn<WorkflowInstance, string>,
     IDistributedLock<string>
 {
     /// <summary>

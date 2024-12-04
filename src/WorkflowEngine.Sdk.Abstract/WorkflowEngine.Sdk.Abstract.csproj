@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.7.1</Version>
+    <Version>1.7.2</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -43,6 +43,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.7.2 Added "AndReturn" to create and update methods for efficiency when using the CrudPersistingenceHelper cache
       1.7.1 Now has JsonIgnore attribute on redundant information in WorkflowSummary
       1.6.1 IActivityAction can now have both throttle and lock
       1.5.2 Bump

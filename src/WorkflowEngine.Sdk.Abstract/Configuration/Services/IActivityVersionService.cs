@@ -3,6 +3,12 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Services;
 
-public interface IActivityVersionService : ICreateWithSpecifiedIdAndReturn<ActivityVersionCreate, ActivityVersion, string>, IRead<ActivityVersion, string>, IUpdateAndReturn<ActivityVersion, string>
+/// <summary>
+/// Persistence for <see cref="ActivityVersion"/>
+/// </summary>
+public interface IActivityVersionService : 
+    ICreateWithSpecifiedIdAndReturn<ActivityVersionCreate, ActivityVersion, string>,
+    IRead<ActivityVersion, string>,
+    IUpdateAndReturn<ActivityVersion, string>
 {
 }
