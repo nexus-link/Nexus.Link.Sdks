@@ -144,7 +144,13 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public async Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
+    public Task SaveToDbAsync(CancellationToken cancellationToken)
+    {
+        return _workflowCache.SaveToDbAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task SaveAsync(bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
     {
 
         // Save the logs and possibly purge logs
@@ -157,7 +163,7 @@ internal class WorkflowInformation : IWorkflowInformation
             if (FulcrumApplication.IsInDevelopment) throw;
             // Don't let logging problems get in our way
         }
-        await _workflowCache.SaveWithFallbackAsync(hasSavedToFallback, doAnInitialSaveToFallback, cancellationToken);
+        await _workflowCache.SaveWithFallbackAsync(doAnInitialSaveToFallback, cancellationToken);
 
         async Task SaveAndPurgeLogs()
         {

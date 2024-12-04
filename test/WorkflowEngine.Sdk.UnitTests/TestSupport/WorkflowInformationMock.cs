@@ -198,7 +198,13 @@ internal class WorkflowInformationMock : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
+    public Task SaveToDbAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public Task SaveAsync(bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

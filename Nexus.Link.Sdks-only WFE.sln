@@ -42,6 +42,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsyncManager.Sdk", "src\AsyncManager.Sdk\AsyncManager.Sdk.csproj", "{A2F5C657-D670-4460-B270-559675847E58}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTest", "src\WorkflowEngine.Sdk.UnitTest\WorkflowEngine.Sdk.UnitTest.csproj", "{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ci|Any CPU = ci|Any CPU
@@ -246,6 +248,22 @@ Global
 		{A2F5C657-D670-4460-B270-559675847E58}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A2F5C657-D670-4460-B270-559675847E58}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2F5C657-D670-4460-B270-559675847E58}.ver|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.ci|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.ci|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.int|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.int|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prd|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prd|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prdsim|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.ver|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6F9413-C6D4-4F77-8D57-A4C9B5BD81D3}.ver|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

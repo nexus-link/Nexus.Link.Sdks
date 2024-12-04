@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Logging;
@@ -73,7 +74,16 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
         WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
         WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
-        await WorkflowInformation.SaveAsync(false, false, cancellationToken);
+        try
+        {
+            Log.LogInformation($"Saving workflow instance state to {WorkflowInformation.Instance.State} for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).");
+            await WorkflowInformation.SaveToDbAsync(cancellationToken);
+        }
+        catch (Exception dbException)
+        {
+            Log.LogInformation($"Failed to save workflow instance state to {WorkflowInformation.Instance.State} for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).", dbException);
+            throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+        }
 
         if (WorkflowInformation.Instance.CancelledAt != null)
         {
@@ -122,7 +132,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
             {
                 Log.LogInformation($"We will do an initial save of the state to fallback storage due to many activity instances ({WorkflowInformation.NumberOfActivityInstances}) for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).");
             }
-            await WorkflowInformation.SaveAsync(false, doAnInitialSaveToFallback, extendedCancellationToken);
+            await WorkflowInformation.SaveAsync(doAnInitialSaveToFallback, extendedCancellationToken);
         }
         finally
         {

@@ -93,7 +93,7 @@ public class WorkflowCacheTests
         cache.Instance.State = newState;
         cache.Instance.Title = newInstanceTitle;
         cache.Instance.FinishedAt = newFinishedAt;
-        await cache.SaveWithFallbackAsync(false, false);
+        await cache.SaveWithFallbackAsync(false);
 
         // Assert
         resetEvent.WaitOne(100).ShouldBeTrue($"There is probably an error in {nameof(workflowInformation.WorkflowOptions.AfterSaveAsync)}. Look for an error message below.");
@@ -148,7 +148,7 @@ public class WorkflowCacheTests
         cache.Instance.Title = "Changed to force a save";
 
         // Act
-        await cache.SaveWithFallbackAsync(false, false)
+        await cache.SaveWithFallbackAsync(false)
             .ShouldThrowAsync<RequestPostponedException>();
 
         // Assert

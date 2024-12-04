@@ -147,7 +147,12 @@ internal interface IWorkflowInformation
     /// <summary>
     /// Save the current workflow instance to storage.
     /// </summary>
-    Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken);
+    Task SaveToDbAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Save the current workflow instance to storage.
+    /// </summary>
+    Task SaveAsync(bool doAnInitialSaveToFallback, CancellationToken cancellationToken);
 
     /// <summary>
     /// Return true if the workflow instance already exists in storage.

@@ -171,6 +171,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             // We will not let the database spend more than 30 seconds on saving.
             var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+
+            // Initial save to fallback?
             if (doAnInitialSaveToFallback)
             {
                 try
@@ -187,10 +189,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 }
             }
 
+            // Save to DB and if fails: Save to fallback
             try
             {
                 Log.LogInformation($"Saving state to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await SaveToDbAsync(_summary, mergedToken.Token);
+                await SaveToDbAsync(mergedToken.Token);
                 Log.LogInformation($"Succeeded saving state fallback to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
                 if (doAnInitialSaveToFallback && hasSavedToFallback)
                 {
@@ -219,7 +222,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
         }
 
-        public async Task<WorkflowSummary> SaveWithFallbackAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken = default)
+        public async Task<WorkflowSummary> SaveWithFallbackAsync(bool doAnInitialSaveToFallback,
+            CancellationToken cancellationToken = default)
         {
             InternalContract.Require(_summary != null, $"The method {nameof(LoadAsync)} must be called before calling this method.");
             RememberData(_summary, false);
@@ -230,7 +234,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
                 
                 Log.LogInformation($"The workflow execution has finished, save state to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await SaveToDbOrFallbackAndThrowAsync(hasSavedToFallback, doAnInitialSaveToFallback, cancellationToken);
+                await SaveToDbOrFallbackAndThrowAsync(false, doAnInitialSaveToFallback, cancellationToken);
                 if (_workflowInformation.WorkflowOptions.AfterSaveAsync == null) return _summary;
                 try
                 {
@@ -344,35 +348,35 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
         }
 
-        public async Task SaveToDbAsync(WorkflowSummary summary, CancellationToken cancellationToken = default)
+        public async Task SaveToDbAsync(CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNull(summary, nameof(summary));
+            InternalContract.RequireNotNull(_summary, nameof(_summary));
 
             // The following things are intentionally NOT in a transaction. This makes it possible for us to save them incrementally
             // over a number of executions. This is of importance when there are a lot of activity instances.
             try
             {
-                Log.LogVerbose($"Saving workflow form for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _workflowFormCache.SaveAsync((_, item) => summary.Form = item, cancellationToken);
-                Log.LogVerbose($"Saving workflow version for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _workflowVersionCache.SaveAsync((_, item) => summary.Version = item, cancellationToken);
-                Log.LogVerbose($"Saving activity forms for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _activityFormCache.SaveAsync((id, item) => summary.ActivityForms[id] = item, cancellationToken);
-                Log.LogVerbose($"Saving activity versions for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _activityVersionCache.SaveAsync((id, item) => summary.ActivityVersions[id] = item,
+                Log.LogVerbose($"Saving workflow form for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _workflowFormCache.SaveAsync((_, item) => _summary.Form = item, cancellationToken);
+                Log.LogVerbose($"Saving workflow version for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _workflowVersionCache.SaveAsync((_, item) => _summary.Version = item, cancellationToken);
+                Log.LogVerbose($"Saving activity forms for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _activityFormCache.SaveAsync((id, item) => _summary.ActivityForms[id] = item, cancellationToken);
+                Log.LogVerbose($"Saving activity versions for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _activityVersionCache.SaveAsync((id, item) => _summary.ActivityVersions[id] = item,
                     cancellationToken);
-                Log.LogVerbose($"Saving activity instances for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _activityInstanceCache.SaveAsync((id, item) => summary.ActivityInstances[id] = item,
+                Log.LogVerbose($"Saving activity instances for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _activityInstanceCache.SaveAsync((id, item) => _summary.ActivityInstances[id] = item,
                     cancellationToken);
                 // Ths is intentionally put last in the save sequence; when we have succeed in saving this record,
                 // it also marks that the complete state has been saved.
-                Log.LogVerbose($"Saving workflow instance for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await _workflowInstanceCache.SaveAsync((_, item) => summary.Instance = item, cancellationToken);
-                Log.LogVerbose($"Done saving to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
+                Log.LogVerbose($"Saving workflow instance for {_summary.Instance} ({_summary.Instance?.Id}).");
+                await _workflowInstanceCache.SaveAsync((_, item) => _summary.Instance = item, cancellationToken);
+                Log.LogVerbose($"Done saving to DB for {_summary.Instance} ({_summary.Instance?.Id}).");
             }
             catch (Exception ex)
             {
-                Log.LogWarning($"Save to DB failed for {_summary?.Instance} ({_summary?.Instance?.Id}):\r{ex.ToLog()}", ex);
+                Log.LogWarning($"Save to DB failed for {_summary.Instance} ({_summary.Instance?.Id}):\r{ex.ToLog()}", ex);
                 throw;
             }
         }
