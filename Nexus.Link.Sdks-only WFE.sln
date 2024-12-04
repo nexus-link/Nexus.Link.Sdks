@@ -30,8 +30,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persiste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.AspNet", "src\WorkflowEngine.Sdk.AspNet\WorkflowEngine.Sdk.AspNet.csproj", "{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.UnitTest", "src\WorkflowEngine.Sdk.UnitTest\WorkflowEngine.Sdk.UnitTest.csproj", "{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persistence.Memory.UnitTests", "test\WorkflowEngine.Sdk.Persistence.Memory.UnitTests\WorkflowEngine.Sdk.Persistence.Memory.UnitTests.csproj", "{BC374B01-1115-4A97-8B7B-FDABFF0B47C8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowEngine.Sdk.Persistent.Abstract.UnitTests", "test\WorkflowEngine.Sdk.Persistent.Abstract.UnitTests\WorkflowEngine.Sdk.Persistent.Abstract.UnitTests.csproj", "{AA6A966E-CCDB-4CF8-9CDD-589AFB2A94C0}"
@@ -152,22 +150,6 @@ Global
 		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ver|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFD5CD9D-9BC6-4DDD-9442-37E9A093DA55}.ver|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.ci|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.ci|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.int|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.int|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prd|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prd|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prdsim|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prdsim|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prd-simulation|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.prd-simulation|Any CPU.Build.0 = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.ver|Any CPU.ActiveCfg = Debug|Any CPU
-		{376609C2-2E81-4FD1-BC5D-BD2A818D62CC}.ver|Any CPU.Build.0 = Debug|Any CPU
 		{BC374B01-1115-4A97-8B7B-FDABFF0B47C8}.ci|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC374B01-1115-4A97-8B7B-FDABFF0B47C8}.ci|Any CPU.Build.0 = Debug|Any CPU
 		{BC374B01-1115-4A97-8B7B-FDABFF0B47C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

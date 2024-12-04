@@ -30,6 +30,7 @@
     <PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.13" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.19.1" />
     <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.2.1" />
+    <PackageReference Include="Serilog" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +57,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.33.2</Version>
+    <Version>6.34.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -66,6 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.34.0 Added support for Serilog logger
       6.33.2 Fixed a logic bug when removing unmodified things for the fallback storage
       6.33.0 Cache now has transaction. Saves less data in fallback storage. Lot of bugfixes around saving to fallback
       6.32.1 ActivityAction can now have both throttle and lock
