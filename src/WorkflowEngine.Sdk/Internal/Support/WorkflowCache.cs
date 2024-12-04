@@ -351,6 +351,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         public async Task SaveToDbAsync(CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNull(_summary, nameof(_summary));
+            RememberData(_summary, false);
 
             // The following things are intentionally NOT in a transaction. This makes it possible for us to save them incrementally
             // over a number of executions. This is of importance when there are a lot of activity instances.

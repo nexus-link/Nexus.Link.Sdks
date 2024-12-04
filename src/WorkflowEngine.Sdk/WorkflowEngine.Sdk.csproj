@@ -57,7 +57,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.35.1</Version>
+    <Version>6.35.2</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -67,7 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.35.1 Now doesn't save to fallback for micro save before execution
+      6.35.2 Now doesn't save to fallback for micro save before execution
       6.35.0 Now makes an initial save to fallback storage if there are more than 100 activity instances
       6.34.1 Bump
       6.34.0 Added support for Serilog logger
