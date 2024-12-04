@@ -120,6 +120,9 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public int NumberOfActivityInstances => _workflowCache.NumberOfActivityInstances;
+
+    /// <inheritdoc />
     public void AddActivity(IInternalActivity activity)
     {
         InternalContract.RequireNotNull(activity, nameof(activity));
@@ -141,7 +144,7 @@ internal class WorkflowInformation : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public async Task SaveAsync(CancellationToken cancellationToken)
+    public async Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
     {
 
         // Save the logs and possibly purge logs
@@ -154,7 +157,7 @@ internal class WorkflowInformation : IWorkflowInformation
             if (FulcrumApplication.IsInDevelopment) throw;
             // Don't let logging problems get in our way
         }
-        await _workflowCache.SaveWithFallbackAsync(cancellationToken);
+        await _workflowCache.SaveWithFallbackAsync(hasSavedToFallback, doAnInitialSaveToFallback, cancellationToken);
 
         async Task SaveAndPurgeLogs()
         {

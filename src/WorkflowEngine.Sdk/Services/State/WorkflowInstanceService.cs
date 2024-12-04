@@ -64,6 +64,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
             return result;
         }
 
+        /// <inheritdoc />
         public async Task UpdateAsync(string id, WorkflowInstance item, CancellationToken cancellationToken = default)
         {
             InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
@@ -72,6 +73,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.State
 
             var record = new WorkflowInstanceRecord().From(item);
             await _runtimeTables.WorkflowInstance.UpdateAndReturnAsync(record.Id, record, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public async Task<WorkflowInstance> UpdateAndReturnAsync(string id, WorkflowInstance item,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNull(item, nameof(item));
+            InternalContract.RequireValidated(item, nameof(item));
+
+            var record = new WorkflowInstanceRecord().From(item);
+            var resultRecord = await _runtimeTables.WorkflowInstance.UpdateAndReturnAsync(record.Id, record, cancellationToken);
+            var result = new WorkflowInstance().From(resultRecord);
+            return result;
         }
 
         /// <inheritdoc />

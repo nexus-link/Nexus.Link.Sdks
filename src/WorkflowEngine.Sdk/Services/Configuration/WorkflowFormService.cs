@@ -73,6 +73,20 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Configuration
         }
 
         /// <inheritdoc />
+        public async Task<WorkflowForm> UpdateAndReturnAsync(string id, WorkflowForm item, CancellationToken cancellationToken = new CancellationToken())
+        {
+            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNull(item, nameof(item));
+            InternalContract.RequireValidated(item, nameof(item));
+            
+            var idAsGuid = id.ToGuid();
+            var record = new WorkflowFormRecord().From(item);
+            var resultRecord = await _configurationTables.WorkflowForm.UpdateAndReturnAsync(idAsGuid, record, cancellationToken);
+            var result = new WorkflowForm().From(resultRecord);
+            return result;
+        }
+
+        /// <inheritdoc />
         public async Task<PageEnvelope<WorkflowForm>> ReadAllWithPagingAsync(int offset, int? limit = null, CancellationToken cancellationToken = default)
         {
             var result = await _configurationTables.WorkflowForm.ReadAllWithPagingAsync(offset, limit, cancellationToken);

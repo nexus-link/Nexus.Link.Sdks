@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
@@ -42,6 +43,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         public WorkflowVersion Version => _summary?.Version;
 
         public WorkflowInstance Instance => _summary?.Instance;
+        public int NumberOfActivityInstances => _summary.ActivityInstances.Count;
 
         private readonly NexusAsyncSemaphore _semaphore = new();
         private readonly CrudPersistenceHelper<ActivityVersionCreate, ActivityVersion, string> _activityVersionCache;
@@ -150,7 +152,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             RememberData(_summary, false);
             // There was a fallback blob stored of the last state. Save that state to DB and remove the blob representation.
             Log.LogInformation($"Saving fallback state back to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-            await SaveToDbOrFallbackAndThrowAsync(cancellationToken);
+            await SaveToDbOrFallbackAndThrowAsync(true, false, cancellationToken);
             Log.LogInformation($"Removing state fallback for {_summary?.Instance} ({_summary?.Instance?.Id}).");
             try
             {
@@ -164,35 +166,60 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
         }
 
-        private async Task SaveToDbOrFallbackAndThrowAsync(CancellationToken cancellationToken)
+        private async Task SaveToDbOrFallbackAndThrowAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
         {
             // We will not let the database spend more than 30 seconds on saving.
             var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            if (doAnInitialSaveToFallback)
+            {
+                try
+                {
+                    Log.LogWarning(
+                        $"We will do an initial save to fallback storage for {_summary?.Instance} ({_summary?.Instance?.Id}).");
+                    await SaveToFallbackAsync(cancellationToken);
+                    hasSavedToFallback = true;
+                }
+                catch (Exception fallbackException)
+                {
+                    var message = $"The initial save to fallback storage failed for {_summary?.Instance} ({_summary?.Instance?.Id}). If we can't save the state to the DB we are in big trouble.:\r{fallbackException.ToLogString()}";
+                    Log.LogError(message, fallbackException);
+                }
+            }
+
             try
             {
                 Log.LogInformation($"Saving state to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
                 await SaveToDbAsync(_summary, mergedToken.Token);
+                Log.LogInformation($"Succeeded saving state fallback to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
+                if (doAnInitialSaveToFallback && hasSavedToFallback)
+                {
+                    await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.DeleteBlobAsync(_summary!.Instance!.Id, _summary.Instance.StartedAt, cancellationToken);
+                }
             }
             catch (Exception dbException)
             {
+                if (hasSavedToFallback) throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
                 try
                 {
-                    Log.LogWarning($"Failed to save to DB for {_summary?.Instance} ({_summary?.Instance?.Id}). Will try to save to secondary storage.:\r{dbException.ToLogString()}", dbException);
+                    Log.LogWarning(
+                        $"Failed to save to DB for {_summary?.Instance} ({_summary?.Instance?.Id}). Will try to save to secondary storage.:\r{dbException.ToLogString()}",
+                        dbException);
                     await SaveToFallbackAsync(cancellationToken);
                 }
                 catch (Exception fallbackException)
                 {
-                    // This means that we have an execution that didn't suceed in saving its state, we must fail the entire workflow instance
-                    var message = $"The workflow instance {_summary?.Instance} ({_summary?.Instance?.Id}) could not save its state and will be cancelled on the next execution.:\r{fallbackException.ToLogString()}";
+                    // This means that we have an execution that didn't succeed in saving its state, we must fail the entire workflow instance
+                    var message =
+                        $"The workflow instance {_summary?.Instance} ({_summary?.Instance?.Id}) could not save its state and will be cancelled on the next execution.:\r{fallbackException.ToLogString()}";
                     Log.LogError(message, fallbackException);
                 }
+
                 throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
             }
-            Log.LogInformation($"Succeeded saving state fallback to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
         }
 
-        public async Task<WorkflowSummary> SaveWithFallbackAsync(CancellationToken cancellationToken = default)
+        public async Task<WorkflowSummary> SaveWithFallbackAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken = default)
         {
             InternalContract.Require(_summary != null, $"The method {nameof(LoadAsync)} must be called before calling this method.");
             RememberData(_summary, false);
@@ -203,7 +230,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 var oldInstance = _workflowInstanceCache.GetStored(_summary.Instance.Id);
                 
                 Log.LogInformation($"The workflow execution has finished, save state to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                await SaveToDbOrFallbackAndThrowAsync(cancellationToken);
+                await SaveToDbOrFallbackAndThrowAsync(hasSavedToFallback, doAnInitialSaveToFallback, cancellationToken);
                 if (_workflowInformation.WorkflowOptions.AfterSaveAsync == null) return _summary;
                 try
                 {

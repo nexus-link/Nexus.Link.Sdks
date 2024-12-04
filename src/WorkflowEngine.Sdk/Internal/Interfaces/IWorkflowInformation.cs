@@ -125,6 +125,11 @@ internal interface IWorkflowInformation
     ActivityInstance GetActivityInstance(string activityInstanceId);
 
     /// <summary>
+    /// The total number of activity instances for this workflow instance
+    /// </summary>
+    int NumberOfActivityInstances { get; }
+
+    /// <summary>
     /// Add the <paramref name="activity"/> to the list of known activities.
     /// </summary>
     void AddActivity(IInternalActivity activity);
@@ -142,9 +147,7 @@ internal interface IWorkflowInformation
     /// <summary>
     /// Save the current workflow instance to storage.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task SaveAsync(CancellationToken cancellationToken);
+    Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken);
 
     /// <summary>
     /// Return true if the workflow instance already exists in storage.

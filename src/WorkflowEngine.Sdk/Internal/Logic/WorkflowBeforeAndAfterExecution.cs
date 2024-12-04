@@ -73,7 +73,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         WorkflowInformation.Version.MinorVersion = WorkflowInformation.MinorVersion;
         WorkflowInformation.Instance.State = WorkflowStateEnum.Executing;
         WorkflowInformation.Instance.Title = WorkflowInformation.InstanceTitle;
-        await WorkflowInformation.SaveAsync(cancellationToken);
+        await WorkflowInformation.SaveAsync(false, false, cancellationToken);
 
         if (WorkflowInformation.Instance.CancelledAt != null)
         {
@@ -117,7 +117,12 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
                     extendedCancellationToken);
             }
 
-            await WorkflowInformation.SaveAsync(extendedCancellationToken);
+            var doAnInitialSaveToFallback = WorkflowInformation.NumberOfActivityInstances > 100;
+            if (doAnInitialSaveToFallback)
+            {
+                Log.LogInformation($"We will do an initial save of the state to fallback storage due to many activity instances ({WorkflowInformation.NumberOfActivityInstances}) for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).");
+            }
+            await WorkflowInformation.SaveAsync(false, doAnInitialSaveToFallback, extendedCancellationToken);
         }
         finally
         {

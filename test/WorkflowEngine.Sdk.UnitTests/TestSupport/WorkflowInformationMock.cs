@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -177,6 +178,9 @@ internal class WorkflowInformationMock : IWorkflowInformation
     }
 
     /// <inheritdoc />
+    public int NumberOfActivityInstances => 1;
+
+    /// <inheritdoc />
     public void AddActivity(IInternalActivity activity)
     {
     }
@@ -194,7 +198,7 @@ internal class WorkflowInformationMock : IWorkflowInformation
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(CancellationToken cancellationToken)
+    public Task SaveAsync(bool hasSavedToFallback, bool doAnInitialSaveToFallback, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
