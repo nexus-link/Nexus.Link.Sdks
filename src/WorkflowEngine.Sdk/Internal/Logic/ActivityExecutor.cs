@@ -14,6 +14,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -347,6 +348,8 @@ internal class ActivityExecutor : IActivityExecutor
     private async Task<TActivityReturns> ExecuteUnderTimeLimitsAsync<TActivityReturns>(
         InternalActivityMethodAsync<TActivityReturns> methodAsync, CancellationToken cancellationToken)
     {
+        FailIfParentIsAction();
+
         // We will fail if the total execution time limit has passed
 #pragma warning disable CS0618
         GetTotalExecutionTimeRemainingOrThrow();
@@ -366,6 +369,17 @@ internal class ActivityExecutor : IActivityExecutor
         // This should normally not happen, if the postpone limit above has been set to a low enough value
         Activity.ActivityInformation.Workflow.ReducedTimeCancellationToken.ThrowIfCancellationRequested();
         return await methodAsync(cancellationToken);
+
+        void FailIfParentIsAction()
+        {
+            if (Activity.ActivityInformation.Parent == null) return;
+            if (Activity.ActivityInformation.Parent is not IActivityAction) return;
+            if (Activity.ActivityInformation.Workflow.WorkflowOptions.IgnoreNestedActions) return;
+            throw new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowImplementationError,
+                $"An activity of type {nameof(ActivityAction)} cannot have nested sub activities." +
+                $" The activity {Activity} is nested under {nameof(ActivityAction)} {Activity.ActivityInformation.Parent}.",
+                "The programmer of this workflow has made an invalid workflow construction.");
+        }
 
         [Obsolete($"Please use Action with {nameof(IActivityAction.SetMaxTime)}. Obsolete since 2023-09-12.")]
         TimeSpan? GetTotalExecutionTimeRemainingOrThrow()

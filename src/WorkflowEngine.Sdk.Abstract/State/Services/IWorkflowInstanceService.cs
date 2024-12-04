@@ -35,6 +35,14 @@ public class WorkflowOptions
     public AfterSaveDelegate AfterSaveAsync { get; set; }
 
     /// <summary>
+    /// An action cannot have nested activities. Setting this to true means that we ignore that.
+    /// </summary>
+    /// <remarks>
+    /// NEVER USE THIS EXCEPT FOR WORKFLOWS THAT USE NESTED ACTIONS AND THAT ALREADY WORK IN PRODUCTION
+    /// </remarks>
+    public bool IgnoreNestedActions { get; set; }
+
+    /// <summary>
     /// Copy the options from <paramref name="source"/>.
     /// </summary>
     public WorkflowOptions From(WorkflowOptions source)
