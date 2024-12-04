@@ -21,6 +21,5 @@ jobs:
     jobName: 'WorkflowEngine_Sdk'
     testProjectsPath: '**/test/WorkflowEngine.Sdk.UnitTests/*.csproj'
     nugetProjectsPath: 'src/WorkflowEngine.Sdk/*.csproj'
-    nuGetFeedType: external
     publishFeedCredentials: 'prd-nexus-nuget-external'
     publishVstsFeed: 'Nexus Libs/nexus-nugets'
