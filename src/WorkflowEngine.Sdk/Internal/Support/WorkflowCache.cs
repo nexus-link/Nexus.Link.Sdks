@@ -171,16 +171,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             // We will not let the database spend more than 30 seconds on saving.
             var limitedTimeCancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var mergedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, limitedTimeCancellationToken.Token);
+            var weHaveSavedToFallback = false;
 
             // Initial save to fallback?
-            if (doAnInitialSaveToFallback)
+            if (doAnInitialSaveToFallback && !hasSavedToFallback)
             {
                 try
                 {
                     Log.LogWarning(
                         $"We will do an initial save to fallback storage for {_summary?.Instance} ({_summary?.Instance?.Id}).");
                     await SaveToFallbackAsync(cancellationToken);
-                    hasSavedToFallback = true;
+                    weHaveSavedToFallback = true;
                 }
                 catch (Exception fallbackException)
                 {
@@ -195,14 +196,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 Log.LogInformation($"Saving state to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
                 await SaveToDbAsync(mergedToken.Token);
                 Log.LogInformation($"Succeeded saving state fallback to DB for {_summary?.Instance} ({_summary?.Instance?.Id}).");
-                if (doAnInitialSaveToFallback && hasSavedToFallback)
+                if (weHaveSavedToFallback)
                 {
                     await _workflowCapabilities.StateCapability.WorkflowSummaryStorage.DeleteBlobAsync(_summary!.Instance!.Id, _summary.Instance.StartedAt, cancellationToken);
+                    weHaveSavedToFallback = false;
                 }
             }
             catch (Exception dbException)
             {
-                if (hasSavedToFallback) throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+                if (hasSavedToFallback || weHaveSavedToFallback)  throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
                 try
                 {
                     Log.LogWarning(
