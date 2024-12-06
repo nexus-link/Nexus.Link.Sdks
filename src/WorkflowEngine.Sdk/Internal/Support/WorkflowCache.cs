@@ -161,7 +161,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
             catch (Exception ex)
             {
-                Log.LogWarning($"Failed to delete state fallback {_summary?.Instance} ({_summary?.Instance?.Id}). Will try again.:\r{ex.ToLog()}");
+                Log.LogWarning($"Failed to delete state fallback {_summary?.Instance} ({_summary?.Instance?.Id}). Will try again.:\r{ex.ToLog()}", ex);
                 throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
             }
         }
@@ -406,7 +406,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 }
                 catch (Exception ex)
                 {
-                    Log.LogWarning($"Try {count}. Could not save to fallback for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}):\r{ex.ToLog()}");
+                    Log.LogWarning($"Try {count}. Could not save to fallback for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}):\r{ex.ToLog()}", ex);
                     if (cancellationToken.IsCancellationRequested || ex is FulcrumNotImplementedException || FulcrumApplication.IsInDevelopment)
                     {
                         Log.LogError($"Try {count}. Gave up saving to fallback for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}).", ex);

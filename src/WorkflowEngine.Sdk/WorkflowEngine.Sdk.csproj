@@ -67,6 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.35.4 Removed validation that could cause exceptions after removing activitites
       6.35.3 Tried to make initial save to fallback safer
       6.35.2 Now doesn't save to fallback for micro save before execution
       6.35.0 Now makes an initial save to fallback storage if there are more than 100 activity instances
@@ -250,5 +251,12 @@
     <LocalPackageOutputPath Condition="'$(LocalPackageOutputPath)'==''">c:\dev\local-nugets</LocalPackageOutputPath>
     <PackageOutputPath>$(LocalPackageOutputPath)</PackageOutputPath>
   </PropertyGroup>
+
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>WorkflowEngine.Sdk.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
 </Project>

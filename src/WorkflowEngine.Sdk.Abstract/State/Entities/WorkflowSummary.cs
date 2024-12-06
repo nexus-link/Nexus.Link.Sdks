@@ -97,9 +97,6 @@ public class WorkflowSummary : IValidatable
             FulcrumValidate.AreEqual(Form.Id, Version.WorkflowFormId,
                 $"{nameof(Version)}.{nameof(Version.WorkflowFormId)}", errorLocation);
         }
-            
-        FulcrumValidate.IsNotNull(ActivityTree, nameof(ActivityTree), errorLocation);
-        FulcrumValidate.IsNotNull(ReferredActivities, nameof(ReferredActivities), errorLocation);
         FulcrumValidate.IsNotNull(ActivityForms, nameof(ActivityForms), errorLocation);
         FulcrumValidate.IsNotNull(ActivityVersions, nameof(ActivityVersions), errorLocation);
         FulcrumValidate.IsNotNull(ActivityInstances, nameof(ActivityInstances), errorLocation);
