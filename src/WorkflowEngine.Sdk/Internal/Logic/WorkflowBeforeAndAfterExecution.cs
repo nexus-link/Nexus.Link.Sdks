@@ -97,13 +97,22 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
                     $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.");
             }
         }
-        finally
+        catch (Exception ex)
         {
-            if (WorkflowInformation.WorkflowInstanceService != null)
+            try
             {
-                await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
-                    WorkflowInformation.InstanceId, _workflowDistributedLock.LockId, cancellationToken);
+                if (WorkflowInformation.WorkflowInstanceService != null && _workflowDistributedLock?.LockId != null)
+                {
+                    await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
+                        WorkflowInformation.InstanceId, _workflowDistributedLock.LockId, cancellationToken);
+                }
             }
+            catch (Exception)
+            {
+                Log.LogWarning($"Could not release the distributed lock for workflow {WorkflowInformation.InstanceId}. It will be released automatically within a couple of minutes.", ex);
+                // Ignore
+            }
+            throw;
         }
     }
 
