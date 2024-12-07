@@ -178,7 +178,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             {
                 try
                 {
-                    Log.LogWarning(
+                    Log.LogInformation(
                         $"We will do an initial save to fallback storage for {_summary?.Instance} ({_summary?.Instance?.Id}).");
                     await SaveToFallbackAsync(cancellationToken);
                     weHaveSavedToFallback = true;
@@ -407,7 +407,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 catch (Exception ex)
                 {
                     Log.LogWarning($"Try {count}. Could not save to fallback for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}):\r{ex.ToLog()}", ex);
-                    if (cancellationToken.IsCancellationRequested || ex is FulcrumNotImplementedException || FulcrumApplication.IsInDevelopment)
+                    if (cancellationToken.IsCancellationRequested || count > 5 || ex is FulcrumNotImplementedException || FulcrumApplication.IsInDevelopment)
                     {
                         Log.LogError($"Try {count}. Gave up saving to fallback for workflow instance {summaryCopy.Instance} ({summaryCopy.Instance?.Id}).", ex);
                         throw;
