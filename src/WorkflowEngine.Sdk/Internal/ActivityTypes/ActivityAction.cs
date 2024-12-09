@@ -196,8 +196,8 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
                                 $"The maximum time ({_maxTime.ToLogString()}) for the activity {ToLogString()} has been reached. The activity was started at {ActivityStartedAt.ToLogString()} and expired at {_maxTime.ToLogString()}, it is now {DateTimeOffset.UtcNow.ToLogString()}",
                                 "The maximum time for the activity has been reached.");
                         }
-                        await MaybeRaiseAsync(ThrottleSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         await MaybeRaiseAsync(LockSemaphoreSupport, WhenWaitingAsync, cancellationToken);
+                        await MaybeRaiseAsync(ThrottleSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         if (_trySynchronousHttpRequestFirst
                             && Instance.AsyncRequestId == null
                             && WorkflowStatic.Context.ExecutionIsAsynchronous)
@@ -222,16 +222,16 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
                         {
                             await _methodAsync(this, ct);
                         }
-                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
                         await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
+                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
                     }, methodName,
                         cancellationToken);
                     return;
                 }
                 catch (ActivityFailedException e)
                 {
-                    await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
                     await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
+                    await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
                     serializedException = e.Serialize();
                     if (!_catchAsyncMethods.TryGetValue(e.ExceptionCategory, out _)
                         && _catchAllMethodAsync == null)
