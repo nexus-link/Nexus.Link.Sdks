@@ -18,6 +18,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using Serilog.Debugging;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 {
@@ -75,8 +76,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
 
                 if (response != null)
                 {
-                    await activity.LogInformationAsync($"Activity received a response"+
-                                       $" on request {request.ToLogString()}", activity, cancellationToken);
+                    Libraries.Core.Logging.Log.LogInformation($"The asynchronous request has completed for activity {activity.ActivityInformation.ToLogString()}.");
+                    var message = $"Activity received a response on request {request.ToLogString()}";
+                    await activity.LogInformationAsync(message, activity, cancellationToken);
                     return response;
                 }
                 await activity.LogVerboseAsync($"Activity polled for a response" +
@@ -99,17 +101,30 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
         {
             InternalContract.Require(!activity.Instance.HasCompleted, "The activity instance must not be completed.");
 
-
+            // First try to get all responses
             if (activity.ActivityInformation.Workflow.HttpAsyncResponses == null)
             {
                 await activity.ActivityInformation.Workflow.ReadResponsesSemaphore
                     .ExecuteAsync(ct => MaybeReadResponsesAsync(activity, 100, TimeSpan.FromSeconds(5), ct), cancellationToken);
-                FulcrumAssert.IsNotNull(activity.ActivityInformation.Workflow.HttpAsyncResponses, CodeLocation.AsString());
             }
 
-            if (!activity.ActivityInformation.Workflow.HttpAsyncResponses!.TryGetValue(
-                    activity.Instance.AsyncRequestId, out var response)) return null;
+            HttpResponse response;
+            if (activity.ActivityInformation.Workflow.HttpAsyncResponses!= null && activity.ActivityInformation.Workflow.HttpAsyncResponses.Any())
+            {
+                // We have a least one response from the multi response query, focus on that one
+                if (!activity.ActivityInformation.Workflow.HttpAsyncResponses!.TryGetValue(
+                        activity.Instance.AsyncRequestId, out response)) return null;
+            }
+            else
+            {
+                // No multi responses, try to get the instance that this individual activity is waiting for
+                response =
+                    await _asyncRequestMgmtCapability.RequestResponse.ReadResponseAsync(
+                        activity.Instance.AsyncRequestId, cancellationToken);
+                if (response == null) return null;
+            }
             if (!response.Metadata.RequestHasCompleted) return null;
+            
 
             if (response.HttpStatus == null)
             {
@@ -128,9 +143,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
             if (activity.ActivityInformation.Workflow.HttpAsyncResponses != null) return;
 
             var waitingRequestId = activity.WorkflowInstanceId;
-            var responses = await _asyncRequestMgmtCapability.RequestResponse.ReadWaitingResponsesAsync(waitingRequestId, limit, timeLimit?.TotalSeconds, cancellationToken);
-            activity.ActivityInformation.Workflow.HttpAsyncResponses = responses
-                .ToDictionary(r => r.Id, r => r);
+            try
+            {
+                var responses =
+                    await _asyncRequestMgmtCapability.RequestResponse.ReadWaitingResponsesAsync(waitingRequestId, limit,
+                        timeLimit?.TotalSeconds, cancellationToken);
+                activity.ActivityInformation.Workflow.HttpAsyncResponses = responses
+                    .ToDictionary(r => r.Id, r => r);
+            }
+            catch (Exception ex)
+            {
+                Libraries.Core.Logging.Log.LogWarning($"Could not read waiting responses for workflow instance {waitingRequestId}: {ex.Message}", ex);
+            }
         }
     }
 }

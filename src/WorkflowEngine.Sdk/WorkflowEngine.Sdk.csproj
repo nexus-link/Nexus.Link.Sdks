@@ -57,7 +57,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.35.6</Version>
+    <Version>6.35.7</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -67,6 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.35.7 If we wail to get responses for all the activity requests we will now try to get the individual activity request
       6.35.6 Semaphore first for lock, then for throttle
       6.35.5 Now releases the distributed lock
       6.35.4 Removed validation that could cause exceptions after removing activitites
