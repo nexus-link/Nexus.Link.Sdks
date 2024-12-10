@@ -71,9 +71,9 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/Persons/123");
         var requestResponseServiceMock = new Mock<IRequestResponseService>();
         var expectedException = new ActivityPostponedException(TimeSpan.FromSeconds(30));
-        requestResponseServiceMock
-            .Setup(rr => rr.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(expectedException);
+        //requestResponseServiceMock
+        //    .Setup(rr => rr.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //    .ThrowsAsync(expectedException);
         _asyncManagerMock
             .SetupGet(am => am.RequestResponse)
             .Returns(requestResponseServiceMock.Object);
@@ -94,9 +94,9 @@ public class CallAsyncManagerForAsynchronousRequestsTests
         TimeSpan? expectedTimeSpan = null;
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.com/api/Persons/123");
         var requestResponseServiceMock = new Mock<IRequestResponseService>();
-        requestResponseServiceMock
-            .Setup(rr => rr.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(exceptionThrown);
+        //requestResponseServiceMock
+        //    .Setup(rr => rr.ReadResponseAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        //    .ThrowsAsync(exceptionThrown);
         _asyncManagerMock
             .SetupGet(am => am.RequestResponse)
             .Returns(requestResponseServiceMock.Object);
