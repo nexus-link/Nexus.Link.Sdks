@@ -1,3 +1,7 @@
+pool:
+  name: 'Azure Pipelines'
+  vmImage: 'windows-latest'
+
 resources:
   repositories:
   - repository: azure-devops-tools
