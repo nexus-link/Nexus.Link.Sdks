@@ -183,7 +183,7 @@ internal abstract class ActivityBase : IActivityBase, IInternalActivityBase
     public void MarkAsSuccess<T>(T result)
     {
         MarkAsSuccess();
-        Instance.ResultAsJson = result.ToJsonString();
+        Instance.ResultAsJson = ActivityInformation.Workflow.WorkflowOptions.JsonSupport.Serialize(result);
     }
 
     /// <inheritdoc />

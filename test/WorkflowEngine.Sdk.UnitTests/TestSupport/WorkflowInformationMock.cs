@@ -19,6 +19,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace WorkflowEngine.Sdk.UnitTests.TestSupport;
@@ -251,7 +252,7 @@ internal class WorkflowInformationMock : IWorkflowInformation
             FulcrumAssert.IsNotNull(instance.ResultAsJson);
             try
             {
-                var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(instance.ResultAsJson);
+                var deserializedObject = WorkflowOptions.JsonSupport.Deserialize<TActivityReturns>(instance.ResultAsJson);
                 return deserializedObject;
             }
             catch (Exception e)
@@ -271,7 +272,10 @@ internal class WorkflowInformationMock : IWorkflowInformation
     /// <inheritdoc />
     public Stopwatch TimeSinceCurrentRunStarted { get; }
 
-    public WorkflowOptions WorkflowOptions { get; set; } = new();
+    public WorkflowOptions WorkflowOptions { get; set; } = new()
+    {
+        JsonSupport = new JsonSupportNewtonsoft()
+    };
 
     /// <inheritdoc />
     public NexusAsyncSemaphore ReadResponsesSemaphore { get; } = new NexusAsyncSemaphore(1);

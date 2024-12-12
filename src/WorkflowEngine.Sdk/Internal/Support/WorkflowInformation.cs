@@ -19,6 +19,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 using Activity = Nexus.Link.WorkflowEngine.Sdk.Internal.Logic.Activity;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -40,6 +41,8 @@ internal class WorkflowInformation : IWorkflowInformation
         _workflowCache = new WorkflowCache(this, workflowImplementation.WorkflowContainer.WorkflowCapabilities);
         WorkflowOptions = new WorkflowOptions().From(workflowImplementation.WorkflowContainer.WorkflowCapabilities
             .StateCapability.WorkflowInstance.DefaultWorkflowOptions);
+        // Compatibility with earlier versions
+        WorkflowOptions.JsonSupport ??= new JsonSupportNewtonsoft();
     }
 
     /// <inheritdoc />
@@ -244,7 +247,7 @@ internal class WorkflowInformation : IWorkflowInformation
             FulcrumAssert.IsNotNull(instance.ResultAsJson);
             try
             {
-                var deserializedObject = JsonConvert.DeserializeObject<TActivityReturns>(instance.ResultAsJson);
+                var deserializedObject = WorkflowOptions.JsonSupport.Deserialize<TActivityReturns>(instance.ResultAsJson);
                 return deserializedObject;
             }
             catch (Exception e)
