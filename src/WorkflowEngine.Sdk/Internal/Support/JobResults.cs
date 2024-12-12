@@ -10,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
 {
     internal class JobResults : IJobResults
     {
-        public ConcurrentDictionary<int, JobResult> Results = new();
+        public ConcurrentDictionary<int, JobResult> Results { get; set; } = new();
 
         public void Add(int jobNumber, object result, Type type)
         {
