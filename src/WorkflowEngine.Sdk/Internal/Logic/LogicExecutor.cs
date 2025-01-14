@@ -12,6 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
 {
@@ -166,7 +167,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (RequestPostponedException ex)
             {
-                return (default, ex);
+                var exception = WorkflowStatic.Context.ExecutionIsFireAndForget ? null : ex;
+                return (default, exception);
             }
 #pragma warning disable CS0618
             catch (ActivityException ex)

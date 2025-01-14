@@ -53,6 +53,10 @@ public class ActivityTests : Base
             .Callback((IActivityWhileDo a) => a.SetContext("Incomplete", false))
             .Returns(Task.CompletedTask)
             .Verifiable();
+        LogicMoq
+            .Setup(l => l.FireAndForgetAsync())
+            .ThrowsAsync(new ActivityPostponedException(TimeSpan.FromSeconds(30)))
+            .Verifiable();
 
         // Act
         var result = await implementation.ExecuteAsync();
@@ -70,6 +74,7 @@ public class ActivityTests : Base
         LogicMoq.Verify(l => l.ActionUnderLockAsync(), Times.Once);
         LogicMoq.Verify(l => l.ParallelJob1Async(), Times.Once);
         LogicMoq.Verify(l => l.ParallelJob2Async(), Times.Once);
+        LogicMoq.Verify(l => l.FireAndForgetAsync(), Times.Once);
         LogicMoq.VerifyNoOtherCalls();
         result.ShouldBe(parameterValue);
         var workflowInstance = await RuntimeTables.WorkflowInstance.ReadAsync(WorkflowInstanceId);

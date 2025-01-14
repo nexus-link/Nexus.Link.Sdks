@@ -1,10 +1,13 @@
-﻿using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+﻿using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions
 {
+    /// <summary>
+    /// Same as an <see cref="ActivityFailedException"/>, but we will ignore <see cref="ActivityFailUrgencyEnum"/> and fail the entire workflow.
+    /// </summary>
     public class WorkflowFailedException : ActivityFailedException
     {
-
         /// <summary>
         /// Constructor
         /// </summary>

@@ -142,7 +142,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityAction Action(ActivityMethodAsync<IActivityAction> methodAsync)
+        public IActivityActionMaybeFireAndForget Action(ActivityMethodAsync<IActivityAction> methodAsync)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -157,7 +157,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityAction Action(ActivityMethod<IActivityAction> method)
+        public IActivityActionMaybeFireAndForget Action(ActivityMethod<IActivityAction> method)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(method, nameof(method));

@@ -19,7 +19,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityAction" />
-internal class ActivityAction : Activity, IActivityAction, IActivityActionWithThrottle
+internal class ActivityAction : Activity, IActivityAction, IActivityActionWithThrottle, IActivityActionMaybeFireAndForget
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
@@ -44,6 +44,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     private readonly Dictionary<ActivityExceptionCategoryEnum, TryCatchMethodAsync> _catchAsyncMethods = new();
 
     private bool _trySynchronousHttpRequestFirst;
+    private bool _fireAndForget;
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityAction(IActivityInformation activityInformation)
@@ -89,6 +90,13 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
             $"You must use the {nameof(IActivityAction.ExecuteAsync)}() method that has no method parameter.");
         _methodAsync = methodAsync;
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(this, ct), cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public IExecutableActivity SetFireAndForget()
+    {
+        _fireAndForget = true;
+        return this;
     }
 
     /// <inheritdoc />
@@ -181,6 +189,7 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
+        WorkflowStatic.Context.ExecutionIsFireAndForget = _fireAndForget;
         while (true)
         {
             TryGetContext(SerializedException, out string serializedException);

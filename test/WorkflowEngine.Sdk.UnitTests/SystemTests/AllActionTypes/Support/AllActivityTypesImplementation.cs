@@ -103,6 +103,11 @@ public class AllActivityTypesImplementation : WorkflowImplementation<int>
             .Do((a, _) => _logic.WhileDoAsync(a))
             .ExecuteAsync(cancellationToken);
 
+        await CreateActivity(12, AllActivityTypesContainer.Activities.FireAndForgetAction)
+            .Action((_, _) => _logic.FireAndForgetAsync())
+            .SetFireAndForget()
+            .ExecuteAsync(cancellationToken);
+
         return parameterA;
     }
 }
@@ -124,6 +129,7 @@ public class AllActivityTypesContainer : WorkflowContainer
         DefineActivity(Activities.Sleep, nameof(Activities.Sleep), ActivityTypeEnum.Sleep);
         DefineActivity(Activities.DoWhileOrUntil, nameof(Activities.DoWhileOrUntil), ActivityTypeEnum.DoWhileOrUntil);
         DefineActivity(Activities.WhileDo, nameof(Activities.WhileDo), ActivityTypeEnum.WhileDo);
+        DefineActivity(Activities.FireAndForgetAction, nameof(Activities.FireAndForgetAction), ActivityTypeEnum.Action);
     }
 
     /// <summary>
@@ -142,6 +148,7 @@ public class AllActivityTypesContainer : WorkflowContainer
         public const string Sleep = "D2FDD0E6-5995-4439-9266-03DAC7CC972B";
         public const string DoWhileOrUntil = "B88BD710-CD85-4616-9E20-27AF58E858E9";
         public const string WhileDo = "C2574EBC-D60B-428E-A1BE-AA46C87F5681";
+        public const string FireAndForgetAction = "9D486D45-BF66-4F57-BACD-498847926C2B";
     }
 
     /// <summary>
@@ -173,4 +180,5 @@ public interface IAllActivityTypesLogic
     Task DoUntilAsync(IActivityDoWhileOrUntil activityWhileDo);
     Task WhileDoAsync(IActivityWhileDo activityWhileDo);
     void ActionUnderLockAlreadyLocked();
+    Task FireAndForgetAsync();
 }

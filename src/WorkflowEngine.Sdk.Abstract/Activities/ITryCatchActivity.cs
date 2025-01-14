@@ -5,6 +5,7 @@
 /// </summary>
 public interface ITryCatchActivity : IExecutableActivity, ICatchableActivity
 {
+
 }
 
 /// <summary>

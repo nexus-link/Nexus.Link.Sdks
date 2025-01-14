@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.8.0</Version>
+    <Version>1.9.0-beta01</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -43,6 +43,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.9.0 Added .SetFireAndForget() for actions
       1.8.0 Added WorkflowOptions.JsonSupport to support a backwards compatible way to move to System.Text.Json
       1.7.3 Removed redundant test in validation for WorkflowSummary.
       1.7.2 Added "AndReturn" to create and update methods for efficiency when using the CrudPersistingenceHelper cache

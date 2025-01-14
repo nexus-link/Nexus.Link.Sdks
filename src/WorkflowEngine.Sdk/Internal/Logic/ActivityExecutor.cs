@@ -17,6 +17,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 internal class ActivityExecutor : IActivityExecutor
@@ -321,9 +322,11 @@ internal class ActivityExecutor : IActivityExecutor
             {
                 case ActivityFailedException: // Also covers WorkflowFailedException
                 case WorkflowImplementationShouldNotCatchThisException:
-                case RequestPostponedException:
                 case WorkflowFastForwardBreakException:
                     exception = ex;
+                    break;
+                case RequestPostponedException:
+                    exception = WorkflowStatic.Context.ExecutionIsFireAndForget ? null : ex;
                     break;
                 case OperationCanceledException:
                     exception = new ActivityPostponedException(TimeSpan.Zero);

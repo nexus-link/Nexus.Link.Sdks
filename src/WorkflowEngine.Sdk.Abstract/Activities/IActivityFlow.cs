@@ -46,8 +46,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
 
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01", true)]
         IActivityAction Action();
-        IActivityAction Action(ActivityMethodAsync<IActivityAction> methodAsync);
-        IActivityAction Action(ActivityMethod<IActivityAction> method);
+        IActivityActionMaybeFireAndForget Action(ActivityMethodAsync<IActivityAction> methodAsync);
+        IActivityActionMaybeFireAndForget Action(ActivityMethod<IActivityAction> method);
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
 

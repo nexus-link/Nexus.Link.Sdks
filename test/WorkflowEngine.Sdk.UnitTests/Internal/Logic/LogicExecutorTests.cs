@@ -10,6 +10,7 @@ using Nexus.Link.Libraries.Web.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
 using Xunit;
@@ -94,6 +95,22 @@ public class LogicExecutorTests
         exception.WaitingForRequestIds.ShouldNotBeNull();
         exception.WaitingForRequestIds.Count.ShouldBe(1);
         exception.WaitingForRequestIds.ShouldContain(expectedRequestId);
+    }
+
+    [Fact]
+    public async Task Execute_Given_FireAndForgetAndMethodThrowsRequestPostponed_Gives_Success()
+    {
+        // Arrange
+        const string expectedRequestId = "D26D6803-03D2-4889-90E4-500B83839184";
+        var requestPostponedException = new ActivityWaitsForRequestException(expectedRequestId);
+        WorkflowStatic.Context.ExecutionIsFireAndForget = true;
+
+        // Act
+        await _executor
+            .ExecuteWithoutReturnValueAsync(_ => throw requestPostponedException, "Method without return value");
+
+        // Assert
+
     }
 
     [Theory]

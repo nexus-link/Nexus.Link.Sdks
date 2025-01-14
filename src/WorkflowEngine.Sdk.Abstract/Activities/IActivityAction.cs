@@ -8,6 +8,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
+public interface IActivityActionMaybeFireAndForget : IActivityAction
+{
+    /// <summary>
+    /// Do not wait for the response for this action, just hand it over to asynchronous execution.
+    /// </summary>
+    IExecutableActivity SetFireAndForget();
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.Action"/>.
+/// </summary>
 public interface IActivityAction : ITryCatchActivity, IActivityActionCanHaveLock
 {
     /// <summary>
@@ -45,6 +56,8 @@ public interface IActivityAction : ITryCatchActivity, IActivityActionCanHaveLock
     [Obsolete("Please use the ExecuteAsync() method without a method in concert with Action(method). Obsolete since 2022-05-01.")]
     Task ExecuteAsync(ActivityMethodAsync<IActivityAction> methodAsync, CancellationToken cancellationToken = default);
 }
+
+
 
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.If"/>.

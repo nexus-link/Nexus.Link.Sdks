@@ -6,8 +6,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
     internal class WorkflowContext
     {
         public IContextValueProvider ValueProvider { get; }
-
+        
         private readonly OneValueProvider<bool> _executionIsAsynchronous;
+        private readonly OneValueProvider<bool> _executionIsFireAndForget;
         private readonly OneValueProvider<string> _workflowInstanceId;
         private readonly OneValueProvider<string> _iterationTitle;
         private readonly OneValueProvider<Activity> _parentActivity;
@@ -18,6 +19,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         {
             ValueProvider = valueProvider;
             _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");
+            _executionIsFireAndForget = new OneValueProvider<bool>(ValueProvider, "ExecutionIsFireAndForget");
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
             _iterationTitle = new OneValueProvider<string>(ValueProvider, "IterationTitle");
             _parentActivity = new OneValueProvider<Activity>(ValueProvider, "ParentActivity");
@@ -34,6 +36,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         {
             get => _executionIsAsynchronous.GetValue();
             set => _executionIsAsynchronous.SetValue(value);
+        }
+
+        /// <summary>
+        /// If this is true, then the current execution is in an truly asynchronous context,
+        /// i.e. the client is not waiting for the response, so we are for instance
+        /// free to make asynchronous calls to other servers.
+        /// </summary>
+        public bool ExecutionIsFireAndForget
+        {
+            get => _executionIsFireAndForget.GetValue();
+            set => _executionIsFireAndForget.SetValue(value);
         }
 
         /// <summary>
