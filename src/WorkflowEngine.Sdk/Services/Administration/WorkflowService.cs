@@ -125,28 +125,29 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             return Task.FromResult(waitingForWorkflow);
         }
 
-        public async Task RetryHaltedAsync(string id, CancellationToken cancellationToken = default)
+        /// <inheritdoc />
+        public async Task RetryHaltedAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
             // Workflow Instances
             var workflowInstanceService = _stateCapability.WorkflowInstance;
             FulcrumAssert.IsNotNull((workflowInstanceService, CodeLocation.AsString()));
 
             var workflowDistributedLock = await workflowInstanceService.ClaimDistributedLockAsync(
-                id, null, null, cancellationToken);
+                workflowInstanceId, null, null, cancellationToken);
 
             try
             {
-                var workflowInstance = await workflowInstanceService.ReadAsync(id, cancellationToken);
-                if (workflowInstance == null) throw new FulcrumNotFoundException(id);
+                var workflowInstance = await workflowInstanceService.ReadAsync(workflowInstanceId, cancellationToken);
+                if (workflowInstance == null) throw new FulcrumNotFoundException(workflowInstanceId);
                 if (workflowInstance.State != WorkflowStateEnum.Halted)
                 {
                     return;
                 }
 
-                var workflowSummary = await _stateCapability.WorkflowSummary.GetSummaryAsync(id, cancellationToken);
-                if (workflowSummary == null) throw new FulcrumNotFoundException(id);
+                var workflowSummary = await _stateCapability.WorkflowSummary.GetSummaryAsync(workflowInstanceId, cancellationToken);
+                if (workflowSummary == null) throw new FulcrumNotFoundException(workflowInstanceId);
 
                 var activityInstanceService = _stateCapability.ActivityInstance;
                 FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
@@ -170,15 +171,15 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                 }
 
                 workflowInstance.State = WorkflowStateEnum.Waiting;
-                await workflowInstanceService.UpdateAsync(id, workflowInstance, cancellationToken);
+                await workflowInstanceService.UpdateAsync(workflowInstanceId, workflowInstance, cancellationToken);
             }
             finally
             {
                 await workflowInstanceService.ReleaseDistributedLockAsync(
-                    id, workflowDistributedLock.LockId, cancellationToken);
+                    workflowInstanceId, workflowDistributedLock.LockId, cancellationToken);
             }
 
-            await _requestMgmtCapability.Request.RetryAsync(id, cancellationToken);
+            await _requestMgmtCapability.Request.RetryAsync(workflowInstanceId, cancellationToken);
         }
 
         /// <inheritdoc />

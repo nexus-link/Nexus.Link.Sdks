@@ -43,11 +43,11 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 
         /// <inheritdoc />
         [HttpPost("Activities/{id}/Retry")]
-        public async Task RetryAsync(string id, CancellationToken cancellationToken = default)
+        public async Task RetryAsync(string activityInstanceId, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
 
-            await _capability.Activity.RetryAsync(id, cancellationToken);
+            await _capability.Activity.RetryAsync(activityInstanceId, cancellationToken);
         }
     }
 }

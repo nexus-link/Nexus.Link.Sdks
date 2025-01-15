@@ -22,5 +22,5 @@ public interface IActivityService
     /// <summary>
     /// Retry an activity that is in a halted state
     /// </summary>
-    Task RetryAsync(string id, CancellationToken cancellationToken = default);
+    Task RetryAsync(string activityInstanceId, CancellationToken cancellationToken = default);
 }

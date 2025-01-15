@@ -72,17 +72,17 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
         }
 
         /// <inheritdoc />
-        public async Task RetryAsync(string id, CancellationToken cancellationToken = default)
+        public async Task RetryAsync(string activityInstanceId, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
 
             var activityInstanceService = _workflowStateCapability.ActivityInstance;
             FulcrumAssert.IsNotNull(activityInstanceService, CodeLocation.AsString());
             var workflowInstanceService = _workflowStateCapability.WorkflowInstance;
             FulcrumAssert.IsNotNull(workflowInstanceService, CodeLocation.AsString());
 
-            var activityInstance = await activityInstanceService.ReadAsync(id, cancellationToken);
-            if (activityInstance == null) throw new FulcrumNotFoundException(id);
+            var activityInstance = await activityInstanceService.ReadAsync(activityInstanceId, cancellationToken);
+            if (activityInstance == null) throw new FulcrumNotFoundException(activityInstanceId);
             FulcrumAssert.IsValidated(activityInstance, CodeLocation.AsString());
 
             var workflowInstance = await workflowInstanceService.ReadAsync(activityInstance.WorkflowInstanceId, cancellationToken);
@@ -96,10 +96,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             }
 
             activityInstance.Reset();
-            await activityInstanceService.UpdateAndReturnAsync(id, activityInstance, cancellationToken);
+            await activityInstanceService.UpdateAndReturnAsync(activityInstanceId, activityInstance, cancellationToken);
 
             workflowInstance.State = WorkflowStateEnum.Waiting;
-            await workflowInstanceService.UpdateAsync(id, workflowInstance, cancellationToken);
+            await workflowInstanceService.UpdateAsync(activityInstanceId, workflowInstance, cancellationToken);
 
             await _requestMgmtCapability.Request.RetryAsync(activityInstance.WorkflowInstanceId, cancellationToken);
 
