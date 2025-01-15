@@ -186,7 +186,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (FulcrumException e)
             {
-                throw ConvertFulcrumException(e);
+                return (default, ConvertFulcrumException(e));
             }
             catch (OperationCanceledException)
             {
