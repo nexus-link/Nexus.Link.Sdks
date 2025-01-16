@@ -12,9 +12,9 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Component.Services;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
-using Nexus.Link.WorkflowEngine.Sdk.Abstract.Execution;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
@@ -164,8 +164,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
                         {
                             continue;
                         }
-                            
-                        ClearValuesOfFailedActivity( activityInstance);
+
+                        activityInstance.Reset();
                         await activityInstanceService.UpdateAndReturnAsync(activityInstance.Id, activityInstance, cancellationToken);
                     }
                 }
@@ -181,20 +181,5 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
 
             await _requestMgmtCapability.Request.RetryAsync(workflowInstanceId, cancellationToken);
         }
-
-        /// <inheritdoc />
-        private void ClearValuesOfFailedActivity(ActivityInstance activityInstance)
-        {
-            activityInstance.State = ActivityStateEnum.Waiting;
-            activityInstance.ResultAsJson = null;
-            activityInstance.ExceptionCategory = null;
-            activityInstance.ExceptionTechnicalMessage = null;
-            activityInstance.ExceptionFriendlyMessage = null;
-            activityInstance.AsyncRequestId = null;
-            activityInstance.ExceptionAlertHandled = false;
-            activityInstance.FinishedAt = null;
-
-        }
-
     }
 }
