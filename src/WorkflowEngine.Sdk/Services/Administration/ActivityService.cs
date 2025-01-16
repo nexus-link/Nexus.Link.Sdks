@@ -88,10 +88,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             var workflowInstance = await workflowInstanceService.ReadAsync(activityInstance.WorkflowInstanceId, cancellationToken);
             FulcrumAssert.IsNotNull(workflowInstance, CodeLocation.AsString());
 
-            if (workflowInstance.State != WorkflowStateEnum.Halted)
+            if (workflowInstance.State != WorkflowStateEnum.Halted && workflowInstance.State != WorkflowStateEnum.Halting)
             {
                 throw new FulcrumBusinessRuleException(
-                    $"You can only retry workflows that are in state {nameof(WorkflowStateEnum.Halted)}," +
+                    $"You can only retry workflows that are in state {nameof(WorkflowStateEnum.Halted)} or {nameof(WorkflowStateEnum.Halting)}," +
                     $" but workflow {workflowInstance.Id} is in state {workflowInstance.State}.");
             }
 

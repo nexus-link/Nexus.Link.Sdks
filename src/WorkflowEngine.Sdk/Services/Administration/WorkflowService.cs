@@ -141,7 +141,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Services.Administration
             {
                 var workflowInstance = await workflowInstanceService.ReadAsync(workflowInstanceId, cancellationToken);
                 if (workflowInstance == null) throw new FulcrumNotFoundException(workflowInstanceId);
-                if (workflowInstance.State != WorkflowStateEnum.Halted)
+                if (workflowInstance.State != WorkflowStateEnum.Halted && workflowInstance.State != WorkflowStateEnum.Halting)
                 {
                     return;
                 }

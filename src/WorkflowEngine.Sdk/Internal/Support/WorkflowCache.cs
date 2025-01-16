@@ -538,6 +538,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     _summary.ActivityVersions.Add(version.Id, version);
                     _activityVersionCache.Add(version.Id, version, false);
                 }
+                version.FailUrgency = activityInformation.Options.FailUrgency;
 
                 var instance = _summary.ActivityInstances.Values.FirstOrDefault(i => IsSameInstance(i, version));
                 if (instance != null) return instance.Id;
@@ -575,8 +576,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             var failedAndLater = 0;
             var failedAndIgnore = 0;
             var cancelWorkflow = false;
+            IActivity cancelActivity = null;
             foreach (var activity in _activities.Values)
             {
+                FulcrumAssert.IsNotNull(activity.Instance, CodeLocation.AsString());
+                // We only care about the leaf activities
+                if (HasChildren(activity)) continue;
                 switch (activity.Instance.State)
                 {
                     case ActivityStateEnum.Executing:
@@ -589,13 +594,14 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                         success++;
                         break;
                     case ActivityStateEnum.Failed:
-                        switch (activity.Version.FailUrgency)
+                        switch (activity.ActivityInformation.Options.FailUrgency)
                         {
                             case ActivityFailUrgencyEnum.Stopping:
                                 failedAndStopping++;
                                 break;
                             case ActivityFailUrgencyEnum.CancelWorkflow:
                                 cancelWorkflow = true;
+                                cancelActivity = activity;
                                 break;
                             case ActivityFailUrgencyEnum.HandleLater:
                                 failedAndLater++;
@@ -613,10 +619,18 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                 }
             }
 
-            if (Instance.State == WorkflowStateEnum.Success)
+            if (Instance.State == WorkflowStateEnum.Success  || Instance.State == WorkflowStateEnum.Failed)
             {
                 Instance.IsComplete = failedAndLater == 0;
                 FulcrumAssert.IsNotNull(Instance.FinishedAt, CodeLocation.AsString());
+            }
+            else if (cancelWorkflow)
+            {
+                Instance.State = WorkflowStateEnum.Failed;
+                Instance.FinishedAt = DateTimeOffset.UtcNow;
+                Instance.CancelledAt ??= Instance.FinishedAt;
+                var exception = cancelActivity.GetException();
+                throw new FulcrumCancelledException(exception?.TechnicalMessage ?? $"The activity {cancelActivity.ToLogString()} failed.");
             }
             else if (failedAndStopping > 0)
             {
@@ -628,9 +642,16 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
             else
             {
-                Instance.State = cancelWorkflow ? WorkflowStateEnum.Failed : WorkflowStateEnum.Success;
+                // TODO: Why is this here
+                Instance.State = WorkflowStateEnum.Success;
                 Instance.FinishedAt = DateTimeOffset.UtcNow;
-                if (cancelWorkflow && Instance.CancelledAt == null) Instance.CancelledAt = Instance.FinishedAt;
+            }
+
+            return;
+
+            bool HasChildren(Activity activity)
+            {
+                return _activities.Values.Any(a => a.ActivityInformation.Parent?.Instance?.Id == activity.Instance.Id);
             }
         }
     }

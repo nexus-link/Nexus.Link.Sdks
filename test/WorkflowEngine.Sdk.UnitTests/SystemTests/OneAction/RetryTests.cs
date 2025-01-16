@@ -112,10 +112,11 @@ public class RetryTests : Base
     }
 
     [Theory]
-    [InlineData(WorkflowStateEnum.Waiting)]
     [InlineData(WorkflowStateEnum.Executing)]
-    [InlineData(WorkflowStateEnum.Halting)]
-    public async Task Execute_03_Given_RetryOnNotHalted_Gives_ThrowsFulcrumBusinessError(WorkflowStateEnum workflowState)
+    [InlineData(WorkflowStateEnum.Waiting)]
+    [InlineData(WorkflowStateEnum.Success)]
+    [InlineData(WorkflowStateEnum.Failed)]
+    public async Task Execute_03_Given_RetryOnNotHaltedOrHalting_Gives_ThrowsFulcrumBusinessError(WorkflowStateEnum workflowState)
     {
         //
         // Arrange
