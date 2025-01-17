@@ -67,7 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.38.0 Introduced Spawn/Await for all activities
+      6.38.1 Introduced Spawn/Await for all activities
       6.37.4 When retrying an entire workflow, the context data for each failed activity was not reset
       6.37.3 Bug where we classified workflows as Halting when they should be Halted and by mistake prioritized Halt/Halted before workflow cancelled. Bug where UrgencyLevel was mixed up
       6.37.2 Better in parameter names

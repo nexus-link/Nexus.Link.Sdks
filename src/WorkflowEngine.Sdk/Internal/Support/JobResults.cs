@@ -41,10 +41,4 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
         }
     }
-
-    internal class JobResult
-    {
-        public string TypeName { get; set; }
-        public string ResultAsJson { get; set; }
-    }
 }

@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.AspNet</PackageId>
-    <Version>2.4.37</Version>
+    <Version>2.4.38</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -44,7 +44,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      2.4.37 Bump
+      2.4.38 Bump
       2.4.0 Added FormOverviewIncludeFilter parameter to FormsController
       2.3.7 Bump
       2.3.6 Updated nugets to avoid versions with security risks
