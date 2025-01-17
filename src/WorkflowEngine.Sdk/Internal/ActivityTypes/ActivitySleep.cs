@@ -33,7 +33,7 @@ internal class ActivitySleep: Activity, IActivitySleep
     }
 
     /// <inheritdoc />
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(SleepAsync, cancellationToken);
     }

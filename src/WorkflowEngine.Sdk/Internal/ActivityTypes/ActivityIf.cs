@@ -86,7 +86,7 @@ internal class ActivityIf : Activity, IActivityIf, IActivityIfElse
     }
 
     /// <inheritdoc />
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(IfThenElseAsync, cancellationToken);
     }
@@ -182,7 +182,7 @@ internal class ActivityIf<TActivityReturns> : Activity<TActivityReturns>, IActiv
     }
 
     /// <inheritdoc />
-    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_thenMethodAsync != null, "An if activity that returns a result must have a then-method.");
         InternalContract.Require(_elseMethodAsync != null, "An if activity that returns a result must have an else-method.");

@@ -65,7 +65,7 @@ internal class ActivitySwitch<TSwitchValue> : Activity, IActivitySwitch<TSwitchV
     }
 
     /// <inheritdoc />
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(SwitchAsync, cancellationToken);
     }
@@ -147,7 +147,7 @@ internal class ActivitySwitch<TActivityReturns, TSwitchValue> :
     }
 
     /// <inheritdoc />
-    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithReturnValueAsync(SwitchAsync, DefaultValueMethodAsync ,cancellationToken);
     }

@@ -12,6 +12,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
@@ -20,7 +21,7 @@ using Log = Nexus.Link.Libraries.Core.Logging.Log;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 /// <inheritdoc cref="IInternalActivity" />
-internal abstract class Activity : ActivityBase, IInternalActivity
+internal abstract class Activity : ActivityBase, IInternalActivity, IExecutableActivity, ISpawnedActivity
 {
     protected Activity(IActivityInformation activityInformation)
         : base(activityInformation)
@@ -186,10 +187,38 @@ internal abstract class Activity : ActivityBase, IInternalActivity
         if (semaphoreSupport == null) return;
         await semaphoreSupport.LowerAsync(cancellationToken);
     }
+
+    public virtual Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        throw new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError,
+            $"The WF code for activity {this.ToLogString()} doesn't implement Task {nameof(ExecuteAsync)}().",
+            "There was a problem with the Workflow Engine, please contact the developer of this workflow");
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<ISpawnedActivity> SpawnAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            WorkflowStatic.Context.ExecutionBackgroundStyle = ActivityAction.BackgroundStyleEnum.Spawn;
+            await ExecuteAsync(cancellationToken);
+            return this;
+        }
+        catch (RequestPostponedException)
+        {
+            return this;
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task AwaitAsync(CancellationToken cancellationToken = default)
+    {
+        await ExecuteAsync(cancellationToken);
+    }
 }
 
 /// <inheritdoc cref="Activity" />
-internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>
+internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity<TActivityReturns>, IExecutableActivity<TActivityReturns>, ISpawnedActivity<TActivityReturns>
 {
     [JsonIgnore]
     public ActivityDefaultValueMethodAsync<TActivityReturns> DefaultValueMethodAsync { get; }
@@ -204,5 +233,34 @@ internal abstract class Activity<TActivityReturns> : Activity, IInternalActivity
     public TActivityReturns GetResult()
     {
         return ActivityInformation.Workflow.GetActivityResult<TActivityReturns>(ActivityInstanceId);
+    }
+
+    public new virtual Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        throw new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError,
+            $"The WF code for activity {this.ToLogString()} doesn't implement Task<{nameof(TActivityReturns)}> {nameof(ExecuteAsync)}().",
+            "There was a problem with the Workflow Engine, please contact the developer of this workflow");
+    }
+
+    /// <inheritdoc />
+    public new virtual async Task<ISpawnedActivity<TActivityReturns>> SpawnAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            WorkflowStatic.Context.ExecutionBackgroundStyle = ActivityAction.BackgroundStyleEnum.Spawn;
+            await ExecuteAsync(cancellationToken);
+            return this;
+        }
+        catch (RequestPostponedException)
+        {
+            return this;
+        }
+    }
+
+    /// <inheritdoc />
+    public new virtual async Task<TActivityReturns> AwaitAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await ExecuteAsync(cancellationToken);
+        return result;
     }
 }

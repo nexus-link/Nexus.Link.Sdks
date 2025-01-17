@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Nexus.Link.Libraries.Core.Assert;
-using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
@@ -15,11 +14,12 @@ using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
+using static Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes.ActivityAction;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityAction" />
-internal class ActivityAction : Activity, IActivityAction, IActivityActionWithThrottle, IActivityActionMaybeFireAndForget
+internal class ActivityAction : Activity, IActivityActionWithThrottle, IActivityActionMaybeBackground
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction> _methodAsync;
@@ -178,10 +178,11 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     }
 
     /// <inheritdoc/>
-    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null,
             $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
+        if (_fireAndForget) WorkflowStatic.Context.ExecutionBackgroundStyle = BackgroundStyleEnum.FireAndForget;
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
     }
 
@@ -189,7 +190,6 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
         var methodName = _catchAllMethodAsync == null && !_catchAsyncMethods.Any() ? "Action" : "Try";
-        WorkflowStatic.Context.ExecutionIsFireAndForget = _fireAndForget;
         while (true)
         {
             TryGetContext(SerializedException, out string serializedException);
@@ -275,9 +275,16 @@ internal class ActivityAction : Activity, IActivityAction, IActivityActionWithTh
             }
         }
     }
+
+    public enum BackgroundStyleEnum
+    {
+        None,
+        FireAndForget,
+        Spawn
+    }
 }
 
-internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityAction<TActivityReturns>, IActivityActionLockOrThrottle<TActivityReturns>, IActivityActionWithThrottle<TActivityReturns>
+internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IActivityActionMaybeBackground<TActivityReturns>, IActivityActionWithThrottle<TActivityReturns>
 {
     private const string SerializedException = nameof(SerializedException);
     private ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> _methodAsync;
@@ -302,6 +309,7 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     private readonly Dictionary<ActivityExceptionCategoryEnum, TryCatchMethodAsync<TActivityReturns>> _catchAsyncMethods = new();
 
     private bool _trySynchronousHttpRequestFirst;
+    private bool _fireAndForget;
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityAction(IActivityInformation activityInformation,
@@ -416,11 +424,18 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
         return this;
     }
 
+    /// <inheritdoc />
+    public IExecutableActivity SetFireAndForget()
+    {
+        _fireAndForget = true;
+        return this;
+    }
 
     /// <inheritdoc />
-    public async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
+        if (_fireAndForget) WorkflowStatic.Context.ExecutionBackgroundStyle = BackgroundStyleEnum.FireAndForget;
         return await ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
     }
 
@@ -446,8 +461,8 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                         await MaybeRaiseAsync(ThrottleSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         await MaybeRaiseAsync(LockSemaphoreSupport, WhenWaitingAsync, cancellationToken);
                         TActivityReturns returnValue;
-                        if (_trySynchronousHttpRequestFirst 
-                            && Instance.AsyncRequestId == null 
+                        if (_trySynchronousHttpRequestFirst
+                            && Instance.AsyncRequestId == null
                             && WorkflowStatic.Context.ExecutionIsAsynchronous)
                         {
                             try

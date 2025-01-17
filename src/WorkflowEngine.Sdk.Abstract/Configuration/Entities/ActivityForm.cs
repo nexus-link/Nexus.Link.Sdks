@@ -68,7 +68,11 @@ public enum ActivityTypeEnum
     /// <summary>
     /// Use this to run a loop while a condition holds.
     /// </summary>
-    WhileDo
+    WhileDo,
+    /// <summary>
+    /// Use in concert with Action and Spawn.
+    /// </summary>
+    Await
 }
 
 public class ActivityForm : ActivityFormCreate, IUniquelyIdentifiable<string>, IOptimisticConcurrencyControlByETag

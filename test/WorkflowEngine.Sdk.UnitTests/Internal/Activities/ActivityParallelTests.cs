@@ -27,7 +27,7 @@ public class ActivityParallelTests : ActivityTestsBase
         await activity.ExecuteAsync();
 
         // Assert
-        _activityExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync(activity.ParallelAsync, It.IsAny<ActivityDefaultValueMethodAsync<JobResults>>(), It.IsAny<CancellationToken>()), Times.Once);
+        _activityExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync<IJobResults>(activity.ParallelAsync, It.IsAny<ActivityDefaultValueMethodAsync<IJobResults>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

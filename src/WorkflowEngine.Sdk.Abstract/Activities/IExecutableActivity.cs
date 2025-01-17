@@ -12,6 +12,12 @@ public interface IExecutableActivity : IActivity
     /// Start the activity and don't proceed until the activity has completed.
     /// </summary>
     Task ExecuteAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Start the activity but we will not block here. Use <see cref="ISpawnedActivity.AwaitAsync"/>
+    /// to await the activity.
+    /// </summary>
+    Task<ISpawnedActivity> SpawnAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -27,4 +33,10 @@ public interface IExecutableActivity<TActivityReturns> : IActivity
     /// </returns>
 
     Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>>
+    /// Start the activity but we will not block here. Use <see cref="ISpawnedActivity{TActivityReturns}.AwaitAsync"/>
+    /// to await the activity.
+    /// </summary>
+    Task<ISpawnedActivity<TActivityReturns>> SpawnAsync(CancellationToken cancellationToken = default);
 }

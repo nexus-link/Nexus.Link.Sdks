@@ -8,7 +8,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 /// <summary>
 /// An activity of type <see cref="ActivityTypeEnum.Action"/>.
 /// </summary>
-public interface IActivityActionMaybeFireAndForget : IActivityAction
+public interface IActivityActionMaybeBackground : IActivityAction
 {
     /// <summary>
     /// Do not wait for the response for this action, just hand it over to asynchronous execution.
@@ -98,6 +98,17 @@ public interface IActivityActionLockOrThrottle : ITryCatchActivity
     /// we are waiting for the resource to be available, i.e. it is already fully utilized by other workflow instances.
     /// </summary>
     ITryCatchActivity WhenWaiting(ActivityMethod<IActivityAction> whenWaiting);
+}
+
+/// <summary>
+/// An activity of type <see cref="ActivityTypeEnum.Action"/>.
+/// </summary>
+public interface IActivityActionMaybeBackground<TActivityReturns> : IActivityAction<TActivityReturns>
+{
+    /// <summary>
+    /// Do not wait for the response for this action, just hand it over to asynchronous execution.
+    /// </summary>
+    IExecutableActivity SetFireAndForget();
 }
 
 /// <summary>

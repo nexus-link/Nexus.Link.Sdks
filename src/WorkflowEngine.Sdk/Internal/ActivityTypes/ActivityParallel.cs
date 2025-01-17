@@ -16,7 +16,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityParallel" />
-internal class ActivityParallel : Activity<JobResults>, IActivityParallel
+internal class ActivityParallel : Activity<IJobResults>, IActivityParallel
 {
     private readonly Dictionary<int, Task<object>> _objectTasks = new();
     private readonly Dictionary<int, Task> _voidTasks = new();
@@ -26,7 +26,7 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
     private int _maxJobIndex;
 
     public ActivityParallel(IActivityInformation activityInformation)
-        : base(activityInformation, _ => Task.FromResult(new JobResults()))
+        : base(activityInformation, _ => Task.FromResult(new JobResults() as IJobResults))
     {
         _maxJobIndex = 0;
     }
@@ -80,16 +80,16 @@ internal class ActivityParallel : Activity<JobResults>, IActivityParallel
     }
 
     /// <inheritdoc />
-    public async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         JobNumber = 0;
         WorkflowStatic.Context.ParentActivity = this;
-        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ParallelAsync, DefaultValueMethodAsync, cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync<IJobResults>(ParallelAsync, DefaultValueMethodAsync, cancellationToken);
         WorkflowStatic.Context.ParentActivity = null;
         return result;
     }
 
-    internal async Task<JobResults> ParallelAsync(CancellationToken cancellationToken = default)
+    internal async Task<IJobResults> ParallelAsync(CancellationToken cancellationToken = default)
     {
         foreach (var (index, job) in _voidJobs)
         {

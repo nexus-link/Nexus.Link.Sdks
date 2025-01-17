@@ -63,7 +63,7 @@ internal abstract class LockOrThrottleActivity<TLockOrThrottle, TLockOrThrottleT
     }
 
     /// <inheritdoc />
-    public Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithoutReturnValueAsync(LockOrThrottleAsync, cancellationToken);
     }
@@ -138,7 +138,7 @@ internal class ActivityLockOrThrottle<TActivityReturns, TLockOrThrottle, TLockOr
         return this;
     }
 
-    public Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         return ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
     }

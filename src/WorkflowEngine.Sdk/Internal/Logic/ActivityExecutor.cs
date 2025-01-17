@@ -14,6 +14,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Abstract.Configuration.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
@@ -109,7 +110,7 @@ internal class ActivityExecutor : IActivityExecutor
                     $"The workflow \"{Activity.ActivityInformation.Workflow.InstanceTitle}\" encountered an unexpected error. Please contact the workflow developer.");
                 throw new WorkflowImplementationShouldNotCatchThisException(unexpectedException);
         }
-       
+
     }
 
     private async Task<(TActivityReturns, Exception)> FastForwardOrExecuteAsync<TActivityReturns>(InternalActivityMethodAsync<TActivityReturns> methodAsync,
@@ -325,8 +326,21 @@ internal class ActivityExecutor : IActivityExecutor
                 case WorkflowFastForwardBreakException:
                     exception = ex;
                     break;
-                case RequestPostponedException:
-                    exception = WorkflowStatic.Context.ExecutionIsFireAndForget ? null : ex;
+                case RequestPostponedException e:
+                    switch (WorkflowStatic.Context.ExecutionBackgroundStyle)
+                    {
+                        case ActivityAction.BackgroundStyleEnum.None:
+                            exception = e;
+                            break;
+                        case ActivityAction.BackgroundStyleEnum.FireAndForget:
+                        case ActivityAction.BackgroundStyleEnum.Spawn:
+                            Activity.Instance.AsyncRequestId = e.WaitingForRequestIds.FirstOrDefault();
+                            exception = null;
+                            break;
+                        default:
+                            exception =new ActivityFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, $"Expected exception {nameof(RequestPostponedException)} to have at least one request id.", "Workflow engine error, contact the workflow developer.");
+                            break;
+                    }
                     break;
                 case OperationCanceledException:
                     exception = new ActivityPostponedException(TimeSpan.Zero);

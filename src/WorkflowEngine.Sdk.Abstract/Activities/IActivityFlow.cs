@@ -46,8 +46,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
 
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01", true)]
         IActivityAction Action();
-        IActivityActionMaybeFireAndForget Action(ActivityMethodAsync<IActivityAction> methodAsync);
-        IActivityActionMaybeFireAndForget Action(ActivityMethod<IActivityAction> method);
+        IActivityActionMaybeBackground Action(ActivityMethodAsync<IActivityAction> methodAsync);
+        IActivityActionMaybeBackground Action(ActivityMethod<IActivityAction> method);
+
         IActivitySleep Sleep(TimeSpan timeToSleep);
         IActivityParallel Parallel();
 
@@ -148,9 +149,9 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities
 
         [Obsolete("Please use Action() with a method parameter. Obsolete since 2022-05-01")]
         IActivityAction<TActivityReturns> Action();
-        IActivityAction<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync);
-        IActivityAction<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method);
-        IActivityAction<TActivityReturns> Action(TActivityReturns value);
+        IActivityActionMaybeBackground<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync);
+        IActivityActionMaybeBackground<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method);
+        IActivityActionMaybeBackground<TActivityReturns> Action(TActivityReturns value);
 
         [Obsolete("Please use LoopUntil() with a method parameter. Obsolete since 2022-05-01")]
         IActivityLoopUntilTrue<TActivityReturns> LoopUntil();

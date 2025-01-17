@@ -142,7 +142,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityActionMaybeFireAndForget Action(ActivityMethodAsync<IActivityAction> methodAsync)
+        public IActivityActionMaybeBackground Action(ActivityMethodAsync<IActivityAction> methodAsync)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -157,7 +157,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityActionMaybeFireAndForget Action(ActivityMethod<IActivityAction> method)
+        public IActivityActionMaybeBackground Action(ActivityMethod<IActivityAction> method)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(method, nameof(method));
@@ -635,7 +635,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityAction<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync)
+        public IActivityActionMaybeBackground<TActivityReturns> Action(ActivityMethodAsync<IActivityAction<TActivityReturns>, TActivityReturns> methodAsync)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
@@ -650,7 +650,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityAction<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method)
+        public IActivityActionMaybeBackground<TActivityReturns> Action(ActivityMethod<IActivityAction<TActivityReturns>, TActivityReturns> method)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             InternalContract.RequireNotNull(method, nameof(method));
@@ -665,7 +665,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
         }
 
         /// <inheritdoc />
-        public IActivityAction<TActivityReturns> Action(TActivityReturns value)
+        public IActivityActionMaybeBackground<TActivityReturns> Action(TActivityReturns value)
         {
             VerifyActualType(ActivityTypeEnum.Action);
             try

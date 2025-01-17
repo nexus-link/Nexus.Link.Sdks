@@ -1,4 +1,6 @@
 ﻿using Nexus.Link.Libraries.Core.Context;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
@@ -8,7 +10,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         public IContextValueProvider ValueProvider { get; }
         
         private readonly OneValueProvider<bool> _executionIsAsynchronous;
-        private readonly OneValueProvider<bool> _executionIsFireAndForget;
+        private readonly OneValueProvider<ActivityAction.BackgroundStyleEnum> _executionBackgroundStyle;
         private readonly OneValueProvider<string> _workflowInstanceId;
         private readonly OneValueProvider<string> _iterationTitle;
         private readonly OneValueProvider<Activity> _parentActivity;
@@ -19,7 +21,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         {
             ValueProvider = valueProvider;
             _executionIsAsynchronous = new OneValueProvider<bool>(ValueProvider, "ExecutionIsAsynchronous");
-            _executionIsFireAndForget = new OneValueProvider<bool>(ValueProvider, "ExecutionIsFireAndForget");
+            _executionBackgroundStyle = new OneValueProvider<ActivityAction.BackgroundStyleEnum>(ValueProvider, "ExecutionBackgroundStyle");
             _workflowInstanceId = new OneValueProvider<string>(ValueProvider, "WorkflowInstanceId");
             _iterationTitle = new OneValueProvider<string>(ValueProvider, "IterationTitle");
             _parentActivity = new OneValueProvider<Activity>(ValueProvider, "ParentActivity");
@@ -43,10 +45,10 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Model
         /// i.e. the client is not waiting for the response, so we are for instance
         /// free to make asynchronous calls to other servers.
         /// </summary>
-        public bool ExecutionIsFireAndForget
+        public ActivityAction.BackgroundStyleEnum ExecutionBackgroundStyle
         {
-            get => _executionIsFireAndForget.GetValue();
-            set => _executionIsFireAndForget.SetValue(value);
+            get => _executionBackgroundStyle.GetValue();
+            set => _executionBackgroundStyle.SetValue(value);
         }
 
         /// <summary>
