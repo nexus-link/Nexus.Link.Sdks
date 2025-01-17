@@ -71,7 +71,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Outbound
                     var timeSpan = ex is FulcrumException fe
                         ? TimeSpan.FromSeconds(fe.RecommendedWaitTimeInSeconds)
                         : TimeSpan.FromSeconds(60);
-                    throw new ActivityPostponedException(timeSpan);
+                    throw new ActivityTemporaryErrorException(timeSpan);
                 }
 
                 if (response != null)

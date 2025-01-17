@@ -64,7 +64,7 @@ public class WorkflowSemaphoreService : IWorkflowSemaphoreService
                 if (raisedHolder == null)
                 {
                     scope.Complete();
-                    throw new ActivityPostponedException(TimeSpan.FromHours(1));
+                    throw new ActivityTemporaryErrorException(TimeSpan.FromHours(1));
                 }
 
                 if (semaphore.Limit != item.Limit)

@@ -299,12 +299,12 @@ public class LogicExecutorTests
 //}
 
 [Theory]
-    [InlineData(false, typeof(FulcrumTryAgainException), typeof(ActivityPostponedException), null)]
-    [InlineData(true, typeof(FulcrumTryAgainException), typeof(ActivityPostponedException), null)]
-    [InlineData(false, typeof(FulcrumResourceLockedException), typeof(ActivityPostponedException), null)]
-    [InlineData(true, typeof(FulcrumResourceLockedException), typeof(ActivityPostponedException), null)]
-    [InlineData(false, typeof(FulcrumNotFoundException), typeof(ActivityPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
-    [InlineData(true, typeof(FulcrumNotFoundException), typeof(ActivityPostponedException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
+    [InlineData(false, typeof(FulcrumTryAgainException), typeof(ActivityTemporaryErrorException), null)]
+    [InlineData(true, typeof(FulcrumTryAgainException), typeof(ActivityTemporaryErrorException), null)]
+    [InlineData(false, typeof(FulcrumResourceLockedException), typeof(ActivityTemporaryErrorException), null)]
+    [InlineData(true, typeof(FulcrumResourceLockedException), typeof(ActivityTemporaryErrorException), null)]
+    [InlineData(false, typeof(FulcrumNotFoundException), typeof(ActivityTemporaryErrorException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
+    [InlineData(true, typeof(FulcrumNotFoundException), typeof(ActivityTemporaryErrorException), null)] // TODO: Lars suggests that FulcrumNotFoundException should have IsRetryMeaningful = false
     [InlineData(false, typeof(FulcrumBusinessRuleException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.BusinessError)]
     [InlineData(true, typeof(FulcrumBusinessRuleException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.BusinessError)]
     [InlineData(false, typeof(FulcrumCancelledException), typeof(ActivityFailedException), ActivityExceptionCategoryEnum.TechnicalError)]

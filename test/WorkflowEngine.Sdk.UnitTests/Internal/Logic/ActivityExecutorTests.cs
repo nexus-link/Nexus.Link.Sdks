@@ -327,7 +327,7 @@ public class ActivityExecutorTests
 
         outerException.InnerException.ShouldNotBeNull();
         var innerException = outerException.InnerException;
-        innerException.ShouldBeOfType<ActivityPostponedException>();
+        innerException.ShouldBeOfType<ActivityTemporaryErrorException>();
         activity.Instance.State.ShouldBe(ActivityStateEnum.Waiting);
         activity.SafeAlertExceptionCalled.ShouldBe(0);
         activity.Instance.AsyncRequestId.ShouldBeNull();

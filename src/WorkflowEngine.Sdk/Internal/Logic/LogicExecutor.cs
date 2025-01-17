@@ -191,7 +191,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
             }
             catch (OperationCanceledException)
             {
-                var exception = new ActivityPostponedException(TimeSpan.Zero);
+                var exception = new ActivityTemporaryErrorException(TimeSpan.Zero);
                 return (default, exception);
             }
             catch (Exception e)
@@ -214,7 +214,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Logic
                     timeSpan = TimeSpan.FromSeconds(1);
                 }
 
-                return new ActivityPostponedException(timeSpan);
+                return new ActivityTemporaryErrorException(timeSpan);
             }
 
             if (e is FulcrumProgrammersErrorException)

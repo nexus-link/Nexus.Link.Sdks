@@ -162,7 +162,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             catch (Exception ex)
             {
                 Log.LogWarning($"Failed to delete state fallback {_summary?.Instance} ({_summary?.Instance?.Id}). Will try again.:\r{ex.ToLog()}", ex);
-                throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+                throw new ActivityTemporaryErrorException(TimeSpan.FromSeconds(30));
             }
         }
 
@@ -204,7 +204,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
             }
             catch (Exception dbException)
             {
-                if (hasSavedToFallback || weHaveSavedToFallback)  throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+                if (hasSavedToFallback || weHaveSavedToFallback)  throw new ActivityTemporaryErrorException(TimeSpan.FromSeconds(30));
                 try
                 {
                     Log.LogWarning(
@@ -220,7 +220,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
                     Log.LogError(message, fallbackException);
                 }
 
-                throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+                throw new ActivityTemporaryErrorException(TimeSpan.FromSeconds(30));
             }
         }
 

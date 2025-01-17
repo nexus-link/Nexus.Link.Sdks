@@ -86,7 +86,7 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
                 Log.LogInformation(
                     $"Failed to save workflow instance state to {WorkflowInformation.Instance.State} for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).",
                     dbException);
-                throw new ActivityPostponedException(TimeSpan.FromSeconds(30));
+                throw new ActivityTemporaryErrorException(TimeSpan.FromSeconds(30));
             }
 
             if (WorkflowInformation.Instance.CancelledAt != null)
