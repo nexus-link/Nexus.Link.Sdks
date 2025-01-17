@@ -19,15 +19,15 @@
 
 	<!-- Publish symbols -->
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Nexus.Link.Libraries.Core" Version="5.32.0" />
-		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.13" />
+		<PackageReference Include="Nexus.Link.Libraries.Crud.Web" Version="2.13.14" />
 		<PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.19.1" />
-		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.2.1" />
+		<PackageReference Include="Nexus.Link.Libraries.Web" Version="6.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -37,7 +37,7 @@
 
 	<PropertyGroup>
 		<PackageId>Nexus.Link.Dashboards.Sdk</PackageId>
-		<Version>1.0.20</Version>
+		<Version>1.0.21</Version>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>nexus;link;fulcrum;lever</PackageTags>
 		<Authors>XLENT Link</Authors>
@@ -47,7 +47,7 @@
 		<Copyright>Copyright ©2022 Xlent Link AB</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReleaseNotes>
-      1.0.20 Bump
+      1.0.21 Bump
       1.0.5 Updated nugets to avoid versions with security risks
       1.0.4 Bump
       1.0.1 Url fix

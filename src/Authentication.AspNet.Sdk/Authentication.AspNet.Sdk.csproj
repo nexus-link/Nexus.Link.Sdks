@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.4.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Nexus.Link.Contracts.Misc.AspNet.Sdk" Version="1.0.13" />
-    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.5.3" />
+    <PackageReference Include="Nexus.Link.Libraries.Web.AspNet" Version="3.6.0" />
   </ItemGroup>
 
   <!--<ItemGroup Condition="'$(TargetFramework)'=='net472'">
@@ -37,7 +37,7 @@
 
     <PropertyGroup>
       <PackageId>Nexus.Link.Authentication.AspNet.Sdk</PackageId>
-      <Version>3.3.2</Version>
+      <Version>3.3.3</Version>
       <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
       <PackageTags>nexus;link;fulcrum;lever</PackageTags>
       <Authors>XLENT Link</Authors>
@@ -47,7 +47,7 @@
       <Copyright>Copyright ©2019 Xlent Link AB</Copyright>
       <IncludeSymbols>true</IncludeSymbols>
       <PackageReleaseNotes>
-        3.3.2 Bump
+        3.3.3 Bump
         3.3.0 Upgraded IdentityModel
         3.2.9 Bug in ReentryAuthenticationService.CreateAsync()
         3.2.8 Bump

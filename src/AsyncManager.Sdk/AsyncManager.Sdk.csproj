@@ -40,12 +40,12 @@
     <PackageReference Include="Nexus.Link.Capabilities.AsyncRequestMgmt.Abstract" Version="4.3.0" />
     <PackageReference Include="Nexus.Link.Libraries.Core" Version="5.32.0" />
     <PackageReference Include="Nexus.Link.Libraries.Crud" Version="3.19.1" />
-    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.2.1" />
+    <PackageReference Include="Nexus.Link.Libraries.Web" Version="6.3.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Nexus.Link.AsyncManager.Sdk</PackageId>
-    <Version>4.2.3</Version>
+    <Version>4.2.4</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -55,7 +55,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      4.2.3 Bump
+      4.2.4 Bump
       4.2.0 Added ReadWaitingResponsesAsync
       4.1.0 Now use Metadata.WaitingRequestId
       4.0.8 Bump

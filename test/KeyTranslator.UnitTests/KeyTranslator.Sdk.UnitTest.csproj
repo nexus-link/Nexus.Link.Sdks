@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net472</TargetFrameworks>
+    <TargetFrameworks>net8.0;net472</TargetFrameworks>
     <AssemblyName>Xlent.Lever.KeyTranslator.Sdk.Test</AssemblyName>
     <RootNamespace>Xlent.Lever.KeyTranslator.Sdk.Test</RootNamespace>
     <IsPackable>false</IsPackable>
@@ -10,8 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.7.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.7.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,6 +27,7 @@ namespace IdentityAccessManagement.Sdk.UnitTest
         {
             using var httpClient = _factory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = TestStartup.AuthorizationHeader;
+            
 
             var response = await httpClient.GetAsync("api/home/information");
             var result = await response.Content.ReadAsStringAsync();
