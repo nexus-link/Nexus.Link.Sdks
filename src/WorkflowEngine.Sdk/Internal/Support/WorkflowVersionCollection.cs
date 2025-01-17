@@ -66,7 +66,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Support
         {
             if (string.IsNullOrWhiteSpace(FulcrumApplication.Context.ManagedAsynchronousRequestId))
             {
-                throw new ActivityTemporaryErrorException(TimeSpan.Zero);
+                throw new ActivityTemporaryFailureException(TimeSpan.Zero);
             }
         }
 

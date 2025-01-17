@@ -57,7 +57,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.39.0</Version>
+    <Version>6.39.1</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -67,7 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
-      6.39.0 Introduced possibility to ask for backoff strategy for retries
+      6.39.1 Introduced possibility to ask for backoff strategy for retries
       6.38.2 Bump
       6.38.1 Introduced Spawn/Await for all activities
       6.37.4 When retrying an entire workflow, the context data for each failed activity was not reset

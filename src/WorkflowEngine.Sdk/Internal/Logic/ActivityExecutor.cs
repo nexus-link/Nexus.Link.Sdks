@@ -343,7 +343,7 @@ internal class ActivityExecutor : IActivityExecutor
                     }
                     break;
                 case OperationCanceledException:
-                    exception = new ActivityTemporaryErrorException(TimeSpan.Zero);
+                    exception = new ActivityTemporaryFailureException(TimeSpan.Zero);
                     break;
                 default:
                     // Unexpected exception. Our conclusion is that there is an error in the workflow engine.
