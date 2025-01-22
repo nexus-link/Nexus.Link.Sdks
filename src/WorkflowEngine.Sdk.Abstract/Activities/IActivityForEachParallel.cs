@@ -46,7 +46,7 @@ public interface IActivityForEachParallel<out TItem> : IExecutableActivity, ILoo
     /// <summary>
     /// The items to loop over
     /// </summary>
-    IEnumerable<TItem> Items { get; }
+    TItem[] Items { get; }
 
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.
@@ -65,7 +65,7 @@ public interface IActivityForEachParallel<TMethodReturns, out TItem> : IExecutab
     /// <summary>
     /// The items to loop over
     /// </summary>
-    IEnumerable<TItem> Items { get; }
+    TItem[] Items { get; }
 
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.

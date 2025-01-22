@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Assert;
@@ -20,7 +21,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
 {
     private readonly ActivityForEachParallelMethodAsync<TItem> _methodAsync;
     private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
-    public IEnumerable<TItem> Items { get; }
+    public TItem[] Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachParallel(
@@ -30,7 +31,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
         : base(activityInformation)
     {
         InternalContract.RequireNotNull(items, nameof(items));
-        Items = items;
+        Items = items.ToArray();
         _getIterationTitleMethod = getIterationTitleMethod;
     }
     public ActivityForEachParallel(
@@ -44,7 +45,7 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
         _getIterationTitleMethod = getIterationTitleMethod;
-        Items = items;
+        Items = items.ToArray();
     }
 
     /// <inheritdoc/>
@@ -69,9 +70,10 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
     private async Task ForEachParallelAsync(ActivityForEachParallelMethodAsync<TItem> methodAsync, CancellationToken cancellationToken)
     {
         var taskList = new List<Task>();
-        foreach (var item in Items)
-        {
-            LoopIteration++;
+        if (LoopIteration == 0) LoopIteration = 1;
+        var index = LoopIteration - 1;
+        while (index < Items.Length) {
+            var item = Items[index];
             try
             {
                 WorkflowStatic.Context.IterationTitle = _getIterationTitleMethod == null
@@ -85,6 +87,9 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
             }
             var task = LogicExecutor.ExecuteWithoutReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);
             taskList.Add(task);
+            LoopIteration++;
+            Instance.Iteration = LoopIteration;
+            index = LoopIteration - 1;
         }
 
         await WorkflowHelper.WhenAllActivities(taskList);
@@ -99,7 +104,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     private readonly ActivityForEachParallelMethodAsync<TMethodReturns, TItem> _methodAsync;
 
-    public IEnumerable<TItem> Items { get; }
+    public TItem[] Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachParallel(IActivityInformation activityInformation,
@@ -110,7 +115,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     {
         InternalContract.RequireNotNull(items, nameof(items));
         InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
-        Items = items;
+        Items = items.ToArray();
         _getKeyMethod = getKeyMethod;
         _getIterationTitleMethod = getIterationTitleMethod;
     }
@@ -126,7 +131,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         InternalContract.RequireNotNull(getKeyMethod, nameof(getKeyMethod));
         _methodAsync = methodAsync;
-        Items = items;
+        Items = items.ToArray();
         _getKeyMethod = getKeyMethod;
         _getIterationTitleMethod = getIterationTitleMethod;
     }
@@ -156,9 +161,10 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         CancellationToken cancellationToken)
     {
         var taskDictionary = new Dictionary<string, Task<TMethodReturns>>();
-        foreach (var item in Items)
-        {
-            LoopIteration++;
+        if (LoopIteration == 0) LoopIteration = 1;
+        var index = LoopIteration - 1;
+        while (index < Items.Length) {
+            var item = Items[index];
             string key = default;
             try
             {
@@ -182,6 +188,9 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             InternalContract.Require(key != null, $"The {nameof(_getKeyMethod)} method must not return null.");
             var task = LogicExecutor.ExecuteWithReturnValueAsync(ct => methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken);
             taskDictionary.Add(key!, task);
+            LoopIteration++;
+            Instance.Iteration = LoopIteration;
+            index = LoopIteration - 1;
         }
         return AggregateResultsAndPostponeExceptionsAsync(taskDictionary, cancellationToken);
     }

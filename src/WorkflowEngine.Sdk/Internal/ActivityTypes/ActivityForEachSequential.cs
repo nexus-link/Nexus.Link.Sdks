@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
 {
     private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
     private ActivityForEachSequentialMethodAsync<TItem> _methodAsync;
-    public IEnumerable<TItem> Items { get; }
+    public TItem[] Items { get; }
 
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachSequential(
@@ -28,7 +29,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
     {
         _getIterationTitleMethod = getIterationTitleMethod;
         InternalContract.RequireNotNull(items, nameof(items));
-        Items = items;
+        Items = items.ToArray();
     }
     public ActivityForEachSequential(IActivityInformation activityInformation, IEnumerable<TItem> items,
         GetIterationTitleMethod<TItem> getIterationTitleMethod,
@@ -39,7 +40,7 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _getIterationTitleMethod = getIterationTitleMethod;
         _methodAsync = methodAsync;
-        Items = items;
+        Items = items.ToArray();
     }
 
     /// <inheritdoc/>
@@ -58,9 +59,11 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
     internal async Task ForEachSequentialAsync(CancellationToken cancellationToken = default)
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
-        foreach (var item in Items)
+        if (LoopIteration == 0) LoopIteration = 1;
+        var index = LoopIteration - 1;
+        while (index < Items.Length)
         {
-            LoopIteration++;
+            var item = Items[index];
             try
             {
                 WorkflowStatic.Context.IterationTitle = _getIterationTitleMethod == null
@@ -76,7 +79,9 @@ internal class ActivityForEachSequential<TItem> : LoopActivity, IActivityForEach
             await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => _methodAsync(item, this, ct), $"Item{LoopIteration}", cancellationToken)
                 .CatchExitExceptionAsync(this, cancellationToken);
 #pragma warning restore CS0618 // Type or member is obsolete
+            LoopIteration++;
             Instance.Iteration = LoopIteration;
+            index = LoopIteration - 1;
         }
     }
 
@@ -93,7 +98,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
 {
     private ActivityForEachSequentialMethodAsync<TMethodReturns, TItem> _methodAsync;
     private readonly GetIterationTitleMethod<TItem> _getIterationTitleMethod;
-    public IEnumerable<TItem> Items { get; }
+    public TItem[] Items { get; }
 
     [JsonIgnore]
     public GetIterationTitleMethod<TItem> GetIterationTitleMethod { get; }
@@ -105,7 +110,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         : base(activityInformation, _ => Task.FromResult((IList<TMethodReturns>)new List<TMethodReturns>()))
     {
         InternalContract.RequireNotNull(items, nameof(items));
-        Items = items;
+        Items = items.ToArray();
         GetIterationTitleMethod = getIterationTitleMethod;
     }
 
@@ -120,7 +125,7 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
         InternalContract.RequireNotNull(methodAsync, nameof(methodAsync));
         _methodAsync = methodAsync;
         _getIterationTitleMethod = getIterationTitleMethod;
-        Items = items;
+        Items = items.ToArray();
     }
 
     /// <inheritdoc/>
@@ -142,9 +147,10 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
     {
         FulcrumAssert.IsNotNull(_methodAsync, CodeLocation.AsString());
         var resultList = new List<TMethodReturns>();
-        foreach (var item in Items)
-        {
-            LoopIteration++;
+        if (LoopIteration == 0) LoopIteration = 1;
+        var index = LoopIteration - 1;
+        while (index < Items.Length) {
+            var item = Items[index];
             try
             {
                 Instance.IterationTitle = _getIterationTitleMethod == null
@@ -159,6 +165,9 @@ internal class ActivityForEachSequential<TMethodReturns, TItem> :
             var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => _methodAsync(item, this, ct),
                 $"Item{LoopIteration}", cancellationToken);
             resultList.Add(result);
+            LoopIteration++;
+            Instance.Iteration = LoopIteration;
+            index = LoopIteration - 1;
         }
 
         return resultList;

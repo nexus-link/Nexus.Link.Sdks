@@ -33,7 +33,7 @@ public interface IActivityForEachSequential<out TItem> : IExecutableActivity, IL
     /// <summary>
     /// The items to loop over
     /// </summary>
-    IEnumerable<TItem> Items { get; }
+    TItem[] Items { get; }
 
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.
@@ -50,7 +50,7 @@ public interface IActivityForEachSequential<TMethodReturns, out TItem> : IExecut
     /// <summary>
     /// The items to loop over
     /// </summary>
-    IEnumerable<TItem> Items { get; }
+    TItem[] Items { get; }
 
     /// <summary>
     /// Execute the <paramref name="methodAsync"/> for all items.
