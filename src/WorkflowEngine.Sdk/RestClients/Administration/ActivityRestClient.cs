@@ -20,21 +20,21 @@ namespace Nexus.Link.WorkflowEngine.Sdk.RestClients.Administration
         }
 
         /// <inheritdoc />
-        public Task SuccessAsync(string id, ActivitySuccessResult result,
+        public Task SuccessAsync(string activityInstanceId, ActivitySuccessResult result,
             CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
             InternalContract.RequireNotNull(result, nameof(result));
-            var relativeUrl = $"{WebUtility.UrlEncode(id)}/Success";
+            var relativeUrl = $"{WebUtility.UrlEncode(activityInstanceId)}/Success";
             return PostNoResponseContentAsync(relativeUrl, result, null, cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default)
+        public Task FailedAsync(string activityInstanceId, ActivityFailedResult result, CancellationToken cancellationToken = default)
         {
-            InternalContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            InternalContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
             InternalContract.RequireNotNull(result, nameof(result));
-            var relativeUrl = $"{WebUtility.UrlEncode(id)}/Failed";
+            var relativeUrl = $"{WebUtility.UrlEncode(activityInstanceId)}/Failed";
             return PostNoResponseContentAsync(relativeUrl, result, null, cancellationToken);
         }
 

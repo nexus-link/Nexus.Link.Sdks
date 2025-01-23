@@ -23,26 +23,26 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 
 
         /// <inheritdoc />
-        [HttpPost("Activities/{id}/Success")]
-        public Task SuccessAsync(string id, ActivitySuccessResult result,
+        [HttpPost("Activities/{activityInstanceId}/Success")]
+        public Task SuccessAsync(string activityInstanceId, ActivitySuccessResult result,
             CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
 
-            return _capability.Activity.SuccessAsync(id, result, cancellationToken);
+            return _capability.Activity.SuccessAsync(activityInstanceId, result, cancellationToken);
         }
 
         /// <inheritdoc />
-        [HttpPost("Activities/{id}/Failed")]
-        public Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default)
+        [HttpPost("Activities/{activityInstanceId}/Failed")]
+        public Task FailedAsync(string activityInstanceId, ActivityFailedResult result, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));
 
-            return _capability.Activity.FailedAsync(id, result, cancellationToken);
+            return _capability.Activity.FailedAsync(activityInstanceId, result, cancellationToken);
         }
 
         /// <inheritdoc />
-        [HttpPost("Activities/{id}/Retry")]
+        [HttpPost("Activities/{activityInstanceId}/Retry")]
         public async Task RetryAsync(string activityInstanceId, CancellationToken cancellationToken = default)
         {
             ServiceContract.RequireNotNullOrWhiteSpace(activityInstanceId, nameof(activityInstanceId));

@@ -106,6 +106,13 @@ internal class WorkflowExecutor : IWorkflowExecutor
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             TWorkflowResult result;
             await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);
+            if (WorkflowInformation.Instance.CancelledAt != null)
+            {
+                throw new WorkflowFailedException(
+                    ActivityExceptionCategoryEnum.BusinessError,
+                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.",
+                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.");
+            }
             try
             {
                 result = await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);
@@ -152,6 +159,13 @@ internal class WorkflowExecutor : IWorkflowExecutor
         {
             WorkflowStatic.Context.ExecutionIsAsynchronous = true;
             await this.LogVerboseAsync($"Begin Workflow {WorkflowInformation} execution", WorkflowInformation.Instance, cancellationToken);
+            if (WorkflowInformation.Instance?.CancelledAt != null)
+            {
+                throw new WorkflowFailedException(
+                    ActivityExceptionCategoryEnum.BusinessError,
+                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.",
+                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.");
+            }
             try
             {
                 await workflowImplementation.ExecuteWorkflowAsync(cancellationToken);

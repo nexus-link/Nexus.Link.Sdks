@@ -12,12 +12,12 @@ public interface IActivityService
     /// <summary>
     /// Mark an activity as successful with result <paramref name="result"/>.
     /// </summary>
-    Task SuccessAsync(string id, ActivitySuccessResult result, CancellationToken cancellationToken = default);
+    Task SuccessAsync(string activityInstanceId, ActivitySuccessResult result, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Mark an activity as failed with result <paramref name="result"/>.
     /// </summary>
-    Task FailedAsync(string id, ActivityFailedResult result, CancellationToken cancellationToken = default);
+    Task FailedAsync(string activityInstanceId, ActivityFailedResult result, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retry an activity that is in a halted state

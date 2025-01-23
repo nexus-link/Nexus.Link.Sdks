@@ -35,12 +35,12 @@ namespace Nexus.Link.WorkflowEngine.Sdk.AspNet.Controllers.Administration
 
 
         /// <inheritdoc />
-        [HttpGet("Forms/{id}")]
-        public async Task<WorkflowForm> ReadAsync(string id, CancellationToken cancellationToken = default)
+        [HttpGet("Forms/{workflowFormId}")]
+        public async Task<WorkflowForm> ReadAsync(string workflowFormId, CancellationToken cancellationToken = default)
         {
-            ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+            ServiceContract.RequireNotNullOrWhiteSpace(workflowFormId, nameof(workflowFormId));
 
-            return await _capability.Form.ReadAsync(id, cancellationToken);
+            return await _capability.Form.ReadAsync(workflowFormId, cancellationToken);
         }
 
         /// <inheritdoc />

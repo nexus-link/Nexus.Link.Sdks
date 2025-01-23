@@ -88,14 +88,6 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
                     dbException);
                 throw new ActivityTemporaryFailureException(TimeSpan.FromSeconds(30));
             }
-
-            if (WorkflowInformation.Instance.CancelledAt != null)
-            {
-                throw new WorkflowFailedException(
-                    ActivityExceptionCategoryEnum.BusinessError,
-                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.",
-                    $"This workflow was manually marked for cancelling at {WorkflowInformation.Instance.CancelledAt.Value.ToLogString()}.");
-            }
         }
         catch (Exception ex)
         {

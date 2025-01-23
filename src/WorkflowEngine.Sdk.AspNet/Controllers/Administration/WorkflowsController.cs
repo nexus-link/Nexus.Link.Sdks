@@ -22,26 +22,26 @@ public abstract class WorkflowsController : ControllerBase, IWorkflowService
     }
 
     /// <inheritdoc />
-    [HttpGet("Workflows/{id}")]
-    public async Task<Workflow> ReadAsync(string id, CancellationToken cancellationToken = default)
+    [HttpGet("Workflows/{workflowInstanceId}")]
+    public async Task<Workflow> ReadAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
     {
-        ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+        ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
-        var workflow = await _capability.Workflow.ReadAsync(id, cancellationToken);
+        var workflow = await _capability.Workflow.ReadAsync(workflowInstanceId, cancellationToken);
         return workflow;
     }
 
     /// <inheritdoc />
-    [HttpPost("Workflows/{id}/Cancel")]
-    public async Task CancelAsync(string id, CancellationToken cancellationToken = default)
+    [HttpPost("Workflows/{workflowInstanceId}/Cancel")]
+    public async Task CancelAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
     {
-        ServiceContract.RequireNotNullOrWhiteSpace(id, nameof(id));
+        ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
 
-        await _capability.Workflow.CancelAsync(id, cancellationToken);
+        await _capability.Workflow.CancelAsync(workflowInstanceId, cancellationToken);
     }
 
     /// <inheritdoc />
-    [HttpPost("Workflows/{id}/RetryHalted")]
+    [HttpPost("Workflows/{workflowInstanceId}/RetryHalted")]
     public async Task RetryHaltedAsync(string workflowInstanceId, CancellationToken cancellationToken = default)
     {
         ServiceContract.RequireNotNullOrWhiteSpace(workflowInstanceId, nameof(workflowInstanceId));
