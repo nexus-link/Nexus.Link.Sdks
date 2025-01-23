@@ -57,7 +57,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk</PackageId>
-    <Version>6.39.3</Version>
+    <Version>6.40.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -67,6 +67,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      6.40.0 Refactored JobResults; removed IJobResults to avoid serialization complications
       6.39.3 Bug: Manual cancellation of workflow did not release locks or other cleaning up activity
       6.39.2 Bug: The activity ForEachSequential seems to start over if it is postponed during the loop. Also corrected ForEachParallel the same way
       6.39.1 Introduced possibility to ask for backoff strategy for retries

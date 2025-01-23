@@ -6,7 +6,10 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Exceptions;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Interfaces;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Logic;
@@ -16,7 +19,7 @@ using Nexus.Link.WorkflowEngine.Sdk.Support;
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
 
 /// <inheritdoc cref="IActivityParallel" />
-internal class ActivityParallel : Activity<IJobResults>, IActivityParallel
+internal class ActivityParallel : Activity<JobResults>, IActivityParallel
 {
     private readonly Dictionary<int, Task<object>> _objectTasks = new();
     private readonly Dictionary<int, Task> _voidTasks = new();
@@ -26,7 +29,7 @@ internal class ActivityParallel : Activity<IJobResults>, IActivityParallel
     private int _maxJobIndex;
 
     public ActivityParallel(IActivityInformation activityInformation)
-        : base(activityInformation, _ => Task.FromResult(new JobResults() as IJobResults))
+        : base(activityInformation, _ => Task.FromResult(new JobResults() as JobResults))
     {
         _maxJobIndex = 0;
     }
@@ -80,16 +83,16 @@ internal class ActivityParallel : Activity<IJobResults>, IActivityParallel
     }
 
     /// <inheritdoc />
-    public override async Task<IJobResults> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task<JobResults> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         JobNumber = 0;
         WorkflowStatic.Context.ParentActivity = this;
-        var result = await ActivityExecutor.ExecuteWithReturnValueAsync<IJobResults>(ParallelAsync, DefaultValueMethodAsync, cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync<JobResults>(ParallelAsync, DefaultValueMethodAsync, cancellationToken);
         WorkflowStatic.Context.ParentActivity = null;
         return result;
     }
 
-    internal async Task<IJobResults> ParallelAsync(CancellationToken cancellationToken = default)
+    internal async Task<JobResults> ParallelAsync(CancellationToken cancellationToken = default)
     {
         foreach (var (index, job) in _voidJobs)
         {

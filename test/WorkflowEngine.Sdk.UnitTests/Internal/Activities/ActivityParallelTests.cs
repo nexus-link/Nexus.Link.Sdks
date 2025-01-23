@@ -3,7 +3,10 @@ using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Support;
+using Nexus.Link.WorkflowEngine.Sdk.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
+using Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.Support;
 using Shouldly;
 using WorkflowEngine.Sdk.UnitTests.TestSupport;
@@ -27,7 +30,7 @@ public class ActivityParallelTests : ActivityTestsBase
         await activity.ExecuteAsync();
 
         // Assert
-        _activityExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync<IJobResults>(activity.ParallelAsync, It.IsAny<ActivityDefaultValueMethodAsync<IJobResults>>(), It.IsAny<CancellationToken>()), Times.Once);
+        _activityExecutorMock.Verify(e => e.ExecuteWithReturnValueAsync<JobResults>(activity.ParallelAsync, It.IsAny<ActivityDefaultValueMethodAsync<JobResults>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

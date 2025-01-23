@@ -6,6 +6,7 @@ using Nexus.Link.Libraries.Core.Assert;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities;
+using Nexus.Link.WorkflowEngine.Sdk.Support;
 
 namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
 {
@@ -73,7 +74,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.ResultAsJson = source.ResultAsJson;
             target.ContextDictionary = source.ContextAsJson == null 
                 ? new Dictionary<string, JToken>() 
-                : JsonConvert.DeserializeObject<Dictionary<string, JToken>>(source.ContextAsJson);
+                : new JsonSupportNewtonsoft().Deserialize<Dictionary<string, JToken>>(source.ContextAsJson);
             target.State = source.State.ToEnum<ActivityStateEnum>();
             target.ExceptionCategory = source.ExceptionCategory?.ToEnum<ActivityExceptionCategoryEnum>();
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
