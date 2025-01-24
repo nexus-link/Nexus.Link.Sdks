@@ -72,7 +72,8 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
         var taskList = new List<Task>();
         if (LoopIteration == 0) LoopIteration = 1;
         var index = LoopIteration - 1;
-        while (index < Items.Length) {
+        while (index < Items.Length)
+        {
             var item = Items[index];
             try
             {
@@ -91,7 +92,8 @@ internal class ActivityForEachParallel<TItem> : LoopActivity, IActivityForEachPa
             Instance.Iteration = LoopIteration;
             index = LoopIteration - 1;
         }
-
+        // Reset the iteration counter to make sure that we run all activities in parallel again if there is an exception.
+        Instance.Iteration = 0;
         await WorkflowHelper.WhenAllActivities(taskList);
     }
 }
@@ -109,7 +111,7 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
     [Obsolete("Please use the constructor with a method parameter. Obsolete since 2022-05-01.")]
     public ActivityForEachParallel(IActivityInformation activityInformation,
         IEnumerable<TItem> items,
-        GetKeyMethod<TItem> getKeyMethod, 
+        GetKeyMethod<TItem> getKeyMethod,
         GetIterationTitleMethod<TItem> getIterationTitleMethod)
         : base(activityInformation, EmptyDictionaryAsync)
     {
@@ -163,7 +165,8 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
         var taskDictionary = new Dictionary<string, Task<TMethodReturns>>();
         if (LoopIteration == 0) LoopIteration = 1;
         var index = LoopIteration - 1;
-        while (index < Items.Length) {
+        while (index < Items.Length)
+        {
             var item = Items[index];
             string key = default;
             try
@@ -192,6 +195,8 @@ internal class ActivityForEachParallel<TMethodReturns, TItem> :
             Instance.Iteration = LoopIteration;
             index = LoopIteration - 1;
         }
+        // Reset the iteration counter to make sure that we run all activities in parallel again if there is an exception.
+        Instance.Iteration = 0;
         return AggregateResultsAndPostponeExceptionsAsync(taskDictionary, cancellationToken);
     }
 
