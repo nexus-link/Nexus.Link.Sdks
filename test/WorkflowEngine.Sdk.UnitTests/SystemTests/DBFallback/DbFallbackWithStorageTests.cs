@@ -62,7 +62,7 @@ public class DbFallbackWithStorageTests : Base
 
         // Act
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
 
         // Assert
         LogicMoq.Verify();
@@ -91,7 +91,7 @@ public class DbFallbackWithStorageTests : Base
             .Returns(expectedResult)
             .Verifiable();
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
         // Make DB work again
         WorkflowInstanceTable.OnlyForTest_Update_AlwaysThrowThisException = null;
         implementation = await WorkflowContainer.SelectImplementationAsync<string>(1, 1);
@@ -130,7 +130,7 @@ public class DbFallbackWithStorageTests : Base
 
         // Act
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
 
         // Assert
         LogicMoq.Verify();
@@ -160,7 +160,7 @@ public class DbFallbackWithStorageTests : Base
             .Returns(expectedResult)
             .Verifiable();
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
         // Make DB and storage work again
         WorkflowInstanceTable.OnlyForTest_Update_AlwaysThrowThisException = null;
         WorkflowSummaryStore.OnlyForTest_Create_AlwaysThrowThisException = null;
@@ -199,7 +199,7 @@ public class DbFallbackWithStorageTests : Base
             .Returns(expectedResult)
             .Verifiable();
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
         // Make DB and storage work again
         WorkflowInstanceTable.OnlyForTest_Update_AlwaysThrowThisException = new FulcrumResourceException();
         WorkflowSummaryStore.OnlyForTest_Create_AlwaysThrowThisException = null;

@@ -38,7 +38,7 @@ public class DbFallbackWithNoStorageTests : Base
     }
 
     [Fact]
-    public async Task Execute_Given_FirstTimeDbFailsNoStorage_Gives_RequestPostponed()
+    public async Task Execute_Given_FirstTimeDbFailsNoStorage_Gives_FulcrumTryAgainException()
     {
         // Arrange
         var implementation = await WorkflowContainer.SelectImplementationAsync<string>(1, 1);
@@ -57,7 +57,7 @@ public class DbFallbackWithNoStorageTests : Base
 
         // Act
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
 
         // Assert
         LogicMoq.Verify();
@@ -82,7 +82,7 @@ public class DbFallbackWithNoStorageTests : Base
             .Returns(expectedResult)
             .Verifiable();
         await implementation.ExecuteAsync()
-            .ShouldThrowAsync<RequestPostponedException>();
+            .ShouldThrowAsync<FulcrumTryAgainException>();
         // Make DB and storage work again
         WorkflowInstanceTable.OnlyForTest_Update_AlwaysThrowThisException = null;
         implementation = await WorkflowContainer.SelectImplementationAsync<string>(1, 1);

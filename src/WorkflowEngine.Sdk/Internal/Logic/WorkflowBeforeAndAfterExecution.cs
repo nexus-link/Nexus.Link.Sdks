@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.Libraries.Core.Application;
 using Nexus.Link.Libraries.Core.Assert;
+using Nexus.Link.Libraries.Core.Error.Logic;
 using Nexus.Link.Libraries.Core.Logging;
 using Nexus.Link.Libraries.Core.Misc;
 using Nexus.Link.Libraries.Crud.Model;
@@ -116,15 +117,19 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         }
         catch (Exception ex)
         {
-            Log.LogWarning($"The workflow {WorkflowInformation} had a problem with the book keeping after execution. Will try again later.\r{ex.ToLog()}", ex);
-            throw new WorkflowPostponedException(TimeSpan.FromSeconds(30));
+            var message = $"The workflow {WorkflowInformation} had a problem with the book keeping after execution. Will try again later.\r{ex.ToLog()}";
+            Log.LogWarning(message, ex);
+            throw new FulcrumTryAgainException(message)
+            {
+                RecommendedWaitTimeInSeconds = 30
+            };
         }
     }
 
     private async Task InternalAfterExecutionAsync(CancellationToken orginalCancellationToken)
     {
         // Please note! We will not honor the original cancellation token here, because it is very important
-        // that we save the state. We will give ourselves 30 seconds, no matter what the original
+        // that we save the state. We will give ourselves at least 30 seconds, no matter what the original
         // cancellation token thinks
         var timeLeftToFinish = CalculateTimeLeftToFinish(TimeSpan.FromSeconds(30));
         var limitedTimeCancellationToken = new CancellationTokenSource(timeLeftToFinish);
@@ -134,37 +139,41 @@ internal class WorkflowBeforeAndAfterExecution : IWorkflowBeforeAndAfterExecutio
         {
             WorkflowInformation.AggregateActivityInformation();
 
-            // Release semaphores
-            if (WorkflowInformation.Instance.State is WorkflowStateEnum.Success or WorkflowStateEnum.Failed)
-            {
-                await WorkflowInformation.SemaphoreService.LowerAllAsync(WorkflowInformation.InstanceId,
-                    extendedCancellationToken);
-            }
-
             var doAnInitialSaveToFallback = WorkflowInformation.NumberOfActivityInstances > 100;
             if (doAnInitialSaveToFallback)
             {
                 Log.LogInformation($"We will do an initial save of the state to fallback storage due to many activity instances ({WorkflowInformation.NumberOfActivityInstances}) for {WorkflowInformation.Instance} ({WorkflowInformation.InstanceId}).");
             }
             await WorkflowInformation.SaveAsync(doAnInitialSaveToFallback, extendedCancellationToken);
+
+            // Release semaphores
+            if (WorkflowInformation.Instance.State is not (WorkflowStateEnum.Success or WorkflowStateEnum.Failed)) return;
+            try
+            {
+                await WorkflowInformation.SemaphoreService.LowerAllAsync(WorkflowInformation.InstanceId, extendedCancellationToken);
+            }
+            catch (Exception ex)
+            {
+                throw new FulcrumTryAgainException($"Could not lower semaphores: {ex.Message}");
+            }
         }
         finally
         {
-            try
+            if (_workflowDistributedLock != null)
             {
-                // Release the lock
-                if (_workflowDistributedLock != null)
+                try
                 {
+                    // Release the lock
                     FulcrumAssert.IsNotNull(WorkflowInformation.WorkflowInstanceService, CodeLocation.AsString());
                     await WorkflowInformation.WorkflowInstanceService.ReleaseDistributedLockAsync(
-                        _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId, extendedCancellationToken);
+                        _workflowDistributedLock.ItemId, _workflowDistributedLock.LockId,
+                        extendedCancellationToken);
+                }
+                catch (Exception)
+                {
+                    // Never let this cause a failure
                 }
             }
-            catch (Exception)
-            {
-                // Never let this cause a failure
-            }
-
         }
     }
 

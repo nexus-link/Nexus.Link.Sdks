@@ -209,7 +209,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
             technicalMessage;
         WorkflowInformation.Instance.ExceptionFriendlyMessage =
             "The workflow engine failed; it encountered an unexpected exception";
-        var message = $"Workflow {WorkflowInformation} failed: {technicalMessage}";
+        var message = $"Workflow {WorkflowInformation.ToLogString()} failed: {technicalMessage}";
         Log.LogError(message);
         await this.LogErrorAsync(message,
             new { Exception = ex, WorkflowInformation },
@@ -228,7 +228,7 @@ internal class WorkflowExecutor : IWorkflowExecutor
                 WorkflowInformation.Instance.ExceptionTechnicalMessage = wfe.TechnicalMessage;
                 WorkflowInformation.Instance.ExceptionFriendlyMessage = wfe.FriendlyMessage;
 
-                var message = $"Workflow {WorkflowInformation} failed: {wfe.TechnicalMessage}";
+                var message = $"Workflow {WorkflowInformation.ToLogString()} failed: {wfe.TechnicalMessage}";
                 Log.LogInformation(message, exception);
                 await this.LogWarningAsync(message, WorkflowInformation.Instance, cancellationToken);
                 return new FulcrumCancelledException(wfe.TechnicalMessage)
