@@ -33,6 +33,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.ExceptionFriendlyMessage = source.ExceptionFriendlyMessage;
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.FinishedAt = source.FinishedAt;
+            target.ExtraAdminCompleted = source.ExtraAdminCompleted;
             target.AbsolutePosition = source.AbsolutePosition;
             target.AsyncRequestId = source.AsyncRequestId;
             target.ExceptionAlertHandled = source.ExceptionAlertHandled;
@@ -81,6 +82,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Internal.Extensions.State
             target.ExceptionTechnicalMessage = source.ExceptionTechnicalMessage;
             target.StartedAt = source.StartedAt;
             target.FinishedAt = source.FinishedAt;
+            target.ExtraAdminCompleted = source.ExtraAdminCompleted;
             target.AbsolutePosition = source.AbsolutePosition;
             target.AsyncRequestId = source.AsyncRequestId;
             target.ExceptionAlertHandled = source.ExceptionAlertHandled;

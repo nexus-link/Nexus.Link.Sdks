@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 
@@ -12,4 +13,6 @@ internal interface IActivityExecutor
 
     Task<TActivityReturns> ExecuteWithReturnValueAsync<TActivityReturns>(InternalActivityMethodAsync<TActivityReturns> methodAsync, ActivityDefaultValueMethodAsync<TActivityReturns> getDefaultValueAsync,
         CancellationToken cancellationToken = default);
+
+    Task DoExtraAdminAsync(Func<CancellationToken, Task> finishAction, CancellationToken cancellationToken);
 }

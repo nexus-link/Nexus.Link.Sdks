@@ -34,7 +34,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Abstract</PackageId>
-    <Version>1.11.4</Version>
+    <Version>1.12.0</Version>
     <Description>Workflow engine contracts</Description>
     <Copyright>Copyright ©2023 Xlent Link AB</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -43,6 +43,7 @@
     <PackageLanguage>en-US</PackageLanguage>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      1.12.0 Added ActivityInstance.ExtraAdminCompleted
       1.11.4 Refactored JobResults; removed IJobResults to avoid serialization complications
       1.11.3 Renamed some parameters to make the code clearer
       1.11.2 The Item list for ForEachSequential and ForEachParallel is now an array

@@ -48,7 +48,7 @@
 
   <PropertyGroup>
     <PackageId>Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql</PackageId>
-    <Version>2.11.7</Version>
+    <Version>2.12.0</Version>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>nexus;link;fulcrum;lever</PackageTags>
     <Authors>XLENT Link</Authors>
@@ -58,6 +58,7 @@
     <Copyright>Copyright ©2021 Xlent Link AB</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageReleaseNotes>
+      2.12.0 Added ActivityInstance.ExtraAdminCompleted
       2.11.7 Bump
       2.11.1 Bug fixed for SELECT statement with RecordCreatedAt
       2.11.0 Now uses RecordCreatedAt instead of StartedAt at some cruicial points to get better performnce for some SELECT statements
@@ -169,6 +170,19 @@
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch15_rollback .sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch16 - iteration.sql" />
     <None Remove="contentFiles\any\any\sql-scripts\patches\patch16_rollback.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="contentFiles\any\any\sql-scripts\patches\patch17 - ExtraAdminCompleted.sql">
+      <PackagePath>contentFiles</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <IncludeInPackage>true</IncludeInPackage>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <BuildAction>Content</BuildAction>
+      <copyToOutput>true</copyToOutput>
+      <Pack>true</Pack>
+    </Content>
   </ItemGroup>
 
 </Project>

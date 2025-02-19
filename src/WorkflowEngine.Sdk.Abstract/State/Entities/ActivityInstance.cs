@@ -55,7 +55,8 @@ public enum ActivityStateEnum
     /// The activity has finished, but it failed. <see cref="ActivityFailUrgencyEnum"/> for the level of urgency to deal with this.
     /// </summary>
     Failed
-};
+}
+
 public class ActivityInstance : ActivityInstanceCreate, IUniquelyIdentifiable<string>, IOptimisticConcurrencyControlByETag, IEqualityComparer<ActivityInstance>
 {
     public string Id { get; set; }
@@ -92,6 +93,8 @@ public class ActivityInstanceCreate : ActivityInstanceUnique, IValidatable
     public bool HasCompleted => State == ActivityStateEnum.Success || State == ActivityStateEnum.Failed;
 
     public DateTimeOffset? FinishedAt { get; set; }
+
+    public bool? ExtraAdminCompleted { get; set; }
 
     public string AsyncRequestId { get; set; }
 

@@ -49,6 +49,34 @@ internal class ActivityExecutor : IActivityExecutor
         return await SafeExecuteAsync(methodAsync, true, getDefaultValueAsync, cancellationToken);
     }
 
+    /// <inheritdoc />
+    public async Task DoExtraAdminAsync(Func<CancellationToken, Task> finishAction, CancellationToken cancellationToken)
+    {
+        if (Activity.Instance.ExtraAdminCompleted == true) return;
+        try
+        {
+            Activity.Instance.ExtraAdminCompleted = false;
+            await finishAction.Invoke(cancellationToken);
+            Activity.Instance.ExtraAdminCompleted = true;
+        }
+        catch (FulcrumTryAgainException tryAgainException)
+        {
+            await Activity.LogWarningAsync($"The activity completed, but had a temporary error while doing extra administration after. We will try again: {tryAgainException.ToLogString()}", null, cancellationToken);
+            var exception = new ActivityTemporaryFailureException(TimeSpan.FromSeconds(tryAgainException.RecommendedWaitTimeInSeconds));
+            throw new WorkflowImplementationShouldNotCatchThisException(exception);
+        }
+        catch (Exception exception)
+        {
+            var technicalMessage = $"The activity completed, but had an unexpected error while doing extra administration after: {exception.ToLogString()}";
+            await Activity.LogErrorAsync(technicalMessage, null, cancellationToken);
+            technicalMessage = $"The activity {Activity.ToLogString()} succeeded, but had an unexpected error while doing extra administration after: {exception.ToLogString()}";
+            var friendlyMessage =
+                $"The workflow engine unexpectedly failed while doing some administration after an activity had completed. Contact the workflow programmer.";
+            var workflowException = new WorkflowFailedException(ActivityExceptionCategoryEnum.WorkflowCapabilityError, technicalMessage, friendlyMessage);
+            throw new WorkflowImplementationShouldNotCatchThisException(workflowException);
+        }
+    }
+
     /// <summary>
     /// The single purpose of this method is to verify that we limit the type of exceptions that can be thrown, both outer and inner exception.
     /// </summary>

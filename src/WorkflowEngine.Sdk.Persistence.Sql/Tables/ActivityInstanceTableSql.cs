@@ -29,6 +29,7 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Sql.Tables
                 nameof(ActivityInstanceRecord.AbsolutePosition),
                 nameof(ActivityInstanceRecord.StartedAt),
                 nameof(ActivityInstanceRecord.FinishedAt),
+                nameof(ActivityInstanceRecord.ExtraAdminCompleted),
                 nameof(ActivityInstanceRecord.ResultAsJson),
                 nameof(ActivityInstanceRecord.ContextAsJson),
                 nameof(ActivityInstanceRecord.State),

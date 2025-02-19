@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Nexus.Link.Libraries.Web.Error.Logic;
+using Nexus.Link.WorkflowEngine.Sdk.Abstract.Activities;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.Exceptions;
 using Nexus.Link.WorkflowEngine.Sdk.Abstract.State.Entities;
 using Nexus.Link.WorkflowEngine.Sdk.Internal.ActivityTypes;
@@ -35,9 +36,8 @@ public class ActivityActionLockTests : ActivityTestsBase
             LockSemaphoreSupport = _semaphoreSupportMock.Object
         };
 
-
         // Act
-        await activity.ActionAsync();
+        await activity.ExecuteAsync();
 
         // Assert
         _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -56,7 +56,7 @@ public class ActivityActionLockTests : ActivityTestsBase
 
 
         // Act
-        await activity.ActionAsync();
+        await activity.ExecuteAsync();
 
         // Assert
         _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -165,9 +165,14 @@ public class ActivityActionLockTests : ActivityTestsBase
         {
             LockSemaphoreSupport = _semaphoreSupportMock.Object
         };
+        _activityExecutorMock.Setup(executor =>
+                executor.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(),
+                    It.IsAny<ActivityDefaultValueMethodAsync<int>>(),
+                    It.IsAny<CancellationToken>()))
+            .Callback((InternalActivityMethodAsync<int> m, ActivityDefaultValueMethodAsync<int> _, CancellationToken ct) => m.Invoke(ct));
 
         // Act
-        await activity.ActionAsync();
+        await activity.ExecuteAsync();
 
         // Assert
         _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -183,9 +188,14 @@ public class ActivityActionLockTests : ActivityTestsBase
         {
             ThrottleSemaphoreSupport = _semaphoreSupportMock.Object
         };
+        _activityExecutorMock.Setup(executor =>
+            executor.ExecuteWithReturnValueAsync(It.IsAny<InternalActivityMethodAsync<int>>(),
+                It.IsAny<ActivityDefaultValueMethodAsync<int>>(),
+        It.IsAny<CancellationToken>()))
+            .Callback((InternalActivityMethodAsync<int> m, ActivityDefaultValueMethodAsync<int> _, CancellationToken ct) => m.Invoke(ct));
 
         // Act
-        await activity.ActionAsync();
+        await activity.ExecuteAsync();
 
         // Assert
         _semaphoreSupportMock.Verify(e => e.RaiseAsync(It.IsAny<CancellationToken>()), Times.Once);

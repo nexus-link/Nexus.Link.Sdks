@@ -40,6 +40,8 @@ namespace Nexus.Link.WorkflowEngine.Sdk.Persistence.Abstract.Entities
 
         public DateTimeOffset? FinishedAt { get; set; }
 
+        public bool? ExtraAdminCompleted { get; set; }
+
         public string ResultAsJson { get; set; }
 
         public string ExceptionCategory { get; set; }

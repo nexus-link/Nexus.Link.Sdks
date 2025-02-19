@@ -184,6 +184,11 @@ internal class ActivityAction : Activity, IActivityActionWithThrottle, IActivity
             $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
         if (_fireAndForget) WorkflowStatic.Context.ExecutionBackgroundStyle = BackgroundStyleEnum.FireAndForget;
         await ActivityExecutor.ExecuteWithoutReturnValueAsync(ActionAsync, cancellationToken);
+        await ActivityExecutor.DoExtraAdminAsync(async (ct) =>
+        {
+            await MaybeLowerAsync(ThrottleSemaphoreSupport, ct);
+            await MaybeLowerAsync(LockSemaphoreSupport, ct);
+        }, cancellationToken);
     }
 
     internal async Task ActionAsync(CancellationToken cancellationToken = default)
@@ -231,8 +236,6 @@ internal class ActivityAction : Activity, IActivityActionWithThrottle, IActivity
                         {
                             await _methodAsync(this, ct);
                         }
-                        await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
-                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
                     }, methodName,
                         cancellationToken);
                     return;
@@ -436,7 +439,13 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
     {
         InternalContract.Require(_methodAsync != null, $"You must use the {nameof(IActivityFlow.Action)}() method that has a method as parameter.");
         if (_fireAndForget) WorkflowStatic.Context.ExecutionBackgroundStyle = BackgroundStyleEnum.FireAndForget;
-        return await ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(ActionAsync, DefaultValueMethodAsync, cancellationToken);
+        await ActivityExecutor.DoExtraAdminAsync(async (ct) =>
+        {
+            await MaybeLowerAsync(ThrottleSemaphoreSupport, ct);
+            await MaybeLowerAsync(LockSemaphoreSupport, ct);
+        }, cancellationToken);
+        return result;
     }
 
     internal async Task<TActivityReturns> ActionAsync(CancellationToken cancellationToken = default)
@@ -485,8 +494,6 @@ internal class ActivityAction<TActivityReturns> : Activity<TActivityReturns>, IA
                         {
                             returnValue = await _methodAsync(this, ct);
                         }
-                        await MaybeLowerAsync(LockSemaphoreSupport, cancellationToken);
-                        await MaybeLowerAsync(ThrottleSemaphoreSupport, cancellationToken);
                         return returnValue;
                     }, methodName,
                         cancellationToken);

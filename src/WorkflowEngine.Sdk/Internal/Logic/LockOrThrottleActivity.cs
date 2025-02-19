@@ -63,9 +63,13 @@ internal abstract class LockOrThrottleActivity<TLockOrThrottle, TLockOrThrottleT
     }
 
     /// <inheritdoc />
-    public override Task ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithoutReturnValueAsync(LockOrThrottleAsync, cancellationToken);
+        await ActivityExecutor.ExecuteWithoutReturnValueAsync(LockOrThrottleAsync, cancellationToken);
+        await ActivityExecutor.DoExtraAdminAsync(async (ct) =>
+        {
+            await MaybeLowerAsync(SemaphoreSupport, ct);
+        }, cancellationToken);
     }
 
     protected internal async Task LockOrThrottleAsync(CancellationToken cancellationToken)
@@ -88,7 +92,6 @@ internal abstract class LockOrThrottleActivity<TLockOrThrottle, TLockOrThrottleT
             return;
         }
         await LogicExecutor.ExecuteWithoutReturnValueAsync(ct => ThenMethodAsync(this as TLockOrThrottle, ct), "Then", cancellationToken);
-        await SemaphoreSupport.LowerAsync(cancellationToken);
     }
 }
 
@@ -138,9 +141,14 @@ internal class ActivityLockOrThrottle<TActivityReturns, TLockOrThrottle, TLockOr
         return this;
     }
 
-    public override Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
+    public override async Task<TActivityReturns> ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        return ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
+        var result = await ActivityExecutor.ExecuteWithReturnValueAsync(LockOrThrottleAsync, DefaultValueMethodAsync, cancellationToken);
+        await ActivityExecutor.DoExtraAdminAsync(async (ct) =>
+        {
+            await MaybeLowerAsync(SemaphoreSupport, ct);
+        }, cancellationToken);
+        return result;
     }
 
     protected internal async Task<TActivityReturns> LockOrThrottleAsync(CancellationToken cancellationToken)
@@ -161,7 +169,6 @@ internal class ActivityLockOrThrottle<TActivityReturns, TLockOrThrottle, TLockOr
             return await LogicExecutor.ExecuteWithReturnValueAsync(ct => ElseMethodAsync(this as TLockOrThrottle, ct), "Else", cancellationToken);
         }
         var result = await LogicExecutor.ExecuteWithReturnValueAsync(ct => ThenMethodAsync(this as TLockOrThrottle, ct), "Then", cancellationToken);
-        await SemaphoreSupport.LowerAsync(cancellationToken);
         return result;
     }
 }
