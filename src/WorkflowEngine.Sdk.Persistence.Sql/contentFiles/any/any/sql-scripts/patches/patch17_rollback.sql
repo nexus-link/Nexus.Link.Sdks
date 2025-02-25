@@ -1,3 +1,3 @@
 -- ROLLBACK: 17
 
-ALTER TABLE [ActivityInstance] DROP ExtraAdminCompleted
+ALTER TABLE [ActivityInstance] DROP COLUMN ExtraAdminCompleted
